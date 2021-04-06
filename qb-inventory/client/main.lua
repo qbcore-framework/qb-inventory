@@ -128,7 +128,7 @@ Citizen.CreateThread(function()
                 local ped = PlayerPedId()
                 local pos = GetEntityCoords(ped)
                 local vehpos = GetEntityCoords(vehicle)
-                if #(pos - vehpos) < 5.0) and not IsPedInAnyVehicle(ped) then
+                if #(pos - vehpos) < 5.0 and not IsPedInAnyVehicle(ped) then
                     local drawpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, -2.5, 0)
                     if (IsBackEngine(GetEntityModel(vehicle))) then
                         drawpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, 2.5, 0)
