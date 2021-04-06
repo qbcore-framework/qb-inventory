@@ -1,0 +1,907 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:600&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Lato&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Balthazar&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Roboto+Slab&display=swap');
+
+@font-face {
+    font-family: 'Verdana';
+    src: url('../verdana.ttf');
+}
+
+@font-face {
+    font-family: 'Verdana Bold';
+    src: url('../VerdanaBold.ttf');
+}
+
+
+p {
+    margin: 0 !important;
+}
+
+:root {
+    --main-label-color: 20, 10, 20;  
+}
+
+/* rgb() */
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+::-webkit-scrollbar
+{
+	width: 4px;
+}
+
+::-webkit-scrollbar-thumb
+{
+	background-color: rgba(120, 10, 20, 1);
+}
+
+body {
+    overflow-x: hidden;
+}
+
+#qbus-inventory {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0vw;
+    display: none;
+}
+
+.inv-background {
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+.inv-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    /* background-color: rgb(153, 147, 147); */
+}
+
+.player-inventory {
+    position: absolute;
+    top: 26%;
+    left: 10.2%;
+    width: 31.5%;
+    max-width: 31.5%;
+    height: 44.16%;
+    max-height: 44.16%;
+    float: left;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    z-index: 100;
+}
+
+.other-inventory {
+    position: absolute;
+    top: 26%;
+    right: 10.2%;
+    width: 31.5%;
+    max-width: 31.5%;
+    height: 44.16%;
+    max-height: 44.16%;
+    float: left;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    z-index: 100;
+}
+
+.ply-hotbar-inventory {
+    position: absolute;
+    bottom: 10%;
+    left: 35.5%;
+    z-index: 105;
+}
+
+.player-inventory > .item-slot > .item-slot-key p {
+    position: absolute;
+    background: #ffffff;
+    color: #000000;
+    padding: .3vh;
+    padding-left: .5vh;
+    padding-right: .5vh;
+    text-align: left;
+    font-size: 1.1vh;
+    line-height: 1.8vh;
+    font-family: 'Verdana Bold'
+}
+
+.inv-options {
+    position: absolute;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    width: 9%;
+    top: 32%;
+    left: 3vh;
+}
+
+.combine-option-container {
+    display: none;
+    position: absolute;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    width: 9%;
+    top: 48%;
+    left: 3vh;
+}
+
+.item-slot {
+    position: relative;
+    width: 10.5vh;
+    height: 13.5vh;
+    float: left;
+    margin-left: 2px;
+    margin-bottom: 2px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: opacity 0.2s;
+    opacity: 1.0;
+}
+
+/* .other-inventory > .item-slot {
+    background-color: rgba(61, 11, 11, 0.075);
+} */
+
+.item-slot-hoverClass {
+    opacity: .6;
+}
+
+.item-slot:hover {
+    opacity: .7;
+}
+
+.inv-option-item {
+    margin-top: 20%;
+}
+
+.btn-inv {
+    width: 100%!important;
+    max-width: 100%!important;
+    padding: 10%!important;
+    background-color: rgba(235, 235, 235, 0);
+}
+
+#item-amount {
+    color: white;
+    text-align: center;
+    font-size: 1.25vh;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Verdana, sans-serif;
+    outline: none;
+}
+
+.ammo-info-block {
+    position: absolute;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    width: 22vh;
+    height: 11vh;
+    background-color: rgba(235, 235, 235, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.01);
+    top: 2vh;
+}
+.ammo-info-header {
+    /* background-color: rgba(5, 5, 5, 0.5); */
+    width: 100%;
+    color: white;
+    font-family: 'Open Sans', sans-serif;
+    background-color: rgba(0, 0, 0, 0.192);
+    font-size: 1.2vh;
+    padding: .4vh;
+    text-align: center;
+}
+.ammo-info {
+    position: relative;
+    color: white;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 200;
+    font-size: 1.3vh;
+    margin-left: .8vh;
+    margin-top: .4vh;
+    margin-bottom: .25vh;
+    top: .6vh;
+}
+.ammo-info span {
+    margin-right: 1vh;
+    float: right;
+}
+
+.inv-option-item > p {
+    color: white;
+    text-align: center;
+    line-height: 48px;
+    text-transform: uppercase;
+    font-size: 1.1vh;
+    font-family: Verdana;
+}
+
+.inv-option-item {
+    width: 80%;
+    height: 50px;
+    background-color: rgba(120, 10, 20, 0.3); /* rgba(20, 20, 20, 0.5) */
+    border: 1px solid rgba(255, 255, 255, .01);
+    color: white;
+    transition: background-color .1s linear;
+}
+
+.inv-option-item:hover {
+    background-color: rgba(120, 10, 20, 0.2); /* rgba(20, 20, 20, 0.5) */
+}
+
+.btn-combine {
+    position: relative;
+    margin-top: 20%;
+    width: 80%;
+    height: 50px;
+    background-color: rgba(120, 10, 20, 0.3); /* rgba(20, 20, 20, 0.5) */
+    border: 1px solid rgba(255, 255, 255, 0.01);
+    color: white;
+    transition: background-color .1s linear;
+}
+
+.btn-combine > p {
+    color: white;
+    text-align: center;
+    line-height: 48px;
+    text-transform: uppercase;
+    font-size: 1.1vh;
+    font-family: Verdana;
+}
+
+.btn-combine:hover {
+    background-color: rgba(120, 10, 20, 0.4); /* rgba(20, 20, 20, 0.5) */
+}
+
+.item-slot-amount {
+    position: absolute;
+    top:0.3vh;
+    right: 0.3vw;
+}
+
+.item-slot-amount p {
+    color: #ffffff;
+    text-align: right;
+    font-size: 11px;
+}
+
+@import url('https://fonts.googleapis.com/css?family=Source+Code+Pro&display=swap');
+
+.item-slot-label {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: rgba(var(--main-label-color), 0.35);
+    min-height: 2vh;
+    height: auto;
+}
+
+.item-slot-label p {
+    color: rgb(247, 247, 247);
+    font-size: .95vh;
+    line-height: 2.2vh;
+    text-align: center;
+    text-transform: uppercase;
+    font-family: Verdana;
+    font-variant: small-caps;
+}
+
+.item-slot-quality {
+    position: absolute;
+    bottom: 2vh;
+    width: 100%;
+    height: 1.2vh;
+    background-color: rgba(32, 6, 6, 0.15);
+}
+
+.item-slot-quality-bar {
+    position: absolute;
+    bottom: 0;
+    width: 0%;
+    height: 100%;
+    background-color: rgba(111, 195, 111, 0.8);
+    box-shadow: inset 0 0 .25vh 0 rgba(0, 0, 0, 0.2);
+}
+
+.item-slot-quality p {
+    color: rgb(247, 247, 247);
+    font-size: .8vh;
+    text-align: center;
+    text-transform: uppercase;
+    line-height: 1.3vh;
+    font-family: 'Verdana Bold';
+    /* font-variant: small-caps; */
+}
+
+.item-slot-img {
+    max-width: 100%;
+    max-height: 100%;
+    padding: 0.5vw;
+}
+
+.item-slot-img img {
+    display:block;
+    position: relative;
+    margin: 0 auto;
+    margin-top: 21%;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.ui-draggable-dragging {
+    background: rgba(20,20,20,0.7);
+}
+
+.player-inv-info {
+    position: absolute;
+    left: 10.3%;
+    top: 19.5%;
+}
+
+#player-inv-label {
+    position: relative;
+    color: white;
+    font-size: 18px;
+    font-family: 'Lato', monospace;
+    font-weight: bold;
+    letter-spacing: 0.1vh;
+    bottom: 15px;
+    float: left;
+}
+
+#player-inv-weight {
+    color: white;
+    font-size: 11px;
+    font-family: 'Lato', monospace;
+    letter-spacing: 0.1vh;
+    float: left;
+}
+
+#other-inv-label {
+    position: relative;
+    color: white;
+    font-size: 18px;
+    font-family: 'Lato', monospace;
+    font-weight: bold;
+    letter-spacing: 0.1vh;
+    bottom: 15px;
+    float: left;
+}
+
+#other-inv-weight {
+    color: white;
+    font-size: 11px;
+    font-family: 'Lato', monospace;
+    letter-spacing: 0.1vh;
+    float: left;
+}
+
+.player-inv-weight {
+    position: absolute;
+    left: 38%;
+    top: 12%;
+}
+
+.player-inv-weight p {
+    color: white;
+    font-size: 12px;
+    font-family: 'Roboto Mono', monospace;
+}
+
+.other-inv-info {
+    position: absolute;
+    left: 58.3%;
+    top: 19.5%;
+}
+
+.ply-iteminfo-container {
+    font-family: 'Open Sans';
+    display: none;
+    position: absolute;
+    bottom: 3%;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    width: 35vh;
+    height: 23vh;
+    /* background: rgba(20,20,20,0.5); */
+}
+
+.item-info-title {
+    font-family: sans-serif;
+    font-size: 1.8vh;
+    color: white;
+    font-family: 'Open Sans';
+    padding-top: 5px;
+    padding-left: 5px;
+}
+
+.item-info-line {
+    position: absolute;
+    font-family: 'Open Sans';
+    width: 100%;
+    background-color: white;
+    height: .1vh;
+    top: 4.5vh;
+}
+
+.item-info-description {
+    font-size: 1.1vh;
+    font-family: 'Open Sans';
+    color: white;
+    padding-top: 3vh;
+    padding-left: .5vh;
+}
+
+.itemboxes-container {
+    height: 130px;
+    min-width: 110px;
+    max-width: 550px;
+    width: fit-content;
+    position: absolute;
+    left: 47%;
+    bottom: 20%;
+    overflow: hidden;
+}
+
+.template {
+    display: none;
+}
+
+.itembox-container {
+    display: none;
+    position: relative;
+    float: left;
+    margin: 0 auto;
+    margin-right: 1vh;
+    width: 110px;
+    height: 130px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+#itembox-action {
+    position: absolute;
+    background-color: white;
+    padding: 4px;
+    top: 0;
+    left: 0;
+}
+
+#itembox-action > p {
+    font-size: 10px;
+    font-family: 'Verdana Bold';
+}
+
+#itembox-label {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: rgba(var(--main-label-color), 0.35);
+    min-height: 2.2vh;
+    height: fit-content;
+}
+
+#itembox-label > p {
+    color: rgb(247, 247, 247);
+    font-size: 11.5px;
+    line-height: 2.1vh;
+    text-align: center;
+    text-transform: lowercase;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-variant: small-caps;
+}
+
+.requiredItem-container {
+    display: none;
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+}
+
+.requiredItem-box {
+    position: relative;
+    top: 70%;
+    left: 42%;
+    width: 110px;
+    height: 130px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    float: left;
+    margin-left: 20px;
+}
+
+#requiredItem-action {
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: white;
+    padding: 3px;
+    font-size: 10px;
+    font-family: 'Verdana Bold';
+}
+
+#requiredItem-label {
+    position: absolute;
+    bottom:0;
+    width: 100%;
+    background-color: rgba(24, 0, 0, 0.2);
+    height: 21px;
+}
+
+#requiredItem-label > p {
+    color: #ffffff;
+    font-size: 11px;
+    text-align: center;
+    text-transform: uppercase;
+    line-height: 19px;
+}
+
+.z-hotbar-inventory {
+    display: none;
+    position: absolute;
+    bottom: 10%;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    width: fit-content;
+    z-index: 105;
+}
+
+.z-hotbar-inventory > .z-hotbar-item-slot > .z-hotbar-item-slot-key p {
+    position: absolute;
+    background: #ffffff;
+    color: #000000;
+    padding: .3vh;
+    padding-left: .5vh;
+    padding-right: .5vh;
+    text-align: left;
+    font-size: 1.1vh;
+    line-height: 1.8vh;
+    font-family: 'Verdana Bold'
+}
+
+.z-hotbar-item-slot {
+    position: relative;
+    width: 10.5vh;
+    height: 13.5vh;
+    float: left;
+    margin-left: 2px;
+    margin-bottom: 2px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: opacity 0.2s;
+    opacity: 1.0;
+}
+
+.z-hotbar-item-slot-amount {
+    position: absolute;
+    top:0.3vh;
+    right: 0.3vw;
+}
+
+.z-hotbar-item-slot-amount p {
+    color: #ffffff;
+    text-align: right;
+    font-size: 10px;
+}
+
+.z-hotbar-item-slot-label {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: rgba(var(--main-label-color), 0.35);
+    min-height: 2.2vh;
+    height: fit-content;
+}
+
+.z-hotbar-item-slot-label p {
+    color: rgb(247, 247, 247);
+    font-size: 11.5px;
+    line-height: 2.1vh;
+    text-align: center;
+    text-transform: lowercase;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-variant: small-caps;
+}
+
+.z-hotbar-item-slot-img {
+    max-width: 100%;
+    max-height: 100%;
+    padding: 0.5vw;
+}
+
+.z-hotbar-item-slot-img img {
+    margin-top: 21%;
+    display:block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.ammo-container {
+    position: absolute;
+    background-color: rgba(20, 18, 32, 0.2);
+    width: 3.25%;
+    height: 44.16%;
+    top: 26%;
+    left: 6%;
+}
+
+.ammo-container-header {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 5vh;
+    background-color: rgba(120, 10, 20, 0.5);
+    text-align: center;
+    color: rgba(216, 216, 216, 0.897);
+}
+
+.ammo-container-header > i {
+    line-height: 5vh;
+    font-size: 1.8vh;
+}
+
+.ammo-box {
+    position: relative;
+    width: 100%;
+    height: 6vh;
+    top: 5vh;
+    background-color: rgba(0, 0, 0, .4);
+    margin-bottom: .5vh;
+    margin-top: .5vh;
+}
+
+.ammo-box > img {
+    position: absolute;
+    top: .15vh;
+    left: .2vh;
+    width: 5.25vh;
+    opacity: .25;
+}
+
+.ammo-box > span {
+    position: absolute;
+    color: rgba(255, 255, 255, 0.95);
+    font-size: .93vh;
+    bottom: 0;
+    right: 0;
+    margin: .3vh;
+    font-family: 'Source Code Pro', monospace;
+}
+
+.ammo-box-amount {
+    position: absolute;
+    width: 100%;
+    background-color: rgba(36, 36, 36, 0.4);
+    bottom: 0;
+    max-height: 100%;
+}
+
+#pistol_ammo > .ammo-box-amount {
+    height: 0%;
+}
+
+#smg_ammo > .ammo-box-amount {
+    height: 0%;
+}
+
+#shotgun_ammo > .ammo-box-amount {
+    height: 0%;
+}
+
+#rifle_ammo > .ammo-box-amount {
+    height: 0%;
+}
+
+/* Weapon Attachments */
+
+.weapon-attachments-container {
+    position: absolute;
+    left: -100vw;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.weapon-attachments-container-title {
+    position: absolute;
+    margin: 5vh;
+    font-size: 3vh;
+    color: rgb(255, 255, 255);
+    font-family: 'Source Sans Pro';
+}
+
+.weapon-attachments-container-description {
+    position: absolute;
+    margin: 5vh;
+    top: 5vh;
+    font-size: 1.7vh;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'Source Sans Pro';
+}
+
+.weapon-attachments-container-details {
+    position: absolute;
+    margin: 5vh;
+    top: 9vh;
+    font-size: 1.4vh;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'Source Sans Pro';
+}
+
+.weapon-attachments-container-detail-durability {
+    height: 1.5vh;
+    width: 10vh;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: .2vh;
+}
+
+.weapon-attachments-container-detail-durability-total {
+    height: 100%;
+    width: 50%;
+    background-color: rgb(39, 174, 96);
+}
+
+.weapon-attachments-container-image {
+    position: absolute;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    top: 32%;
+    width: 50%;
+}
+
+.weapon-attachments {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    margin: 5vh;
+    width: 50vh;
+    height: 12.5vh;
+}
+
+.weapon-attachments-title {
+    position: absolute;
+    bottom: 14vh;
+    left: 0;
+    margin: 5vh;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.weapon-attachment {
+    position: relative;
+    height: 12.5vh;
+    width: 10.5vh;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgb(75, 75, 75);
+    margin-right: 1vh;
+    float: left;
+    transition: .05s linear;
+}
+
+.weapon-attachment:hover {
+    background-color: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgb(29, 29, 29);
+    transition: .05s linear;
+}
+
+.weapon-attachment-label {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: rgba(var(--main-label-color), 0.3);
+    padding: 2.1%;
+}
+
+.weapon-attachment-label > p {
+    color: #ffffff;
+    font-size: 1.1vh;
+    text-align: center;
+    text-transform: uppercase;
+    line-height: 1.9vh;
+    font-family: 'Source Code Pro', monospace;
+    font-weight: 100;
+}
+
+.weapon-attachment-img {
+    max-width: 100%;
+    max-height: 100%;
+    padding: 0.5vw;
+}
+
+.weapon-attachment-img > img {
+    display:block;
+    position: relative;
+    margin: 0 auto;
+    margin-top: 10%;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.weapon-attachments-remove {
+    position: absolute;
+    width: 6.5vh;
+    height: 6.5vh;
+    background-color: rgb(15, 15, 15);
+    border-radius: 1vh;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    bottom: 20vh;
+    text-align: center;
+    color: white;
+    font-size: 2vh;
+    transition: background-color .05s linear;
+}
+
+.weapon-attachments-remove:hover {
+    background-color: rgb(18, 18, 18);
+}
+
+.weapon-attachments-remove > i {
+    line-height: 6.5vh;
+}
+
+.weapon-attachments-remove-hover {
+    background-color: rgb(39, 174, 96);
+}
+
+.weapon-dragging-class {
+    animation: ShakeEffect .75s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes ShakeEffect {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+.weapon-attachments-back {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 10vh;
+    height: 6vh;
+    margin: 5vh;
+    background-color: rgb(15, 15, 15);
+    border-radius: .2vh;
+    text-align: center;
+    line-height: 6vh;
+    color: white;
+    font-family: 'Source Code Pro', monospace;
+    transition: .05s linear;
+}
+
+.weapon-attachments-back:hover {
+    background-color: rgb(18, 18, 18);
+}
