@@ -95,7 +95,7 @@ Citizen.CreateThread(function()
 
         if VendingMachine ~= nil then
             local VendingPos = GetEntityCoords(VendingMachine)
-            local Distance = #(pos - vector3(VendingPos.x, VendingPos.y, VendingPos.z)
+            local Distance = #(pos - vector3(VendingPos.x, VendingPos.y, VendingPos.z))
             if Distance < 20 then
                 inRange = true
                 if Distance < 1.5 then
