@@ -134,7 +134,7 @@ Citizen.CreateThread(function()
                         drawpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, 2.5, 0)
                     end
                     QBCore.Functions.DrawText3D(drawpos.x, drawpos.y, drawpos.z, "Trunk")
-                    if #(pos - drawpos) < 2.0) and not IsPedInAnyVehicle(ped) then
+                    if #(pos - drawpos) < 2.0 and not IsPedInAnyVehicle(ped) then
                         CurrentVehicle = GetVehicleNumberPlateText(vehicle)
                         showTrunkPos = false
                     end
@@ -173,7 +173,7 @@ Citizen.CreateThread(function()
                             if (IsBackEngine(GetEntityModel(vehicle))) then
                                 trunkpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, 2.5, 0)
                             end
-                            if #(pos - trunkpos) < 2.0) and not IsPedInAnyVehicle(ped) then
+                            if #(pos - trunkpos) < 2.0 and not IsPedInAnyVehicle(ped) then
                                 if GetVehicleDoorLockStatus(vehicle) < 2 then
                                     CurrentVehicle = GetVehicleNumberPlateText(vehicle)
                                     curVeh = vehicle
@@ -731,7 +731,7 @@ AddEventHandler("inventory:client:ShowId", function(sourceId, citizenid, charact
     local sourcePos = GetEntityCoords(GetPlayerPed(GetPlayerFromServerId(sourceId)), false)
     local pos = GetEntityCoords(PlayerPedId(), false)
     local dist = #(pos - sourcePos)
-    if dist < 2.0) then
+    if dist < 2.0 then
         local gender = "Man"
         if character.gender == 1 then
             gender = "Vrouw"
@@ -748,7 +748,7 @@ AddEventHandler("inventory:client:ShowDriverLicense", function(sourceId, citizen
     local sourcePos = GetEntityCoords(GetPlayerPed(GetPlayerFromServerId(sourceId)), false)
     local pos = GetEntityCoords(PlayerPedId(), false)
     local dist = #(pos - sourcePos)
-    if dist < 2.0) then
+    if dist < 2.0 then
         TriggerEvent('chat:addMessage', {
             template = '<div class="chat-message advert"><div class="chat-message-body"><strong>{0}:</strong><br><br> <strong>First Name:</strong> {1} <br><strong>Last Name:</strong> {2} <br><strong>Birth Date:</strong> {3} <br><strong>Licenses:</strong> {4}</div></div>',
             args = {'Rijbewijs', character.firstname, character.lastname, character.birthdate, character.type}
