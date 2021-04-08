@@ -180,7 +180,7 @@ $(document).on('click', '.weapon-attachments-back', function(e){
 });
 
 function FormatAttachmentInfo(data) {
-    $.post("http://qb-inventory/GetWeaponData", JSON.stringify({
+    $.post("https://qb-inventory/GetWeaponData", JSON.stringify({
         weapon: data.name,
         ItemData: ClickedItemData
     }), function(data){
@@ -246,7 +246,7 @@ function handleAttachmentDrag() {
         accept: ".weapon-attachment",
         hoverClass: 'weapon-attachments-remove-hover',
         drop: function(event, ui) {
-            $.post('http://qb-inventory/RemoveAttachment', JSON.stringify({
+            $.post('https://qb-inventory/RemoveAttachment', JSON.stringify({
                 AttachmentData: AttachmentDraggingData,
                 WeaponData: ClickedItemData,
             }), function(data){
@@ -292,7 +292,7 @@ $(document).on('click', '#weapon-attachments', function(e){
         AttachmentScreenActive = true;
         FormatAttachmentInfo(ClickedItemData);    
     } else {
-        $.post('http://qb-inventory/Notify', JSON.stringify({
+        $.post('https://qb-inventory/Notify', JSON.stringify({
             message: "Attachments are unavailable for this gun.",
             type: "error"
         }))
@@ -493,7 +493,7 @@ function handleDragDrop() {
                 if (fromData.shouldClose) {
                     Inventory.Close();
                 }
-                $.post("http://qb-inventory/UseItem", JSON.stringify({
+                $.post("https://qb-inventory/UseItem", JSON.stringify({
                     inventory: fromInventory,
                     item: fromData,
                 }));
@@ -512,7 +512,7 @@ function handleDragDrop() {
             amount = $("#item-amount").val();
             if (amount == 0) {amount=fromData.amount}
             $(this).css("background", "rgba(35,35,35, 0.7");
-            $.post("http://qb-inventory/DropItem", JSON.stringify({
+            $.post("https://qb-inventory/DropItem", JSON.stringify({
                 inventory: fromInventory,
                 item: fromData,
                 amount: parseInt(amount),
@@ -620,13 +620,13 @@ var combineslotData = null;
 $(document).on('click', '.CombineItem', function(e){
     e.preventDefault();
     if (combineslotData.toData.combinable.anim != null) {
-        $.post('http://qb-inventory/combineWithAnim', JSON.stringify({
+        $.post('https://qb-inventory/combineWithAnim', JSON.stringify({
             combineData: combineslotData.toData.combinable,
             usedItem: combineslotData.toData.name,
             requiredItem: combineslotData.fromData.name
         }))
     } else {
-        $.post('http://qb-inventory/combineItem', JSON.stringify({
+        $.post('https://qb-inventory/combineItem', JSON.stringify({
             reward: combineslotData.toData.combinable.reward,
             toItem: combineslotData.toData.name,
             fromItem: combineslotData.fromData.name
@@ -670,7 +670,7 @@ function optionSwitch($fromSlot, $toSlot, $fromInv, $toInv, $toAmount, toData, f
         $fromInv.find("[data-slot=" + $fromSlot + "]").html('<div class="item-slot-img"><img src="images/' + toData.image + '" alt="' + toData.name + '" /></div><div class="item-slot-amount"><p>' + toData.amount + ' (' + ((toData.weight * toData.amount) / 1000).toFixed(1) + ')</p></div><div class="item-slot-label"><p>' + toData.label + '</p></div>');
     }
 
-    $.post("http://qb-inventory/SetInventoryData", JSON.stringify({
+    $.post("https://qb-inventory/SetInventoryData", JSON.stringify({
         fromInventory: $fromInv.attr("data-inventory"),
         toInventory: $toInv.attr("data-inventory"),
         fromSlot: $fromSlot,
@@ -882,8 +882,8 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                     }
                 }    
             }
-            $.post("http://qb-inventory/PlayDropSound", JSON.stringify({}));
-            $.post("http://qb-inventory/SetInventoryData", JSON.stringify({
+            $.post("https://qb-inventory/PlayDropSound", JSON.stringify({}));
+            $.post("https://qb-inventory/SetInventoryData", JSON.stringify({
                 fromInventory: $fromInv.attr("data-inventory"),
                 toInventory: $toInv.attr("data-inventory"),
                 fromSlot: $fromSlot,
@@ -893,7 +893,7 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
         } else {
             if (fromData.amount == $toAmount) {
                 if (toData != undefined && toData.combinable != null && isItemAllowed(fromData.name, toData.combinable.accept)) {
-                    $.post('http://qb-inventory/getCombineItem', JSON.stringify({item: toData.combinable.reward}), function(item){
+                    $.post('https://qb-inventory/getCombineItem', JSON.stringify({item: toData.combinable.reward}), function(item){
                         $('.combine-option-text').html("<p>If you combine these items you get: <b>"+item.label+"</b></p>");
                     })
                     $(".combine-option-container").fadeIn(100);
@@ -1005,7 +1005,7 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                         }
                     }
 
-                    $.post("http://qb-inventory/SetInventoryData", JSON.stringify({
+                    $.post("https://qb-inventory/SetInventoryData", JSON.stringify({
                         fromInventory: $fromInv.attr("data-inventory"),
                         toInventory: $toInv.attr("data-inventory"),
                         fromSlot: $fromSlot,
@@ -1027,7 +1027,7 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                         $fromInv.find("[data-slot=" + $fromSlot + "]").html('<div class="item-slot-img"></div><div class="item-slot-label"><p>&nbsp;</p></div>');
                     }
 
-                    $.post("http://qb-inventory/SetInventoryData", JSON.stringify({
+                    $.post("https://qb-inventory/SetInventoryData", JSON.stringify({
                         fromInventory: $fromInv.attr("data-inventory"),
                         toInventory: $toInv.attr("data-inventory"),
                         fromSlot: $fromSlot,
@@ -1035,7 +1035,7 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                         fromAmount: $toAmount,
                     }));
                 }
-                $.post("http://qb-inventory/PlayDropSound", JSON.stringify({}));
+                $.post("https://qb-inventory/PlayDropSound", JSON.stringify({}));
             } else if(fromData.amount > $toAmount && (toData == undefined || toData == null)) {
                 var newDataTo = [];
                 newDataTo.name = fromData.name;
@@ -1162,8 +1162,8 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                         }
                     }
                 }
-                $.post("http://qb-inventory/PlayDropSound", JSON.stringify({}));
-                $.post("http://qb-inventory/SetInventoryData", JSON.stringify({
+                $.post("https://qb-inventory/PlayDropSound", JSON.stringify({}));
+                $.post("https://qb-inventory/SetInventoryData", JSON.stringify({
                     fromInventory: $fromInv.attr("data-inventory"),
                     toInventory: $toInv.attr("data-inventory"),
                     fromSlot: $fromSlot,
@@ -1195,7 +1195,7 @@ function InventoryError($elinv, $elslot) {
     setTimeout(function() {
         $elinv.find("[data-slot=" + $elslot + "]").css("background", "rgba(255, 255, 255, 0.03)");
     }, 500)
-    $.post("http://qb-inventory/PlayDropFail", JSON.stringify({}));
+    $.post("https://qb-inventory/PlayDropFail", JSON.stringify({}));
 }
 
 var requiredItemOpen = false;
@@ -1210,7 +1210,7 @@ var requiredItemOpen = false;
     Inventory.dropmaxweight = 100000
 
     Inventory.Error = function() {
-        $.post("http://qb-inventory/PlayDropFail", JSON.stringify({}));
+        $.post("https://qb-inventory/PlayDropFail", JSON.stringify({}));
     }
 
     Inventory.IsWeaponBlocked = function(WeaponName) {
@@ -1441,7 +1441,7 @@ var requiredItemOpen = false;
         if ($("#rob-money").length) {
             $("#rob-money").remove();
         }
-        $.post("http://qb-inventory/CloseInventory", JSON.stringify({}));
+        $.post("https://qb-inventory/CloseInventory", JSON.stringify({}));
 
         if (AttachmentScreenActive) {
             $("#qbus-inventory").css({"left": "0vw"});
@@ -1625,7 +1625,7 @@ var requiredItemOpen = false;
 $(document).on('click', '#rob-money', function(e){
     e.preventDefault();
     var TargetId = $(this).data('TargetId');
-    $.post('http://qb-inventory/RobMoney', JSON.stringify({
+    $.post('https://qb-inventory/RobMoney', JSON.stringify({
         TargetId: TargetId
     }));
     $("#rob-money").remove();
