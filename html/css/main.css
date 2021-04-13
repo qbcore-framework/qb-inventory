@@ -39,7 +39,8 @@ input[type=number]::-webkit-outer-spin-button {
 
 ::-webkit-scrollbar-thumb
 {
-	background-color: rgba(120, 10, 20, 1);
+	background-color: darkkhaki;
+	border-radius: 7px;
 }
 
 body {
@@ -109,6 +110,7 @@ body {
 .player-inventory > .item-slot > .item-slot-key p {
     position: absolute;
     background: #ffffff;
+    border-top-left-radius: 7px;
     color: #000000;
     padding: .3vh;
     padding-left: .5vh;
@@ -147,8 +149,10 @@ body {
     float: left;
     margin-left: 2px;
     margin-bottom: 2px;
+    border-radius: 7px;
     background-color: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(120, 10, 20, 1);
+    margin: 3px;
     transition: opacity 0.2s;
     opacity: 1.0;
 }
@@ -223,6 +227,7 @@ body {
 
 .inv-option-item > p {
     color: white;
+    background-color: rgba(0, 255, 0, .3);
     text-align: center;
     line-height: 48px;
     text-transform: uppercase;
@@ -286,23 +291,24 @@ body {
     bottom: 0;
     width: 100%;
     background-color: rgba(var(--main-label-color), 0.35);
-    min-height: 2vh;
+    min-height: 3vh;
     height: auto;
 }
 
 .item-slot-label p {
     color: rgb(247, 247, 247);
-    font-size: .95vh;
-    line-height: 2.2vh;
+    border-top: 1px solid rgba(120, 10, 20, 1);
+    font-size: .99vh;
+    line-height: 1.8vh;
     text-align: center;
-    text-transform: uppercase;
+
     font-family: Verdana;
-    font-variant: small-caps;
+
 }
 
 .item-slot-quality {
     position: absolute;
-    bottom: 2vh;
+    bottom: 0vh;
     width: 100%;
     height: 1.2vh;
     background-color: rgba(32, 6, 6, 0.15);
@@ -313,7 +319,10 @@ body {
     bottom: 0;
     width: 0%;
     height: 100%;
-    background-color: rgba(111, 195, 111, 0.8);
+    background-color: green;
+    border-bottom-left-radius: 7px;
+    border-bottom-right-radius: 7px;
+    z-index: 1;
     box-shadow: inset 0 0 .25vh 0 rgba(0, 0, 0, 0.2);
 }
 
@@ -338,8 +347,8 @@ body {
     position: relative;
     margin: 0 auto;
     margin-top: 21%;
-    width: auto;
-    height: auto;
+    width: 85px;
+    height: 85px;
     max-width: 100%;
     max-height: 100%;
 }
@@ -357,12 +366,13 @@ body {
 #player-inv-label {
     position: relative;
     color: white;
-    font-size: 18px;
+    font-size: 14px;
     font-family: 'Lato', monospace;
     font-weight: bold;
     letter-spacing: 0.1vh;
-    bottom: 15px;
+    bottom: 0px;
     float: left;
+    text-transform: uppercase;
 }
 
 #player-inv-weight {
@@ -376,12 +386,13 @@ body {
 #other-inv-label {
     position: relative;
     color: white;
-    font-size: 18px;
+    font-size: 14px;
     font-family: 'Lato', monospace;
     font-weight: bold;
     letter-spacing: 0.1vh;
-    bottom: 15px;
+    bottom: 0px;
     float: left;
+    text-transform: uppercase;
 }
 
 #other-inv-weight {
@@ -472,13 +483,15 @@ body {
     margin-right: 1vh;
     width: 110px;
     height: 130px;
-    background-color: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 7px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(120, 10, 20, 1);
 }
 
 #itembox-action {
     position: absolute;
     background-color: white;
+    border-top-left-radius: 7px;
     padding: 4px;
     top: 0;
     left: 0;
@@ -504,6 +517,7 @@ body {
     line-height: 2.1vh;
     text-align: center;
     text-transform: lowercase;
+    border-top: 1px solid rgba(120, 10, 20, 1);
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     font-variant: small-caps;
 }
@@ -567,6 +581,7 @@ body {
 .z-hotbar-inventory > .z-hotbar-item-slot > .z-hotbar-item-slot-key p {
     position: absolute;
     background: #ffffff;
+    border-top-left-radius: 7px;
     color: #000000;
     padding: .3vh;
     padding-left: .5vh;
@@ -584,8 +599,10 @@ body {
     float: left;
     margin-left: 2px;
     margin-bottom: 2px;
+    border-radius: 7px;
     background-color: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(120, 10, 20, 1);
+    margin: 3px;
     transition: opacity 0.2s;
     opacity: 1.0;
 }
@@ -630,8 +647,8 @@ body {
 .z-hotbar-item-slot-img img {
     margin-top: 21%;
     display:block;
-    width: auto;
-    height: auto;
+    width: 85px;
+    height: 85px;
     max-width: 100%;
     max-height: 100%;
 }

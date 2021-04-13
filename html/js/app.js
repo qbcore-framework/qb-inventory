@@ -606,10 +606,10 @@ function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
         return false;
     }
 
-    $("#player-inv-weight").html("Gewicht: " + (parseInt(totalWeight) / 1000).toFixed(2) + " / " + (playerMaxWeight / 1000).toFixed(2));
+    $("#player-inv-weight").html("Weight: " + (parseInt(totalWeight) / 1000).toFixed(2) + " / " + (playerMaxWeight / 1000).toFixed(2));
     if ($fromInv.attr("data-inventory").split("-")[0] != "itemshop" && $toInv.attr("data-inventory").split("-")[0] != "itemshop" && $fromInv.attr("data-inventory") != "crafting" && $toInv.attr("data-inventory") != "crafting") {
         $("#other-inv-label").html(otherLabel)
-        $("#other-inv-weight").html("Gewicht: " + (parseInt(totalWeightOther) / 1000).toFixed(2) + " / " + (otherMaxWeight / 1000).toFixed(2))
+        $("#other-inv-weight").html("Weight: " + (parseInt(totalWeightOther) / 1000).toFixed(2) + " / " + (otherMaxWeight / 1000).toFixed(2))
     }
 
     return true;
@@ -1206,7 +1206,7 @@ var requiredItemOpen = false;
     Inventory.slots = 40;
 
     Inventory.dropslots = 30;
-    Inventory.droplabel = "Grond";
+    Inventory.droplabel = "Drop";
     Inventory.dropmaxweight = 100000
 
     Inventory.Error = function() {
@@ -1215,14 +1215,14 @@ var requiredItemOpen = false;
 
     Inventory.IsWeaponBlocked = function(WeaponName) {
         var DurabilityBlockedWeapons = [ 
-            "weapon_pistol_mk2", 
+/*             "weapon_pistol_mk2", 
             "weapon_pistol",
             "weapon_stungun", 
             "weapon_pumpshotgun", 
             "weapon_smg", 
             "weapon_carbinerifle", 
             "weapon_nightstick", 
-            "weapon_flashlight",
+            "weapon_flashlight", */
             "weapon_unarmed"
         ]
 
@@ -1390,7 +1390,7 @@ var requiredItemOpen = false;
             });
         }
 
-        $("#player-inv-weight").html("Gewicht: " + (totalWeight / 1000).toFixed(2) + " / " + (data.maxweight / 1000).toFixed(2));
+        $("#player-inv-weight").html("Weight: " + (totalWeight / 1000).toFixed(2) + " / " + (data.maxweight / 1000).toFixed(2));
         playerMaxWeight = data.maxweight;
         if (data.other != null) 
         {
