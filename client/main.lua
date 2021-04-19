@@ -99,7 +99,7 @@ Citizen.CreateThread(function()
                     DrawText3Ds(VendingPos.x, VendingPos.y, VendingPos.z, '~g~E~w~ - Buy drinks')
                     if IsControlJustPressed(0, 38) then -- E
                         local ShopItems = {}
-                        ShopItems.label = "Drankautomaat"
+                        ShopItems.label = "Vending Machine"
                         ShopItems.items = Config.VendingItem
                         ShopItems.slots = #Config.VendingItem
                         TriggerServerEvent("inventory:server:OpenInventory", "shop", "Vendingshop_"..math.random(1, 99), ShopItems)
