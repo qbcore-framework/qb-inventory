@@ -93,7 +93,7 @@ Citizen.CreateThread(function()
         if VendingMachine ~= nil then
             local VendingPos = GetEntityCoords(VendingMachine)
             local Distance = #(pos - vector3(VendingPos.x, VendingPos.y, VendingPos.z))
-            if Distance < 20 then
+            if Distance < 2 then
                 inRange = true
                 if Distance < 1.5 then
                     DrawText3Ds(VendingPos.x, VendingPos.y, VendingPos.z, '~g~E~w~ - Buy drinks')
