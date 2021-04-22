@@ -1596,13 +1596,6 @@ QBCore.Commands.Add("randomitems", "Give Random Items (God Only)", {}, false, fu
 	end
 end, "god")
 
-QBCore.Functions.CreateUseableItem("id_card", function(source, item)
-    local Player = QBCore.Functions.GetPlayer(source)
-	if Player.Functions.GetItemBySlot(item.slot) ~= nil then
-        TriggerClientEvent("inventory:client:ShowId", -1, source, Player.PlayerData.citizenid, item.info)
-    end
-end)
-
 QBCore.Functions.CreateUseableItem("snowball", function(source, item)
 	local Player = QBCore.Functions.GetPlayer(source)
 	local itemData = Player.Functions.GetItemBySlot(item.slot)
@@ -1612,8 +1605,31 @@ QBCore.Functions.CreateUseableItem("snowball", function(source, item)
 end)
 
 QBCore.Functions.CreateUseableItem("driver_license", function(source, item)
-    local Player = QBCore.Functions.GetPlayer(source)
-	if Player.Functions.GetItemBySlot(item.slot) ~= nil then
-        TriggerClientEvent("inventory:client:ShowDriverLicense", -1, source, Player.PlayerData.citizenid, item.info)
-    end
+	for k, v in pairs(QBCore.Functions.GetPlayers()) do
+		local character = QBCore.Functions.GetPlayer(source)
+		local PlayerPed = GetPlayerPed(source)
+		local TargetPed = GetPlayerPed(v)
+		local dist = #(GetEntityCoords(PlayerPed) - GetEntityCoords(TargetPed))
+		if dist < 3.0 then
+			TriggerClientEvent('chat:addMessage', v,  {
+				template = '<div class="chat-message advert"><div class="chat-message-body"><strong>{0}:</strong><br><br> <strong>First Name:</strong> {1} <br><strong>Last Name:</strong> {2} <br><strong>Birth Date:</strong> {3} <br><strong>Licenses:</strong> {4}</div></div>',
+				args = {'Drivers License', character.PlayerData.charinfo.firstname, character.PlayerData.charinfo.lastname, character.PlayerData.charinfo.birthdate, character.PlayerData.charinfo.type}
+			})
+		end
+	end
+end)
+
+QBCore.Functions.CreateUseableItem("id_card", function(source, item)
+	for k, v in pairs(QBCore.Functions.GetPlayers()) do
+		local character = QBCore.Functions.GetPlayer(source)
+		local PlayerPed = GetPlayerPed(source)
+		local TargetPed = GetPlayerPed(v)
+		local dist = #(GetEntityCoords(PlayerPed) - GetEntityCoords(TargetPed))
+		if dist < 3.0 then
+			TriggerClientEvent('chat:addMessage', v,  {
+				template = '<div class="chat-message advert"><div class="chat-message-body"><strong>{0}:</strong><br><br> <strong>First Name:</strong> {1} <br><strong>Last Name:</strong> {2} <br><strong>Birth Date:</strong> {3} <br><strong>Licenses:</strong> {4}</div></div>',
+				args = {'ID Card', character.PlayerData.citizenid, character.PlayerData.charinfo.firstname, character.PlayerData.charinfo.lastname, character.PlayerData.charinfo.birthdate, character.PlayerData.charinfo.gender, character.PlayerData.charinfo.nationality}
+			})
+		end
+	end
 end)
