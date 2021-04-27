@@ -463,8 +463,8 @@ AddEventHandler('inventory:server:SetInventoryData', function(fromInventory, toI
 			elseif QBCore.Shared.SplitStr(toInventory, "-")[1] == "traphouse" then
 				-- Traphouse
 				local traphouseId = QBCore.Shared.SplitStr(toInventory, "-")[2]
-				local toItemData = exports['qb-traphouses']:GetInventoryData(traphouseId, toSlot)
-				local IsItemValid = exports['qb-traphouses']:CanItemBeSaled(fromItemData.name:lower())
+				local toItemData = exports['qb-traphouse']:GetInventoryData(traphouseId, toSlot)
+				local IsItemValid = exports['qb-traphouse']:CanItemBeSaled(fromItemData.name:lower())
 				if IsItemValid then
 					Player.Functions.RemoveItem(fromItemData.name, fromAmount, fromSlot)
 					TriggerClientEvent("inventory:client:CheckWeapon", src, fromItemData.name)
@@ -472,7 +472,7 @@ AddEventHandler('inventory:server:SetInventoryData', function(fromInventory, toI
 						local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
 						local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
 						if toItemData.name ~= fromItemData.name then
-							exports['qb-traphouses']:RemoveHouseItem(traphouseId, fromSlot, itemInfo["name"], toAmount)
+							exports['qb-traphouse']:RemoveHouseItem(traphouseId, fromSlot, itemInfo["name"], toAmount)
 							Player.Functions.AddItem(toItemData.name, toAmount, fromSlot, toItemData.info)
 							TriggerEvent("qb-log:server:CreateLog", "traphouse", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..itemInfo["name"].."**, amount: **" .. toAmount .. "** with name: **" .. fromItemData.name .. "**, amount: **" .. fromAmount .. "** - traphouse: *" .. traphouseId .. "*")
 						end
@@ -481,7 +481,7 @@ AddEventHandler('inventory:server:SetInventoryData', function(fromInventory, toI
 						TriggerEvent("qb-log:server:CreateLog", "traphouse", "Dropped Item", "red", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) dropped new item; name: **"..itemInfo["name"].."**, amount: **" .. fromAmount .. "** - traphouse: *" .. traphouseId .. "*")
 					end
 					local itemInfo = QBCore.Shared.Items[fromItemData.name:lower()]
-					exports['qb-traphouses']:AddHouseItem(traphouseId, toSlot, itemInfo["name"], fromAmount, fromItemData.info, src)
+					exports['qb-traphouse']:AddHouseItem(traphouseId, toSlot, itemInfo["name"], fromAmount, fromItemData.info, src)
 				else
 					TriggerClientEvent('QBCore:Notify', src, "You can\'t sell this item..", 'error')
 				end
@@ -699,19 +699,19 @@ AddEventHandler('inventory:server:SetInventoryData', function(fromInventory, toI
 		end
 	elseif QBCore.Shared.SplitStr(fromInventory, "-")[1] == "traphouse" then
 		local traphouseId = QBCore.Shared.SplitStr(fromInventory, "-")[2]
-		local fromItemData = exports['qb-traphouses']:GetInventoryData(traphouseId, fromSlot)
+		local fromItemData = exports['qb-traphouse']:GetInventoryData(traphouseId, fromSlot)
 		local fromAmount = tonumber(fromAmount) ~= nil and tonumber(fromAmount) or fromItemData.amount
 		if fromItemData ~= nil and fromItemData.amount >= fromAmount then
 			local itemInfo = QBCore.Shared.Items[fromItemData.name:lower()]
 			if toInventory == "player" or toInventory == "hotbar" then
 				local toItemData = Player.Functions.GetItemBySlot(toSlot)
-				exports['qb-traphouses']:RemoveHouseItem(traphouseId, fromSlot, itemInfo["name"], fromAmount)
+				exports['qb-traphouse']:RemoveHouseItem(traphouseId, fromSlot, itemInfo["name"], fromAmount)
 				if toItemData ~= nil then
 					local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
 					local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
 					if toItemData.name ~= fromItemData.name then
 						Player.Functions.RemoveItem(toItemData.name, toAmount, toSlot)
-						exports['qb-traphouses']:AddHouseItem(traphouseId, fromSlot, itemInfo["name"], toAmount, toItemData.info, src)
+						exports['qb-traphouse']:AddHouseItem(traphouseId, fromSlot, itemInfo["name"], toAmount, toItemData.info, src)
 						TriggerEvent("qb-log:server:CreateLog", "stash", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** with item; name: **"..fromItemData.name.."**, amount: **" .. fromAmount .. "** stash: *" .. traphouseId .. "*")
 					else
 						TriggerEvent("qb-log:server:CreateLog", "stash", "Stacked Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) stacked item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** from stash: *" .. traphouseId .. "*")
@@ -721,19 +721,19 @@ AddEventHandler('inventory:server:SetInventoryData', function(fromInventory, toI
 				end
 				Player.Functions.AddItem(fromItemData.name, fromAmount, toSlot, fromItemData.info)
 			else
-				local toItemData = exports['qb-traphouses']:GetInventoryData(traphouseId, toSlot)
-				exports['qb-traphouses']:RemoveHouseItem(traphouseId, fromSlot, itemInfo["name"], fromAmount)
+				local toItemData = exports['qb-traphouse']:GetInventoryData(traphouseId, toSlot)
+				exports['qb-traphouse']:RemoveHouseItem(traphouseId, fromSlot, itemInfo["name"], fromAmount)
 				if toItemData ~= nil then
 					local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
 					local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
 					if toItemData.name ~= fromItemData.name then
 						local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
-						exports['qb-traphouses']:RemoveHouseItem(traphouseId, toSlot, itemInfo["name"], toAmount)
-						exports['qb-traphouses']:AddHouseItem(traphouseId, fromSlot, itemInfo["name"], toAmount, toItemData.info, src)
+						exports['qb-traphouse']:RemoveHouseItem(traphouseId, toSlot, itemInfo["name"], toAmount)
+						exports['qb-traphouse']:AddHouseItem(traphouseId, fromSlot, itemInfo["name"], toAmount, toItemData.info, src)
 					end
 				end
 				local itemInfo = QBCore.Shared.Items[fromItemData.name:lower()]
-				exports['qb-traphouses']:AddHouseItem(traphouseId, toSlot, itemInfo["name"], fromAmount, fromItemData.info, src)
+				exports['qb-traphouse']:AddHouseItem(traphouseId, toSlot, itemInfo["name"], fromAmount, fromItemData.info, src)
 			end
 		else
 			TriggerClientEvent("QBCore:Notify", src, "Item doesn't exist??", "error")
