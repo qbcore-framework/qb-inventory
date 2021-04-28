@@ -153,6 +153,9 @@ Citizen.CreateThread(function()
         DisableControlAction(0, 164, true) -- 4
         DisableControlAction(0, 165, true) -- 5
         if IsDisabledControlJustPressed(0, 37) and not isCrafting then
+			QBCore.Functions.TriggerCallback("CheckInventory", function(perms)
+		--	print(perms)
+			if perms then	
             QBCore.Functions.GetPlayerData(function(PlayerData)
                 if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] then
                     local ped = PlayerPedId()
@@ -299,6 +302,8 @@ Citizen.CreateThread(function()
                 end
             end)
         end
+	end
+	end)
     end
 end)
 
