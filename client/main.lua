@@ -146,93 +146,99 @@ end)
 
 RegisterCommand('openinventory', function()
     QBCore.Functions.GetPlayerData(function(PlayerData)
-        if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() then
-            local ped = PlayerPedId()
-            local curVeh = nil
-            if IsPedInAnyVehicle(ped) then
-                local vehicle = GetVehiclePedIsIn(ped, false)
-                CurrentGlovebox = GetVehicleNumberPlateText(vehicle)
-                curVeh = vehicle
-                CurrentVehicle = nil
-            else
-                local vehicle = QBCore.Functions.GetClosestVehicle()
-                if vehicle ~= 0 and vehicle ~= nil then
-                    local pos = GetEntityCoords(ped)
-                    local trunkpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, -2.5, 0)
-                    if (IsBackEngine(GetEntityModel(vehicle))) then
-                        trunkpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, 2.5, 0)
-                    end
-                    if #(pos - trunkpos) < 2.0 and not IsPedInAnyVehicle(ped) then
-                        if GetVehicleDoorLockStatus(vehicle) < 2 then
-                            CurrentVehicle = GetVehicleNumberPlateText(vehicle)
-                            curVeh = vehicle
-                            CurrentGlovebox = nil
-                        else
-                            QBCore.Functions.Notify("Vehicle is locked..", "error")
-                            return
-                        end
-                    else
+        QBCore.Functions.TriggerCallback("CheckInventory", function(isbusy)
+            if not isbusy then
+                if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() then
+                    local ped = PlayerPedId()
+                    local curVeh = nil
+                    if IsPedInAnyVehicle(ped) then
+                        local vehicle = GetVehiclePedIsIn(ped, false)
+                        CurrentGlovebox = GetVehicleNumberPlateText(vehicle)
+                        curVeh = vehicle
                         CurrentVehicle = nil
+                    else
+                        local vehicle = QBCore.Functions.GetClosestVehicle()
+                        if vehicle ~= 0 and vehicle ~= nil then
+                            local pos = GetEntityCoords(ped)
+                            local trunkpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, -2.5, 0)
+                            if (IsBackEngine(GetEntityModel(vehicle))) then
+                                trunkpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, 2.5, 0)
+                            end
+                            if #(pos - trunkpos) < 2.0 and not IsPedInAnyVehicle(ped) then
+                                if GetVehicleDoorLockStatus(vehicle) < 2 then
+                                    CurrentVehicle = GetVehicleNumberPlateText(vehicle)
+                                    curVeh = vehicle
+                                    CurrentGlovebox = nil
+                                else
+                                    QBCore.Functions.Notify("Vehicle is locked..", "error")
+                                    return
+                                end
+                            else
+                                CurrentVehicle = nil
+                            end
+                        else
+                            CurrentVehicle = nil
+                        end
                     end
-                else
-                    CurrentVehicle = nil
-                end
-            end
 
-            if CurrentVehicle ~= nil then
-                local maxweight = 0
-                local slots = 0
-                if GetVehicleClass(curVeh) == 0 then
-                    maxweight = 38000
-                    slots = 30
-                elseif GetVehicleClass(curVeh) == 1 then
-                    maxweight = 50000
-                    slots = 40
-                elseif GetVehicleClass(curVeh) == 2 then
-                    maxweight = 75000
-                    slots = 50
-                elseif GetVehicleClass(curVeh) == 3 then
-                    maxweight = 42000
-                    slots = 35
-                elseif GetVehicleClass(curVeh) == 4 then
-                    maxweight = 38000
-                    slots = 30
-                elseif GetVehicleClass(curVeh) == 5 then
-                    maxweight = 30000
-                    slots = 25
-                elseif GetVehicleClass(curVeh) == 6 then
-                    maxweight = 30000
-                    slots = 25
-                elseif GetVehicleClass(curVeh) == 7 then
-                    maxweight = 30000
-                    slots = 25
-                elseif GetVehicleClass(curVeh) == 8 then
-                    maxweight = 15000
-                    slots = 15
-                elseif GetVehicleClass(curVeh) == 9 then
-                    maxweight = 60000
-                    slots = 35
-                elseif GetVehicleClass(curVeh) == 12 then
-                    maxweight = 120000
-                    slots = 35
-                else
-                    maxweight = 60000
-                    slots = 35
+                    if CurrentVehicle ~= nil then
+                        local maxweight = 0
+                        local slots = 0
+                        if GetVehicleClass(curVeh) == 0 then
+                            maxweight = 38000
+                            slots = 30
+                        elseif GetVehicleClass(curVeh) == 1 then
+                            maxweight = 50000
+                            slots = 40
+                        elseif GetVehicleClass(curVeh) == 2 then
+                            maxweight = 75000
+                            slots = 50
+                        elseif GetVehicleClass(curVeh) == 3 then
+                            maxweight = 42000
+                            slots = 35
+                        elseif GetVehicleClass(curVeh) == 4 then
+                            maxweight = 38000
+                            slots = 30
+                        elseif GetVehicleClass(curVeh) == 5 then
+                            maxweight = 30000
+                            slots = 25
+                        elseif GetVehicleClass(curVeh) == 6 then
+                            maxweight = 30000
+                            slots = 25
+                        elseif GetVehicleClass(curVeh) == 7 then
+                            maxweight = 30000
+                            slots = 25
+                        elseif GetVehicleClass(curVeh) == 8 then
+                            maxweight = 15000
+                            slots = 15
+                        elseif GetVehicleClass(curVeh) == 9 then
+                            maxweight = 60000
+                            slots = 35
+                        elseif GetVehicleClass(curVeh) == 12 then
+                            maxweight = 120000
+                            slots = 35
+                        else
+                            maxweight = 60000
+                            slots = 35
+                        end
+                        local other = {
+                            maxweight = maxweight,
+                            slots = slots,
+                        }
+                        TriggerServerEvent("inventory:server:OpenInventory", "trunk", CurrentVehicle, other)
+                        OpenTrunk()
+                    elseif CurrentGlovebox ~= nil then
+                        TriggerServerEvent("inventory:server:OpenInventory", "glovebox", CurrentGlovebox)
+                    elseif CurrentDrop ~= 0 then
+                        TriggerServerEvent("inventory:server:OpenInventory", "drop", CurrentDrop)
+                    else
+                        TriggerServerEvent("inventory:server:OpenInventory")
+                    end
                 end
-                local other = {
-                    maxweight = maxweight,
-                    slots = slots,
-                }
-                TriggerServerEvent("inventory:server:OpenInventory", "trunk", CurrentVehicle, other)
-                OpenTrunk()
-            elseif CurrentGlovebox ~= nil then
-                TriggerServerEvent("inventory:server:OpenInventory", "glovebox", CurrentGlovebox)
-            elseif CurrentDrop ~= 0 then
-                TriggerServerEvent("inventory:server:OpenInventory", "drop", CurrentDrop)
             else
-                TriggerServerEvent("inventory:server:OpenInventory")
+                QBCore.Functions.Notify('You Are Busy', 'error')
             end
-        end
+        end)        
     end)
 end)
 RegisterKeyMapping('openinventory', 'Open Players Inventory', 'keyboard', 'tab')

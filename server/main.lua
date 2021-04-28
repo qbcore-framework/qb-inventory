@@ -75,6 +75,19 @@ AddEventHandler('inventory:server:SetIsOpenState', function(IsOpen, type, id)
 	end
 end)
 
+-- Event To Set Inventory As Inaccessible
+local isbusy = false
+
+RegisterServerEvent("OpenInventory")
+AddEventHandler("OpenInventory",function(bool)
+	isbusy = bool
+end)
+
+QBCore.Functions.CreateCallback("CheckInventory",function(source,cb)
+	cb(isbusy)
+end)
+-- Event To Set Inventory As Inaccessible
+
 RegisterServerEvent("inventory:server:OpenInventory")
 AddEventHandler('inventory:server:OpenInventory', function(name, id, other)
 	local src = source
