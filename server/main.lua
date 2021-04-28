@@ -75,6 +75,24 @@ AddEventHandler('inventory:server:SetIsOpenState', function(IsOpen, type, id)
 	end
 end)
 
+--#Check data from progressbar resource
+
+local notopen = true
+RegisterServerEvent("OpenInventory")
+AddEventHandler("OpenInventory",function(bool)
+	--print("dato ",bool)
+	notopen = bool
+
+end)
+
+QBCore.Functions.CreateCallback("CheckInventory",function(source,cb)
+cb(notopen)
+end)
+
+--#
+
+
+
 RegisterServerEvent("inventory:server:OpenInventory")
 AddEventHandler('inventory:server:OpenInventory', function(name, id, other)
 	local src = source
