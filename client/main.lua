@@ -16,6 +16,7 @@ local CurrentVehicle = nil
 local CurrentGlovebox = nil
 local CurrentStash = nil
 local isCrafting = false
+local isHotbar = false
 
 local showTrunkPos = false
 
@@ -143,164 +144,115 @@ Citizen.CreateThread(function()
     end
 end)
 
-Citizen.CreateThread(function()
-    while true do
-        Citizen.Wait(7)
-        DisableControlAction(0, 37, true) -- TAB
-        DisableControlAction(0, 157, true) -- 1
-        DisableControlAction(0, 158, true) -- 2
-        DisableControlAction(0, 160, true) -- 3
-        DisableControlAction(0, 164, true) -- 4
-        DisableControlAction(0, 165, true) -- 5
-        if IsDisabledControlJustPressed(0, 37) and not isCrafting then
-            QBCore.Functions.GetPlayerData(function(PlayerData)
-                if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] then
-                    local ped = PlayerPedId()
-                    local curVeh = nil
-                    if IsPedInAnyVehicle(ped) then
-                        local vehicle = GetVehiclePedIsIn(ped, false)
-                        CurrentGlovebox = GetVehicleNumberPlateText(vehicle)
-                        curVeh = vehicle
+RegisterCommand('openinventory', function()
+    QBCore.Functions.GetPlayerData(function(PlayerData)
+        if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] then
+            local ped = PlayerPedId()
+            local curVeh = nil
+            if IsPedInAnyVehicle(ped) then
+                local vehicle = GetVehiclePedIsIn(ped, false)
+                CurrentGlovebox = GetVehicleNumberPlateText(vehicle)
+                curVeh = vehicle
+                CurrentVehicle = nil
+            else
+                local vehicle = QBCore.Functions.GetClosestVehicle()
+                if vehicle ~= 0 and vehicle ~= nil then
+                    local pos = GetEntityCoords(ped)
+                    local trunkpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, -2.5, 0)
+                    if (IsBackEngine(GetEntityModel(vehicle))) then
+                        trunkpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, 2.5, 0)
+                    end
+                    if #(pos - trunkpos) < 2.0 and not IsPedInAnyVehicle(ped) then
+                        if GetVehicleDoorLockStatus(vehicle) < 2 then
+                            CurrentVehicle = GetVehicleNumberPlateText(vehicle)
+                            curVeh = vehicle
+                            CurrentGlovebox = nil
+                        else
+                            QBCore.Functions.Notify("Vehicle is locked..", "error")
+                            return
+                        end
+                    else
                         CurrentVehicle = nil
-                    else
-                        local vehicle = QBCore.Functions.GetClosestVehicle()
-                        if vehicle ~= 0 and vehicle ~= nil then
-                            local pos = GetEntityCoords(ped)
-                            local trunkpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, -2.5, 0)
-                            if (IsBackEngine(GetEntityModel(vehicle))) then
-                                trunkpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, 2.5, 0)
-                            end
-                            if #(pos - trunkpos) < 2.0 and not IsPedInAnyVehicle(ped) then
-                                if GetVehicleDoorLockStatus(vehicle) < 2 then
-                                    CurrentVehicle = GetVehicleNumberPlateText(vehicle)
-                                    curVeh = vehicle
-                                    CurrentGlovebox = nil
-                                else
-                                    QBCore.Functions.Notify("Vehicle is locked..", "error")
-                                    return
-                                end
-                            else
-                                CurrentVehicle = nil
-                            end
-                        else
-                            CurrentVehicle = nil
-                        end
                     end
-
-                    if CurrentVehicle ~= nil then
-                        local maxweight = 0
-                        local slots = 0
-                        if GetVehicleClass(curVeh) == 0 then
-                            maxweight = 38000
-                            slots = 30
-                        elseif GetVehicleClass(curVeh) == 1 then
-                            maxweight = 50000
-                            slots = 40
-                        elseif GetVehicleClass(curVeh) == 2 then
-                            maxweight = 75000
-                            slots = 50
-                        elseif GetVehicleClass(curVeh) == 3 then
-                            maxweight = 42000
-                            slots = 35
-                        elseif GetVehicleClass(curVeh) == 4 then
-                            maxweight = 38000
-                            slots = 30
-                        elseif GetVehicleClass(curVeh) == 5 then
-                            maxweight = 30000
-                            slots = 25
-                        elseif GetVehicleClass(curVeh) == 6 then
-                            maxweight = 30000
-                            slots = 25
-                        elseif GetVehicleClass(curVeh) == 7 then
-                            maxweight = 30000
-                            slots = 25
-                        elseif GetVehicleClass(curVeh) == 8 then
-                            maxweight = 15000
-                            slots = 15
-                        elseif GetVehicleClass(curVeh) == 9 then
-                            maxweight = 60000
-                            slots = 35
-                        elseif GetVehicleClass(curVeh) == 12 then
-                            maxweight = 120000
-                            slots = 35
-                        else
-                            maxweight = 60000
-                            slots = 35
-                        end
-                        local other = {
-                            maxweight = maxweight,
-                            slots = slots,
-                        }
-                        TriggerServerEvent("inventory:server:OpenInventory", "trunk", CurrentVehicle, other)
-                        OpenTrunk()
-                    elseif CurrentGlovebox ~= nil then
-                        TriggerServerEvent("inventory:server:OpenInventory", "glovebox", CurrentGlovebox)
-                    elseif CurrentDrop ~= 0 then
-                        TriggerServerEvent("inventory:server:OpenInventory", "drop", CurrentDrop)
-                    else
-                        TriggerServerEvent("inventory:server:OpenInventory")
-                    end
+                else
+                    CurrentVehicle = nil
                 end
-            end)
-        end
+            end
 
-        if IsControlJustPressed(0, 20) then -- Z
-            ToggleHotbar(true)
-        end
-
-        if IsControlJustReleased(0, 20) then -- Z
-            ToggleHotbar(false)
-        end
-
-        if IsDisabledControlJustReleased(0, 157) then -- 1
-            QBCore.Functions.GetPlayerData(function(PlayerData)
-                if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] then
-                    TriggerServerEvent("inventory:server:UseItemSlot", 1)
+            if CurrentVehicle ~= nil then
+                local maxweight = 0
+                local slots = 0
+                if GetVehicleClass(curVeh) == 0 then
+                    maxweight = 38000
+                    slots = 30
+                elseif GetVehicleClass(curVeh) == 1 then
+                    maxweight = 50000
+                    slots = 40
+                elseif GetVehicleClass(curVeh) == 2 then
+                    maxweight = 75000
+                    slots = 50
+                elseif GetVehicleClass(curVeh) == 3 then
+                    maxweight = 42000
+                    slots = 35
+                elseif GetVehicleClass(curVeh) == 4 then
+                    maxweight = 38000
+                    slots = 30
+                elseif GetVehicleClass(curVeh) == 5 then
+                    maxweight = 30000
+                    slots = 25
+                elseif GetVehicleClass(curVeh) == 6 then
+                    maxweight = 30000
+                    slots = 25
+                elseif GetVehicleClass(curVeh) == 7 then
+                    maxweight = 30000
+                    slots = 25
+                elseif GetVehicleClass(curVeh) == 8 then
+                    maxweight = 15000
+                    slots = 15
+                elseif GetVehicleClass(curVeh) == 9 then
+                    maxweight = 60000
+                    slots = 35
+                elseif GetVehicleClass(curVeh) == 12 then
+                    maxweight = 120000
+                    slots = 35
+                else
+                    maxweight = 60000
+                    slots = 35
                 end
-            end)
+                local other = {
+                    maxweight = maxweight,
+                    slots = slots,
+                }
+                TriggerServerEvent("inventory:server:OpenInventory", "trunk", CurrentVehicle, other)
+                OpenTrunk()
+            elseif CurrentGlovebox ~= nil then
+                TriggerServerEvent("inventory:server:OpenInventory", "glovebox", CurrentGlovebox)
+            elseif CurrentDrop ~= 0 then
+                TriggerServerEvent("inventory:server:OpenInventory", "drop", CurrentDrop)
+            else
+                TriggerServerEvent("inventory:server:OpenInventory")
+            end
         end
-
-        if IsDisabledControlJustReleased(0, 158) then -- 2
-            QBCore.Functions.GetPlayerData(function(PlayerData)
-                if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] then
-                    TriggerServerEvent("inventory:server:UseItemSlot", 2)
-                end
-            end)
-        end
-
-        if IsDisabledControlJustReleased(0, 160) then -- 3
-            QBCore.Functions.GetPlayerData(function(PlayerData)
-                if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] then
-                    TriggerServerEvent("inventory:server:UseItemSlot", 3)
-                end
-            end)
-        end
-
-        if IsDisabledControlJustReleased(0, 164) then -- 4
-            QBCore.Functions.GetPlayerData(function(PlayerData)
-                if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] then
-                    TriggerServerEvent("inventory:server:UseItemSlot", 4)
-                end
-            end)
-        end
-
-        if IsDisabledControlJustReleased(0, 165) then -- 5
-            QBCore.Functions.GetPlayerData(function(PlayerData)
-                if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] then
-                    TriggerServerEvent("inventory:server:UseItemSlot", 5)
-                end
-            end)
-        end
-
-        if IsDisabledControlJustReleased(0, 159) then -- 6
-            QBCore.Functions.GetPlayerData(function(PlayerData)
-                if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] then
-                    TriggerServerEvent("inventory:server:UseItemSlot", 41)
-                end
-            end)
-        end
-    end
+    end)
 end)
+RegisterKeyMapping('openinventory', 'Open Players Inventory', 'keyboard', 'tab')
+
+RegisterCommand('hotbar', function()
+    isHotbar = not isHotbar
+    ToggleHotbar(isHotbar)
+end)
+RegisterKeyMapping('hotbar', 'Toggles keybind slots', 'keyboard', 'z')
+
+for i=1, 6 do 
+    RegisterCommand('slot' .. i,function()
+        QBCore.Functions.GetPlayerData(function(PlayerData)
+            if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] then
+                TriggerServerEvent("inventory:server:UseItemSlot", i)
+            end
+        end)
+    end)
+    RegisterKeyMapping('slot' .. i, 'Uses the item in slot ' .. i, 'keyboard', i)
+end
 
 RegisterNetEvent('inventory:client:ItemBox')
 AddEventHandler('inventory:client:ItemBox', function(itemData, type)
