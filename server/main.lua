@@ -1492,11 +1492,6 @@ function CreateNewDrop(source, fromSlot, toSlot, itemAmount)
 	end
 end
 
-QBCore.Commands.Add("inv", "Open Inventory", {}, false, function(source, args)
-    local Player = QBCore.Functions.GetPlayer(source)
-	TriggerClientEvent("inventory:client:OpenInventory", source, Player.PlayerData.items)
-end)
-
 QBCore.Commands.Add("resetinv", "Reset Inventory (Admin Only)", {{name="type", help="stash/trunk/glovebox"},{name="id/plate", help="ID of stash or license plate"}}, true, function(source, args)
 	local invType = args[1]:lower()
 	table.remove(args, 1)
