@@ -253,6 +253,9 @@ for i=1, 6 do
     RegisterCommand('slot' .. i,function()
         QBCore.Functions.GetPlayerData(function(PlayerData)
             if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() then
+                if i == 6 then 
+                    i = MaxInventorySlots
+                end
                 TriggerServerEvent("inventory:server:UseItemSlot", i)
             end
         end)
