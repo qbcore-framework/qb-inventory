@@ -769,11 +769,17 @@ AddEventHandler('inventory:server:SetInventoryData', function(fromInventory, toI
 			end
 		elseif QBCore.Shared.SplitStr(shopType, "_")[1] == "Itemshop" then
 			if Player.Functions.RemoveMoney("cash", price, "itemshop-bought-item") then
+				if itemData.name == 'duffelbag' then 
+					itemData.info.bagid = math.random(11111,99999) 
+				end
 				Player.Functions.AddItem(itemData.name, fromAmount, toSlot, itemData.info)
 				TriggerClientEvent('qb-shops:client:UpdateShop', src, QBCore.Shared.SplitStr(shopType, "_")[2], itemData, fromAmount)
 				TriggerClientEvent('QBCore:Notify', src, itemInfo["label"] .. " bought!", "success")
 				TriggerEvent("qb-log:server:CreateLog", "shops", "Shop item bought", "green", "**"..GetPlayerName(src) .. "** bought a " .. itemInfo["label"] .. " for $"..price)
 			elseif bankBalance >= price then
+				if itemData.name == 'duffelbag' then 
+					itemData.info.bagid = math.random(11111,99999) 
+				end
 				Player.Functions.RemoveMoney("bank", price, "itemshop-bought-item")
 				Player.Functions.AddItem(itemData.name, fromAmount, toSlot, itemData.info)
 				TriggerClientEvent('qb-shops:client:UpdateShop', src, QBCore.Shared.SplitStr(shopType, "_")[2], itemData, fromAmount)
@@ -1553,6 +1559,8 @@ QBCore.Commands.Add("giveitem", "Give An Item (Admin Only)", {{name="id", help="
 					info.uses = 20
 				elseif itemData["name"] == "markedbills" then
 					info.worth = math.random(5000, 10000)
+				elseif itemData['name'] == 'duffelbag' then
+					info.bagid = math.random(11111,99999)
 				elseif itemData["name"] == "labkey" then
 					info.lab = exports["qb-methlab"]:GenerateRandomLab()
 				elseif itemData["name"] == "printerdocument" then
@@ -1615,5 +1623,12 @@ QBCore.Functions.CreateUseableItem("driver_license", function(source, item)
     local Player = QBCore.Functions.GetPlayer(source)
 	if Player.Functions.GetItemBySlot(item.slot) ~= nil then
         TriggerClientEvent("inventory:client:ShowDriverLicense", -1, source, Player.PlayerData.citizenid, item.info)
+    end
+end)
+
+QBCore.Functions.CreateUseableItem("duffelbag", function(source, item)
+	local Player = QBCore.Functions.GetPlayer(source)
+	if Player.Functions.GetItemBySlot(item.slot) ~= nil then
+        TriggerClientEvent('inventory:client:UseDuffelBag', source, item.info.bagid)
     end
 end)
