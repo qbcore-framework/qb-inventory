@@ -758,6 +758,27 @@ AddEventHandler("inventory:client:SetCurrentStash", function(stash)
     CurrentStash = stash
 end)
 
+RegisterNetEvent('inventory:client:UseDuffelBag')
+AddEventHandler('inventory:client:UseDuffelBag', function(bagId)
+	local ped = PlayerPedId()
+    QBCore.Functions.Progressbar("use_bag", "Opening Duffelbag", 2000, false, true, {
+        disableMovement = false,
+        disableCarMovement = false,
+        disableMouse = false,
+        disableCombat = true,
+    }, {}, {}, {}, function() -- Done
+        RequestAnimDict("clothingtie")
+	while not HasAnimDictLoaded("clothingtie") do
+	    Wait(0)
+	end
+        TaskPlayAnim(ped, "clothingtie", "try_tie_negative_a", 3.0, 3.0, 2000, 51, 0, false, false, false)
+        Wait(600)
+        ClearPedSecondaryTask(ped)
+        TriggerServerEvent("inventory:server:OpenInventory", "stash", 'bag_'..bagId, {maxweight = 25000, slots = 9})
+        TriggerEvent("inventory:client:SetCurrentStash", 'bag_'..bagId)
+    end)
+end)
+
 RegisterNUICallback('getCombineItem', function(data, cb)
     cb(QBCore.Shared.Items[data.item])
 end)
