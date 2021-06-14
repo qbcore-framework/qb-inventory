@@ -82,7 +82,7 @@ AddEventHandler('inventory:server:OpenInventory', function(name, id, other)
 	local Player = QBCore.Functions.GetPlayer(src)
 	local PlayerAmmo = {}
 	if not ply.state.inv_busy then
-		QBCore.Functions.ExecuteSql(false, "SELECT * FROM `playerammo` WHERE `citizenid` = '"..Player.PlayerData.citizenid.."'", function(ammo)
+		QBCore.Functions.ExecuteSql(false, {['a'] = Player.PlayerData.citizenid}, "SELECT * FROM `playerammo` WHERE `citizenid` = @a", function(ammo)
 			if ammo[1] ~= nil then
 				PlayerAmmo = json.decode(ammo[1].ammo)
 			end
@@ -891,7 +891,7 @@ end
 
 function IsVehicleOwned(plate)
 	local val = false
-	QBCore.Functions.ExecuteSql(true, "SELECT * FROM `player_vehicles` WHERE `plate` = '"..plate.."'", function(result)
+	QBCore.Functions.ExecuteSql(true, {['a'] = plate}, "SELECT * FROM `player_vehicles` WHERE `plate` = @a", function(result)
 		if (result[1] ~= nil) then
 			val = true
 		else
@@ -938,7 +938,7 @@ end
 -- Stash Items
 function GetStashItems(stashId)
 	local items = {}
-	QBCore.Functions.ExecuteSql(true, "SELECT * FROM `stashitems` WHERE `stash` = '"..stashId.."'", function(result)
+	QBCore.Functions.ExecuteSql(true, {['a']=stashId}, "SELECT * FROM `stashitems` WHERE `stash` = @a", function(result)
 		if result[1] ~= nil then
 			for k, item in pairs(result) do
 				local itemInfo = QBCore.Shared.Items[item.name:lower()]
@@ -956,9 +956,9 @@ function GetStashItems(stashId)
 					slot = item.slot,
 				}
 			end
-			QBCore.Functions.ExecuteSql(false, "DELETE FROM `stashitems` WHERE `stash` = '"..stashId.."'")
+			QBCore.Functions.ExecuteSql(false, {['a']=stashId}, "DELETE FROM `stashitems` WHERE `stash` = @a")
 		else
-			QBCore.Functions.ExecuteSql(true, "SELECT * FROM `stashitemsnew` WHERE `stash` = '"..stashId.."'", function(result)
+			QBCore.Functions.ExecuteSql(true, {['a']=stashId}, "SELECT * FROM `stashitemsnew` WHERE `stash` = @a", function(result)
 				if result[1] ~= nil then 
 					if result[1].items ~= nil then
 						result[1].items = json.decode(result[1].items)
@@ -994,11 +994,11 @@ end)
 
 RegisterServerEvent('qb-inventory:server:SaveStashItems')
 AddEventHandler('qb-inventory:server:SaveStashItems', function(stashId, items)
-	QBCore.Functions.ExecuteSql(false, "SELECT * FROM `stashitemsnew` WHERE `stash` = '"..stashId.."'", function(result)
+	QBCore.Functions.ExecuteSql(false, {['a']=stashId}, "SELECT * FROM `stashitemsnew` WHERE `stash` = @a", function(result)
 		if result[1] ~= nil then
-			QBCore.Functions.ExecuteSql(false, "UPDATE `stashitemsnew` SET `items` = '"..json.encode(items).."' WHERE `stash` = '"..stashId.."'")
+			QBCore.Functions.ExecuteSql(false, {['a']=json.encode(items), ['b']=stashId}, "UPDATE `stashitemsnew` SET `items` = @a WHERE `stash` = @b")
 		else
-			QBCore.Functions.ExecuteSql(false, "INSERT INTO `stashitemsnew` (`stash`, `items`) VALUES ('"..stashId.."', '"..json.encode(items).."')")
+			QBCore.Functions.ExecuteSql(false, {['a']=stashId, ['b']=json.encode(items)}, "INSERT INTO `stashitemsnew` (`stash`, `items`) VALUES (@a, @b)")
 		end
 	end)
 end)
@@ -1010,12 +1010,12 @@ function SaveStashItems(stashId, items)
 				item.description = nil
 			end
 
-			QBCore.Functions.ExecuteSql(false, "SELECT * FROM `stashitemsnew` WHERE `stash` = '"..stashId.."'", function(result)
+			QBCore.Functions.ExecuteSql(false, {['a']=stashId}, "SELECT * FROM `stashitemsnew` WHERE `stash` = @a", function(result)
 				if result[1] ~= nil then
-					QBCore.Functions.ExecuteSql(false, "UPDATE `stashitemsnew` SET `items` = '"..json.encode(items).."' WHERE `stash` = '"..stashId.."'")
+					QBCore.Functions.ExecuteSql(false, {['a']=json.encode(items), ['b']=stashId}, "UPDATE `stashitemsnew` SET `items` = @a WHERE `stash` = @b")
 					Stashes[stashId].isOpen = false
 				else
-					QBCore.Functions.ExecuteSql(false, "INSERT INTO `stashitemsnew` (`stash`, `items`) VALUES ('"..stashId.."', '"..json.encode(items).."')")
+					QBCore.Functions.ExecuteSql(false, {['a']=json.encode(items), ['b']=stashId}, "INSERT INTO `stashitemsnew` (`stash`, `items`) VALUES (@b, @a)")
 					Stashes[stashId].isOpen = false
 				end
 			end)
@@ -1102,7 +1102,7 @@ end
 -- Trunk items
 function GetOwnedVehicleItems(plate)
 	local items = {}
-	QBCore.Functions.ExecuteSql(true, "SELECT * FROM `trunkitems` WHERE `plate` = '"..plate.."'", function(result)
+	QBCore.Functions.ExecuteSql(true, {['a'] = plate}, "SELECT * FROM `trunkitems` WHERE `plate` = @plate", function(result)
 		if result[1] ~= nil then
 			for k, item in pairs(result) do
 				local itemInfo = QBCore.Shared.Items[item.name:lower()]
@@ -1120,9 +1120,9 @@ function GetOwnedVehicleItems(plate)
 					slot = item.slot,
 				}
 			end
-			QBCore.Functions.ExecuteSql(false, "DELETE FROM `trunkitems` WHERE `plate` = '"..plate.."'")
+			QBCore.Functions.ExecuteSql(false, {['a'] = plate}, "DELETE FROM `trunkitems` WHERE `plate` = @a")
 		else
-			QBCore.Functions.ExecuteSql(true, "SELECT * FROM `trunkitemsnew` WHERE `plate` = '"..plate.."'", function(result)
+			QBCore.Functions.ExecuteSql(true, {['a'] = plate}, "SELECT * FROM `trunkitemsnew` WHERE `plate` = @a", function(result)
 				if result[1] ~= nil then
 					if result[1].items ~= nil then
 						result[1].items = json.decode(result[1].items)
@@ -1159,13 +1159,13 @@ function SaveOwnedVehicleItems(plate, items)
 				item.description = nil
 			end
 
-			QBCore.Functions.ExecuteSql(false, "SELECT * FROM `trunkitemsnew` WHERE `plate` = '"..plate.."'", function(result)
+			QBCore.Functions.ExecuteSql(false, {['a'] = plate}, "SELECT * FROM `trunkitemsnew` WHERE `plate` = @a", function(result)
 				if result[1] ~= nil then
-					QBCore.Functions.ExecuteSql(false, "UPDATE `trunkitemsnew` SET `items` = '"..json.encode(items).."' WHERE `plate` = '"..plate.."'", function(result) 
+					QBCore.Functions.ExecuteSql(false, {['a']= json.encode(items), ['b'] = plate}, "UPDATE `trunkitemsnew` SET `items` = @a WHERE `plate` = @b", function(result) 
 						Trunks[plate].isOpen = false
 					end)
 				else
-					QBCore.Functions.ExecuteSql(false, "INSERT INTO `trunkitemsnew` (`plate`, `items`) VALUES ('"..plate.."', '"..json.encode(items).."')", function(result) 
+					QBCore.Functions.ExecuteSql(false, {['a'] = plate, ['b'] = json.encode(items)}, "INSERT INTO `trunkitemsnew` (`plate`, `items`) VALUES (@a, @b)", function(result) 
 						Trunks[plate].isOpen = false
 					end)
 				end
@@ -1253,7 +1253,7 @@ end
 -- Glovebox items
 function GetOwnedVehicleGloveboxItems(plate)
 	local items = {}
-	QBCore.Functions.ExecuteSql(true, "SELECT * FROM `gloveboxitems` WHERE `plate` = '"..plate.."'", function(result)
+	QBCore.Functions.ExecuteSql(true, {['a']= plate}, "SELECT * FROM `gloveboxitems` WHERE `plate` = @a", function(result)
 		if result[1] ~= nil then
 			for k, item in pairs(result) do
 				local itemInfo = QBCore.Shared.Items[item.name:lower()]
@@ -1271,9 +1271,9 @@ function GetOwnedVehicleGloveboxItems(plate)
 					slot = item.slot,
 				}
 			end
-			QBCore.Functions.ExecuteSql(false, "DELETE FROM `gloveboxitems` WHERE `plate` = '"..plate.."'")
+			QBCore.Functions.ExecuteSql(false, {['a']= plate}, "DELETE FROM `gloveboxitems` WHERE `plate` = @a")
 		else
-			QBCore.Functions.ExecuteSql(true, "SELECT * FROM `gloveboxitemsnew` WHERE `plate` = '"..plate.."'", function(result)
+			QBCore.Functions.ExecuteSql(true, {['a']= plate}, "SELECT * FROM `gloveboxitemsnew` WHERE `plate` = @a", function(result)
 				if result[1] ~= nil then 
 					if result[1].items ~= nil then
 						result[1].items = json.decode(result[1].items)
@@ -1310,13 +1310,13 @@ function SaveOwnedGloveboxItems(plate, items)
 				item.description = nil
 			end
 
-			QBCore.Functions.ExecuteSql(false, "SELECT * FROM `gloveboxitemsnew` WHERE `plate` = '"..plate.."'", function(result)
+			QBCore.Functions.ExecuteSql(false, {['a']= plate}, "SELECT * FROM `gloveboxitemsnew` WHERE `plate` = @a", function(result)
 				if result[1] ~= nil then
-					QBCore.Functions.ExecuteSql(false, "UPDATE `gloveboxitemsnew` SET `items` = '"..json.encode(items).."' WHERE `plate` = '"..plate.."'", function(result) 
+					QBCore.Functions.ExecuteSql(false, {['a']= json.encode(items), ['b']= plate}, "UPDATE `gloveboxitemsnew` SET `items` = @a WHERE `plate` = @b", function(result) 
 						Gloveboxes[plate].isOpen = false
 					end)
 				else
-					QBCore.Functions.ExecuteSql(false, "INSERT INTO `gloveboxitemsnew` (`plate`, `items`) VALUES ('"..plate.."', '"..json.encode(items).."')", function(result) 
+					QBCore.Functions.ExecuteSql(false, {['a']= plate, ['b']= json.encode(items)}, "INSERT INTO `gloveboxitemsnew` (`plate`, `items`) VALUES (@a, @b)", function(result) 
 						Gloveboxes[plate].isOpen = false
 					end)
 				end
