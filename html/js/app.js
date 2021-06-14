@@ -1575,7 +1575,7 @@ var requiredItemOpen = false;
             if (!requiredItemOpen) {
                 $(".requiredItem-container").html("");
                 $.each(data.items, function(index, item){
-                    var element = '<div class="requiredItem-box"><div id="requiredItem-action">Nodig</div><div id="requiredItem-label"><p>'+item.label+'</p></div><div id="requiredItem-image"><div class="item-slot-img"><img src="images/' + item.image + '" alt="' + item.name + '" /></div></div></div>'
+                    var element = '<div class="requiredItem-box"><div id="requiredItem-action">Required</div><div id="requiredItem-label"><p>'+item.label+'</p></div><div id="requiredItem-image"><div class="item-slot-img"><img src="images/' + item.image + '" alt="' + item.name + '" /></div></div></div>'
                     $(".requiredItem-container").hide();
                     $(".requiredItem-container").append(element);
                     $(".requiredItem-container").fadeIn(100);
