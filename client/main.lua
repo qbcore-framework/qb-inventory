@@ -677,12 +677,12 @@ end)
 
 RegisterNetEvent("inventory:client:RemoveDropItem")
 AddEventHandler("inventory:client:RemoveDropItem", function(dropId)
-    local ped = PlayerPedId()
     Drops[dropId] = nil
 end)
 
 RegisterNetEvent("inventory:client:DropItemAnim")
 AddEventHandler("inventory:client:DropItemAnim", function()
+    local ped = PlayerPedId()
     SendNUIMessage({
         action = "close",
     })
