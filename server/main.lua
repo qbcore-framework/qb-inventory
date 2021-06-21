@@ -1615,7 +1615,7 @@ QBCore.Functions.CreateUseableItem("driver_license", function(source, item)
 		if dist < 3.0 then
 			TriggerClientEvent('chat:addMessage', v,  {
 				template = '<div class="chat-message advert"><div class="chat-message-body"><strong>{0}:</strong><br><br> <strong>First Name:</strong> {1} <br><strong>Last Name:</strong> {2} <br><strong>Birth Date:</strong> {3} <br><strong>Licenses:</strong> {4}</div></div>',
-				args = {'Drivers License', character.PlayerData.charinfo.firstname, character.PlayerData.charinfo.lastname, character.PlayerData.charinfo.birthdate, character.PlayerData.charinfo.type}
+				args = {'Drivers License', character.PlayerData.charinfo.firstname, character.PlayerData.charinfo.lastname, character.PlayerData.charinfo.birthdate, item.info.type}
 			})
 		end
 	end
