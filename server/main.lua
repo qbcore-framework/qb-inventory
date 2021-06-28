@@ -82,7 +82,7 @@ AddEventHandler('inventory:server:OpenInventory', function(name, id, other)
 	local Player = QBCore.Functions.GetPlayer(src)
 	local PlayerAmmo = {}
 	if not ply.state.inv_busy then
-		exports.ghmattimysql:execute('SELECT * FROM playerammmo WHERE citizenid=@citizenid', {['@citizenid'] = Player.PlayerData.citizenid}, function(ammo)
+		exports.ghmattimysql:execute('SELECT * FROM playerammo WHERE citizenid=@citizenid', {['@citizenid'] = Player.PlayerData.citizenid}, function(ammo)
 			if ammo[1] ~= nil then
 				PlayerAmmo = json.decode(ammo[1].ammo)
 			end
