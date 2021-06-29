@@ -82,11 +82,10 @@ AddEventHandler('inventory:server:OpenInventory', function(name, id, other)
 	local Player = QBCore.Functions.GetPlayer(src)
 	local PlayerAmmo = {}
 	if not ply.state.inv_busy then
-		QBCore.Functions.ExecuteSql(false, "SELECT * FROM `playerammo` WHERE `citizenid` = '"..Player.PlayerData.citizenid.."'", function(ammo)
+		exports.ghmattimysql:execute('SELECT * FROM playerammo WHERE citizenid=@citizenid', {['@citizenid'] = Player.PlayerData.citizenid}, function(ammo)
 			if ammo[1] ~= nil then
 				PlayerAmmo = json.decode(ammo[1].ammo)
 			end
-
 			if name ~= nil and id ~= nil then
 				local secondInv = {}
 				if name == "stash" then
@@ -957,7 +956,7 @@ function GetStashItems(stashId)
 					slot = item.slot,
 				}
 			end
-			QBCore.Functions.ExecuteSql(false, "DELETE FROM `stashitems` WHERE `stash` = '"..stashId.."'")
+			exports.ghmattimysql:execute('DELETE FROM stashitems WHERE stash=@stash', {['@stash'] = stashId})
 		else
 			QBCore.Functions.ExecuteSql(true, "SELECT * FROM `stashitemsnew` WHERE `stash` = '"..stashId.."'", function(result)
 				if result[1] ~= nil then 
@@ -995,11 +994,11 @@ end)
 
 RegisterServerEvent('qb-inventory:server:SaveStashItems')
 AddEventHandler('qb-inventory:server:SaveStashItems', function(stashId, items)
-	QBCore.Functions.ExecuteSql(false, "SELECT * FROM `stashitemsnew` WHERE `stash` = '"..stashId.."'", function(result)
+	exports.ghmattimysql:execute('SELECT * FROM stashitemsnew WHERE stash=@stash', {['@stash'] = stashId}, function(result)
 		if result[1] ~= nil then
-			QBCore.Functions.ExecuteSql(false, "UPDATE `stashitemsnew` SET `items` = '"..json.encode(items).."' WHERE `stash` = '"..stashId.."'")
+			exports.ghmattimysql:execute('UPDATE stashitemsnew SET items=@items WHERE stash=@stash', {['@items'] = json.encode(items), ['@stash'] = stashId})
 		else
-			QBCore.Functions.ExecuteSql(false, "INSERT INTO `stashitemsnew` (`stash`, `items`) VALUES ('"..stashId.."', '"..json.encode(items).."')")
+			exports.ghmattimysql:execute('INSERT INTO stashitemsnew (stash, items) VALUES (@stash, @items)', {['@stash'] = stashId, ['@items'] = json.encode(items)})
 		end
 	end)
 end)
@@ -1011,12 +1010,12 @@ function SaveStashItems(stashId, items)
 				item.description = nil
 			end
 
-			QBCore.Functions.ExecuteSql(false, "SELECT * FROM `stashitemsnew` WHERE `stash` = '"..stashId.."'", function(result)
+			exports.ghmattimysql:execute('SELECT * FROM stashitemsnew WHERE stash=@stash', {['@stash'] = stashId}, function(result)
 				if result[1] ~= nil then
-					QBCore.Functions.ExecuteSql(false, "UPDATE `stashitemsnew` SET `items` = '"..json.encode(items).."' WHERE `stash` = '"..stashId.."'")
+					exports.ghmattimysql:execute('UPDATE stashitemsnew SET items=@items WHERE stash=@stash', {['@items'] = json.encode(items), ['@stash'] = stashId})
 					Stashes[stashId].isOpen = false
 				else
-					QBCore.Functions.ExecuteSql(false, "INSERT INTO `stashitemsnew` (`stash`, `items`) VALUES ('"..stashId.."', '"..json.encode(items).."')")
+					exports.ghmattimysql:execute('INSERT INTO stashitemsnew (stash, items) VALUES (@stash, @items)', {['@stash'] = stashId, ['@items'] = json.encode(items)})
 					Stashes[stashId].isOpen = false
 				end
 			end)
@@ -1121,7 +1120,7 @@ function GetOwnedVehicleItems(plate)
 					slot = item.slot,
 				}
 			end
-			QBCore.Functions.ExecuteSql(false, "DELETE FROM `trunkitems` WHERE `plate` = '"..plate.."'")
+			exports.ghmattimysql:execute('DELETE FROM trunkitems WHERE plate=@plate', {['@plate'] = plate})
 		else
 			QBCore.Functions.ExecuteSql(true, "SELECT * FROM `trunkitemsnew` WHERE `plate` = '"..plate.."'", function(result)
 				if result[1] ~= nil then
@@ -1159,14 +1158,13 @@ function SaveOwnedVehicleItems(plate, items)
 			for slot, item in pairs(items) do
 				item.description = nil
 			end
-
-			QBCore.Functions.ExecuteSql(false, "SELECT * FROM `trunkitemsnew` WHERE `plate` = '"..plate.."'", function(result)
+			exports.ghmattimysql:execute('SELECT * FROM trunkitemsnew WHERE plate=@plate', {['@plate'] = plate}, function(result)
 				if result[1] ~= nil then
-					QBCore.Functions.ExecuteSql(false, "UPDATE `trunkitemsnew` SET `items` = '"..json.encode(items).."' WHERE `plate` = '"..plate.."'", function(result) 
+					exports.ghmattimysql:execute('UPDATE trunkitemsnew SET items=@items WHERE plate=@plate', {['@items'] = json.encode(items), ['@plate'] = plate}, function(result)
 						Trunks[plate].isOpen = false
 					end)
 				else
-					QBCore.Functions.ExecuteSql(false, "INSERT INTO `trunkitemsnew` (`plate`, `items`) VALUES ('"..plate.."', '"..json.encode(items).."')", function(result) 
+					exports.ghmattimysql:execute('INSERT INTO trunkitemsnew (plate, items) VALUES (@plate, @items)', {['@plate'] = plate, ['@items'] = json.encode(items)}, function(result)
 						Trunks[plate].isOpen = false
 					end)
 				end
@@ -1272,7 +1270,7 @@ function GetOwnedVehicleGloveboxItems(plate)
 					slot = item.slot,
 				}
 			end
-			QBCore.Functions.ExecuteSql(false, "DELETE FROM `gloveboxitems` WHERE `plate` = '"..plate.."'")
+			exports.ghmattimysql:execute('DELETE FROM gloveboxitems WHERE plate=@plate', {['@plate'] = plate})
 		else
 			QBCore.Functions.ExecuteSql(true, "SELECT * FROM `gloveboxitemsnew` WHERE `plate` = '"..plate.."'", function(result)
 				if result[1] ~= nil then 
@@ -1310,14 +1308,13 @@ function SaveOwnedGloveboxItems(plate, items)
 			for slot, item in pairs(items) do
 				item.description = nil
 			end
-
-			QBCore.Functions.ExecuteSql(false, "SELECT * FROM `gloveboxitemsnew` WHERE `plate` = '"..plate.."'", function(result)
+			exports.ghmattimysql:execute('SELECT * FROM gloveboxitemsnew WHERE plate=@plate', {['@plate'] = plate}, function(result)
 				if result[1] ~= nil then
-					QBCore.Functions.ExecuteSql(false, "UPDATE `gloveboxitemsnew` SET `items` = '"..json.encode(items).."' WHERE `plate` = '"..plate.."'", function(result) 
+					exports.ghmattimysql:execute('UPDATE gloveboxitemsnew SET items=@items WHERE plate=@plate', {['@items'] = json.encode(items), ['@plate'] = plate}, function(result)
 						Gloveboxes[plate].isOpen = false
 					end)
 				else
-					QBCore.Functions.ExecuteSql(false, "INSERT INTO `gloveboxitemsnew` (`plate`, `items`) VALUES ('"..plate.."', '"..json.encode(items).."')", function(result) 
+					exports.ghmattimysql:execute('INSERT INTO gloveboxitemsnew (plate, items) VALUES (@plate, @items)', {['@plate'] = plate, ['@items'] = json.encode(items)}, function(result)
 						Gloveboxes[plate].isOpen = false
 					end)
 				end
