@@ -367,7 +367,6 @@ RegisterNetEvent("inventory:client:OpenInventory")
 AddEventHandler("inventory:client:OpenInventory", function(PlayerAmmo, inventory, other)
     if not IsEntityDead(PlayerPedId()) then
         ToggleHotbar(false)
-        TriggerScreenblurFadeIn(0)
         SetNuiFocus(true, true)
         if other ~= nil then
             currentOtherInventory = other.name
@@ -729,7 +728,6 @@ RegisterNUICallback("CloseInventory", function(data, cb)
         TriggerServerEvent("inventory:server:SaveInventory", "drop", CurrentDrop)
         CurrentDrop = 0
     end
-    TriggerScreenblurFadeOut(0)
     SetNuiFocus(false, false)
     inInventory = false
 end)
