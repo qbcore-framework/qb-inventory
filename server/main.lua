@@ -519,7 +519,7 @@ AddEventHandler('inventory:server:SetInventoryData', function(fromInventory, toI
 				end
 			end
 		else
-			TriggerClientEvent("QBCore:Notify", src, "Je hebt dit item niet!", "error")
+			TriggerClientEvent("QBCore:Notify", src, "You don't have this item!", "error")
 		end
 	elseif QBCore.Shared.SplitStr(fromInventory, "-")[1] == "otherplayer" then
 		local playerId = tonumber(QBCore.Shared.SplitStr(fromInventory, "-")[2])
