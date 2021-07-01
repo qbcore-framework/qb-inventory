@@ -766,8 +766,8 @@ AddEventHandler('inventory:server:SetInventoryData', function(fromInventory, toI
 				if Player.Functions.RemoveMoney("cash", price, "dealer-item-bought") then
 					Player.Functions.AddItem(itemData.name, fromAmount, toSlot, itemData.info)
 					TriggerClientEvent('qb-drugs:client:updateDealerItems', src, itemData, fromAmount)
-					TriggerClientEvent('QBCore:Notify', src, itemInfo["label"] .. " ingekocht!", "success")
-					TriggerEvent("qb-log:server:CreateLog", "dealers", "Dealer item gekocht", "green", "**"..GetPlayerName(src) .. "** heeft een " .. itemInfo["label"] .. " gekocht voor $"..price)
+					TriggerClientEvent('QBCore:Notify', src, itemInfo["label"] .. " bought!", "success")
+					TriggerEvent("qb-log:server:CreateLog", "dealers", "Dealer item bought", "green", "**"..GetPlayerName(src) .. "** bought a " .. itemInfo["label"] .. "  for $"..price)
 				else
 					TriggerClientEvent('QBCore:Notify', src, "You don't have enough cash..", "error")
 				end
