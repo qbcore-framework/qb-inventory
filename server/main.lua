@@ -879,7 +879,7 @@ function hasCraftItems(source, CostItems, amount)
 	local Player = QBCore.Functions.GetPlayer(source)
 	for k, v in pairs(CostItems) do
 		if Player.Functions.GetItemByName(k) ~= nil then
-			if Player.Functions.GetItemByName(k).amount < (v * amount) then
+			if Player.Functions.GetItemByName(k) < (v * amount) then
 				return false
 			end
 		else
