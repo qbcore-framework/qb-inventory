@@ -888,7 +888,7 @@ end
 
 function IsVehicleOwned(plate)
 	local val = false
-	QBCore.Functions.ExecuteSql(true, "SELECT * FROM `player_vehicles` WHERE `plate` = '"..plate.."'", function(result)
+	exports.ghmattimysql:execute("SELECT * FROM `player_vehicles` WHERE `plate` = @plate", {['@plate']=plate}, function(result)
 		if (result[1] ~= nil) then
 			val = true
 		else
@@ -935,7 +935,7 @@ end
 -- Stash Items
 function GetStashItems(stashId)
 	local items = {}
-	QBCore.Functions.ExecuteSql(true, "SELECT * FROM `stashitems` WHERE `stash` = '"..stashId.."'", function(result)
+	exports.ghmattimysql:execute("SELECT * FROM `stashitems` WHERE `stash` = @stashid", {['@stashid'] = stashId}, function(result)
 		if result[1] ~= nil then
 			for k, item in pairs(result) do
 				local itemInfo = QBCore.Shared.Items[item.name:lower()]
@@ -955,7 +955,7 @@ function GetStashItems(stashId)
 			end
 			exports.ghmattimysql:execute('DELETE FROM stashitems WHERE stash=@stash', {['@stash'] = stashId})
 		else
-			QBCore.Functions.ExecuteSql(true, "SELECT * FROM `stashitemsnew` WHERE `stash` = '"..stashId.."'", function(result)
+			exports.ghmattimysql:execute("SELECT * FROM `stashitemsnew` WHERE `stash` = @stash", {['@stash'] = stashId}, function(result)
 				if result[1] ~= nil then 
 					if result[1].items ~= nil then
 						result[1].items = json.decode(result[1].items)
@@ -1099,7 +1099,7 @@ end
 -- Trunk items
 function GetOwnedVehicleItems(plate)
 	local items = {}
-	QBCore.Functions.ExecuteSql(true, "SELECT * FROM `trunkitems` WHERE `plate` = '"..plate.."'", function(result)
+	exports.ghmattimysql:execute("SELECT * FROM `trunkitems` WHERE `plate` = @plate", {['@plate'] = plate}, function(result)
 		if result[1] ~= nil then
 			for k, item in pairs(result) do
 				local itemInfo = QBCore.Shared.Items[item.name:lower()]
@@ -1119,7 +1119,7 @@ function GetOwnedVehicleItems(plate)
 			end
 			exports.ghmattimysql:execute('DELETE FROM trunkitems WHERE plate=@plate', {['@plate'] = plate})
 		else
-			QBCore.Functions.ExecuteSql(true, "SELECT * FROM `trunkitemsnew` WHERE `plate` = '"..plate.."'", function(result)
+			exports.ghmattimysql:execute("SELECT * FROM `trunkitemsnew` WHERE `plate` = @plate", {['@plate'] = plate}, function(result)
 				if result[1] ~= nil then
 					if result[1].items ~= nil then
 						result[1].items = json.decode(result[1].items)
@@ -1249,7 +1249,7 @@ end
 -- Glovebox items
 function GetOwnedVehicleGloveboxItems(plate)
 	local items = {}
-	QBCore.Functions.ExecuteSql(true, "SELECT * FROM `gloveboxitems` WHERE `plate` = '"..plate.."'", function(result)
+	exports.ghmattimysql:execute("SELECT * FROM `gloveboxitems` WHERE `plate` = @plate" {['@plate'] = plate}, function(result)
 		if result[1] ~= nil then
 			for k, item in pairs(result) do
 				local itemInfo = QBCore.Shared.Items[item.name:lower()]
@@ -1269,7 +1269,7 @@ function GetOwnedVehicleGloveboxItems(plate)
 			end
 			exports.ghmattimysql:execute('DELETE FROM gloveboxitems WHERE plate=@plate', {['@plate'] = plate})
 		else
-			QBCore.Functions.ExecuteSql(true, "SELECT * FROM `gloveboxitemsnew` WHERE `plate` = '"..plate.."'", function(result)
+			exports.ghmattimysql:execute("SELECT * FROM `gloveboxitemsnew` WHERE `plate` = @plate", {['@plate'] = plate}, function(result)
 				if result[1] ~= nil then 
 					if result[1].items ~= nil then
 						result[1].items = json.decode(result[1].items)
