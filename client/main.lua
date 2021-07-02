@@ -1,5 +1,3 @@
-QBCore = nil
-
 inInventory = false
 hotbarOpen = false
 
@@ -7,25 +5,16 @@ local inventoryTest = {}
 local currentWeapon = nil
 local CurrentWeaponData = {}
 local currentOtherInventory = nil
-
 local Drops = {}
 local CurrentDrop = 0
 local DropsNear = {}
-
 local CurrentVehicle = nil
 local CurrentGlovebox = nil
 local CurrentStash = nil
 local isCrafting = false
 local isHotbar = false
-
 local showTrunkPos = false
 
-Citizen.CreateThread(function() 
-    while QBCore == nil do
-        TriggerEvent("QBCore:GetObject", function(obj) QBCore = obj end)    
-        Citizen.Wait(200)
-    end
-end)
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded')
 AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
