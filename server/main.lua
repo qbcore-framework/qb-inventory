@@ -1249,7 +1249,7 @@ end
 -- Glovebox items
 function GetOwnedVehicleGloveboxItems(plate)
 	local items = {}
-	exports.ghmattimysql:execute("SELECT * FROM `gloveboxitems` WHERE `plate` = @plate" {['@plate'] = plate}, function(result)
+	exports.ghmattimysql:execute("SELECT * FROM `gloveboxitems` WHERE `plate` = @plate", {['@plate'] = plate}, function(result)
 		if result[1] ~= nil then
 			for k, item in pairs(result) do
 				local itemInfo = QBCore.Shared.Items[item.name:lower()]
