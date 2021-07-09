@@ -1,22 +1,3 @@
-CREATE TABLE IF NOT EXISTS `playeritems` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `citizenid` varchar(255) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `amount` int(11) NOT NULL,
-  `info` text DEFAULT NULL,
-  `type` varchar(255) NOT NULL,
-  `slot` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=255891 DEFAULT CHARSET=latin1;
-
-CREATE TABLE IF NOT EXISTS `playerammo` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `citizenid` varchar(255) NOT NULL,
-  `ammo` text DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `citizenid` (`citizenid`)
-) ENGINE=InnoDB AUTO_INCREMENT=3638 DEFAULT CHARSET=latin1;
-
 CREATE TABLE IF NOT EXISTS `gloveboxitems` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `plate` varchar(255) DEFAULT NULL,
