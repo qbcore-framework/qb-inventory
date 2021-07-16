@@ -1090,6 +1090,38 @@ function RemoveFromStash(stashId, slot, itemName, amount)
 	end
 end
 
+RegisterServerEvent('qb-inventory:server:giveCash')
+AddEventHandler('qb-inventory:server:giveCash', function(trgtId, amount)
+    local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+    local Target = QBCore.Functions.GetPlayer(trgtId)
+
+    Player.Functions.RemoveMoney('cash', amount)
+    Target.Functions.AddMoney('cash', amount)
+
+    TriggerClientEvent('QBCore:Notify', trgtId, "You got " .. amount .. " from " .. Player.PlayerData.charinfo.firstname .. "!", 'success')
+    TriggerClientEvent('QBCore:Notify', src, "You gave " .. amount .. " to " .. Target.PlayerData.charinfo.firstname .. "!", 'success')
+end)
+
+RegisterServerEvent("inventory:server:GiveItem")
+AddEventHandler('inventory:server:GiveItem', function(name, inventory, item, amount)
+	local src = source
+	local Player = QBCore.Functions.GetPlayer(src)
+	local OtherPlayer = QBCore.Functions.GetPlayer(tonumber(name))
+	local Target = OtherPlayer.PlayerData.charinfo.firstname..' '..OtherPlayer.PlayerData.charinfo.lastname
+	local YourName = Player.PlayerData.charinfo.firstname..' '..Player.PlayerData.charinfo.lastname
+	if amount ~= 0 then
+		if Player.Functions.RemoveItem(item.name, amount, false, item.info) and OtherPlayer.Functions.AddItem(item.name, amount, false, item.info) then
+			TriggerClientEvent('QBCore:Notify', src, "You gave " ..amount.. ' '..item.label..' to '..Target)
+			TriggerClientEvent('inventory:client:ItemBox',src, QBCore.Shared.Items[item.name], "remove")
+			TriggerClientEvent('QBCore:Notify', name, "You got " ..amount.. ' ' ..item.label..' from '..YourName)
+			TriggerClientEvent('inventory:client:ItemBox',name, QBCore.Shared.Items[item.name], "add")
+		else
+			TriggerClientEvent('QBCore:Notify', src, "Cant give item!", "error")
+		end
+	end
+end)
+
 -- Trunk items
 function GetOwnedVehicleItems(plate)
 	local items = {}

@@ -47,6 +47,23 @@ body {
     overflow-x: hidden;
 }
 
+#progressbar {
+    border-radius: 50px;
+    background-color: rgba(24, 26, 30, 0.6);
+   }
+   .pro {
+       background: linear-gradient(to right, #389f46a9, #f35858b0 500px);
+     width: 0%;
+     height: 17px;
+     border-radius: 50px;
+   }
+   .pro1 {
+       background: linear-gradient(to right, #389f46a9, #f35858b0 500px);
+     width: 0%;
+     height: 17px;
+     border-radius: 50px;
+   }
+
 #qbus-inventory {
     position: absolute;
     width: 100%;
@@ -129,6 +146,8 @@ body {
     width: 9%;
     top: 32%;
     left: 3vh;
+    height: 30%;
+    overflow-y: scroll;
 }
 
 .combine-option-container {
@@ -170,7 +189,7 @@ body {
 }
 
 .inv-option-item {
-    margin-top: 20%;
+    margin-top: 15%;
 }
 
 .btn-inv {
@@ -229,7 +248,7 @@ body {
     color: white;
     background-color: rgba(0, 255, 0, .3);
     text-align: center;
-    line-height: 48px;
+    line-height: 38px;
     text-transform: uppercase;
     font-size: 1.1vh;
     font-family: Verdana;
@@ -237,7 +256,7 @@ body {
 
 .inv-option-item {
     width: 80%;
-    height: 50px;
+    height: 40px;
     background-color: rgba(120, 10, 20, 0.3); /* rgba(20, 20, 20, 0.5) */
     border: 1px solid rgba(255, 255, 255, .01);
     color: white;
@@ -359,6 +378,7 @@ body {
 
 .player-inv-info {
     position: absolute;
+    width: 28.8%;
     left: 10.3%;
     top: 19.5%;
 }
@@ -417,6 +437,7 @@ body {
 
 .other-inv-info {
     position: absolute;
+    width: 28.8%;
     left: 58.3%;
     top: 19.5%;
 }

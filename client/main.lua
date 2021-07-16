@@ -664,6 +664,19 @@ AddEventHandler("inventory:client:SetCurrentStash", function(stash)
     CurrentStash = stash
 end)
 
+RegisterNetEvent('qb-inventory:client:CheckDistance')
+AddEventHandler('qb-inventory:client:CheckDistance', function(targetId, amount)
+    local player, distance = GetClosestPlayer()
+    if player ~= -1 and distance < 2.5 then
+        local playerId = GetPlayerServerId(player)
+        if targetId == playerId then
+            TriggerServerEvent('qb-inventory:server:giveCash', playerId, amount)
+        end
+    else
+        QBCore.Functions.Notify('No players nearby!', 'error')
+    end
+end)
+
 RegisterNUICallback('getCombineItem', function(data, cb)
     cb(QBCore.Shared.Items[data.item])
 end)
@@ -745,6 +758,37 @@ RegisterNUICallback("PlayDropFail", function(data, cb)
     PlaySound(-1, "Place_Prop_Fail", "DLC_Dmod_Prop_Editor_Sounds", 0, 0, 1)
 end)
 
+RegisterNUICallback("GiveItem", function(data, cb)
+    if not isCrafting then
+        QBCore.Functions.GetPlayerData(function(PlayerData)
+            local player, distance = GetClosestPlayer()
+            if player ~= -1 and distance < 2.5 then
+                local playerPed = GetPlayerPed(player)
+                local playerId = GetPlayerServerId(player)
+                local plyCoords = GetEntityCoords(playerPed)
+                local pos = GetEntityCoords(GetPlayerPed(-1))
+                local dist = GetDistanceBetweenCoords(pos.x, pos.y, pos.z, plyCoords.x, plyCoords.y, plyCoords.z, true)
+                if dist < 2.5 and not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() then
+                    SetCurrentPedWeapon(PlayerPedId(),'WEAPON_UNARMED',true)
+                    TriggerServerEvent("inventory:server:GiveItem", playerId, data.inventory, data.item, data.amount)
+                else
+                    QBCore.Functions.Notify("No one nearby!", "error")
+                end
+            else
+                QBCore.Functions.Notify("No one nearby!", "error")
+            end
+        end)
+    else
+        QBCore.Functions.Notify("Cant give item!", "error")
+    end
+end)
+
+RegisterNUICallback("GiveCash", function(data, cb)
+    if tonumber(data.amount) ~= nil and tonumber(data.amount) > 0 then
+        TriggerEvent('qb-inventory:client:CheckDistance', tonumber(data.amount))
+    end
+end)
+
 function OpenTrunk()
     local vehicle = QBCore.Functions.GetClosestVehicle()
     while (not HasAnimDictLoaded("amb@prop_human_bum_bin@idle_b")) do
@@ -811,4 +855,25 @@ function LoadAnimDict( dict )
         RequestAnimDict( dict )
         Citizen.Wait( 5 )
     end
+end
+
+function GetClosestPlayer()
+    local closestPlayers = QBCore.Functions.GetPlayersFromCoords()
+    local closestDistance = -1
+    local closestPlayer = -1
+    local coords = GetEntityCoords(GetPlayerPed(-1))
+  
+    for i=1, #closestPlayers, 1 do
+        if closestPlayers[i] ~= PlayerId() then
+            local pos = GetEntityCoords(GetPlayerPed(closestPlayers[i]))
+            local distance = GetDistanceBetweenCoords(pos.x, pos.y, pos.z, coords.x, coords.y, coords.z, true)
+  
+            if closestDistance == -1 or closestDistance > distance then
+                closestPlayer = closestPlayers[i]
+                closestDistance = distance
+            end
+        end
+    end
+  
+    return closestPlayer, closestDistance
 end

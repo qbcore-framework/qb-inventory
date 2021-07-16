@@ -18,11 +18,23 @@
         <div id="qbus-inventory">
             <div class="inventory-info">
                 <div class="player-inv-info">
-                    <span id="player-inv-label">Player Inventory</span><br>
+                    <span id="player-inv-label">Player</span><br>
+                    <img style="margin-top:0.4%;width:3%;left:0px;position:absolute;display:left"src="images/weight.png">
+                        <div style="margin-left:4%;width:97%">
+                            <div id="progressbar">
+                                <div class="pro"></div>
+                            </div>
+                        </div>
                     <span id="player-inv-weight"></span>
                 </div>
                 <div class="other-inv-info">
                     <span id="other-inv-label"></span><br>
+                    <img style="margin-top:0.4%;width:3%;left:0px;position:absolute;display:left"src="images/weight.png">
+                    <div style="margin-left:4%;width:97%">
+                        <div id="progressbar">
+                            <div class="pro1"></div>
+                        </div>
+                    </div>
                     <span id="other-inv-weight"></span>
                 </div>
             </div>
@@ -66,10 +78,13 @@
                 </div>
                 <div class="inv-options">
                     <div class="inv-options-list">
-                        <input type="number" id="item-amount" class="inv-option-item" min=0 value="0" oninput="validity.valid||(value='');"></input>
+                        <input type="number" id="item-amount" class="inv-option-item" style="height: 40px;" min=0 value="0" oninput="validity.valid||(value='');"></input>
                         <div class="inv-option-item" id="item-use"><p>USE</p></div>
                         <!-- <div class="inv-option-item" id="rob-money"><p>NEEM GELD</p></div> -->
                         <!-- <div class="inv-option-item" id="weapon-attachments"><p>ATTACHMENTS</p></div> -->
+                        <div class="inv-option-item" id="item-give"><p>GIVE ITEM</p></div>
+                        <div class="inv-option-item" id="give-cash"><p>GIVE MONEY</p></div>
+                        <div class="inv-option-item" id="item-close"><p>CLOSE</p></div>
                     </div>
                 </div>
                 <div class="oth-inv-container">

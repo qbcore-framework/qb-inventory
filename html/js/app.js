@@ -314,7 +314,7 @@ function FormatItemInfo(itemData) {
         } else if (itemData.name == "weaponlicense") {
             $(".item-info-title").html('<p>'+itemData.label+'</p>')
             $(".item-info-description").html('<p><strong>First Name: </strong><span>' + itemData.info.firstname + '</span></p><p><strong>Last Name: </strong><span>' + itemData.info.lastname + '</span></p><p><strong>Birth Date: </strong><span>' + itemData.info.birthdate + '</span></p><p><strong>Licenses: </strong><span>' + itemData.info.type + '</span></p>');
-		} else if (itemData.name == "lawyerpass") {
+        } else if (itemData.name == "lawyerpass") {
             $(".item-info-title").html('<p>'+itemData.label+'</p>')
             $(".item-info-description").html('<p><strong>Pass-ID: </strong><span>' + itemData.info.id + '</span></p><p><strong>First Name: </strong><span>' + itemData.info.firstname + '</span></p><p><strong>Last Name: </strong><span>' + itemData.info.lastname + '</span></p><p><strong>CSN: </strong><span>' + itemData.info.citizenid + '</span></p>');
         } else if (itemData.name == "harness") {
@@ -504,6 +504,26 @@ function handleDragDrop() {
         }
     });
 
+    $("#item-give").droppable({
+        hoverClass: 'button-hover',
+        drop: function(event, ui) {
+            setTimeout(function(){
+                IsDragging = false;
+            }, 300)
+            fromData = ui.draggable.data("item");
+            fromInventory = ui.draggable.parent().attr("data-inventory");
+            amount = $("#item-amount").val();
+            if(fromData.amount > 0) {
+                $.post("https://qb-inventory/GiveItem", JSON.stringify({
+                    inventory: fromInventory,
+                    item: fromData,
+                    amount: parseInt(amount),
+                }));
+                Inventory.Close();
+            }
+        }
+    });
+
     $("#item-drop").droppable({
         hoverClass: 'item-slot-hoverClass',
         drop: function(event, ui) {
@@ -609,10 +629,16 @@ function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
         return false;
     }
 
+    var per =(totalWeight/1000)/(playerMaxWeight/100000)
+    $(".pro").css("width",per+"%");
+
     $("#player-inv-weight").html("Weight: " + (parseInt(totalWeight) / 1000).toFixed(2) + " / " + (playerMaxWeight / 1000).toFixed(2));
     if ($fromInv.attr("data-inventory").split("-")[0] != "itemshop" && $toInv.attr("data-inventory").split("-")[0] != "itemshop" && $fromInv.attr("data-inventory") != "crafting" && $toInv.attr("data-inventory") != "crafting") {
         $("#other-inv-label").html(otherLabel)
         $("#other-inv-weight").html("Weight: " + (parseInt(totalWeightOther) / 1000).toFixed(2) + " / " + (otherMaxWeight / 1000).toFixed(2))
+
+        var per1 =(totalWeightOther/1000)/(otherMaxWeight/100000)
+        $(".pro1").css("width",per1+"%");
     }
 
     return true;
@@ -1393,6 +1419,8 @@ var requiredItemOpen = false;
             });
         }
 
+        var per =(totalWeight/1000)/(data.maxweight/100000)
+        $(".pro").css("width",per+"%");
         $("#player-inv-weight").html("Weight: " + (totalWeight / 1000).toFixed(2) + " / " + (data.maxweight / 1000).toFixed(2));
         playerMaxWeight = data.maxweight;
         if (data.other != null) 
@@ -1403,12 +1431,19 @@ var requiredItemOpen = false;
             } else {
                 $("#other-inv-label").html(data.other.label)
                 $("#other-inv-weight").html("Weight: " + (totalWeightOther / 1000).toFixed(2) + " / " + (data.other.maxweight / 1000).toFixed(2))
+
+                var per12 =(totalWeightOther/1000)/(data.other.maxweight/100000)
+                $(".pro1").css("width",per12+"%");
             }
             otherMaxWeight = data.other.maxweight;
             otherLabel = data.other.label;
         } else {
             $("#other-inv-label").html(Inventory.droplabel)
             $("#other-inv-weight").html("Weight: " + (totalWeightOther / 1000).toFixed(2) + " / " + (Inventory.dropmaxweight / 1000).toFixed(2))
+
+            var per123 =(totalWeightOther/1000)/(Inventory.dropmaxweight/100000)
+            $(".pro1").css("width",per123+"%");
+
             otherMaxWeight = Inventory.dropmaxweight;
             otherLabel = Inventory.droplabel;
         }
@@ -1495,6 +1530,9 @@ var requiredItemOpen = false;
             }
         });
 
+        var per =(totalWeight/1000)/(data.maxweight/100000)
+        $(".pro").css("width",per+"%");
+        
         $("#player-inv-weight").html("Weight: " + (totalWeight / 1000).toFixed(2) + " / " + (data.maxweight / 1000).toFixed(2));
 
         handleDragDrop();
@@ -1632,4 +1670,16 @@ $(document).on('click', '#rob-money', function(e){
         TargetId: TargetId
     }));
     $("#rob-money").remove();
+});
+
+$(document).on('click', '#item-close', function(e){
+    e.preventDefault();
+    Inventory.Close();
+});
+
+$(document).on('click', '#give-cash', function(e){
+    e.preventDefault();
+    amount = $("#item-amount").val();
+    $.post("https://qb-inventory/GiveCash", JSON.stringify({ amount: parseInt(amount) }));
+    Inventory.Close();
 });
