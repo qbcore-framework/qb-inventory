@@ -1,5 +1,10 @@
 # qb-inventory
 
+##AJ-Inventory
+Some functionality taken from AJ-Inventory: https://github.com/ihyajb/aj-inventory
+
+Added weightbar + giveitem from there!
+
 ## Dependencies
 - [qb-core](https://github.com/qbcore-framework/qb-core)
 - [qb-logs](https://github.com/qbcore-framework/qb-logs) - For logging transfer and other history
