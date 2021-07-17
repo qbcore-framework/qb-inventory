@@ -665,11 +665,11 @@ AddEventHandler("inventory:client:SetCurrentStash", function(stash)
 end)
 
 RegisterNetEvent('qb-inventory:client:CheckDistance')
-AddEventHandler('qb-inventory:client:CheckDistance', function(targetId, amount)
+AddEventHandler('qb-inventory:client:CheckDistance', function(amount)
     local player, distance = GetClosestPlayer()
     if player ~= -1 and distance < 2.5 then
         local playerId = GetPlayerServerId(player)
-        if targetId == playerId then
+        if playerId then
             TriggerServerEvent('qb-inventory:server:giveCash', playerId, amount)
         end
     else
