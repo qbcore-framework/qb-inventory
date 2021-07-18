@@ -5,6 +5,12 @@ Some functionality taken from AJ-Inventory: https://github.com/ihyajb/aj-invento
 
 Added weightbar + giveitem from there!
 
+## New Features
+- Give item function
+- Give money function
+- New weightbar
+- More licenses added from [Jakats/qb-cityhall](https://github.com/Jakats/qb-cityhall)
+
 ## Dependencies
 - [qb-core](https://github.com/qbcore-framework/qb-core)
 - [qb-logs](https://github.com/qbcore-framework/qb-logs) - For logging transfer and other history
@@ -14,23 +20,9 @@ Added weightbar + giveitem from there!
 - [qb-shops](https://github.com/qbcore-framework/qb-shops) - Needed in order to add shops
 
 ## Screenshots
-![General](https://imgur.com/cQWrQ4L.png)
-![ID Card](https://imgur.com/YyLmgBN.png)
-![Weapon](https://imgur.com/4Egycg6.png)
-![Shop](https://imgur.com/kRgEMVk.png)
-![Vending Machine](https://imgur.com/lSwba9S.png)
-![Attachment Crafting](https://imgur.com/dEwa4pI.png)
-![Glovebox](https://imgur.com/IXaODb2.png)
-![Trunk](https://imgur.com/pLmK0iV.png)
+![General](https://cdn.discordapp.com/attachments/854913681669095454/865727820193857566/unknown.png)
 
-## Features
-- Item crafting
-- Weapon attachment crafting
-- Stashes (Personal and/or Shared)
-- Vehicle Trunk & Glovebox
-- Weapon serial number
-- Shops
-- Item Drops
+
 
 ## Installation
 ### Manual
