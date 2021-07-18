@@ -1,9 +1,6 @@
 # qb-inventory
 
-##AJ-Inventory
 Some functionality taken from AJ-Inventory: https://github.com/ihyajb/aj-inventory
-
-Added weightbar + giveitem from there!
 
 ## New Features
 - Give item function
