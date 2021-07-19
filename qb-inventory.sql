@@ -1,22 +1,3 @@
-CREATE TABLE IF NOT EXISTS `playeritems` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `citizenid` varchar(255) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `amount` int(11) NOT NULL,
-  `info` text DEFAULT NULL,
-  `type` varchar(255) NOT NULL,
-  `slot` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=255891 DEFAULT CHARSET=latin1;
-
-CREATE TABLE IF NOT EXISTS `playerammo` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `citizenid` varchar(255) NOT NULL,
-  `ammo` text DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `citizenid` (`citizenid`)
-) ENGINE=InnoDB AUTO_INCREMENT=3638 DEFAULT CHARSET=latin1;
-
 CREATE TABLE IF NOT EXISTS `gloveboxitems` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `plate` varchar(255) DEFAULT NULL,
@@ -75,8 +56,8 @@ CREATE TABLE IF NOT EXISTS `trunkitemsnew` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1127 DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `player_vehicles` (
-  `#` int(11) NOT NULL AUTO_INCREMENT,
-  `steam` varchar(50) DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `license` varchar(50) DEFAULT NULL,
   `citizenid` varchar(50) DEFAULT NULL,
   `vehicle` varchar(50) DEFAULT NULL,
   `hash` varchar(50) DEFAULT NULL,
@@ -91,8 +72,8 @@ CREATE TABLE IF NOT EXISTS `player_vehicles` (
   `depotprice` int(11) NOT NULL DEFAULT 0,
   `drivingdistance` int(50) DEFAULT NULL,
   `status` text DEFAULT NULL,
-  PRIMARY KEY (`#`),
+  PRIMARY KEY (`id`),
   KEY `plate` (`plate`),
   KEY `citizenid` (`citizenid`),
-  KEY `steam` (`steam`)
+  KEY `license` (`license`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2432 DEFAULT CHARSET=utf8mb4;
