@@ -32,6 +32,18 @@ $(document).on('keydown', function() {
     }
 });
 
+$(document).on("dblclick", ".item-slot", function(e){
+    var ItemData = $(this).data("item");
+    var ItemInventory = $(this).parent().attr("data-inventory");
+    if(ItemData) {
+        Inventory.Close();
+        $.post("http://qb-inventory/UseItem", JSON.stringify({
+            inventory: ItemInventory,
+            item: ItemData,
+        }));
+    }
+});
+
 $(document).on('keyup', function(){
     switch(event.keyCode) {
         case 17: // TAB
