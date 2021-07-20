@@ -37,7 +37,7 @@ $(document).on("dblclick", ".item-slot", function(e){
     var ItemInventory = $(this).parent().attr("data-inventory");
     if(ItemData) {
         Inventory.Close();
-        $.post("http://qb-inventory/UseItem", JSON.stringify({
+        $.post("https://qb-inventory/UseItem", JSON.stringify({
             inventory: ItemInventory,
             item: ItemData,
         }));
