@@ -390,3 +390,74 @@ Config.MaximumAmmoValues = {
     ["shotgun"] = 200,
     ["rifle"] = 250,
 }
+
+
+Config.WeaponAttachments = {
+    ["WEAPON_SNSPISTOL"] = {
+        ["extendedclip"] = {
+            component = "COMPONENT_SNSPISTOL_CLIP_02",
+            label = "Extended Clip",
+            item = "pistol_extendedclip"
+        }
+    },
+    ["WEAPON_VINTAGEPISTOL"] = {
+        ["suppressor"] = {
+            component = "COMPONENT_AT_PI_SUPP",
+            label = "Demper",
+            item = "pistol_suppressor"
+        },
+        ["extendedclip"] = {
+            component = "COMPONENT_VINTAGEPISTOL_CLIP_02",
+            label = "Extended Clip",
+            item = "pistol_extendedclip"
+        }
+    },
+    ["WEAPON_PISTOL"] = {
+        ["suppressor"] = {
+            component = "COMPONENT_AT_PI_SUPP_02",
+            label = "Demper",
+            item = "pistol_suppressor"
+        }
+    },
+    ["WEAPON_MICROSMG"] = {
+        ["suppressor"] = {
+            component = "COMPONENT_AT_AR_SUPP_02",
+            label = "Demper",
+            item = "smg_suppressor"
+        },
+        ["extendedclip"] = {
+            component = "COMPONENT_MICROSMG_CLIP_02",
+            label = "Extended Clip",
+            item = "smg_extendedclip"
+        },
+        ["flashlight"] = {
+            component = "COMPONENT_AT_PI_FLSH",
+            label = "Flashlight",
+            item = "smg_flashlight"
+        },
+        ["scope"] = {
+            component = "COMPONENT_AT_SCOPE_MACRO",
+            label = "Scope",
+            item = "smg_scope"
+        }
+    },
+    ["WEAPON_MINISMG"] = {
+        ["extendedclip"] = {
+            component = "COMPONENT_MINISMG_CLIP_02",
+            label = "Extended Clip",
+            item = "smg_extendedclip"
+        }
+    },
+    ["WEAPON_COMPACTRIFLE"] = {
+        ["extendedclip"] = {
+            component = "COMPONENT_COMPACTRIFLE_CLIP_02",
+            label = "Extended Clip",
+            item = "rifle_extendedclip"
+        },
+        ["drummag"] = {
+            component = "COMPONENT_COMPACTRIFLE_CLIP_03",
+            label = "Drum Mag",
+            item = "rifle_drummag"
+        }
+    }
+}
