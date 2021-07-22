@@ -492,76 +492,15 @@ AddEventHandler("inventory:client:UseWeapon", function(weaponData, shootbool)
     end
 end)
 
-WeaponAttachments = {
-    ["WEAPON_SNSPISTOL"] = {
-        ["extendedclip"] = {
-            component = "COMPONENT_SNSPISTOL_CLIP_02",
-            label = "Extended Clip",
-            item = "pistol_extendedclip",
-        },
-    },
-    ["WEAPON_VINTAGEPISTOL"] = {
-        ["suppressor"] = {
-            component = "COMPONENT_AT_PI_SUPP",
-            label = "Suppressor",
-            item = "pistol_suppressor",
-        },
-        ["extendedclip"] = {
-            component = "COMPONENT_VINTAGEPISTOL_CLIP_02",
-            label = "Extended Clip",
-            item = "pistol_extendedclip",
-        },
-    },
-    ["WEAPON_MICROSMG"] = {
-        ["suppressor"] = {
-            component = "COMPONENT_AT_AR_SUPP_02",
-            label = "Suppressor",
-            item = "smg_suppressor",
-        },
-        ["extendedclip"] = {
-            component = "COMPONENT_MICROSMG_CLIP_02",
-            label = "Extended Clip",
-            item = "smg_extendedclip",
-        },
-        ["flashlight"] = {
-            component = "COMPONENT_AT_PI_FLSH",
-            label = "Flashlight",
-            item = "smg_flashlight",
-        },
-        ["scope"] = {
-            component = "COMPONENT_AT_SCOPE_MACRO",
-            label = "Scope",
-            item = "smg_scope",
-        },
-    },
-    ["WEAPON_MINISMG"] = {
-        ["extendedclip"] = {
-            component = "COMPONENT_MINISMG_CLIP_02",
-            label = "Extended Clip",
-            item = "smg_extendedclip",
-        },
-    },
-    ["WEAPON_COMPACTRIFLE"] = {
-        ["extendedclip"] = {
-            component = "COMPONENT_COMPACTRIFLE_CLIP_02",
-            label = "Extended Clip",
-            item = "rifle_extendedclip",
-        },
-        ["drummag"] = {
-            component = "COMPONENT_COMPACTRIFLE_CLIP_03",
-            label = "Drum Mag",
-            item = "rifle_drummag",
-        },
-    },
-}
+
 
 function FormatWeaponAttachments(itemdata)
     local attachments = {}
     itemdata.name = itemdata.name:upper()
     if itemdata.info.attachments ~= nil and next(itemdata.info.attachments) ~= nil then
         for k, v in pairs(itemdata.info.attachments) do
-            if WeaponAttachments[itemdata.name] ~= nil then
-                for key, value in pairs(WeaponAttachments[itemdata.name]) do
+            if Config.WeaponAttachments[itemdata.name] ~= nil then
+                for key, value in pairs(Config.WeaponAttachments[itemdata.name]) do
                     if value.component == v.component then
                         table.insert(attachments, {
                             attachment = key,
@@ -586,14 +525,14 @@ end)
 RegisterNUICallback('RemoveAttachment', function(data, cb)
     local ped = PlayerPedId()
     local WeaponData = QBCore.Shared.Items[data.WeaponData.name]
-    local Attachment = WeaponAttachments[WeaponData.name:upper()][data.AttachmentData.attachment]
+    local Attachment = Config.WeaponAttachments[WeaponData.name:upper()][data.AttachmentData.attachment]
     
     QBCore.Functions.TriggerCallback('weapons:server:RemoveAttachment', function(NewAttachments)
         if NewAttachments ~= false then
             local Attachies = {}
             RemoveWeaponComponentFromPed(ped, GetHashKey(data.WeaponData.name), GetHashKey(Attachment.component))
             for k, v in pairs(NewAttachments) do
-                for wep, pew in pairs(WeaponAttachments[WeaponData.name:upper()]) do
+                for wep, pew in pairs(Config.WeaponAttachments[WeaponData.name:upper()]) do
                     if v.component == pew.component then
                         table.insert(Attachies, {
                             attachment = pew.item,
