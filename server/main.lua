@@ -881,15 +881,10 @@ function hasCraftItems(source, CostItems, amount)
 end
 
 function IsVehicleOwned(plate)
-	local val = false
-	QBCore.Functions.ExecuteSql(true, "SELECT * FROM `player_vehicles` WHERE `plate` = '"..plate.."'", function(result)
-		if (result[1] ~= nil) then
-			val = true
-		else
-			val = false
-		end
-	end)
-	return val
+    local result = exports.ghmattimysql:scalarSync('SELECT 1 from player_vehicles WHERE plate = @plate', {
+        ['@plate'] = plate
+    })
+    if result then return true else return false end
 end
 
 local function escape_str(s)
@@ -929,7 +924,7 @@ end
 -- Stash Items
 function GetStashItems(stashId)
 	local items = {}
-	QBCore.Functions.ExecuteSql(true, "SELECT * FROM `stashitems` WHERE `stash` = '"..stashId.."'", function(result)
+	exports.ghmattimysql:executeSync('SELECT items FROM stashitems WHERE stash=@stash', {['@stash'] = stashId}, function(result)
 		if result[1] ~= nil then
 			for k, item in pairs(result) do
 				local itemInfo = QBCore.Shared.Items[item.name:lower()]
@@ -948,32 +943,6 @@ function GetStashItems(stashId)
 				}
 			end
 			exports.ghmattimysql:execute('DELETE FROM stashitems WHERE stash=@stash', {['@stash'] = stashId})
-		else
-			QBCore.Functions.ExecuteSql(true, "SELECT * FROM `stashitemsnew` WHERE `stash` = '"..stashId.."'", function(result)
-				if result[1] ~= nil then 
-					if result[1].items ~= nil then
-						result[1].items = json.decode(result[1].items)
-						if result[1].items ~= nil then 
-							for k, item in pairs(result[1].items) do
-								local itemInfo = QBCore.Shared.Items[item.name:lower()]
-								items[item.slot] = {
-									name = itemInfo["name"],
-									amount = tonumber(item.amount),
-									info = item.info ~= nil and item.info or "",
-									label = itemInfo["label"],
-									description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-									weight = itemInfo["weight"], 
-									type = itemInfo["type"], 
-									unique = itemInfo["unique"], 
-									useable = itemInfo["useable"], 
-									image = itemInfo["image"],
-									slot = item.slot,
-								}
-							end
-						end
-					end
-				end
-			end)
 		end
 	end)
 	return items
@@ -985,13 +954,10 @@ end)
 
 RegisterServerEvent('qb-inventory:server:SaveStashItems')
 AddEventHandler('qb-inventory:server:SaveStashItems', function(stashId, items)
-	exports.ghmattimysql:execute('SELECT * FROM stashitemsnew WHERE stash=@stash', {['@stash'] = stashId}, function(result)
-		if result[1] ~= nil then
-			exports.ghmattimysql:execute('UPDATE stashitemsnew SET items=@items WHERE stash=@stash', {['@items'] = json.encode(items), ['@stash'] = stashId})
-		else
-			exports.ghmattimysql:execute('INSERT INTO stashitemsnew (stash, items) VALUES (@stash, @items)', {['@stash'] = stashId, ['@items'] = json.encode(items)})
-		end
-	end)
+    exports.ghmattimysql:execute('INSERT INTO stashitems (stash, items) VALUES (@stash, @items) ON DUPLICATE KEY UPDATE items = @items', {
+        ['@stash'] = stashId,
+        ['@items'] = json.encode(items)
+    })
 end)
 
 function SaveStashItems(stashId, items)
@@ -1000,16 +966,11 @@ function SaveStashItems(stashId, items)
 			for slot, item in pairs(items) do
 				item.description = nil
 			end
-
-			exports.ghmattimysql:execute('SELECT * FROM stashitemsnew WHERE stash=@stash', {['@stash'] = stashId}, function(result)
-				if result[1] ~= nil then
-					exports.ghmattimysql:execute('UPDATE stashitemsnew SET items=@items WHERE stash=@stash', {['@items'] = json.encode(items), ['@stash'] = stashId})
-					Stashes[stashId].isOpen = false
-				else
-					exports.ghmattimysql:execute('INSERT INTO stashitemsnew (stash, items) VALUES (@stash, @items)', {['@stash'] = stashId, ['@items'] = json.encode(items)})
-					Stashes[stashId].isOpen = false
-				end
-			end)
+			exports.ghmattimysql:execute('INSERT INTO stashitems (stash, items) VALUES (@stash, @items) ON DUPLICATE KEY UPDATE items = @items', {
+				['@stash'] = stashId,
+				['@items'] = json.encode(items)
+			})
+			Stashes[stashId].isOpen = false
 		end
 	end
 end
@@ -1093,7 +1054,7 @@ end
 -- Trunk items
 function GetOwnedVehicleItems(plate)
 	local items = {}
-	QBCore.Functions.ExecuteSql(true, "SELECT * FROM `trunkitems` WHERE `plate` = '"..plate.."'", function(result)
+	exports.ghmattimysql:executeSync('SELECT items FROM trunkitems WHERE plate=@plate', {['@plate'] = plate}, function(result)
 		if result[1] ~= nil then
 			for k, item in pairs(result) do
 				local itemInfo = QBCore.Shared.Items[item.name:lower()]
@@ -1112,32 +1073,6 @@ function GetOwnedVehicleItems(plate)
 				}
 			end
 			exports.ghmattimysql:execute('DELETE FROM trunkitems WHERE plate=@plate', {['@plate'] = plate})
-		else
-			QBCore.Functions.ExecuteSql(true, "SELECT * FROM `trunkitemsnew` WHERE `plate` = '"..plate.."'", function(result)
-				if result[1] ~= nil then
-					if result[1].items ~= nil then
-						result[1].items = json.decode(result[1].items)
-						if result[1].items ~= nil then 
-							for k, item in pairs(result[1].items) do
-								local itemInfo = QBCore.Shared.Items[item.name:lower()]
-								items[item.slot] = {
-									name = itemInfo["name"],
-									amount = tonumber(item.amount),
-									info = item.info ~= nil and item.info or "",
-									label = itemInfo["label"],
-									description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-									weight = itemInfo["weight"], 
-									type = itemInfo["type"], 
-									unique = itemInfo["unique"], 
-									useable = itemInfo["useable"], 
-									image = itemInfo["image"],
-									slot = item.slot,
-								}
-							end
-						end
-					end
-				end
-			end)
 		end
 	end)
 	return items
@@ -1149,17 +1084,11 @@ function SaveOwnedVehicleItems(plate, items)
 			for slot, item in pairs(items) do
 				item.description = nil
 			end
-			exports.ghmattimysql:execute('SELECT * FROM trunkitemsnew WHERE plate=@plate', {['@plate'] = plate}, function(result)
-				if result[1] ~= nil then
-					exports.ghmattimysql:execute('UPDATE trunkitemsnew SET items=@items WHERE plate=@plate', {['@items'] = json.encode(items), ['@plate'] = plate}, function(result)
-						Trunks[plate].isOpen = false
-					end)
-				else
-					exports.ghmattimysql:execute('INSERT INTO trunkitemsnew (plate, items) VALUES (@plate, @items)', {['@plate'] = plate, ['@items'] = json.encode(items)}, function(result)
-						Trunks[plate].isOpen = false
-					end)
-				end
-			end)
+			exports.ghmattimysql:execute('INSERT INTO trunkitems (plate, items) VALUES (@plate, @items) ON DUPLICATE KEY UPDATE items = @items', {
+				['@plate'] = plate,
+				['@items'] = json.encode(items)
+			})
+			Trunks[plate].isOpen = false
 		end
 	end
 end
@@ -1243,7 +1172,7 @@ end
 -- Glovebox items
 function GetOwnedVehicleGloveboxItems(plate)
 	local items = {}
-	QBCore.Functions.ExecuteSql(true, "SELECT * FROM `gloveboxitems` WHERE `plate` = '"..plate.."'", function(result)
+	exports.ghmattimysql:executeSync('SELECT items FROM gloveboxitems WHERE plate=@plate', {['@plate'] = plate}, function(result)
 		if result[1] ~= nil then
 			for k, item in pairs(result) do
 				local itemInfo = QBCore.Shared.Items[item.name:lower()]
@@ -1262,32 +1191,6 @@ function GetOwnedVehicleGloveboxItems(plate)
 				}
 			end
 			exports.ghmattimysql:execute('DELETE FROM gloveboxitems WHERE plate=@plate', {['@plate'] = plate})
-		else
-			QBCore.Functions.ExecuteSql(true, "SELECT * FROM `gloveboxitemsnew` WHERE `plate` = '"..plate.."'", function(result)
-				if result[1] ~= nil then 
-					if result[1].items ~= nil then
-						result[1].items = json.decode(result[1].items)
-						if result[1].items ~= nil then 
-							for k, item in pairs(result[1].items) do
-								local itemInfo = QBCore.Shared.Items[item.name:lower()]
-								items[item.slot] = {
-									name = itemInfo["name"],
-									amount = tonumber(item.amount),
-									info = item.info ~= nil and item.info or "",
-									label = itemInfo["label"],
-									description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-									weight = itemInfo["weight"], 
-									type = itemInfo["type"], 
-									unique = itemInfo["unique"], 
-									useable = itemInfo["useable"], 
-									image = itemInfo["image"],
-									slot = item.slot,
-								}
-							end
-						end
-					end
-				end
-			end)
 		end
 	end)
 	return items
@@ -1299,17 +1202,11 @@ function SaveOwnedGloveboxItems(plate, items)
 			for slot, item in pairs(items) do
 				item.description = nil
 			end
-			exports.ghmattimysql:execute('SELECT * FROM gloveboxitemsnew WHERE plate=@plate', {['@plate'] = plate}, function(result)
-				if result[1] ~= nil then
-					exports.ghmattimysql:execute('UPDATE gloveboxitemsnew SET items=@items WHERE plate=@plate', {['@items'] = json.encode(items), ['@plate'] = plate}, function(result)
-						Gloveboxes[plate].isOpen = false
-					end)
-				else
-					exports.ghmattimysql:execute('INSERT INTO gloveboxitemsnew (plate, items) VALUES (@plate, @items)', {['@plate'] = plate, ['@items'] = json.encode(items)}, function(result)
-						Gloveboxes[plate].isOpen = false
-					end)
-				end
-			end)
+			exports.ghmattimysql:execute('INSERT INTO gloveboxitems (plate, items) VALUES (@plate, @items) ON DUPLICATE KEY UPDATE items = @items', {
+				['@plate'] = plate,
+				['@items'] = json.encode(items)
+			})
+			Gloveboxes[plate].isOpen = false
 		end
 	end
 end
