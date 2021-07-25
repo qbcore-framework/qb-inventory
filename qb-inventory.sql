@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS `gloveboxitems` (
 
 CREATE TABLE IF NOT EXISTS `stashitems` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `plate` varchar(255) DEFAULT NULL,
+  `stash` varchar(255) DEFAULT NULL,
   `items` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
   PRIMARY KEY (`stash`),
   KEY `id` (`id`)
