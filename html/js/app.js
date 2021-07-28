@@ -105,11 +105,9 @@ $(document).on('mousedown', '.item-slot', function(event){
                 return;
             }
             toAmount = $(this).data('item').amount;
-            if (ControlPressed) {
-                if (toAmount > 1) {
-                    toAmount = Math.round(toAmount / 2)
+            if (toAmount > 1) {
+                    toAmount = 1
                 }
-            }
             if (CanQuickMove()) {
                 if (toSlot === null) {
                     InventoryError(fromInventory, fromSlot);
