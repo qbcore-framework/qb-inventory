@@ -924,25 +924,29 @@ end
 -- Stash Items
 function GetStashItems(stashId)
 	local items = {}
-	exports.ghmattimysql:executeSync('SELECT items FROM stashitems WHERE stash=@stash', {['@stash'] = stashId}, function(result)
-		if result[1] ~= nil then
-			for k, item in pairs(result) do
-				local itemInfo = QBCore.Shared.Items[item.name:lower()]
-				items[item.slot] = {
-					name = itemInfo["name"],
-					amount = tonumber(item.amount),
-					info = json.decode(item.info) ~= nil and json.decode(item.info) or "",
-					label = itemInfo["label"],
-					description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-					weight = itemInfo["weight"], 
-					type = itemInfo["type"], 
-					unique = itemInfo["unique"], 
-					useable = itemInfo["useable"], 
-					image = itemInfo["image"],
-					slot = item.slot,
-				}
+	QBCore.Functions.ExecuteSql(true, "SELECT * FROM `stashitems` WHERE `stash` = '"..stashId.."'", function(result)
+		if result[1] ~= nil then 
+			if result[1].items ~= nil then
+				result[1].items = json.decode(result[1].items)
+				if result[1].items ~= nil then 
+					for k, item in pairs(result[1].items) do
+						local itemInfo = QBCore.Shared.Items[item.name:lower()]
+						items[item.slot] = {
+							name = itemInfo["name"],
+							amount = tonumber(item.amount),
+							info = item.info ~= nil and item.info or "",
+							label = itemInfo["label"],
+							description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
+							weight = itemInfo["weight"], 
+							type = itemInfo["type"], 
+							unique = itemInfo["unique"], 
+							useable = itemInfo["useable"], 
+							image = itemInfo["image"],
+							slot = item.slot,
+						}
+					end
+				end
 			end
-			exports.ghmattimysql:execute('DELETE FROM stashitems WHERE stash=@stash', {['@stash'] = stashId})
 		end
 	end)
 	return items
@@ -1054,25 +1058,29 @@ end
 -- Trunk items
 function GetOwnedVehicleItems(plate)
 	local items = {}
-	exports.ghmattimysql:executeSync('SELECT items FROM trunkitems WHERE plate=@plate', {['@plate'] = plate}, function(result)
+	QBCore.Functions.ExecuteSql(true, "SELECT * FROM `trunkitems` WHERE `plate` = '"..plate.."'", function(result)
 		if result[1] ~= nil then
-			for k, item in pairs(result) do
-				local itemInfo = QBCore.Shared.Items[item.name:lower()]
-				items[item.slot] = {
-					name = itemInfo["name"],
-					amount = tonumber(item.amount),
-					info = json.decode(item.info) ~= nil and json.decode(item.info) or "",
-					label = itemInfo["label"],
-					description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-					weight = itemInfo["weight"], 
-					type = itemInfo["type"], 
-					unique = itemInfo["unique"], 
-					useable = itemInfo["useable"], 
-					image = itemInfo["image"],
-					slot = item.slot,
-				}
+			if result[1].items ~= nil then
+				result[1].items = json.decode(result[1].items)
+				if result[1].items ~= nil then 
+					for k, item in pairs(result[1].items) do
+						local itemInfo = QBCore.Shared.Items[item.name:lower()]
+						items[item.slot] = {
+							name = itemInfo["name"],
+							amount = tonumber(item.amount),
+							info = item.info ~= nil and item.info or "",
+							label = itemInfo["label"],
+							description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
+							weight = itemInfo["weight"], 
+							type = itemInfo["type"], 
+							unique = itemInfo["unique"], 
+							useable = itemInfo["useable"], 
+							image = itemInfo["image"],
+							slot = item.slot,
+						}
+					end
+				end
 			end
-			exports.ghmattimysql:execute('DELETE FROM trunkitems WHERE plate=@plate', {['@plate'] = plate})
 		end
 	end)
 	return items
@@ -1172,25 +1180,29 @@ end
 -- Glovebox items
 function GetOwnedVehicleGloveboxItems(plate)
 	local items = {}
-	exports.ghmattimysql:executeSync('SELECT items FROM gloveboxitems WHERE plate=@plate', {['@plate'] = plate}, function(result)
-		if result[1] ~= nil then
-			for k, item in pairs(result) do
-				local itemInfo = QBCore.Shared.Items[item.name:lower()]
-				items[item.slot] = {
-					name = itemInfo["name"],
-					amount = tonumber(item.amount),
-					info = json.decode(item.info) ~= nil and json.decode(item.info) or "",
-					label = itemInfo["label"],
-					description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-					weight = itemInfo["weight"], 
-					type = itemInfo["type"], 
-					unique = itemInfo["unique"], 
-					useable = itemInfo["useable"], 
-					image = itemInfo["image"],
-					slot = item.slot,
-				}
+	QBCore.Functions.ExecuteSql(true, "SELECT * FROM `gloveboxitems` WHERE `plate` = '"..plate.."'", function(result)
+		if result[1] ~= nil then 
+			if result[1].items ~= nil then
+				result[1].items = json.decode(result[1].items)
+				if result[1].items ~= nil then 
+					for k, item in pairs(result[1].items) do
+						local itemInfo = QBCore.Shared.Items[item.name:lower()]
+						items[item.slot] = {
+							name = itemInfo["name"],
+							amount = tonumber(item.amount),
+							info = item.info ~= nil and item.info or "",
+							label = itemInfo["label"],
+							description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
+							weight = itemInfo["weight"], 
+							type = itemInfo["type"], 
+							unique = itemInfo["unique"], 
+							useable = itemInfo["useable"], 
+							image = itemInfo["image"],
+							slot = item.slot,
+						}
+					end
+				end
 			end
-			exports.ghmattimysql:execute('DELETE FROM gloveboxitems WHERE plate=@plate', {['@plate'] = plate})
 		end
 	end)
 	return items
