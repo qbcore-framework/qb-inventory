@@ -957,7 +957,7 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                             qualityLabel = (fromData.info.quality);
                         }
                         if (fromData.info.quality == 0) {
-                            qualityLabel = "GEBROKEN";
+                            qualityLabel = "BROKEN";
                         }
                         $toInv.find("[data-slot=" + $toSlot + "]").find(".item-slot-quality-bar").css({
                             "width": qualityLabel + "%",
@@ -1099,7 +1099,7 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                             qualityLabel = (newDataTo.info.quality);
                         }
                         if (newDataTo.info.quality == 0) {
-                            qualityLabel = "GEBROKEN";
+                            qualityLabel = "BROKEN";
                         }
                         $toInv.find("[data-slot=" + $toSlot + "]").find(".item-slot-quality-bar").css({
                             "width": qualityLabel + "%",
@@ -1163,7 +1163,7 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                                 qualityLabel = (newDataFrom.info.quality);
                             }
                             if (newDataFrom.info.quality == 0) {
-                                qualityLabel = "GEBROKEN";
+                                qualityLabel = "BROKEN";
                             }
                             $fromInv.find("[data-slot=" + $fromSlot + "]").find(".item-slot-quality-bar").css({
                                 "width": qualityLabel + "%",
@@ -1263,7 +1263,7 @@ var requiredItemOpen = false;
                     qualityLabel = (item.info.quality);
                 }
                 if (item.info.quality == 0) {
-                    qualityLabel = "GEBROKEN";
+                    qualityLabel = "BROKEN";
                     if (!IsOtherInventory) {
                         if (!IsHotbar) {
                             $(".player-inventory").find("[data-slot=" + item.slot + "]").find(".item-slot-quality-bar").css({
