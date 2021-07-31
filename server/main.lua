@@ -444,6 +444,10 @@ AddEventHandler('inventory:server:SetInventoryData', function(fromInventory, toI
 					--Player.PlayerData.items[fromSlot] = toItemData
 					local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
 					local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
+					if toItemData.name == fromItemData.name and toItemData.unique and fromItemData.unique then
+						RemoveFromStash(stashId, toSlot, itemInfo["name"], toAmount)
+						Player.Functions.AddItem(toItemData.name, toAmount, fromSlot, toItemData.info)
+					end
 					if toItemData.name ~= fromItemData.name then
 						--RemoveFromStash(stashId, fromSlot, itemInfo["name"], toAmount)
 						RemoveFromStash(stashId, toSlot, itemInfo["name"], toAmount)
@@ -659,6 +663,10 @@ AddEventHandler('inventory:server:SetInventoryData', function(fromInventory, toI
 				if toItemData ~= nil then
 					local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
 					local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
+					if toItemData.name == fromItemData.name and toItemData.unique and fromItemData.unique then
+						Player.Functions.RemoveItem(toItemData.name, toAmount, toSlot)
+						AddToStash(stashId, fromSlot, toSlot, itemInfo["name"], toAmount, toItemData.info)
+					end
 					if toItemData.name ~= fromItemData.name then
 						Player.Functions.RemoveItem(toItemData.name, toAmount, toSlot)
 						AddToStash(stashId, fromSlot, toSlot, itemInfo["name"], toAmount, toItemData.info)
