@@ -20,6 +20,7 @@ var IsDragging = false;
 
 $(document).on('keydown', function() {
     switch(event.keyCode) {
+        if (event.repeat) { return }
         case 27: // ESC
             Inventory.Close();
             break;
