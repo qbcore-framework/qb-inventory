@@ -449,6 +449,24 @@ AddEventHandler("inventory:client:UseSnowball", function(amount)
     SetCurrentPedWeapon(ped, GetHashKey("weapon_snowball"), true)
 end)
 
+RegisterNetEvent("inventory:client:useThrowables")
+AddEventHandler("inventory:client:useThrowables", function(name, amount)
+    local ped = PlayerPedId()
+    GiveWeaponToPed(ped, GetHashKey(name), amount, false, false)
+    SetPedAmmo(ped, GetHashKey(name), amount)
+    SetCurrentPedWeapon(ped, GetHashKey(name), true)
+    TriggerServerEvent('QBCore:Server:RemoveItem', name, 1)
+end)
+
+function isThrowable(name)
+    for a = 1, #Config.Throwables do
+        if name == Config.Throwables[a] then
+            return true
+        end 
+    end
+    return false
+end
+
 RegisterNetEvent("inventory:client:UseWeapon")
 AddEventHandler("inventory:client:UseWeapon", function(weaponData, shootbool)
     local ped = PlayerPedId()
@@ -458,20 +476,8 @@ AddEventHandler("inventory:client:UseWeapon", function(weaponData, shootbool)
         RemoveAllPedWeapons(ped, true)
         TriggerEvent('weapons:client:SetCurrentWeapon', nil, shootbool)
         currentWeapon = nil
-    elseif weaponName == "weapon_stickybomb" then
-        GiveWeaponToPed(ped, GetHashKey(weaponName), ammo, false, false)
-        SetPedAmmo(ped, GetHashKey(weaponName), 1)
-        SetCurrentPedWeapon(ped, GetHashKey(weaponName), true)
-        TriggerServerEvent('QBCore:Server:RemoveItem', weaponName, 1)
-        TriggerEvent('weapons:client:SetCurrentWeapon', weaponData, shootbool)
-        currentWeapon = weaponName
-    elseif weaponName == "weapon_snowball" then
-        GiveWeaponToPed(ped, GetHashKey(weaponName), ammo, false, false)
-        SetPedAmmo(ped, GetHashKey(weaponName), 10)
-        SetCurrentPedWeapon(ped, GetHashKey(weaponName), true)
-        TriggerServerEvent('QBCore:Server:RemoveItem', weaponName, 1)
-        TriggerEvent('weapons:client:SetCurrentWeapon', weaponData, shootbool)
-        currentWeapon = weaponName
+    elseif isThrowable(weaponName) then
+        TriggerEvent("inventory:client:useThrowables", weaponName, 2)
     else
         TriggerEvent('weapons:client:SetCurrentWeapon', weaponData, shootbool)
         QBCore.Functions.TriggerCallback("weapon:server:GetWeaponAmmo", function(result)
