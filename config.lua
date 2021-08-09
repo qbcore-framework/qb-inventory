@@ -23,33 +23,66 @@ Config.RandomInt = function(length)
 	end
 end
 
-Config.VendingObjects = {
-    "prop_vend_soda_01",
-    "prop_vend_soda_02",
-    "prop_vend_water_01"
-}
-
 Config.BinObjects = {
     "prop_bin_05a",
 }
 
-Config.VendingItem = {
+Config.VendingDrinksItem = {
     [1] = {
         name = "kurkakola",
-        price = 4,
-        amount = 50,
+        price = 7,
+        amount = 15,
         info = {},
         type = "item",
         slot = 1,
     },
     [2] = {
         name = "water_bottle",
-        price = 4,
-        amount = 50,
+        price = 5,
+        amount = 15,
         info = {},
         type = "item",
         slot = 2,
     },
+}
+
+Config.VendingFoodItems = {
+    [1] = {
+        name = "twerks_candy",
+        price = 4,
+        amount = 15,
+        info = {},
+        type = "item",
+        slot = 1,
+    },
+    [2] = {
+        name = "snikkel_candy",
+        price = 4,
+        amount = 15,
+        info = {},
+        type = "item",
+        slot = 2,
+    },
+}
+
+Config.VendingCoffeeItems = {
+    [1] = {
+        name = "coffee",
+        price = 5,
+        amount = 15,
+        info = {},
+        type = "item",
+        slot = 1,
+    },
+}
+
+Config.VendingObjects = {
+	{"prop_vend_soda_01", Config.VendingDrinksItem, 'Máquina de bebidas'},
+	{"prop_vend_soda_02", Config.VendingDrinksItem, 'Máquina de bebidas'},
+	{"prop_vend_water_01", Config.VendingDrinksItem, 'Máquina de bebidas'},
+	{1114264700, Config.VendingDrinksItem, 'Máquina de bebidas'},
+	{-654402915, Config.VendingFoodItems, 'Máquina de snacks'},
+	{690372739, Config.VendingCoffeeItems, 'Máquina de cafe'}
 }
 
 Config.CraftingItems = {
