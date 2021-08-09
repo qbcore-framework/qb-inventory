@@ -69,33 +69,66 @@ Config.RandomInt = function(length) -- Don't touch
 	end
 end
 
-Config.VendingObjects = { -- Props which will be considered as vending machines
-    "prop_vend_soda_01",
-    "prop_vend_soda_02",
-    "prop_vend_water_01"
-}
-
 Config.BinObjects = { --  Props which will be considered as trash bins
     "prop_bin_05a",
 }
 
-Config.VendingItem = { -- Shop inventory for vending machines
+Config.VendingDrinksItem = { -- Shop inventory for vending machines
     [1] = {
-        name = "kurkakola", -- Item name
-        price = 4, -- Price per item
-        amount = 50, -- Stock amount
+        name = "kurkakola",
+        price = 7,
+        amount = 15,
         info = {},
         type = "item",
         slot = 1, -- Inventory slot item will be displayed
     },
     [2] = {
         name = "water_bottle",
-        price = 4,
-        amount = 50,
+        price = 5,
+        amount = 15,
         info = {},
         type = "item",
         slot = 2,
     },
+}
+
+Config.VendingFoodItems = {
+    [1] = {
+        name = "twerks_candy",
+        price = 4,
+        amount = 15,
+        info = {},
+        type = "item",
+        slot = 1,
+    },
+    [2] = {
+        name = "snikkel_candy",
+        price = 4,
+        amount = 15,
+        info = {},
+        type = "item",
+        slot = 2,
+    },
+}
+
+Config.VendingCoffeeItems = {
+    [1] = {
+        name = "coffee",
+        price = 5,
+        amount = 15,
+        info = {},
+        type = "item",
+        slot = 1,
+    },
+}
+
+Config.VendingObjects = { -- Props which will be considered as vending machines
+	{"prop_vend_soda_01", Config.VendingDrinksItem, 'Máquina de bebidas'}, -- Prop, MachineType, Name
+	{"prop_vend_soda_02", Config.VendingDrinksItem, 'Máquina de bebidas'},
+	{"prop_vend_water_01", Config.VendingDrinksItem, 'Máquina de bebidas'},
+	{1114264700, Config.VendingDrinksItem, 'Máquina de bebidas'},
+	{-654402915, Config.VendingFoodItems, 'Máquina de snacks'},
+	{690372739, Config.VendingCoffeeItems, 'Máquina de cafe'}
 }
 
 Config.CraftingItems = { -- Crafting recipes
