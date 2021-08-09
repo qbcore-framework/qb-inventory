@@ -52,20 +52,30 @@ AddEventHandler('weapons:client:SetCurrentWeapon', function(data, bool)
         CurrentWeaponData = {}
     end
 end)
-
 function GetClosestVending()
-    local ped = PlayerPedId()
+    local ped = GetPlayerPed(-1)
     local pos = GetEntityCoords(ped)
-    local object = nil
+    local object, dst, typ = nil, 0.0, ''
     for _, machine in pairs(Config.VendingObjects) do
-        local ClosestObject = GetClosestObjectOfType(pos.x, pos.y, pos.z, 0.75, GetHashKey(machine), 0, 0, 0)
+        local ClosestObject
+        if _ >= 4 then
+            ClosestObject = GetClosestObjectOfType(pos.x, pos.y, pos.z, 50.0, machine[1], 0, 0, 0)
+        else
+            ClosestObject = GetClosestObjectOfType(pos.x, pos.y, pos.z, 50.0, GetHashKey(machine[1]), 0, 0, 0)
+        end
         if ClosestObject ~= 0 and ClosestObject ~= nil then
             if object == nil then
                 object = ClosestObject
+                dst = #(pos - GetEntityCoords(ClosestObject))
+                typ = machine
+            elseif #(pos - GetEntityCoords(ClosestObject)) < dst then
+                object = ClosestObject
+                dst = #(pos - GetEntityCoords(ClosestObject))
+                typ = machine
             end
         end
     end
-    return object
+    return object, typ
 end
 
 function DrawText3Ds(x, y, z, text)
@@ -117,7 +127,6 @@ RegisterCommand('inventory', function()
             if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() then
                 local ped = PlayerPedId()
                 local curVeh = nil
-                local VendingMachine = GetClosestVending()
 
                 -- Is Player In Vehicle
 
@@ -203,17 +212,44 @@ RegisterCommand('inventory', function()
                     TriggerServerEvent("inventory:server:OpenInventory", "glovebox", CurrentGlovebox)
                 elseif CurrentDrop ~= 0 then
                     TriggerServerEvent("inventory:server:OpenInventory", "drop", CurrentDrop)
-                elseif VendingMachine ~= nil then
-                    local ShopItems = {}
-                    ShopItems.label = "Vending Machine"
-                    ShopItems.items = Config.VendingItem
-                    ShopItems.slots = #Config.VendingItem
-                    TriggerServerEvent("inventory:server:OpenInventory", "shop", "Vendingshop_"..math.random(1, 99), ShopItems)
                 else
                     TriggerServerEvent("inventory:server:OpenInventory")
                 end
             end    
         end)
+    end
+end)
+
+Citizen.CreateThread(function()
+    while true do
+        local ped = GetPlayerPed(-1)
+        local pos = GetEntityCoords(ped)
+        local inRange = false
+        local VendingMachine, typ = GetClosestVending()
+
+        if VendingMachine ~= nil then
+            local VendingPos = GetEntityCoords(VendingMachine)
+            local Distance = GetDistanceBetweenCoords(pos, VendingPos.x, VendingPos.y, VendingPos.z, true)
+            if Distance < 4 then
+                inRange = true
+                if Distance < 1.5 then
+                    DrawText3Ds(VendingPos.x, VendingPos.y, VendingPos.z, '~r~[E]~w~ ' .. typ[3])
+                    if IsControlJustPressed(0, 38) then
+                        local ShopItems = {}
+                        ShopItems.label = typ[3]
+                        ShopItems.items = typ[2]
+                        ShopItems.slots = #typ[2]
+                        TriggerServerEvent("inventory:server:OpenInventory", "shop", "Vendingshop_"..math.random(1, 99), ShopItems)
+                    end
+                end
+            end
+        end
+
+        if not inRange then
+            Citizen.Wait(1000)
+        end
+
+        Citizen.Wait(1)
     end
 end)
 
