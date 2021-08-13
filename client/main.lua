@@ -625,9 +625,11 @@ RegisterNUICallback("CloseInventory", function(data, cb)
         TriggerServerEvent("inventory:server:SaveInventory", "drop", CurrentDrop)
         CurrentDrop = 0
     end
+    TriggerEvent('inventory:client:UpdatePlayerInventory', source, false)
     SetNuiFocus(false, false)
     inInventory = false
 end)
+
 RegisterNUICallback("UseItem", function(data, cb)
     TriggerServerEvent("inventory:server:UseItem", data.inventory, data.item)
 end)
