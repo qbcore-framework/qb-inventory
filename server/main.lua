@@ -1420,7 +1420,7 @@ QBCore.Commands.Add("resetinv", "Reset Inventory (Admin Only)", {{name="type", h
 			TriggerClientEvent('QBCore:Notify', source,  "Not a valid type..", "error")
 		end
 	else
-		TriggerClientEvent('QBCore:Notify', source,  "Argumenten not filled out correctly..", "error")
+		TriggerClientEvent('QBCore:Notify', source,  "Arguments not filled out correctly..", "error")
 	end
 end, "admin")
 
