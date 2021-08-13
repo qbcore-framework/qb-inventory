@@ -307,11 +307,6 @@ Citizen.CreateThread(function()
     end
 end)
 
-RegisterNetEvent("QBCore:Client:OnPlayerLoaded")
-AddEventHandler("QBCore:Client:OnPlayerLoaded", function()
-    --TriggerServerEvent("inventory:server:LoadDrops")
-end)
-
 RegisterNetEvent('inventory:server:RobPlayer')
 AddEventHandler('inventory:server:RobPlayer', function(TargetId)
     SendNUIMessage({
@@ -426,7 +421,7 @@ AddEventHandler("inventory:client:PickupSnowballs", function()
     local ped = PlayerPedId()
     LoadAnimDict('anim@mp_snowball')
     TaskPlayAnim(ped, 'anim@mp_snowball', 'pickup_snowball', 3.0, 3.0, -1, 0, 1, 0, 0, 0)
-    QBCore.Functions.Progressbar("pickupsnowball", "Sneeuwballen oprapen..", 1500, false, true, {
+    QBCore.Functions.Progressbar("pickupsnowball", "Collecting snowballs..", 1500, false, true, {
         disableMovement = true,
         disableCarMovement = true,
         disableMouse = false,
@@ -666,7 +661,7 @@ RegisterNUICallback('combineWithAnim', function(data)
         TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items[combineData.reward], 'add')
     end, function() -- Cancel
         StopAnimTask(ped, aDict, aLib, 1.0)
-        QBCore.Functions.Notify("Mislukt!", "error")
+        QBCore.Functions.Notify("Failed!", "error")
     end)
 end)
 
