@@ -1508,14 +1508,13 @@ end)
 
 QBCore.Functions.CreateUseableItem("driver_license", function(source, item)
 	for k, v in pairs(QBCore.Functions.GetPlayers()) do
-		local character = QBCore.Functions.GetPlayer(source)
 		local PlayerPed = GetPlayerPed(source)
 		local TargetPed = GetPlayerPed(v)
 		local dist = #(GetEntityCoords(PlayerPed) - GetEntityCoords(TargetPed))
 		if dist < 3.0 then
 			TriggerClientEvent('chat:addMessage', v,  {
 				template = '<div class="chat-message advert"><div class="chat-message-body"><strong>{0}:</strong><br><br> <strong>First Name:</strong> {1} <br><strong>Last Name:</strong> {2} <br><strong>Birth Date:</strong> {3} <br><strong>Licenses:</strong> {4}</div></div>',
-				args = {'Drivers License', character.PlayerData.charinfo.firstname, character.PlayerData.charinfo.lastname, character.PlayerData.charinfo.birthdate, item.info.type}
+				args = {'Drivers License', item.info.firstname, item.info.lastname, item.info.birthdate, item.info.type}
 			})
 		end
 	end
@@ -1523,18 +1522,17 @@ end)
 
 QBCore.Functions.CreateUseableItem("id_card", function(source, item)
 	for k, v in pairs(QBCore.Functions.GetPlayers()) do
-		local character = QBCore.Functions.GetPlayer(source)
 		local PlayerPed = GetPlayerPed(source)
 		local TargetPed = GetPlayerPed(v)
 		local dist = #(GetEntityCoords(PlayerPed) - GetEntityCoords(TargetPed))
 		if dist < 3.0 then
 			local gender = "Man"
-			if character.PlayerData.charinfo.gender == 1 then
+			if item.info.gender == 1 then
 				gender = "Woman"
 			end
 			TriggerClientEvent('chat:addMessage', v,  {
 				template = '<div class="chat-message advert"><div class="chat-message-body"><strong>{0}:</strong><br><br> <strong>Civ ID:</strong> {1} <br><strong>First Name:</strong> {2} <br><strong>Last Name:</strong> {3} <br><strong>Birthdate:</strong> {4} <br><strong>Gender:</strong> {5} <br><strong>Nationality:</strong> {6}</div></div>',
-				args = {'ID Card', character.PlayerData.citizenid, character.PlayerData.charinfo.firstname, character.PlayerData.charinfo.lastname, character.PlayerData.charinfo.birthdate, gender, character.PlayerData.charinfo.nationality}
+				args = {'ID Card', item.info.citizenid, item.info.firstname, item.info.lastname,item.info.birthdate, gender, item.info.nationality}
 			})
 		end
 	end
