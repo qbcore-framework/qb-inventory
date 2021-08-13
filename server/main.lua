@@ -1394,7 +1394,7 @@ function CreateNewDrop(source, fromSlot, toSlot, itemAmount)
 			TriggerClientEvent('Radio.Set', source, false)
 		end
 	else
-		TriggerClientEvent("QBCore:Notify", src, "You don't have this item!", "error")
+		TriggerClientEvent("QBCore:Notify", source, "You don't have this item!", "error")
 		return
 	end
 end
