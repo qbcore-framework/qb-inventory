@@ -112,7 +112,7 @@ end)
 
 -- Inventory Main Thread
 RegisterCommand('inventory', function()
-    if not isCrafting then
+    if not isCrafting and not inInventory then
         QBCore.Functions.GetPlayerData(function(PlayerData)
             if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() then
                 local ped = PlayerPedId()
