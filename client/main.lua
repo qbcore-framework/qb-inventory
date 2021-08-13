@@ -628,7 +628,7 @@ RegisterNUICallback("CloseInventory", function(data, cb)
     SetNuiFocus(false, false)
     inInventory = false
     Citizen.Wait(300)
-    TriggerEvent('inventory:client:UpdatePlayerInventory', source, false)
+    TriggerEvent('inventory:client:UpdatePlayerInventory', false)
 end)
 
 RegisterNUICallback("UseItem", function(data, cb)
