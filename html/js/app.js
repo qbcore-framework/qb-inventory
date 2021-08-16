@@ -19,6 +19,7 @@ var selectedItem = null;
 var IsDragging = false;
 
 $(document).on('keydown', function() {
+    if (event.repeat) { return }
     switch(event.keyCode) {
         case 27: // ESC
             Inventory.Close();
