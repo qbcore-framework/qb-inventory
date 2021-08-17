@@ -1566,7 +1566,7 @@ var requiredItemOpen = false;
         if (data.type == "add") {
             type = "Received";
         } else if (data.type == "remove") { 
-            type = "Deleted";
+            type = "Removed";
         }
 
         var $itembox = $(".itembox-container.template").clone();
@@ -1627,7 +1627,7 @@ var requiredItemOpen = false;
                     Inventory.ToggleHotbar(event.data);
                     break;
                 case "RobMoney":
-                    $(".inv-options-list").append('<div class="inv-option-item" id="rob-money"><p>NEEM GELD</p></div>');
+                    $(".inv-options-list").append('<div class="inv-option-item" id="rob-money"><p>TAKE MONEY</p></div>');
                     $("#rob-money").data('TargetId', event.data.TargetId);
                     break;
             }
