@@ -1321,7 +1321,7 @@ var requiredItemOpen = false;
             $(".requiredItem-container").hide();
             requiredItemOpen = false;
         }
-
+        $("#player-inv-label").html(data.firstname+ " " +data.lastname);
         $("#qbcore-inventory").fadeIn(300);
         if(data.other != null && data.other != "") {
             $(".other-inventory").attr("data-inventory", data.other.name);
