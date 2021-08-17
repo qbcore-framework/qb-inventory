@@ -344,6 +344,8 @@ AddEventHandler("inventory:client:OpenInventory", function(PlayerAmmo, inventory
             maxweight = QBCore.Config.Player.MaxWeight,
             Ammo = PlayerAmmo,
             maxammo = Config.MaximumAmmoValues,
+	    firstname = QBCore.Functions.GetPlayerData().charinfo.firstname,
+            lastname = QBCore.Functions.GetPlayerData().charinfo.lastname,
         })
         inInventory = true
     end
