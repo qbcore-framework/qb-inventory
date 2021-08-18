@@ -9,14 +9,13 @@
 - [qb-shops](https://github.com/qbcore-framework/qb-shops) - Needed in order to add shops
 
 ## Screenshots
-![General](https://imgur.com/cQWrQ4L.png)
-![ID Card](https://imgur.com/YyLmgBN.png)
-![Weapon](https://imgur.com/4Egycg6.png)
-![Shop](https://imgur.com/kRgEMVk.png)
-![Vending Machine](https://imgur.com/lSwba9S.png)
-![Attachment Crafting](https://imgur.com/dEwa4pI.png)
-![Glovebox](https://imgur.com/IXaODb2.png)
-![Trunk](https://imgur.com/pLmK0iV.png)
+![General](https://i.imgur.com/GR0MDFN.png)
+![ID Card](https://i.imgur.com/C6gAOWi.png)
+![Weapon](https://i.imgur.com/RbCvHJb.png)
+![Shop](https://i.imgur.com/7Da7UEX.png)
+![Crafting](https://i.imgur.com/peONaL9.png)
+![Glovebox](https://i.imgur.com/LjDEYWa.png)
+![Trunk](https://i.imgur.com/IoGYZbv.png)
 
 ## Features
 - Item crafting
