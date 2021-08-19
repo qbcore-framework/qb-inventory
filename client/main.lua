@@ -97,7 +97,7 @@ Citizen.CreateThread(function()
                     if (IsBackEngine(GetEntityModel(vehicle))) then
                         drawpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, 2.5, 0)
                     end
-                    QBCore.Functions.DrawText3D(drawpos.x, drawpos.y, drawpos.z, "Trunk")
+                    DrawText3Ds(drawpos.x, drawpos.y, drawpos.z, "Trunk")
                     if #(pos - drawpos) < 2.0 and not IsPedInAnyVehicle(ped) then
                         CurrentVehicle = GetVehicleNumberPlateText(vehicle)
                         showTrunkPos = false
