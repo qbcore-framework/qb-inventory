@@ -23,34 +23,63 @@ Config.RandomInt = function(length)
 	end
 end
 
-Config.VendingObjects = {
-    "prop_vend_soda_01",
-    "prop_vend_soda_02",
-    "prop_vend_water_01"
-}
-
 Config.BinObjects = {
     "prop_bin_05a",
 }
 
-Config.VendingItem = {
+Config.VendingDrinksItem = {
     [1] = {
         name = "kurkakola",
         price = 4,
-        amount = 50,
+        amount = 15,
         info = {},
         type = "item",
         slot = 1,
     },
     [2] = {
-        name = "water_bottle",
+        name = "spirte",
         price = 4,
-        amount = 50,
+        amount = 15,
+        info = {},
+        type = "item",
+        slot = 2,
+    },
+    [3] = {
+        name = "water_bottle",
+        price = 6,
+        amount = 15,
+        info = {},
+        type = "item",
+        slot = 3,
+    },
+}
+
+Config.VendingFoodItems = {
+    [1] = {
+        name = "twerks_candy",
+        price = 4,
+        amount = 15,
+        info = {},
+        type = "item",
+        slot = 1,
+    },
+    [2] = {
+        name = "snikkel_candy",
+        price = 4,
+        amount = 15,
         info = {},
         type = "item",
         slot = 2,
     },
 }
+
+Config.VendingObjects = {
+    {"prop_vend_soda_01", Config.VendingDrinksItem, 'Dede\'s Drinks'},
+    {"prop_vend_soda_02", Config.VendingDrinksItem, 'Dede\'s Drinks'},
+    {"prop_vend_water_01", Config.VendingDrinksItem, 'Dede\'s Drinks'},
+    {1114264700, Config.VendingDrinksItem, 'Dede\'s Drinks'},
+    {-654402915, Config.VendingFoodItems, 'Dede\'s Snacks'}
+}	
 
 Config.CraftingItems = {
     [1] = {
