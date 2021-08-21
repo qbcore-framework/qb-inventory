@@ -37,20 +37,12 @@ Config.VendingDrinksItem = {
         slot = 1,
     },
     [2] = {
-        name = "spirte",
-        price = 4,
-        amount = 15,
-        info = {},
-        type = "item",
-        slot = 2,
-    },
-    [3] = {
         name = "water_bottle",
         price = 6,
         amount = 15,
         info = {},
         type = "item",
-        slot = 3,
+        slot = 2,
     },
 }
 
@@ -62,14 +54,6 @@ Config.VendingFoodItems = {
         info = {},
         type = "item",
         slot = 1,
-    },
-    [2] = {
-        name = "snikkel_candy",
-        price = 4,
-        amount = 15,
-        info = {},
-        type = "item",
-        slot = 2,
     },
 }
 
