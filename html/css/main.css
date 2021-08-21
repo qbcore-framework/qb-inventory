@@ -414,10 +414,9 @@ body {
     margin: 0 auto;
     left: 0;
     right: 0;
-    text-align: right;
+    text-align: left;
     width: 103.4vh;
     height: 23vh;
-    /* background: rgba(20,20,20,0.5); */
 }
 
 .item-info-title {
