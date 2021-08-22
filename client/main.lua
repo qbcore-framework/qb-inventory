@@ -459,14 +459,14 @@ AddEventHandler("inventory:client:UseWeapon", function(weaponData, shootbool)
         TriggerEvent('weapons:client:SetCurrentWeapon', nil, shootbool)
         currentWeapon = nil
     elseif weaponName == "weapon_stickybomb" then
-        GiveWeaponToPed(ped, GetHashKey(weaponName), ammo, false, false)
+        GiveWeaponToPed(ped, GetHashKey(weaponName), 1, false, false)
         SetPedAmmo(ped, GetHashKey(weaponName), 1)
         SetCurrentPedWeapon(ped, GetHashKey(weaponName), true)
         TriggerServerEvent('QBCore:Server:RemoveItem', weaponName, 1)
         TriggerEvent('weapons:client:SetCurrentWeapon', weaponData, shootbool)
         currentWeapon = weaponName
     elseif weaponName == "weapon_snowball" then
-        GiveWeaponToPed(ped, GetHashKey(weaponName), ammo, false, false)
+        GiveWeaponToPed(ped, GetHashKey(weaponName), 10, false, false)
         SetPedAmmo(ped, GetHashKey(weaponName), 10)
         SetCurrentPedWeapon(ped, GetHashKey(weaponName), true)
         TriggerServerEvent('QBCore:Server:RemoveItem', weaponName, 1)
