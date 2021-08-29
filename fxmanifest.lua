@@ -7,7 +7,8 @@ version '1.0.0'
 shared_scripts {
 	'config.lua',
 	'@qb-core/import.lua',
-	'@qb-weapons/config.lua'
+	'@qb-weapons/config.lua',
+    '@qb-crafting/config.lua'
 }
 
 server_script 'server/main.lua'

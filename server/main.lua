@@ -799,7 +799,7 @@ AddEventHandler('inventory:server:SetInventoryData', function(fromInventory, toI
 			end
 		end
 	elseif fromInventory == "crafting" then
-		local itemData = Config.CraftingItems[fromSlot]
+		local itemData = CraftingItems[fromSlot]
 		if hasCraftItems(src, itemData.costs, fromAmount) then
 			TriggerClientEvent("inventory:client:CraftItems", src, itemData.name, itemData.costs, fromAmount, toSlot, itemData.points)
 		else
@@ -807,7 +807,7 @@ AddEventHandler('inventory:server:SetInventoryData', function(fromInventory, toI
 			TriggerClientEvent('QBCore:Notify', src, "You don't have the right items..", "error")
 		end
 	elseif fromInventory == "attachment_crafting" then
-		local itemData = Config.AttachmentCrafting["items"][fromSlot]
+		local itemData = AttachmentCrafting["items"][fromSlot]
 		if hasCraftItems(src, itemData.costs, fromAmount) then
 			TriggerClientEvent("inventory:client:CraftAttachment", src, itemData.name, itemData.costs, fromAmount, toSlot, itemData.points)
 		else
