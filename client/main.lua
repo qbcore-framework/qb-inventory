@@ -487,6 +487,9 @@ AddEventHandler("inventory:client:UseWeapon", function(weaponData, shootbool)
                     GiveWeaponComponentToPed(ped, GetHashKey(weaponName), GetHashKey(attachment.component))
                 end
             end
+            if weaponName == "weapon_petrolcan" then
+                TriggerEvent("fuel:SetJerryCan", weaponData)
+            end
             currentWeapon = weaponName
         end, CurrentWeaponData)
     end
