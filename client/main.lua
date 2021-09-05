@@ -479,7 +479,7 @@ AddEventHandler("inventory:client:UseWeapon", function(weaponData, shootbool)
             if weaponName == "weapon_petrolcan" or weaponName == "weapon_fireextinguisher" then 
                 ammo = 4000 
             end
-            GiveWeaponToPed(ped, GetHashKey(weaponName), ammo, false, false)
+            GiveWeaponToPed(ped, GetHashKey(weaponName), 0, false, false)
             SetPedAmmo(ped, GetHashKey(weaponName), ammo)
             SetCurrentPedWeapon(ped, GetHashKey(weaponName), true)
             if weaponData.info.attachments ~= nil then
