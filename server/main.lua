@@ -23,7 +23,7 @@ RegisterServerEvent("inventory:server:combineItem")
 AddEventHandler('inventory:server:combineItem', function(item, fromItem, toItem)
 	local src = source
 	local ply = QBCore.Functions.GetPlayer(src)
-	if Player.Functions.GetItemByName(toItem) and Player.Functions.GetItemByName(fromItem) then	
+	if Player.Functions.GetItemByName(toItem) ~= nil and Player.Functions.GetItemByName(fromItem) ~= nil then	
 		ply.Functions.RemoveItem(toItem, 1)
 		ply.Functions.RemoveItem(fromItem, 1)
 		ply.Functions.AddItem(item, 1)
