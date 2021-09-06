@@ -23,10 +23,13 @@ RegisterServerEvent("inventory:server:combineItem")
 AddEventHandler('inventory:server:combineItem', function(item, fromItem, toItem)
 	local src = source
 	local ply = QBCore.Functions.GetPlayer(src)
-
-	ply.Functions.AddItem(item, 1)
-	ply.Functions.RemoveItem(fromItem, 1)
-	ply.Functions.RemoveItem(toItem, 1)
+	if Player.Functions.GetItemByName(toItem) and Player.Functions.GetItemByName(fromItem) then	
+		ply.Functions.RemoveItem(toItem, 1)
+		ply.Functions.RemoveItem(fromItem, 1)
+		ply.Functions.AddItem(item, 1)
+	else 
+		TriggerClientEvent("QBCore:Notify", src, "You can't do that from trunk/glovebox/stash")
+	end 
 end)
 
 RegisterServerEvent("inventory:server:CraftItems")
