@@ -1,5 +1,6 @@
 fx_version 'cerulean'
 game 'gta5'
+lua54 'yes'
 
 description 'QB-Inventory'
 version '1.0.0'
@@ -11,11 +12,10 @@ shared_scripts {
 }
 
 server_script 'server/main.lua'
+
 client_script 'client/main.lua'
 
-ui_page {
-	'html/ui.html'
-}
+ui_page 'html/ui.html'
 
 files {
 	'html/ui.html',

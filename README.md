@@ -74,10 +74,6 @@ Config.VendingObjects = { -- Props which will be considered as vending machines
     "prop_vend_water_01"
 }
 
-Config.BinObjects = { --  Props which will be considered as trash bins
-    "prop_bin_05a",
-}
-
 Config.VendingItem = { -- Shop inventory for vending machines
     [1] = {
         name = "kurkakola", -- Item name
@@ -85,16 +81,16 @@ Config.VendingItem = { -- Shop inventory for vending machines
         amount = 50, -- Stock amount
         info = {},
         type = "item",
-        slot = 1, -- Inventory slot item will be displayed
-    },
+        slot = 1 -- Inventory slot item will be displayed
+    }
     [2] = {
         name = "water_bottle",
         price = 4,
         amount = 50,
         info = {},
         type = "item",
-        slot = 2,
-    },
+        slot = 2
+    }
 }
 
 Config.CraftingItems = { -- Crafting recipes
@@ -104,12 +100,12 @@ Config.CraftingItems = { -- Crafting recipes
         info = {},
         costs = { -- Requirements for crafting
             ["metalscrap"] = 22,
-            ["plastic"] = 32,
+            ["plastic"] = 32
         },
         type = "item",
         slot = 1,
         threshold = 0,
-        points = 1,
+        points = 1
     },
     [2] = {
         name = "screwdriverset",
@@ -117,12 +113,12 @@ Config.CraftingItems = { -- Crafting recipes
         info = {},
         costs = {
             ["metalscrap"] = 30,
-            ["plastic"] = 42,
+            ["plastic"] = 42
         },
         type = "item",
         slot = 2,
         threshold = 0,
-        points = 2,
+        points = 2
     },
     [3] = {
         name = "electronickit",
@@ -131,12 +127,12 @@ Config.CraftingItems = { -- Crafting recipes
         costs = {
             ["metalscrap"] = 30,
             ["plastic"] = 45,
-            ["aluminum"] = 28,
+            ["aluminum"] = 28
         },
         type = "item",
         slot = 3,
         threshold = 0,
-        points = 3,
+        points = 3
     },
     [4] = {
         name = "radioscanner",
@@ -145,12 +141,12 @@ Config.CraftingItems = { -- Crafting recipes
         costs = {
             ["electronickit"] = 2,
             ["plastic"] = 52,
-            ["steel"] = 40,
+            ["steel"] = 40
         },
         type = "item",
         slot = 4,
         threshold = 0,
-        points = 4,
+        points = 4
     },
     [5] = {
         name = "gatecrack",
@@ -161,12 +157,12 @@ Config.CraftingItems = { -- Crafting recipes
             ["plastic"] = 50,
             ["aluminum"] = 30,
             ["iron"] = 17,
-            ["electronickit"] = 1,
+            ["electronickit"] = 1
         },
         type = "item",
         slot = 5,
         threshold = 120,
-        points = 5,
+        points = 5
     },
     [6] = {
         name = "handcuffs",
@@ -175,12 +171,12 @@ Config.CraftingItems = { -- Crafting recipes
         costs = {
             ["metalscrap"] = 36,
             ["steel"] = 24,
-            ["aluminum"] = 28,
+            ["aluminum"] = 28
         },
         type = "item",
         slot = 6,
         threshold = 160,
-        points = 6,
+        points = 6
     },
     [7] = {
         name = "repairkit",
@@ -189,12 +185,12 @@ Config.CraftingItems = { -- Crafting recipes
         costs = {
             ["metalscrap"] = 32,
             ["steel"] = 43,
-            ["plastic"] = 61,
+            ["plastic"] = 61
         },
         type = "item",
         slot = 7,
         threshold = 200,
-        points = 7,
+        points = 7
     },
     [8] = {
         name = "pistol_ammo",
@@ -203,12 +199,12 @@ Config.CraftingItems = { -- Crafting recipes
         costs = {
             ["metalscrap"] = 50,
             ["steel"] = 37,
-            ["copper"] = 26,
+            ["copper"] = 26
         },
         type = "item",
         slot = 8,
         threshold = 250,
-        points = 8,
+        points = 8
     },
     [9] = {
         name = "ironoxide",
@@ -216,12 +212,12 @@ Config.CraftingItems = { -- Crafting recipes
         info = {},
         costs = {
             ["iron"] = 60,
-            ["glass"] = 30,
+            ["glass"] = 30
         },
         type = "item",
         slot = 9,
         threshold = 300,
-        points = 9,
+        points = 9
     },
     [10] = {
         name = "aluminumoxide",
@@ -229,12 +225,12 @@ Config.CraftingItems = { -- Crafting recipes
         info = {},
         costs = {
             ["aluminum"] = 60,
-            ["glass"] = 30,
+            ["glass"] = 30
         },
         type = "item",
         slot = 10,
         threshold = 300,
-        points = 10,
+        points = 10
     },
     [11] = {
         name = "armor",
@@ -244,12 +240,12 @@ Config.CraftingItems = { -- Crafting recipes
             ["iron"] = 33,
             ["steel"] = 44,
             ["plastic"] = 55,
-            ["aluminum"] = 22,
+            ["aluminum"] = 22
         },
         type = "item",
         slot = 11,
         threshold = 350,
-        points = 11,
+        points = 11
     },
     [12] = {
         name = "drill",
@@ -259,13 +255,13 @@ Config.CraftingItems = { -- Crafting recipes
             ["iron"] = 50,
             ["steel"] = 50,
             ["screwdriverset"] = 3,
-            ["advancedlockpick"] = 2,
+            ["advancedlockpick"] = 2
         },
         type = "item",
         slot = 12,
         threshold = 1750,
-        points = 12,
-    },
+        points = 12
+    }
 }
 
 Config.AttachmentCrafting = { -- Attachment crafting recipes
@@ -278,12 +274,12 @@ Config.AttachmentCrafting = { -- Attachment crafting recipes
             costs = { -- Requirements for crafting
                 ["metalscrap"] = 140,
                 ["steel"] = 250,
-                ["rubber"] = 60,
+                ["rubber"] = 60
             },
             type = "item",
             slot = 1,
             threshold = 0,
-            points = 1,
+            points = 1
         },
         [2] = {
             name = "pistol_suppressor",
@@ -292,12 +288,12 @@ Config.AttachmentCrafting = { -- Attachment crafting recipes
             costs = {
                 ["metalscrap"] = 165,
                 ["steel"] = 285,
-                ["rubber"] = 75,
+                ["rubber"] = 75
             },
             type = "item",
             slot = 2,
             threshold = 10,
-            points = 2,
+            points = 2
         },
         [3] = {
             name = "rifle_extendedclip",
@@ -307,12 +303,12 @@ Config.AttachmentCrafting = { -- Attachment crafting recipes
                 ["metalscrap"] = 190,
                 ["steel"] = 305,
                 ["rubber"] = 85,
-                ["smg_extendedclip"] = 1,
+                ["smg_extendedclip"] = 1
             },
             type = "item",
             slot = 7,
             threshold = 25,
-            points = 8,
+            points = 8
         },
         [4] = {
             name = "rifle_drummag",
@@ -322,12 +318,12 @@ Config.AttachmentCrafting = { -- Attachment crafting recipes
                 ["metalscrap"] = 205,
                 ["steel"] = 340,
                 ["rubber"] = 110,
-                ["smg_extendedclip"] = 2,
+                ["smg_extendedclip"] = 2
             },
             type = "item",
             slot = 8,
             threshold = 50,
-            points = 8,
+            points = 8
         },
         [5] = {
             name = "smg_flashlight",
@@ -336,12 +332,12 @@ Config.AttachmentCrafting = { -- Attachment crafting recipes
             costs = {
                 ["metalscrap"] = 230,
                 ["steel"] = 365,
-                ["rubber"] = 130,
+                ["rubber"] = 130
             },
             type = "item",
             slot = 3,
             threshold = 75,
-            points = 3,
+            points = 3
         },
         [6] = {
             name = "smg_extendedclip",
@@ -350,12 +346,12 @@ Config.AttachmentCrafting = { -- Attachment crafting recipes
             costs = {
                 ["metalscrap"] = 255,
                 ["steel"] = 390,
-                ["rubber"] = 145,
+                ["rubber"] = 145
             },
             type = "item",
             slot = 4,
             threshold = 100,
-            points = 4,
+            points = 4
         },
         [7] = {
             name = "smg_suppressor",
@@ -364,12 +360,12 @@ Config.AttachmentCrafting = { -- Attachment crafting recipes
             costs = {
                 ["metalscrap"] = 270,
                 ["steel"] = 435,
-                ["rubber"] = 155,
+                ["rubber"] = 155
             },
             type = "item",
             slot = 5,
             threshold = 150,
-            points = 5,
+            points = 5
         },
         [8] = {
             name = "smg_scope",
@@ -378,19 +374,19 @@ Config.AttachmentCrafting = { -- Attachment crafting recipes
             costs = {
                 ["metalscrap"] = 300,
                 ["steel"] = 469,
-                ["rubber"] = 170,
+                ["rubber"] = 170
             },
             type = "item",
             slot = 6,
             threshold = 200,
-            points = 6,
-        },
+            points = 6
+        }
     }
 }
 
-MaxInventorySlots = 41 -- Player inventory slot amount
+Config.MaxInventorySlots = 41 -- Player inventory slot amount
 
-BackEngineVehicles = { -- Vehicles which has its engine on back side of the vehicle
+Config.BackEngineVehicles = { -- Vehicles which has its engine on back side of the vehicle
     'ninef',
     'adder',
     'vagner',
@@ -426,13 +422,6 @@ BackEngineVehicles = { -- Vehicles which has its engine on back side of the vehi
     'stingergt',
     'surfer',
     'surfer2',
-    'comet3',
-}
-
-Config.MaximumAmmoValues = { -- Weapon specific maximum ammo count
-    ["pistol"] = 250,
-    ["smg"] = 250,
-    ["shotgun"] = 200,
-    ["rifle"] = 250,
+    'comet3'
 }
 ```
