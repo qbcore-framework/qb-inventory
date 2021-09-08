@@ -349,6 +349,22 @@ AddEventHandler("inventory:client:OpenInventory", function(PlayerAmmo, inventory
     end
 end)
 
+--GIVE
+RegisterNUICallback("GiveItem", function(data, cb)
+    local player, distance = GetClosestPlayer()
+    if player ~= -1 and distance < 3 then
+        if (data.inventory == 'player') then
+            local playerId = GetPlayerServerId(player)
+            SetCurrentPedWeapon(PlayerPedId(),'WEAPON_UNARMED',true)
+            TriggerServerEvent("inventory:server:GiveItem", playerId, data.inventory, data.item, data.amount)
+        else
+            QBCore.Functions.Notify("You do not own this item!", "error")
+        end
+    else
+        QBCore.Functions.Notify("No one nearby!", "error")
+    end
+end)
+
 RegisterNetEvent("inventory:client:ShowTrunkPos")
 AddEventHandler("inventory:client:ShowTrunkPos", function()
     showTrunkPos = true
