@@ -159,51 +159,52 @@ RegisterCommand('inventory', function()
                 -- Trunk
     
                 if CurrentVehicle ~= nil then
+                    local vehicleClass = GetVehicleClass(curVeh)
                     local maxweight = 0
                     local slots = 0
-                    if GetVehicleClass(curVeh) == 0 then
+                    if vehicleClass == 0 then
                         maxweight = 38000
                         slots = 30
-                    elseif GetVehicleClass(curVeh) == 1 then
+                    elseif vehicleClass == 1 then
                         maxweight = 50000
                         slots = 40
-                    elseif GetVehicleClass(curVeh) == 2 then
+                    elseif vehicleClass == 2 then
                         maxweight = 75000
                         slots = 50
-                    elseif GetVehicleClass(curVeh) == 3 then
+                    elseif vehicleClass == 3 then
                         maxweight = 42000
                         slots = 35
-                    elseif GetVehicleClass(curVeh) == 4 then
+                    elseif vehicleClass == 4 then
                         maxweight = 38000
                         slots = 30
-                    elseif GetVehicleClass(curVeh) == 5 then
+                    elseif vehicleClass == 5 then
                         maxweight = 30000
                         slots = 25
-                    elseif GetVehicleClass(curVeh) == 6 then
+                    elseif vehicleClass == 6 then
                         maxweight = 30000
                         slots = 25
-                    elseif GetVehicleClass(curVeh) == 7 then
+                    elseif vehicleClass == 7 then
                         maxweight = 30000
                         slots = 25
-                    elseif GetVehicleClass(curVeh) == 8 then
+                    elseif vehicleClass == 8 then
                         maxweight = 15000
                         slots = 15
-                    elseif GetVehicleClass(curVeh) == 9 then
+                    elseif vehicleClass == 9 then
                         maxweight = 60000
                         slots = 35
-                    elseif GetVehicleClass(curVeh) == 12 then
+                    elseif vehicleClass == 12 then
                         maxweight = 120000
                         slots = 35
-		    elseif GetVehicleClass(curVeh) == 13 then
+		    elseif vehicleClass == 13 then
                         maxweight = 0
                         slots = 0
-                    elseif GetVehicleClass(curVeh) == 14 then
+                    elseif vehicleClass == 14 then
                         maxweight = 120000
                         slots = 50
-                    elseif GetVehicleClass(curVeh) == 15 then
+                    elseif vehicleClass == 15 then
                         maxweight = 120000
                         slots = 50
-                    elseif GetVehicleClass(curVeh) == 16 then
+                    elseif vehicleClass == 16 then
                         maxweight = 120000
                         slots = 50
                     else
