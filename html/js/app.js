@@ -761,6 +761,34 @@ function handleDragDrop() {
             }
         },
     });
+    
+    $("#item-give").droppable({
+        hoverClass: "button-hover",
+        drop: function(event, ui) {
+            setTimeout(function() {
+                IsDragging = false;
+            }, 300);
+            fromData = ui.draggable.data("item");
+            fromInventory = ui.draggable.parent().attr("data-inventory");
+            amount = $("#item-amount").val();
+            if (amount == 0) {
+                amount = fromData.amount;
+            }
+            if (fromData.useable) {
+                if (fromData.shouldClose) {
+                    Inventory.Close();
+                }
+                $.post(
+                    "https://qb-inventory/GiveItem",
+                    JSON.stringify({
+                        inventory: fromInventory,
+                        item: fromData,
+                        amount: parseInt(amount),
+                    })
+                );
+            }
+        },
+    });
 
     $("#item-drop").droppable({
         hoverClass: "item-slot-hoverClass",
