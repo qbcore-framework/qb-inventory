@@ -774,19 +774,14 @@ function handleDragDrop() {
             if (amount == 0) {
                 amount = fromData.amount;
             }
-            if (fromData.useable) {
-                if (fromData.shouldClose) {
-                    Inventory.Close();
-                }
-                $.post(
-                    "https://qb-inventory/GiveItem",
-                    JSON.stringify({
-                        inventory: fromInventory,
-                        item: fromData,
-                        amount: parseInt(amount),
-                    })
-                );
-            }
+            $.post(
+                "https://qb-inventory/GiveItem",
+                JSON.stringify({
+                    inventory: fromInventory,
+                    item: fromData,
+                    amount: parseInt(amount),
+                })
+            );
         },
     });
 
