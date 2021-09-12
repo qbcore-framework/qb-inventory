@@ -1,8 +1,8 @@
-Drops = {}
-Trunks = {}
-Gloveboxes = {}
-Stashes = {}
-ShopItems = {}
+local Drops = {}
+local Trunks = {}
+local Gloveboxes = {}
+local Stashes = {}
+local ShopItems = {}
 
 RegisterServerEvent("inventory:server:LoadDrops")
 AddEventHandler('inventory:server:LoadDrops', function()
