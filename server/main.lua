@@ -887,7 +887,7 @@ function hasCraftItems(source, CostItems, amount)
 end
 
 function IsVehicleOwned(plate)
-    local result = exports.ghmattimysql:scalarSync('SELECT 1 from player_vehicles WHERE plate = @plate', {
+    local result = exports.oxmysql:scalarSync('SELECT 1 from player_vehicles WHERE plate = @plate', {
         ['@plate'] = plate
     })
     if result then return true else return false end
@@ -930,7 +930,7 @@ end
 -- Stash Items
 function GetStashItems(stashId)
 	local items = {}
-	local result = exports.ghmattimysql:executeSync('SELECT items FROM stashitems WHERE stash=@stash', {['@stash'] = stashId})
+	local result = exports.oxmysql:fetchSync('SELECT items FROM stashitems WHERE stash=@stash', {['@stash'] = stashId})
 	if result[1] ~= nil then 
 		if result[1].items ~= nil then
 			result[1].items = json.decode(result[1].items)
@@ -963,7 +963,7 @@ end)
 
 RegisterServerEvent('qb-inventory:server:SaveStashItems')
 AddEventHandler('qb-inventory:server:SaveStashItems', function(stashId, items)
-    exports.ghmattimysql:execute('INSERT INTO stashitems (stash, items) VALUES (@stash, @items) ON DUPLICATE KEY UPDATE items = @items', {
+    exports.oxmysql:insert('INSERT INTO stashitems (stash, items) VALUES (@stash, @items) ON DUPLICATE KEY UPDATE items = @items', {
         ['@stash'] = stashId,
         ['@items'] = json.encode(items)
     })
@@ -975,7 +975,7 @@ function SaveStashItems(stashId, items)
 			for slot, item in pairs(items) do
 				item.description = nil
 			end
-			exports.ghmattimysql:execute('INSERT INTO stashitems (stash, items) VALUES (@stash, @items) ON DUPLICATE KEY UPDATE items = @items', {
+			exports.oxmysql:insert('INSERT INTO stashitems (stash, items) VALUES (@stash, @items) ON DUPLICATE KEY UPDATE items = @items', {
 				['@stash'] = stashId,
 				['@items'] = json.encode(items)
 			})
@@ -1063,7 +1063,7 @@ end
 -- Trunk items
 function GetOwnedVehicleItems(plate)
 	local items = {}
-	local result = exports.ghmattimysql:executeSync('SELECT items FROM trunkitems WHERE plate=@plate', {['@plate'] = plate})
+	local result = exports.oxmysql:fetchSync('SELECT items FROM trunkitems WHERE plate=@plate', {['@plate'] = plate})
 	if result[1] ~= nil then
 		if result[1].items ~= nil then
 			result[1].items = json.decode(result[1].items)
@@ -1096,7 +1096,7 @@ function SaveOwnedVehicleItems(plate, items)
 			for slot, item in pairs(items) do
 				item.description = nil
 			end
-			exports.ghmattimysql:execute('INSERT INTO trunkitems (plate, items) VALUES (@plate, @items) ON DUPLICATE KEY UPDATE items = @items', {
+			exports.oxmysql:insert('INSERT INTO trunkitems (plate, items) VALUES (@plate, @items) ON DUPLICATE KEY UPDATE items = @items', {
 				['@plate'] = plate,
 				['@items'] = json.encode(items)
 			})
@@ -1184,7 +1184,7 @@ end
 -- Glovebox items
 function GetOwnedVehicleGloveboxItems(plate)
 	local items = {}
-	local result = exports.ghmattimysql:executeSync('SELECT items FROM gloveboxitems WHERE plate=@plate', {['@plate'] = plate})
+	local result = exports.oxmysql:fetchSync('SELECT items FROM gloveboxitems WHERE plate=@plate', {['@plate'] = plate})
 	if result[1] ~= nil then 
 		if result[1].items ~= nil then
 			result[1].items = json.decode(result[1].items)
@@ -1217,7 +1217,7 @@ function SaveOwnedGloveboxItems(plate, items)
 			for slot, item in pairs(items) do
 				item.description = nil
 			end
-			exports.ghmattimysql:execute('INSERT INTO gloveboxitems (plate, items) VALUES (@plate, @items) ON DUPLICATE KEY UPDATE items = @items', {
+			exports.oxmysql:insert('INSERT INTO gloveboxitems (plate, items) VALUES (@plate, @items) ON DUPLICATE KEY UPDATE items = @items', {
 				['@plate'] = plate,
 				['@items'] = json.encode(items)
 			})
