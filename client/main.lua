@@ -1,6 +1,5 @@
-inInventory = false
-hotbarOpen = false
-
+local inInventory = false
+local hotbarOpen = false
 local inventoryTest = {}
 local currentWeapon = nil
 local CurrentWeaponData = {}
@@ -14,7 +13,6 @@ local CurrentStash = nil
 local isCrafting = false
 local isHotbar = false
 local showTrunkPos = false
-
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded')
 AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
