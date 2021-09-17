@@ -66,6 +66,51 @@ function GetClosestVending()
     return object
 end
 
+function GetClosestCoffeeMachine()
+    local ped = PlayerPedId()
+    local pos = GetEntityCoords(ped)
+    local object = nil
+    for _, machine in pairs(Config.CoffeeMachine) do
+        local ClosestObject = GetClosestObjectOfType(pos.x, pos.y, pos.z, 0.75, GetHashKey(machine), 0, 0, 0)
+        if ClosestObject ~= 0 and ClosestObject ~= nil then
+            if object == nil then
+                object = ClosestObject
+            end
+        end
+    end
+    return object
+end
+
+function GetClosestWaterMachine()
+    local ped = PlayerPedId()
+    local pos = GetEntityCoords(ped)
+    local object = nil
+    for _, machine in pairs(Config.WaterMachine) do
+        local ClosestObject = GetClosestObjectOfType(pos.x, pos.y, pos.z, 0.75, GetHashKey(machine), 0, 0, 0)
+        if ClosestObject ~= 0 and ClosestObject ~= nil then
+            if object == nil then
+                object = ClosestObject
+            end
+        end
+    end
+    return object
+end
+
+function GetClosestSnackMachine()
+    local ped = PlayerPedId()
+    local pos = GetEntityCoords(ped)
+    local object = nil
+    for _, machine in pairs(Config.SnackMachine) do
+        local ClosestObject = GetClosestObjectOfType(pos.x, pos.y, pos.z, 0.75, GetHashKey(machine), 0, 0, 0)
+        if ClosestObject ~= 0 and ClosestObject ~= nil then
+            if object == nil then
+                object = ClosestObject
+            end
+        end
+    end
+    return object
+end
+
 function DrawText3Ds(x, y, z, text)
 	SetTextScale(0.35, 0.35)
     SetTextFont(4)
@@ -121,6 +166,9 @@ RegisterCommand('inventory', function()
                 local ped = PlayerPedId()
                 local curVeh = nil
                 local VendingMachine = GetClosestVending()
+		local CoffeeMachine = GetClosestCoffeeMachine()
+                local WaterMachine = GetClosestWaterMachine()
+                local SnackMachine = GetClosestSnackMachine()
 
                 -- Is Player In Vehicle
 
@@ -224,7 +272,25 @@ RegisterCommand('inventory', function()
                     ShopItems.label = "Vending Machine"
                     ShopItems.items = Config.VendingItem
                     ShopItems.slots = #Config.VendingItem
-                    TriggerServerEvent("inventory:server:OpenInventory", "shop", "Vendingshop_"..math.random(1, 99), ShopItems)
+                    TriggerServerEvent("inventory:server:OpenInventory", "shop", "Vendingmachine_"..math.random(1, 99), ShopItems)
+		elseif CoffeeMachine ~= nil then
+                    local ShopItems = {}
+                    ShopItems.label = "Coffee Machine"
+                    ShopItems.items = Config.Coffee
+                    ShopItems.slots = #Config.Coffee
+                    TriggerServerEvent("inventory:server:OpenInventory", "shop", "Coffeemachine_"..math.random(1, 99), ShopItems)
+                elseif WaterMachine ~= nil then
+                    local ShopItems = {}
+                    ShopItems.label = "Water Distributor"
+                    ShopItems.items = Config.Water
+                    ShopItems.slots = #Config.Water
+                    TriggerServerEvent("inventory:server:OpenInventory", "shop", "Watermdistributor_"..math.random(1, 99), ShopItems)
+                elseif SnackMachine ~= nil then
+                    local ShopItems = {}
+                    ShopItems.label = "Snack Machine"
+                    ShopItems.items = Config.Snacks
+                    ShopItems.slots = #Config.Snacks
+                    TriggerServerEvent("inventory:server:OpenInventory", "shop", "Snackmachine_"..math.random(1, 99), ShopItems)
                 else
                     TriggerServerEvent("inventory:server:OpenInventory")
                 end
