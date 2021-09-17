@@ -81,6 +81,10 @@ function GetFirstFreeSlot($toInv, $fromSlot) {
     return retval;
 }
 
+$(document).on('mousedown', '#close-inv', function(event){
+    Inventory.Close()
+});
+
 function CanQuickMove() {
     var otherinventory = otherLabel.toLowerCase();
     var retval = true;
