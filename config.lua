@@ -66,6 +66,47 @@ Config.VendingItem = {
     },
 }
 
+Config.Coffee = {
+    [1] = {
+        name = "coffee",
+        price = 3,
+        amount = 50,
+        info = {},
+        type = "item",
+        slot = 1,
+    }
+}
+
+Config.Water = {
+    [1] = {
+        name = "water_bottle",
+        price = 2,
+        amount = 50,
+        info = {},
+        type = "item",
+        slot = 1,
+    }
+}
+
+Config.Snacks = {
+    [1] = {
+        name = "twerks_candy",
+        price = 3,
+        amount = 50,
+        info = {},
+        type = "item",
+        slot = 1,
+    },
+    [2] = {
+        name = "snikkel_candy",
+        price = 3,
+        amount = 50,
+        info = {},
+        type = "item",
+        slot = 2,
+    }
+}
+
 Config.CraftingItems = {
     [1] = {
         name = "lockpick",
