@@ -29,6 +29,20 @@ Config.VendingObjects = {
     "prop_vend_water_01"
 }
 
+Config.CoffeeMachine = {
+    "prop_vend_coffe_01"
+}
+
+Config.WaterMachine = {
+    "prop_watercooler",
+    "prop_watercooler_dark"
+}
+
+Config.SnackMachine = {
+    "prop_vend_snak_01",
+    "prop_vend_snak_01_tu"
+}
+
 Config.BinObjects = {
     "prop_bin_05a",
 }
