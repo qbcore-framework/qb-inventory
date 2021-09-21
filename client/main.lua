@@ -166,7 +166,7 @@ RegisterCommand('inventory', function()
                 local ped = PlayerPedId()
                 local curVeh = nil
                 local VendingMachine = GetClosestVending()
-		local CoffeeMachine = GetClosestCoffeeMachine()
+                local CoffeeMachine = GetClosestCoffeeMachine()
                 local WaterMachine = GetClosestWaterMachine()
                 local SnackMachine = GetClosestSnackMachine()
 
