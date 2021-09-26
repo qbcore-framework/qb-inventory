@@ -344,6 +344,7 @@ AddEventHandler("inventory:client:OpenInventory", function(PlayerAmmo, inventory
     if not IsEntityDead(PlayerPedId()) then
         ToggleHotbar(false)
         SetNuiFocus(true, true)
+	TriggerEvent("inventory:client:PickupAnim")		
         if other ~= nil then
             currentOtherInventory = other.name
         end
@@ -604,6 +605,15 @@ AddEventHandler("inventory:client:DropItemAnim", function()
     end
     TaskPlayAnim(ped, "pickup_object" ,"pickup_low" ,8.0, -8.0, -1, 1, 0, false, false, false )
     Citizen.Wait(2000)
+    ClearPedTasks(ped)
+end)
+
+RegisterNetEvent('inventory:client:PickupAnim')
+AddEventHandler('inventory:client:PickupAnim', function()
+	local ped = PlayerPedId()
+    RequestAnimDict('pickup_object')
+    TaskPlayAnim(ped,'pickup_object', 'putdown_low',5.0, 1.5, 1.0, 48, 0.0, 0, 0, 0)
+    Wait(1000)
     ClearPedTasks(ped)
 end)
 
