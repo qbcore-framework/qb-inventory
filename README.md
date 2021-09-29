@@ -22,7 +22,7 @@
 - [qb-core](https://github.com/qbcore-framework/qb-core)
 - [qb-logs](https://github.com/qbcore-framework/qb-logs) - For logging transfer and other history
 - [qb-traphouse](https://github.com/qbcore-framework/qb-traphouse) - Trap house system for qbcore
-- [rp-radio](https://github.com/qbcore-framework/rp-radio) - Radio system for communication
+- [qb-radio](https://github.com/qbcore-framework/qb-radio) - Radio system for communication
 - [qb-drugs](https://github.com/qbcore-framework/qb-drugs) -  Drugs and weeds system
 - [qb-shops](https://github.com/qbcore-framework/qb-shops) - Needed in order to add shops
 
