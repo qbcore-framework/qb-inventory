@@ -88,6 +88,40 @@ AddEventHandler('inventory:server:CraftAttachment', function(itemName, itemCosts
 	end
 end)
 
+--GIVE
+RegisterServerEvent("inventory:server:GiveItem")
+AddEventHandler('inventory:server:GiveItem', function(target, inventory, item, amount)
+    local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+    local OtherPlayer = QBCore.Functions.GetPlayer(tonumber(target))
+    local dist = #(GetEntityCoords(GetPlayerPed(src))-GetEntityCoords(GetPlayerPed(target)))
+    if dist < 3 then
+        if amount <= item.amount then
+            if amount == 0 then
+                amount = item.amount -- If 0 gives all of an item the player has
+            end
+            if OtherPlayer.Functions.AddItem(item.name, amount, false, item.info) then
+                TriggerClientEvent('inventory:client:ItemBox',target, QBCore.Shared.Items[item.name], "add")
+                TriggerClientEvent('QBCore:Notify', target, "You Received " .. amount .. ' ' .. item.label .. "!")
+				TriggerClientEvent("inventory:client:UpdatePlayerInventory", target, true)
+                Player.Functions.RemoveItem(item.name, amount, item.slot)
+                TriggerClientEvent('inventory:client:ItemBox',src, QBCore.Shared.Items[item.name], "remove")
+                TriggerClientEvent('QBCore:Notify', src, "You gave " .. OtherPlayer.PlayerData.charinfo.firstname.." "..OtherPlayer.PlayerData.charinfo.lastname.. " " .. amount .. " " .. item.label .."!")
+				TriggerClientEvent("inventory:client:UpdatePlayerInventory", src, true)
+            else
+                TriggerClientEvent('QBCore:Notify', src,  "The other players inventory is full!", "error")
+                TriggerClientEvent('QBCore:Notify', target,  "Your inventory is full!", "error")
+				TriggerClientEvent("inventory:client:UpdatePlayerInventory", src, false)
+				TriggerClientEvent("inventory:client:UpdatePlayerInventory", target, false)
+            end
+        else
+            TriggerClientEvent('QBCore:Notify', src, "You do not have enough items to transfer")
+        end
+    else
+        TriggerClientEvent('QBCore:Notify', src, "You are too far away to give items!")
+    end
+end)
+
 RegisterServerEvent("inventory:server:SetIsOpenState")
 AddEventHandler('inventory:server:SetIsOpenState', function(IsOpen, type, id)
 	if not IsOpen then
@@ -1485,6 +1519,8 @@ QBCore.Commands.Add("giveitem", "Give An Item (Admin Only)", {{name="id", help="
 					info.serie = tostring(Config.RandomInt(2) .. Config.RandomStr(3) .. Config.RandomInt(1) .. Config.RandomStr(2) .. Config.RandomInt(3) .. Config.RandomStr(4))
 				elseif itemData["name"] == "harness" then
 					info.uses = 20
+				elseif itemData["name"] == "phone" then
+					info.phone = Player.PlayerData.charinfo.phone
 				elseif itemData["name"] == "markedbills" then
 					info.worth = math.random(5000, 10000)
 				elseif itemData["name"] == "labkey" then
