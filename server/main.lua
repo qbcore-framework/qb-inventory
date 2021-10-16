@@ -19,14 +19,43 @@ AddEventHandler('inventory:server:addTrunkItems', function(plate, items)
 	Trunks[plate].items = items
 end)
 
+local function recipeContains(recipe, fromItem)
+	for k, v in pairs(recipe.accept) do
+		if v == fromItem.name then
+			return true
+		end
+	end
+
+	return false
+end
+
 RegisterServerEvent("inventory:server:combineItem")
 AddEventHandler('inventory:server:combineItem', function(item, fromItem, toItem)
 	local src = source
 	local ply = QBCore.Functions.GetPlayer(src)
 
+	-- Check that inputs are not nil
+	-- Most commonly when abusing this exploit, this values are left as
+	if fromItem == nil  then return end
+	if toItem == nil then return end
+
+	-- Check that they have the items
+	local fromItem = ply.Functions.GetItemByName(fromItem)
+	local toItem = ply.Functions.GetItemByName(toItem)
+
+	if fromItem == nil  then return end
+	if toItem == nil then return end
+
+	-- Check the recipe is valid
+	local recipe = QBCore.Shared.Items[toItem.name].combinable
+
+	if recipe and recipe.reward ~= item then return end
+	if not recipeContains(recipe, fromItem) then return end
+
+	TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item], 'add')
 	ply.Functions.AddItem(item, 1)
-	ply.Functions.RemoveItem(fromItem, 1)
-	ply.Functions.RemoveItem(toItem, 1)
+	ply.Functions.RemoveItem(fromItem.name, 1)
+	ply.Functions.RemoveItem(toItem.name, 1)
 end)
 
 RegisterServerEvent("inventory:server:CraftItems")
