@@ -81,6 +81,10 @@ function GetFirstFreeSlot($toInv, $fromSlot) {
     return retval;
 }
 
+$(document).on('mousedown', '#close-inv', function(event){
+    Inventory.Close()
+});
+
 function CanQuickMove() {
     var otherinventory = otherLabel.toLowerCase();
     var retval = true;
@@ -572,6 +576,15 @@ function FormatItemInfo(itemData) {
         } else if (itemData.name == "labkey") {
             $(".item-info-title").html("<p>" + itemData.label + "</p>");
             $(".item-info-description").html("<p>Lab: " + itemData.info.lab + "</p>");
+        } else if (itemData.name == "phone") {
+            $(".item-info-title").html('<p>'+itemData.label+'</p>')
+            $(".item-info-description").html('<p><strong>Phone Number: </strong><span>' + itemData.info.phone);
+        } else if (itemData.name == "visa" || itemData.name == "mastercard") {
+            $(".item-info-title").html('<p>'+itemData.label+'</p>')
+            var str = ""+ itemData.info.cardNumber + "";
+            var res = str.slice(12);
+            var cardNumber = "************" + res;
+            $(".item-info-description").html('<p><strong>Card Holder: </strong><span>' + itemData.info.name + '</span></p><p><strong>Citizen ID: </strong><span>' + itemData.info.citizenid + '</span></p><p><strong>Card Number: </strong><span>' + cardNumber + '</span></p>');			
         } else {
             $(".item-info-title").html("<p>" + itemData.label + "</p>");
             $(".item-info-description").html("<p>" + itemData.description + "</p>");
@@ -759,6 +772,29 @@ function handleDragDrop() {
                     })
                 );
             }
+        },
+    });
+
+    $("#item-give").droppable({
+        hoverClass: "button-hover",
+        drop: function(event, ui) {
+            setTimeout(function() {
+                IsDragging = false;
+            }, 300);
+            fromData = ui.draggable.data("item");
+            fromInventory = ui.draggable.parent().attr("data-inventory");
+            amount = $("#item-amount").val();
+            if (amount == 0) {
+                amount = fromData.amount;
+            }
+            $.post(
+                "https://qb-inventory/GiveItem",
+                JSON.stringify({
+                    inventory: fromInventory,
+                    item: fromData,
+                    amount: parseInt(amount),
+                })
+            );
         },
     });
 
