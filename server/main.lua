@@ -1479,7 +1479,12 @@ QBCore.Commands.Add("giveitem", "Give An Item (Admin Only)", {{name="id", help="
 					info.firstname = Player.PlayerData.charinfo.firstname
 					info.lastname = Player.PlayerData.charinfo.lastname
 					info.birthdate = Player.PlayerData.charinfo.birthdate
+					info.gender = Player.PlayerData.charinfo.gender
 					info.type = "Class C Driver License"
+				elseif itemData["name"] == "weaponlicense" then
+					info.firstname = Player.PlayerData.charinfo.firstname
+					info.lastname = Player.PlayerData.charinfo.lastname
+					info.birthdate = Player.PlayerData.charinfo.birthdate
 				elseif itemData["type"] == "weapon" then
 					amount = 1
 					info.serie = tostring(Config.RandomInt(2) .. Config.RandomStr(3) .. Config.RandomInt(1) .. Config.RandomStr(2) .. Config.RandomInt(3) .. Config.RandomStr(4))
@@ -1544,13 +1549,18 @@ QBCore.Functions.CreateUseableItem("driver_license", function(source, item)
 		local TargetPed = GetPlayerPed(v)
 		local dist = #(GetEntityCoords(PlayerPed) - GetEntityCoords(TargetPed))
 		if dist < 3.0 then
+			local gender = "Man"
+			if item.info.gender == 1 then
+				gender = "Woman"
+			end
 			TriggerClientEvent('chat:addMessage', v,  {
-					template = '<div class="chat-message advert"><div class="chat-message-body"><strong>{0}:</strong><br><br> <strong>First Name:</strong> {1} <br><strong>Last Name:</strong> {2} <br><strong>Birth Date:</strong> {3} <br><strong>Licenses:</strong> {4}</div></div>',
+					template = '<div class="chat-message advert"><div class="chat-message-body"><strong>{0}:</strong><br><br> <strong>First Name:</strong> {1} <br><strong>Last Name:</strong> {2} <br><strong>Birth Date:</strong> {3} <br><strong>Gender:</strong> {4}<br><strong>Licenses:</strong> {5}</div></div>',
 					args = {
 						"Drivers License",
 						item.info.firstname,
 						item.info.lastname,
 						item.info.birthdate,
+						gender,
 						item.info.type
 					}
 				}
