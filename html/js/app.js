@@ -414,6 +414,10 @@ function FormatItemInfo(itemData) {
                 "</span></p>"
             );
         } else if (itemData.name == "driver_license") {
+           var gender = "Man";
+            if (itemData.info.gender == 1) {
+                gender = "Woman";
+            }
             $(".item-info-title").html("<p>" + itemData.label + "</p>");
             $(".item-info-description").html(
                 "<p><strong>First Name: </strong><span>" +
@@ -422,6 +426,8 @@ function FormatItemInfo(itemData) {
                 itemData.info.lastname +
                 "</span></p><p><strong>Birth Date: </strong><span>" +
                 itemData.info.birthdate +
+                "</span></p><p><strong>Gender: </strong><span>" +
+                gender +
                 "</span></p><p><strong>Licenses: </strong><span>" +
                 itemData.info.type +
                 "</span></p>"
