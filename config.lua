@@ -3,9 +3,9 @@ Config = {}
 local StringCharset = {}
 local NumberCharset = {}
 
-for i = 48,  57 do table.insert(NumberCharset, string.char(i)) end
-for i = 65,  90 do table.insert(StringCharset, string.char(i)) end
-for i = 97, 122 do table.insert(StringCharset, string.char(i)) end
+for i = 48,  57 do NumberCharset[#NumberCharset+1] = string.char(i) end
+for i = 65,  90 do StringCharset[#StringCharset+1] = string.char(i) end
+for i = 97, 122 do StringCharset[#StringCharset+1] = string.char(i) end
 
 Config.RandomStr = function(length)
 	if length > 0 then
