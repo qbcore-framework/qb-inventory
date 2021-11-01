@@ -920,35 +920,28 @@ function IsVehicleOwned(plate)
     if result then return true else return false end
 end
 
-local function escape_str(s)
-	local in_char  = {'\\', '"', '/', '\b', '\f', '\n', '\r', '\t'}
-	local out_char = {'\\', '"', '/',  'b',  'f',  'n',  'r',  't'}
-	for i, c in ipairs(in_char) do
-	  s = s:gsub(c, '\\' .. out_char[i])
-	end
-	return s
-end
-
 -- Shop Items
 function SetupShopItems(shop, shopItems)
 	local items = {}
 	if shopItems ~= nil and next(shopItems) ~= nil then
 		for k, item in pairs(shopItems) do
 			local itemInfo = QBCore.Shared.Items[item.name:lower()]
-			items[item.slot] = {
-				name = itemInfo["name"],
-				amount = tonumber(item.amount),
-				info = item.info ~= nil and item.info or "",
-				label = itemInfo["label"],
-				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"], 
-				type = itemInfo["type"], 
-				unique = itemInfo["unique"], 
-				useable = itemInfo["useable"], 
-				price = item.price,
-				image = itemInfo["image"],
-				slot = item.slot,
-			}
+			if itemInfo then
+				items[item.slot] = {
+					name = itemInfo["name"],
+					amount = tonumber(item.amount),
+					info = item.info ~= nil and item.info or "",
+					label = itemInfo["label"],
+					description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
+					weight = itemInfo["weight"],
+					type = itemInfo["type"],
+					unique = itemInfo["unique"],
+					useable = itemInfo["useable"],
+					price = item.price,
+					image = itemInfo["image"],
+					slot = item.slot,
+				}
+			end
 		end
 	end
 	return items
@@ -957,28 +950,26 @@ end
 -- Stash Items
 function GetStashItems(stashId)
 	local items = {}
-	local result = exports.oxmysql:executeSync('SELECT items FROM stashitems WHERE stash = ?', {stashId})
-	if result[1] ~= nil then 
-		if result[1].items ~= nil then
-			result[1].items = json.decode(result[1].items)
-			if result[1].items ~= nil then 
-				for k, item in pairs(result[1].items) do
-					local itemInfo = QBCore.Shared.Items[item.name:lower()]
-					if itemInfo then
-						items[item.slot] = {
-							name = itemInfo["name"],
-							amount = tonumber(item.amount),
-							info = item.info ~= nil and item.info or "",
-							label = itemInfo["label"],
-							description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-							weight = itemInfo["weight"],
-							type = itemInfo["type"],
-							unique = itemInfo["unique"],
-							useable = itemInfo["useable"],
-							image = itemInfo["image"],
-							slot = item.slot,
-						}
-					end
+	local result = exports.oxmysql:scalarSync('SELECT items FROM stashitems WHERE stash = ?', {stashId})
+	if result then
+		local stashItems = json.decode(result)
+		if stashItems then
+			for k, item in pairs(stashItems) do
+				local itemInfo = QBCore.Shared.Items[item.name:lower()]
+				if itemInfo then
+					items[item.slot] = {
+						name = itemInfo["name"],
+						amount = tonumber(item.amount),
+						info = item.info ~= nil and item.info or "",
+						label = itemInfo["label"],
+						description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
+						weight = itemInfo["weight"],
+						type = itemInfo["type"],
+						unique = itemInfo["unique"],
+						useable = itemInfo["useable"],
+						image = itemInfo["image"],
+						slot = item.slot,
+					}
 				end
 			end
 		end
@@ -1092,28 +1083,26 @@ end
 -- Trunk items
 function GetOwnedVehicleItems(plate)
 	local items = {}
-	local result = exports.oxmysql:executeSync('SELECT items FROM trunkitems WHERE plate = ?', {plate})
-	if result[1] ~= nil then
-		if result[1].items ~= nil then
-			result[1].items = json.decode(result[1].items)
-			if result[1].items ~= nil then 
-				for k, item in pairs(result[1].items) do
-					local itemInfo = QBCore.Shared.Items[item.name:lower()]
-					if itemInfo then
-						items[item.slot] = {
-							name = itemInfo["name"],
-							amount = tonumber(item.amount),
-							info = item.info ~= nil and item.info or "",
-							label = itemInfo["label"],
-							description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-							weight = itemInfo["weight"], 
-							type = itemInfo["type"], 
-							unique = itemInfo["unique"], 
-							useable = itemInfo["useable"], 
-							image = itemInfo["image"],
-							slot = item.slot,
-						}
-					end
+	local result = exports.oxmysql:scalarSync('SELECT items FROM trunkitems WHERE plate = ?', {plate})
+	if result then
+		local trunkItems = json.decode(result)
+		if trunkItems then
+			for k, item in pairs(trunkItems) do
+				local itemInfo = QBCore.Shared.Items[item.name:lower()]
+				if itemInfo then
+					items[item.slot] = {
+						name = itemInfo["name"],
+						amount = tonumber(item.amount),
+						info = item.info ~= nil and item.info or "",
+						label = itemInfo["label"],
+						description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
+						weight = itemInfo["weight"],
+						type = itemInfo["type"],
+						unique = itemInfo["unique"],
+						useable = itemInfo["useable"],
+						image = itemInfo["image"],
+						slot = item.slot,
+					}
 				end
 			end
 		end
@@ -1215,28 +1204,26 @@ end
 -- Glovebox items
 function GetOwnedVehicleGloveboxItems(plate)
 	local items = {}
-	local result = exports.oxmysql:executeSync('SELECT items FROM gloveboxitems WHERE plate = ?', {plate})
-	if result[1] ~= nil then
-		if result[1].items ~= nil then
-			result[1].items = json.decode(result[1].items)
-			if result[1].items ~= nil then
-				for k, item in pairs(result[1].items) do
-					local itemInfo = QBCore.Shared.Items[item.name:lower()]
-					if itemInfo then
-						items[item.slot] = {
-							name = itemInfo["name"],
-							amount = tonumber(item.amount),
-							info = item.info ~= nil and item.info or "",
-							label = itemInfo["label"],
-							description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-							weight = itemInfo["weight"],
-							type = itemInfo["type"],
-							unique = itemInfo["unique"],
-							useable = itemInfo["useable"],
-							image = itemInfo["image"],
-							slot = item.slot,
-						}
-					end
+	local result = exports.oxmysql:scalarSync('SELECT items FROM gloveboxitems WHERE plate = ?', {plate})
+	if result then
+		local gloveboxItems = json.decode(result)
+		if gloveboxItems then
+			for k, item in pairs(gloveboxItems) do
+				local itemInfo = QBCore.Shared.Items[item.name:lower()]
+				if itemInfo then
+					items[item.slot] = {
+						name = itemInfo["name"],
+						amount = tonumber(item.amount),
+						info = item.info ~= nil and item.info or "",
+						label = itemInfo["label"],
+						description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
+						weight = itemInfo["weight"],
+						type = itemInfo["type"],
+						unique = itemInfo["unique"],
+						useable = itemInfo["useable"],
+						image = itemInfo["image"],
+						slot = item.slot,
+					}
 				end
 			end
 		end
