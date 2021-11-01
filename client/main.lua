@@ -460,9 +460,9 @@ end)
 RegisterNetEvent("inventory:client:UseSnowball")
 AddEventHandler("inventory:client:UseSnowball", function(amount)
     local ped = PlayerPedId()
-    GiveWeaponToPed(ped, GetHashKey("weapon_snowball"), amount, false, false)
-    SetPedAmmo(ped, GetHashKey("weapon_snowball"), amount)
-    SetCurrentPedWeapon(ped, GetHashKey("weapon_snowball"), true)
+    GiveWeaponToPed(ped, `weapon_snowball`, amount, false, false)
+    SetPedAmmo(ped, `weapon_snowball`, amount)
+    SetCurrentPedWeapon(ped, `weapon_snowball`, true)
 end)
 
 RegisterNetEvent("inventory:client:UseWeapon")
@@ -470,7 +470,7 @@ AddEventHandler("inventory:client:UseWeapon", function(weaponData, shootbool)
     local ped = PlayerPedId()
     local weaponName = tostring(weaponData.name)
     if currentWeapon == weaponName then
-        SetCurrentPedWeapon(ped, GetHashKey("WEAPON_UNARMED"), true)
+        SetCurrentPedWeapon(ped, `WEAPON_UNARMED`, true)
         RemoveAllPedWeapons(ped, true)
         TriggerEvent('weapons:client:SetCurrentWeapon', nil, shootbool)
         currentWeapon = nil
@@ -572,7 +572,7 @@ AddEventHandler("inventory:client:CheckWeapon", function(weaponName)
     local ped = PlayerPedId()
     if currentWeapon == weaponName then 
         TriggerEvent('weapons:ResetHolster')
-        SetCurrentPedWeapon(ped, GetHashKey("WEAPON_UNARMED"), true)
+        SetCurrentPedWeapon(ped, `WEAPON_UNARMED`, true)
         RemoveAllPedWeapons(ped, true)
         currentWeapon = nil
     end
