@@ -595,6 +595,7 @@ end)
 RegisterNetEvent("inventory:client:RemoveDropItem")
 AddEventHandler("inventory:client:RemoveDropItem", function(dropId)
     Drops[dropId] = nil
+    DropsNear[dropId] = nil
 end)
 
 RegisterNetEvent("inventory:client:DropItemAnim")
