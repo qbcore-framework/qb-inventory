@@ -122,7 +122,7 @@ AddEventHandler('inventory:server:OpenInventory', function(name, id, other)
 				end
 				local maxweight = 1000000
 				local slots = 50
-				if other ~= nil then 
+				if other ~= nil then
 					maxweight = other.maxweight ~= nil and other.maxweight or 1000000
 					slots = other.slots ~= nil and other.slots or 50
 				end
@@ -175,7 +175,7 @@ AddEventHandler('inventory:server:OpenInventory', function(name, id, other)
 					secondInv.inventory = {}
 					secondInv.slots = 0
 				else
-					if id ~= nil then 
+					if id ~= nil then
 						local ownedItems = GetOwnedVehicleItems(id)
 						if IsVehicleOwned(id) and next(ownedItems) ~= nil then
 							secondInv.inventory = ownedItems
@@ -300,7 +300,7 @@ AddEventHandler('inventory:server:OpenInventory', function(name, id, other)
 		end
 	else
 		TriggerClientEvent('QBCore:Notify', src, 'Not Accessible', 'error')
-	end 	
+	end
 end)
 
 RegisterServerEvent("inventory:server:SaveInventory")
@@ -774,7 +774,7 @@ AddEventHandler('inventory:server:SetInventoryData', function(fromInventory, toI
 			if QBCore.Shared.SplitStr(itemData.name, "_")[1] == "weapon" then
 				price = tonumber(itemData.price)
 				if Player.Functions.RemoveMoney("cash", price, "dealer-item-bought") then
-					itemData.info.serie = tostring(Config.RandomInt(2) .. Config.RandomStr(3) .. Config.RandomInt(1) .. Config.RandomStr(2) .. Config.RandomInt(3) .. Config.RandomStr(4))
+					itemData.info.serie = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
 					Player.Functions.AddItem(itemData.name, 1, toSlot, itemData.info)
 					TriggerClientEvent('qb-drugs:client:updateDealerItems', src, itemData, 1)
 					TriggerClientEvent('QBCore:Notify', src, itemInfo["label"] .. " bought!", "success")
@@ -795,7 +795,7 @@ AddEventHandler('inventory:server:SetInventoryData', function(fromInventory, toI
 		elseif QBCore.Shared.SplitStr(shopType, "_")[1] == "Itemshop" then
 			if Player.Functions.RemoveMoney("cash", price, "itemshop-bought-item") then
                 if QBCore.Shared.SplitStr(itemData.name, "_")[1] == "weapon" then
-                    itemData.info.serie = tostring(Config.RandomInt(2) .. Config.RandomStr(3) .. Config.RandomInt(1) .. Config.RandomStr(2) .. Config.RandomInt(3) .. Config.RandomStr(4))
+                    itemData.info.serie = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
                 end
 				Player.Functions.AddItem(itemData.name, fromAmount, toSlot, itemData.info)
 				TriggerClientEvent('qb-shops:client:UpdateShop', src, QBCore.Shared.SplitStr(shopType, "_")[2], itemData, fromAmount)
@@ -804,7 +804,7 @@ AddEventHandler('inventory:server:SetInventoryData', function(fromInventory, toI
 			elseif bankBalance >= price then
 				Player.Functions.RemoveMoney("bank", price, "itemshop-bought-item")
                 if QBCore.Shared.SplitStr(itemData.name, "_")[1] == "weapon" then
-                    itemData.info.serie = tostring(Config.RandomInt(2) .. Config.RandomStr(3) .. Config.RandomInt(1) .. Config.RandomStr(2) .. Config.RandomInt(3) .. Config.RandomStr(4))
+                    itemData.info.serie = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
                 end
 				Player.Functions.AddItem(itemData.name, fromAmount, toSlot, itemData.info)
 				TriggerClientEvent('qb-shops:client:UpdateShop', src, QBCore.Shared.SplitStr(shopType, "_")[2], itemData, fromAmount)
@@ -1018,10 +1018,10 @@ function AddToStash(stashId, slot, otherslot, itemName, amount, info)
 				info = info ~= nil and info or "",
 				label = itemInfo["label"],
 				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"], 
-				type = itemInfo["type"], 
-				unique = itemInfo["unique"], 
-				useable = itemInfo["useable"], 
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
 				image = itemInfo["image"],
 				slot = slot,
 			}
@@ -1035,10 +1035,10 @@ function AddToStash(stashId, slot, otherslot, itemName, amount, info)
 				info = info ~= nil and info or "",
 				label = itemInfo["label"],
 				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"], 
-				type = itemInfo["type"], 
-				unique = itemInfo["unique"], 
-				useable = itemInfo["useable"], 
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
 				image = itemInfo["image"],
 				slot = otherslot,
 			}
@@ -1050,10 +1050,10 @@ function AddToStash(stashId, slot, otherslot, itemName, amount, info)
 				info = info ~= nil and info or "",
 				label = itemInfo["label"],
 				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"], 
-				type = itemInfo["type"], 
-				unique = itemInfo["unique"], 
-				useable = itemInfo["useable"], 
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
 				image = itemInfo["image"],
 				slot = slot,
 			}
@@ -1140,10 +1140,10 @@ function AddToTrunk(plate, slot, otherslot, itemName, amount, info)
 				info = info ~= nil and info or "",
 				label = itemInfo["label"],
 				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"], 
-				type = itemInfo["type"], 
-				unique = itemInfo["unique"], 
-				useable = itemInfo["useable"], 
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
 				image = itemInfo["image"],
 				slot = slot,
 			}
@@ -1157,10 +1157,10 @@ function AddToTrunk(plate, slot, otherslot, itemName, amount, info)
 				info = info ~= nil and info or "",
 				label = itemInfo["label"],
 				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"], 
-				type = itemInfo["type"], 
-				unique = itemInfo["unique"], 
-				useable = itemInfo["useable"], 
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
 				image = itemInfo["image"],
 				slot = otherslot,
 			}
@@ -1172,10 +1172,10 @@ function AddToTrunk(plate, slot, otherslot, itemName, amount, info)
 				info = info ~= nil and info or "",
 				label = itemInfo["label"],
 				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"], 
-				type = itemInfo["type"], 
-				unique = itemInfo["unique"], 
-				useable = itemInfo["useable"], 
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
 				image = itemInfo["image"],
 				slot = slot,
 			}
@@ -1261,10 +1261,10 @@ function AddToGlovebox(plate, slot, otherslot, itemName, amount, info)
 				info = info ~= nil and info or "",
 				label = itemInfo["label"],
 				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"], 
-				type = itemInfo["type"], 
-				unique = itemInfo["unique"], 
-				useable = itemInfo["useable"], 
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
 				image = itemInfo["image"],
 				slot = slot,
 			}
@@ -1278,10 +1278,10 @@ function AddToGlovebox(plate, slot, otherslot, itemName, amount, info)
 				info = info ~= nil and info or "",
 				label = itemInfo["label"],
 				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"], 
-				type = itemInfo["type"], 
-				unique = itemInfo["unique"], 
-				useable = itemInfo["useable"], 
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
 				image = itemInfo["image"],
 				slot = otherslot,
 			}
@@ -1293,10 +1293,10 @@ function AddToGlovebox(plate, slot, otherslot, itemName, amount, info)
 				info = info ~= nil and info or "",
 				label = itemInfo["label"],
 				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"], 
-				type = itemInfo["type"], 
-				unique = itemInfo["unique"], 
-				useable = itemInfo["useable"], 
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
 				image = itemInfo["image"],
 				slot = slot,
 			}
@@ -1335,10 +1335,10 @@ function AddToDrop(dropId, slot, itemName, amount, info)
 			info = info ~= nil and info or "",
 			label = itemInfo["label"],
 			description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-			weight = itemInfo["weight"], 
-			type = itemInfo["type"], 
-			unique = itemInfo["unique"], 
-			useable = itemInfo["useable"], 
+			weight = itemInfo["weight"],
+			type = itemInfo["type"],
+			unique = itemInfo["unique"],
+			useable = itemInfo["useable"],
 			image = itemInfo["image"],
 			slot = slot,
 			id = dropId,
@@ -1385,7 +1385,7 @@ end
 function CreateNewDrop(source, fromSlot, toSlot, itemAmount)
 	local Player = QBCore.Functions.GetPlayer(source)
 	local itemData = Player.Functions.GetItemBySlot(fromSlot)
-	local coords = GetEntityCoords(GetPlayerPed(source)) 
+	local coords = GetEntityCoords(GetPlayerPed(source))
 	if Player.Functions.RemoveItem(itemData.name, itemAmount, itemData.slot) then
 		TriggerClientEvent("inventory:client:CheckWeapon", source, itemData.name)
 		local itemInfo = QBCore.Shared.Items[itemData.name:lower()]
@@ -1399,10 +1399,10 @@ function CreateNewDrop(source, fromSlot, toSlot, itemAmount)
 			info = itemData.info ~= nil and itemData.info or "",
 			label = itemInfo["label"],
 			description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-			weight = itemInfo["weight"], 
-			type = itemInfo["type"], 
-			unique = itemInfo["unique"], 
-			useable = itemInfo["useable"], 
+			weight = itemInfo["weight"],
+			type = itemInfo["type"],
+			unique = itemInfo["unique"],
+			useable = itemInfo["useable"],
 			image = itemInfo["image"],
 			slot = toSlot,
 			id = dropId,
@@ -1423,17 +1423,17 @@ QBCore.Commands.Add("resetinv", "Reset Inventory (Admin Only)", {{name="type", h
 	local invType = args[1]:lower()
 	table.remove(args, 1)
 	local invId = table.concat(args, " ")
-	if invType ~= nil and invId ~= nil then 
+	if invType ~= nil and invId ~= nil then
 		if invType == "trunk" then
-			if Trunks[invId] ~= nil then 
+			if Trunks[invId] ~= nil then
 				Trunks[invId].isOpen = false
 			end
 		elseif invType == "glovebox" then
-			if Gloveboxes[invId] ~= nil then 
+			if Gloveboxes[invId] ~= nil then
 				Gloveboxes[invId].isOpen = false
 			end
 		elseif invType == "stash" then
-			if Stashes[invId] ~= nil then 
+			if Stashes[invId] ~= nil then
 				Stashes[invId].isOpen = false
 			end
 		else
@@ -1475,7 +1475,7 @@ QBCore.Commands.Add("giveitem", "Give An Item (Admin Only)", {{name="id", help="
 					info.type = "Class C Driver License"
 				elseif itemData["type"] == "weapon" then
 					amount = 1
-					info.serie = tostring(Config.RandomInt(2) .. Config.RandomStr(3) .. Config.RandomInt(1) .. Config.RandomStr(2) .. Config.RandomInt(3) .. Config.RandomStr(4))
+					info.serie = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
 				elseif itemData["name"] == "harness" then
 					info.uses = 20
 				elseif itemData["name"] == "markedbills" then
@@ -1507,7 +1507,7 @@ QBCore.Commands.Add("randomitems", "Give Random Items (God Only)", {}, false, fu
 	local filteredItems = {}
 	for k, v in pairs(QBCore.Shared.Items) do
 		if QBCore.Shared.Items[k]["type"] ~= "weapon" then
-			table.insert(filteredItems, v)
+			filteredItems[#filteredItems+1] = v
 		end
 	end
 	for i = 1, 10, 1 do

@@ -108,7 +108,7 @@ Citizen.CreateThread(function()
     end
 end)
 
--- CloseInventory very rare if scuff 
+-- CloseInventory very rare if scuff
 RegisterCommand('closeinv', function()
     closeInventory()
 end, false)
@@ -155,7 +155,7 @@ RegisterCommand('inventory', function()
                 end
 
                 -- Trunk
-    
+
                 if CurrentVehicle ~= nil then
                     local vehicleClass = GetVehicleClass(curVeh)
                     local maxweight = 0
@@ -228,7 +228,7 @@ RegisterCommand('inventory', function()
                 else
                     TriggerServerEvent("inventory:server:OpenInventory")
                 end
-            end    
+            end
         end)
     end
 end)
@@ -246,11 +246,11 @@ end)
 
 RegisterKeyMapping('hotbar', 'Toggles keybind slots', 'keyboard', 'z')
 
-for i=1, 6 do 
+for i=1, 6 do
     RegisterCommand('slot' .. i,function()
         QBCore.Functions.GetPlayerData(function(PlayerData)
             if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() then
-                if i == 6 then 
+                if i == 6 then
                     i = MaxInventorySlots
                 end
                 TriggerServerEvent("inventory:server:UseItemSlot", i)
@@ -274,14 +274,14 @@ AddEventHandler('inventory:client:requiredItems', function(items, bool)
     local itemTable = {}
     if bool then
         for k, v in pairs(items) do
-            table.insert(itemTable, {
+            itemTable[#itemTable+1] = {
                 item = items[k].name,
                 label = QBCore.Shared.Items[items[k].name]["label"],
                 image = items[k].image,
-            })
+            }
         end
     end
-    
+
     SendNUIMessage({
         action = "requiredItem",
         items = itemTable,
@@ -492,8 +492,8 @@ AddEventHandler("inventory:client:UseWeapon", function(weaponData, shootbool)
         TriggerEvent('weapons:client:SetCurrentWeapon', weaponData, shootbool)
         QBCore.Functions.TriggerCallback("weapon:server:GetWeaponAmmo", function(result)
             local ammo = tonumber(result)
-            if weaponName == "weapon_petrolcan" or weaponName == "weapon_fireextinguisher" then 
-                ammo = 4000 
+            if weaponName == "weapon_petrolcan" or weaponName == "weapon_fireextinguisher" then
+                ammo = 4000
             end
             GiveWeaponToPed(ped, GetHashKey(weaponName), 0, false, false)
             SetPedAmmo(ped, GetHashKey(weaponName), ammo)
@@ -516,10 +516,10 @@ function FormatWeaponAttachments(itemdata)
             if WeaponAttachments[itemdata.name] ~= nil then
                 for key, value in pairs(WeaponAttachments[itemdata.name]) do
                     if value.component == v.component then
-                        table.insert(attachments, {
+                        attachments[#attachments+1] = {
                             attachment = key,
                             label = value.label
-                        })
+                        }
                     end
                 end
             end
@@ -540,7 +540,7 @@ RegisterNUICallback('RemoveAttachment', function(data, cb)
     local ped = PlayerPedId()
     local WeaponData = QBCore.Shared.Items[data.WeaponData.name]
     local Attachment = WeaponAttachments[WeaponData.name:upper()][data.AttachmentData.attachment]
-    
+
     QBCore.Functions.TriggerCallback('weapons:server:RemoveAttachment', function(NewAttachments)
         if NewAttachments ~= false then
             local Attachies = {}
@@ -548,10 +548,10 @@ RegisterNUICallback('RemoveAttachment', function(data, cb)
             for k, v in pairs(NewAttachments) do
                 for wep, pew in pairs(WeaponAttachments[WeaponData.name:upper()]) do
                     if v.component == pew.component then
-                        table.insert(Attachies, {
+                        Attachies[#Attachies+1] = {
                             attachment = pew.item,
                             label = pew.label,
-                        })
+                        }
                     end
                 end
             end
@@ -570,7 +570,7 @@ end)
 RegisterNetEvent("inventory:client:CheckWeapon")
 AddEventHandler("inventory:client:CheckWeapon", function(weaponName)
     local ped = PlayerPedId()
-    if currentWeapon == weaponName then 
+    if currentWeapon == weaponName then
         TriggerEvent('weapons:ResetHolster')
         SetCurrentPedWeapon(ped, GetHashKey("WEAPON_UNARMED"), true)
         RemoveAllPedWeapons(ped, true)
@@ -748,7 +748,7 @@ function ToggleHotbar(toggle)
         [4] = QBCore.Functions.GetPlayerData().items[4],
         [5] = QBCore.Functions.GetPlayerData().items[5],
         [41] = QBCore.Functions.GetPlayerData().items[41],
-    } 
+    }
 
     if toggle then
         SendNUIMessage({

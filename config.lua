@@ -1,28 +1,5 @@
 Config = {}
 
-local StringCharset = {}
-local NumberCharset = {}
-
-for i = 48,  57 do NumberCharset[#NumberCharset+1] = string.char(i) end
-for i = 65,  90 do StringCharset[#StringCharset+1] = string.char(i) end
-for i = 97, 122 do StringCharset[#StringCharset+1] = string.char(i) end
-
-Config.RandomStr = function(length)
-	if length > 0 then
-		return Config.RandomStr(length-1) .. StringCharset[math.random(1, #StringCharset)]
-	else
-		return ''
-	end
-end
-
-Config.RandomInt = function(length)
-	if length > 0 then
-		return Config.RandomInt(length-1) .. NumberCharset[math.random(1, #NumberCharset)]
-	else
-		return ''
-	end
-end
-
 Config.VendingObjects = {
     "prop_vend_soda_01",
     "prop_vend_soda_02",
