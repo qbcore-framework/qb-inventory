@@ -1,6 +1,6 @@
+local QBCore = exports['qb-core']:GetCoreObject()
+
 local inInventory = false
-local hotbarOpen = false
-local inventoryTest = {}
 local currentWeapon = nil
 local CurrentWeaponData = {}
 local currentOtherInventory = nil

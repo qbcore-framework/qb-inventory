@@ -1,3 +1,5 @@
+local QBCore = exports['qb-core']:GetCoreObject()
+
 local Drops = {}
 local Trunks = {}
 local Gloveboxes = {}
@@ -7,9 +9,11 @@ local ShopItems = {}
 RegisterServerEvent("inventory:server:LoadDrops")
 AddEventHandler('inventory:server:LoadDrops', function()
 	local src = source
-	if next(Drops) ~= nil then
-		TriggerClientEvent("inventory:client:AddDropItem", -1, dropId, source)
-		TriggerClientEvent("inventory:client:AddDropItem", src, Drops)
+	for k, v in pairs(Drops) do
+		if v ~= nil then
+			TriggerClientEvent("inventory:client:AddDropItem", -1, k, source)
+			TriggerClientEvent("inventory:client:AddDropItem", src, Drops)
+		end
 	end
 end)
 
