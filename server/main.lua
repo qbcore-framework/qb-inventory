@@ -6,8 +6,7 @@ local Gloveboxes = {}
 local Stashes = {}
 local ShopItems = {}
 
-RegisterServerEvent("inventory:server:addTrunkItems")
-AddEventHandler('inventory:server:addTrunkItems', function(plate, items)
+RegisterNetEvent('inventory:server:addTrunkItems', function(plate, items)
 	Trunks[plate] = {}
 	Trunks[plate].items = items
 end)
@@ -22,8 +21,7 @@ local function recipeContains(recipe, fromItem)
 	return false
 end
 
-RegisterServerEvent("inventory:server:combineItem")
-AddEventHandler('inventory:server:combineItem', function(item, fromItem, toItem)
+RegisterNetEvent('inventory:server:combineItem', function(item, fromItem, toItem)
 	local src = source
 	local ply = QBCore.Functions.GetPlayer(src)
 
@@ -51,8 +49,7 @@ AddEventHandler('inventory:server:combineItem', function(item, fromItem, toItem)
 	ply.Functions.RemoveItem(toItem.name, 1)
 end)
 
-RegisterServerEvent("inventory:server:CraftItems")
-AddEventHandler('inventory:server:CraftItems', function(itemName, itemCosts, amount, toSlot, points)
+RegisterNetEvent('inventory:server:CraftItems', function(itemName, itemCosts, amount, toSlot, points)
 	local src = source
 	local Player = QBCore.Functions.GetPlayer(src)
 	local amount = tonumber(amount)
@@ -66,8 +63,7 @@ AddEventHandler('inventory:server:CraftItems', function(itemName, itemCosts, amo
 	end
 end)
 
-RegisterServerEvent('inventory:server:CraftAttachment')
-AddEventHandler('inventory:server:CraftAttachment', function(itemName, itemCosts, amount, toSlot, points)
+RegisterNetEvent('inventory:server:CraftAttachment', function(itemName, itemCosts, amount, toSlot, points)
 	local src = source
 	local Player = QBCore.Functions.GetPlayer(src)
 	local amount = tonumber(amount)
@@ -81,8 +77,7 @@ AddEventHandler('inventory:server:CraftAttachment', function(itemName, itemCosts
 	end
 end)
 
-RegisterServerEvent("inventory:server:SetIsOpenState")
-AddEventHandler('inventory:server:SetIsOpenState', function(IsOpen, type, id)
+RegisterNetEvent('inventory:server:SetIsOpenState', function(IsOpen, type, id)
 	if not IsOpen then
 		if type == "stash" then
 			Stashes[id].isOpen = false
@@ -94,8 +89,7 @@ AddEventHandler('inventory:server:SetIsOpenState', function(IsOpen, type, id)
 	end
 end)
 
-RegisterServerEvent("inventory:server:OpenInventory")
-AddEventHandler('inventory:server:OpenInventory', function(name, id, other)
+RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 	local src = source
 	local ply = Player(src)
 	local Player = QBCore.Functions.GetPlayer(src)
@@ -267,7 +261,7 @@ AddEventHandler('inventory:server:OpenInventory', function(name, id, other)
 					else
 						secondInv.slots = QBCore.Config.Player.MaxInvSlots - 1
 					end
-					Citizen.Wait(250)
+					Wait(250)
 				end
 			else
 				if Drops[id] ~= nil and not Drops[id].isOpen then
@@ -296,8 +290,7 @@ AddEventHandler('inventory:server:OpenInventory', function(name, id, other)
 	end
 end)
 
-RegisterServerEvent("inventory:server:SaveInventory")
-AddEventHandler('inventory:server:SaveInventory', function(type, id)
+RegisterNetEvent('inventory:server:SaveInventory', function(type, id)
 	if type == "trunk" then
 		if (IsVehicleOwned(id)) then
 			SaveOwnedVehicleItems(id, Trunks[id].items)
@@ -323,8 +316,7 @@ AddEventHandler('inventory:server:SaveInventory', function(type, id)
 	end
 end)
 
-RegisterServerEvent("inventory:server:UseItemSlot")
-AddEventHandler('inventory:server:UseItemSlot', function(slot)
+RegisterNetEvent('inventory:server:UseItemSlot', function(slot)
 	local src = source
 	local Player = QBCore.Functions.GetPlayer(src)
 	local itemData = Player.Functions.GetItemBySlot(slot)
@@ -349,8 +341,7 @@ AddEventHandler('inventory:server:UseItemSlot', function(slot)
 	end
 end)
 
-RegisterServerEvent("inventory:server:UseItem")
-AddEventHandler('inventory:server:UseItem', function(inventory, item)
+RegisterNetEvent('inventory:server:UseItem', function(inventory, item)
 	local src = source
 	local Player = QBCore.Functions.GetPlayer(src)
 	if inventory == "player" or inventory == "hotbar" then
@@ -361,8 +352,8 @@ AddEventHandler('inventory:server:UseItem', function(inventory, item)
 	end
 end)
 
-RegisterServerEvent("inventory:server:SetInventoryData")
-AddEventHandler('inventory:server:SetInventoryData', function(fromInventory, toInventory, fromSlot, toSlot, fromAmount, toAmount)
+
+RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, toInventory, fromSlot, toSlot, fromAmount, toAmount)
 	local src = source
 	local Player = QBCore.Functions.GetPlayer(src)
 	local fromSlot = tonumber(fromSlot)
@@ -974,8 +965,7 @@ QBCore.Functions.CreateCallback('qb-inventory:server:GetStashItems', function(so
 	cb(GetStashItems(stashId))
 end)
 
-RegisterServerEvent('qb-inventory:server:SaveStashItems')
-AddEventHandler('qb-inventory:server:SaveStashItems', function(stashId, items)
+RegisterNetEvent('qb-inventory:server:SaveStashItems', function(stashId, items)
     exports.oxmysql:insert('INSERT INTO stashitems (stash, items) VALUES (:stash, :items) ON DUPLICATE KEY UPDATE items = :items', {
         ['stash'] = stashId,
         ['items'] = json.encode(items)
@@ -1511,7 +1501,7 @@ QBCore.Commands.Add("randomitems", "Give Random Items (God Only)", {}, false, fu
 		end
 		if Player.Functions.AddItem(randitem["name"], amount) then
 			TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items[randitem["name"]], 'add')
-            Citizen.Wait(500)
+            Wait(500)
 		end
 	end
 end, "god")
