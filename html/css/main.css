@@ -5,15 +5,15 @@ p {
 }
 
 :root {
-    --main-label-color: 0, 0, 0;  
+    --main-label-color: 0, 0, 0;
 }
 
 /* rgb() */
 
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-  -webkit-appearance: none; 
-  margin: 0; 
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 ::-webkit-scrollbar
@@ -23,7 +23,7 @@ input[type=number]::-webkit-outer-spin-button {
 
 ::-webkit-scrollbar-thumb {
     border-radius: 50px;
-    background: #ededed;
+    background: #dc143c;
 }
 
 body {
@@ -39,7 +39,6 @@ body {
 }
 
 .inv-background {
-    background-color: rgb(0 0 0 / 58%);
     width: 100%;
     height: 100%;
     position: absolute;
@@ -58,11 +57,9 @@ body {
 .player-inventory {
     position: absolute;
     top: 26%;
-    left: 18.2%;
-    width: 25.8%;
-    max-width: 26.5%;
-    height: 40.16%;
-    max-height: 40.16%;
+    left: 15.2%;
+    width: 28.8%;
+    height: 47.16%;
     float: left;
     overflow-x: hidden;
     overflow-y: scroll;
@@ -72,11 +69,9 @@ body {
 .other-inventory {
     position: absolute;
     top: 26%;
-    right: 20.3%;
-    width: 25.8%;
-    max-width: 26.5%;
-    height: 40.16%;
-    max-height: 40.16%;
+    right: 17%;
+    width: 28.8%;
+    height: 47.16%;
     float: left;
     overflow-x: hidden;
     overflow-y: scroll;
@@ -92,12 +87,10 @@ body {
 
 .player-inventory > .item-slot > .item-slot-key p {
     position: absolute;
-    border-top-left-radius: 1px;
-    font-weight:900;
-    color: #ededed;
+    font-weight:bolder;
+    color: white;
     padding: .3vh;
     padding-left: .5vh;
-    padding-right: .5vh;
     text-align: left;
     font-size: 1.1vh;
     line-height: 1.8vh;
@@ -107,11 +100,10 @@ body {
 .inv-options {
     position: absolute;
     margin: 0 auto;
-    left: 0;
     right: 0;
     width: 9%;
-    top: 32%;
-    left: 3vh;
+    top: 30%;
+    left: 1vh;
 }
 
 .combine-option-container {
@@ -127,22 +119,17 @@ body {
 
 .item-slot {
     position: relative;
-    width: 8.5vh;
-    height: 10.5vh;
+    width: 9.5vh;
+    height: 11.5vh;
     float: left;
-    margin-left: 2px;
-    margin-bottom: 2px;
-    border-radius: 1px;
     background-color: rgba(255, 255, 255, 0.03);
     border: 1px solid rgb(68 68 68 / 40%);
     margin: 3px;
     transition: opacity 0.2s;
     opacity: 1.0;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
 }
-
-/* .other-inventory > .item-slot {
-    background-color: rgba(61, 11, 11, 0.075);
-} */
 
 .item-slot-hoverClass {
     opacity: .6;
@@ -167,7 +154,7 @@ body {
     color: white;
     text-align: center;
     font-size: 1.25vh;
-    font-family: 'Poppins', sans-serif;    
+    font-family: 'Poppins', sans-serif;
     outline: none;
 }
 
@@ -210,23 +197,21 @@ body {
 
 .inv-option-item > p {
     color: white;
-    background-color: #dc143c;
-    border-radius: .7vh;
     text-align: center;
     line-height: 48px;
     text-transform: uppercase;
-    font-size: 1.1vh;
+    font-size: 1.2vh;
+    font-weight: 900;
     font-family: 'Poppins', sans-serif;
 }
 
 .inv-option-item {
-    width: 60%;
+    width: 75%;
     height: 50px;
     background-color: rgb(0 0 0 / 30%); /* rgba(20, 20, 20, 0.5) */
     border: 1px solid rgba(255, 255, 255, .01);
     color: white;
     transition: background-color .1s linear;
-    border-radius: .7vh;
 }
 
 .inv-option-item:hover {
@@ -269,33 +254,32 @@ body {
 .item-slot-amount p {
     color: #ffffff;
     text-align: right;
-    font-size: .8vh;
+    font-size: 0.8vh;
 }
-
-
 
 .item-slot-label {
     position: absolute;
     bottom: 0;
     width: 100%;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
     background-color: rgba(var(--main-label-color), 0.35);
 }
 
 .item-slot-label p {
     text-transform: uppercase;
-    font-weight: 700;
-    color: #ededed;
-    font-size: .9vh;
-    line-height: 2.6vh;
+    font-weight: 900;
+    color: white;
+    font-size: 0.8vh;
     text-align: center;
-    letter-spacing: .3px;
+    letter-spacing: 1px;
     font-family: 'Poppins', sans-serif;
 
 }
 
 .item-slot-quality {
     position: absolute;
-    bottom: 0vh;
+    bottom: 1.2vh;
     width: 100%;
     height: .3vh;
     background-color: rgba(32, 6, 6, 0.15);
@@ -306,19 +290,15 @@ body {
     width: 0%;
     height: 100%;
     background-color: green;
-    border-bottom-left-radius: 1px;
-    border-bottom-right-radius: 1px;
     z-index: 1;
 }
 
 .item-slot-quality p {
     color: rgb(247 247 247 / 0%);
-    font-size: 0vh;
     text-align: center;
     text-transform: uppercase;
     line-height: 1.3vh;
     font-family: 'Poppins', sans-serif;
-    /* font-variant: small-caps; */
 }
 
 .item-slot-img {
@@ -344,7 +324,7 @@ body {
 
 .player-inv-info {
     position: absolute;
-    left: 18.5%;
+    left: 15.5%;
     top: 22.2%;
 }
 
@@ -402,7 +382,7 @@ body {
 
 .other-inv-info {
     position: absolute;
-    left: 54.1%;
+    left: 54.4%;
     top: 22.2%;
 }
 
@@ -410,21 +390,20 @@ body {
     font-family: 'Poppins', sans-serif;
     display: none;
     position: absolute;
-    bottom: 10%;
+    bottom: 3%;
     margin: 0 auto;
-    left: 0;
+    left: 100px;
     right: 0;
     text-align: right;
     width: 103.4vh;
     height: 23vh;
-    /* background: rgba(20,20,20,0.5); */
 }
 
 .item-info-title {
     text-transform: uppercase;
-    font-weight: 700;
+    font-weight: 900;
     font-family: sans-serif;
-    font-size: 1vh;
+    font-size: 1.3vh;
     color: white;
     font-family: 'Poppins', sans-serif;
     padding-top: 1px;
@@ -440,7 +419,7 @@ body {
 
 .item-info-description {
     text-transform: uppercase;
-    font-size: .9vh;
+    font-size: 1vh;
     font-family: 'Poppins', sans-serif;
     color: white;
     padding-top: .5vh;
@@ -905,4 +884,21 @@ body {
 
 .weapon-attachments-back:hover {
     background-color: rgb(18, 18, 18);
+}
+
+#progressbar {
+    border-radius: 50px;
+    background-color: rgba(24, 26, 30, 0.6);
+}
+.pro {
+    background: linear-gradient(to right, #389f46a9, #f35858b0 500px);
+    width: 0%;
+    height: 17px;
+    border-radius: 50px;
+}
+.pro1 {
+    background: linear-gradient(to right, #389f46a9, #f35858b0 500px);
+    width: 0%;
+    height: 17px;
+    border-radius: 50px;
 }
