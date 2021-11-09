@@ -93,7 +93,7 @@ CreateThread(function()
                     end
                     DrawText3Ds(drawpos.x, drawpos.y, drawpos.z, "Trunk")
                     if #(pos - drawpos) < 2.0 and not IsPedInAnyVehicle(ped) then
-                        CurrentVehicle = GetVehicleNumberPlateText(vehicle)
+                        CurrentVehicle = QBCore.Functions.GetPlate(vehicle)
                         showTrunkPos = false
                     end
                 else
@@ -122,7 +122,7 @@ RegisterCommand('inventory', function()
 
                 if IsPedInAnyVehicle(ped) then
                     local vehicle = GetVehiclePedIsIn(ped, false)
-                    CurrentGlovebox = GetVehicleNumberPlateText(vehicle)
+                    CurrentGlovebox = QBCore.Functions.GetPlate(vehicle)
                     curVeh = vehicle
                     CurrentVehicle = nil
                 else
@@ -135,7 +135,7 @@ RegisterCommand('inventory', function()
                         end
                         if #(pos - trunkpos) < 2.0 and not IsPedInAnyVehicle(ped) then
                             if GetVehicleDoorLockStatus(vehicle) < 2 then
-                                CurrentVehicle = GetVehicleNumberPlateText(vehicle)
+                                CurrentVehicle = QBCore.Functions.GetPlate(vehicle)
                                 curVeh = vehicle
                                 CurrentGlovebox = nil
                             else
