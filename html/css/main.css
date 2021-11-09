@@ -51,14 +51,13 @@ body {
     position: absolute;
     width: 100%;
     height: 100%;
-    /* background-color: rgb(153, 147, 147); */
 }
 
 .player-inventory {
     position: absolute;
     top: 26%;
-    left: 15.2%;
-    width: 28.8%;
+    left: 14.2%;
+    width: 28%;
     height: 47.16%;
     float: left;
     overflow-x: hidden;
@@ -69,8 +68,8 @@ body {
 .other-inventory {
     position: absolute;
     top: 26%;
-    right: 17%;
-    width: 28.8%;
+    right: 16%;
+    width: 28%;
     height: 47.16%;
     float: left;
     overflow-x: hidden;
@@ -85,7 +84,7 @@ body {
     z-index: 105;
 }
 
-.player-inventory > .item-slot > .item-slot-key p {
+.player-inventory > .item-slot > .item-slot-key > p {
     position: absolute;
     font-weight:bolder;
     color: white;
@@ -122,9 +121,9 @@ body {
     width: 9.5vh;
     height: 11.5vh;
     float: left;
-    background-color: rgba(255, 255, 255, 0.03);
+    background-color: rgba(0, 0, 0, 0.3);
     border: 1px solid rgb(68 68 68 / 40%);
-    margin: 3px;
+    margin: 2px;
     transition: opacity 0.2s;
     opacity: 1.0;
     border-bottom-left-radius: 5px;
@@ -202,6 +201,7 @@ body {
     text-transform: uppercase;
     font-size: 1.2vh;
     font-weight: 900;
+    background-color: rgba(220, 20, 60, 0.6);
     font-family: 'Poppins', sans-serif;
 }
 
@@ -251,7 +251,7 @@ body {
     right: 0.2vw;
 }
 
-.item-slot-amount p {
+.item-slot-amount > p {
     color: #ffffff;
     text-align: right;
     font-size: 0.8vh;
@@ -263,14 +263,15 @@ body {
     width: 100%;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
-    background-color: rgba(var(--main-label-color), 0.35);
+    background-color: rgba(var(--main-label-color), 0.7);
 }
 
-.item-slot-label p {
+.item-slot-label > p {
     text-transform: uppercase;
     font-weight: 900;
     color: white;
     font-size: 0.8vh;
+    padding: 3px;
     text-align: center;
     letter-spacing: 1px;
     font-family: 'Poppins', sans-serif;
@@ -279,7 +280,7 @@ body {
 
 .item-slot-quality {
     position: absolute;
-    bottom: 1.2vh;
+    bottom: 1.7vh;
     width: 100%;
     height: .3vh;
     background-color: rgba(32, 6, 6, 0.15);
@@ -294,11 +295,7 @@ body {
 }
 
 .item-slot-quality p {
-    color: rgb(247 247 247 / 0%);
-    text-align: center;
-    text-transform: uppercase;
-    line-height: 1.3vh;
-    font-family: 'Poppins', sans-serif;
+    color: transparent;
 }
 
 .item-slot-img {
@@ -312,26 +309,27 @@ body {
     position: relative;
     margin: 0 auto;
     margin-top: 21%;
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
     max-width: 100%;
     max-height: 100%;
 }
 
 .ui-draggable-dragging {
-    background: rgba(20,20,20,0.0);
+    background: rgba(0, 0, 0, 0.3);
 }
 
 .player-inv-info {
     position: absolute;
-    left: 15.5%;
+    left: 14.5%;
     top: 22.2%;
 }
 
 #player-inv-label {
     position: relative;
     color: white;
-    font-size: 11px;
+    font-size: 16px;
+    font-style: italic;
     font-family: 'Poppins', sans-serif;
     font-weight: bold;
     letter-spacing: 0.2vh;
@@ -342,7 +340,8 @@ body {
 
 #player-inv-weight {
     color: white;
-    font-size: 9px;
+    font-size: 12px;
+    font-weight: 900;
     font-family: 'Poppins', sans-serif;
     letter-spacing: 0.2vh;
     float: left;
@@ -351,7 +350,8 @@ body {
 #other-inv-label {
     position: relative;
     color: white;
-    font-size: 11px;
+    font-size: 16px;
+    font-style: italic;
     font-family: 'Poppins', sans-serif;
     font-weight: bold;
     letter-spacing: 0.2vh;
@@ -362,7 +362,8 @@ body {
 
 #other-inv-weight {
     color: white;
-    font-size: 9px;
+    font-size: 12px;
+    font-weight: 900;
     font-family: 'Poppins', sans-serif;
     letter-spacing: 0.2vh;
     float: left;
@@ -374,7 +375,7 @@ body {
     top: 12%;
 }
 
-.player-inv-weight p {
+.player-inv-weight > p {
     color: white;
     font-size: 12px;
     font-family: 'Poppins', sans-serif;
@@ -382,7 +383,7 @@ body {
 
 .other-inv-info {
     position: absolute;
-    left: 54.4%;
+    left: 56%;
     top: 22.2%;
 }
 
@@ -449,7 +450,7 @@ body {
     width: 9vh;
     height: 11vh;
     border-radius: 1px;
-    background-color: rgba(255, 255, 255, 0.03);
+    background-color: rgba(255, 255, 255, 0.3);
     border: 1px solid rgb(68 68 68 / 40%);
 }
 
@@ -497,7 +498,7 @@ body {
     left: 42%;
     width: 9vh;
     height: 11vh;
-    background-color: rgba(255, 255, 255, 0.03);
+    background-color: rgba(255, 255, 255, 0.3);
     border: 1px solid rgb(68 68 68 / 40%);
     float: left;
     margin-left: 20px;
@@ -532,7 +533,7 @@ body {
 .z-hotbar-inventory {
     display: none;
     position: absolute;
-    bottom: 10%;
+    bottom: 1%;
     margin: 0 auto;
     left: 0;
     right: 0;
@@ -540,7 +541,7 @@ body {
     z-index: 105;
 }
 
-.z-hotbar-inventory > .z-hotbar-item-slot > .z-hotbar-item-slot-key p {
+.z-hotbar-inventory > .z-hotbar-item-slot > .z-hotbar-item-slot-key > p {
     position: absolute;
     color: #ffffff;
     border-top-left-radius: 1px;
@@ -560,12 +561,13 @@ body {
     float: left;
     margin-left: 2px;
     margin-bottom: 2px;
-    border-radius: 1px;
-    background-color: rgba(255, 255, 255, 0.03);
     border: 1px solid rgb(68 68 68 / 40%);
     margin: 3px;
     transition: opacity 0.2s;
     opacity: 1.0;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
 }
 
 .z-hotbar-item-slot-amount {
@@ -574,7 +576,7 @@ body {
     right: 0.3vw;
 }
 
-.z-hotbar-item-slot-amount p {
+.z-hotbar-item-slot-amount > p {
     color: #ffffff;
     text-align: right;
     font-size: 10px;
@@ -589,10 +591,9 @@ body {
     height: fit-content;
 }
 
-.z-hotbar-item-slot-label p {
+.z-hotbar-item-slot-label > p {
     color: rgb(247, 247, 247);
     font-size: 11.5px;
-    line-height: 2.1vh;
     text-align: center;
     text-transform: lowercase;
     font-family: 'Poppins', sans-serif;
@@ -884,21 +885,4 @@ body {
 
 .weapon-attachments-back:hover {
     background-color: rgb(18, 18, 18);
-}
-
-#progressbar {
-    border-radius: 50px;
-    background-color: rgba(24, 26, 30, 0.6);
-}
-.pro {
-    background: linear-gradient(to right, #389f46a9, #f35858b0 500px);
-    width: 0%;
-    height: 17px;
-    border-radius: 50px;
-}
-.pro1 {
-    background: linear-gradient(to right, #389f46a9, #f35858b0 500px);
-    width: 0%;
-    height: 17px;
-    border-radius: 50px;
 }
