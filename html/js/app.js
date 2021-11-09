@@ -708,7 +708,7 @@ function handleDragDrop() {
             setTimeout(function() {
                 IsDragging = false;
             }, 300);
-            $(this).css("background", "rgba(235, 235, 235, 0.03)");
+            $(this).css("background", "rgba(0, 0, 0, 0.3)");
             $(this).find("img").css("filter", "brightness(100%)");
             $("#item-use").css("background", "rgba(" + InventoryOption + ", 0.3)");
         },
@@ -990,7 +990,7 @@ function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
     }
 
     $("#player-inv-weight").html(
-        "Weight: " +
+        "⚖️: " +
         (parseInt(totalWeight) / 1000).toFixed(2) +
         " / " +
         (playerMaxWeight / 1000).toFixed(2)
@@ -1003,7 +1003,7 @@ function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
     ) {
         $("#other-inv-label").html(otherLabel);
         $("#other-inv-weight").html(
-            "Weight: " +
+            "⚖️: " +
             (parseInt(totalWeightOther) / 1000).toFixed(2) +
             " / " +
             (otherMaxWeight / 1000).toFixed(2)
@@ -2186,7 +2186,7 @@ function InventoryError($elinv, $elslot) {
     setTimeout(function() {
         $elinv
             .find("[data-slot=" + $elslot + "]")
-            .css("background", "rgba(255, 255, 255, 0.03)");
+            .css("background", "rgba(255, 255, 255, 0.3)");
     }, 500);
     $.post("https://qb-inventory/PlayDropFail", JSON.stringify({}));
 }
@@ -2208,13 +2208,13 @@ var requiredItemOpen = false;
 
     Inventory.IsWeaponBlocked = function(WeaponName) {
         var DurabilityBlockedWeapons = [
-            /*             "weapon_pistol_mk2", 
+            /*             "weapon_pistol_mk2",
                               "weapon_pistol",
-                              "weapon_stungun", 
-                              "weapon_pumpshotgun", 
-                              "weapon_smg", 
-                              "weapon_carbinerifle", 
-                              "weapon_nightstick", 
+                              "weapon_stungun",
+                              "weapon_pumpshotgun",
+                              "weapon_smg",
+                              "weapon_carbinerifle",
+                              "weapon_nightstick",
                               "weapon_flashlight", */
             "weapon_unarmed",
         ];
@@ -2383,7 +2383,7 @@ var requiredItemOpen = false;
                 );
             }
             $(".other-inventory .item-slot").css({
-                "background-color": "rgba(0, 0, 0, 0.05)",
+                "background-color": "rgba(0, 0, 0, 0.3)",
             });
         }
 
@@ -2533,7 +2533,7 @@ var requiredItemOpen = false;
         }
 
         $("#player-inv-weight").html(
-            "Weight: " +
+            "⚖️: " +
             (totalWeight / 1000).toFixed(2) +
             " / " +
             (data.maxweight / 1000).toFixed(2)
@@ -2549,7 +2549,7 @@ var requiredItemOpen = false;
             } else {
                 $("#other-inv-label").html(data.other.label);
                 $("#other-inv-weight").html(
-                    "Weight: " +
+                    "⚖️: " +
                     (totalWeightOther / 1000).toFixed(2) +
                     " / " +
                     (data.other.maxweight / 1000).toFixed(2)
@@ -2560,7 +2560,7 @@ var requiredItemOpen = false;
         } else {
             $("#other-inv-label").html(Inventory.droplabel);
             $("#other-inv-weight").html(
-                "Weight: " +
+                "⚖️: " +
                 (totalWeightOther / 1000).toFixed(2) +
                 " / " +
                 (Inventory.dropmaxweight / 1000).toFixed(2)
@@ -2722,7 +2722,7 @@ var requiredItemOpen = false;
         });
 
         $("#player-inv-weight").html(
-            "Weight: " +
+            "⚖️: " +
             (totalWeight / 1000).toFixed(2) +
             " / " +
             (data.maxweight / 1000).toFixed(2)
