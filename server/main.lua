@@ -1,15 +1,13 @@
-local QBCore = exports['qb-core']:GetCoreObject()
+-- Variables
 
+local QBCore = exports['qb-core']:GetCoreObject()
 local Drops = {}
 local Trunks = {}
 local Gloveboxes = {}
 local Stashes = {}
 local ShopItems = {}
 
-RegisterNetEvent('inventory:server:addTrunkItems', function(plate, items)
-	Trunks[plate] = {}
-	Trunks[plate].items = items
-end)
+-- Functions
 
 local function recipeContains(recipe, fromItem)
 	for k, v in pairs(recipe.accept) do
@@ -20,6 +18,519 @@ local function recipeContains(recipe, fromItem)
 
 	return false
 end
+
+function hasCraftItems(source, CostItems, amount)
+	local Player = QBCore.Functions.GetPlayer(source)
+	for k, v in pairs(CostItems) do
+		if Player.Functions.GetItemByName(k) ~= nil then
+			if Player.Functions.GetItemByName(k).amount < (v * amount) then
+				return false
+			end
+		else
+			return false
+		end
+	end
+	return true
+end
+
+function IsVehicleOwned(plate)
+    local result = exports.oxmysql:scalarSync('SELECT 1 from player_vehicles WHERE plate = ?', {plate})
+    if result then return true else return false end
+end
+
+-- Shop Items
+function SetupShopItems(shop, shopItems)
+	local items = {}
+	if shopItems ~= nil and next(shopItems) ~= nil then
+		for k, item in pairs(shopItems) do
+			local itemInfo = QBCore.Shared.Items[item.name:lower()]
+			if itemInfo then
+				items[item.slot] = {
+					name = itemInfo["name"],
+					amount = tonumber(item.amount),
+					info = item.info ~= nil and item.info or "",
+					label = itemInfo["label"],
+					description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
+					weight = itemInfo["weight"],
+					type = itemInfo["type"],
+					unique = itemInfo["unique"],
+					useable = itemInfo["useable"],
+					price = item.price,
+					image = itemInfo["image"],
+					slot = item.slot,
+				}
+			end
+		end
+	end
+	return items
+end
+
+-- Stash Items
+function GetStashItems(stashId)
+	local items = {}
+	local result = exports.oxmysql:scalarSync('SELECT items FROM stashitems WHERE stash = ?', {stashId})
+	if result then
+		local stashItems = json.decode(result)
+		if stashItems then
+			for k, item in pairs(stashItems) do
+				local itemInfo = QBCore.Shared.Items[item.name:lower()]
+				if itemInfo then
+					items[item.slot] = {
+						name = itemInfo["name"],
+						amount = tonumber(item.amount),
+						info = item.info ~= nil and item.info or "",
+						label = itemInfo["label"],
+						description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
+						weight = itemInfo["weight"],
+						type = itemInfo["type"],
+						unique = itemInfo["unique"],
+						useable = itemInfo["useable"],
+						image = itemInfo["image"],
+						slot = item.slot,
+					}
+				end
+			end
+		end
+	end
+	return items
+end
+
+function SaveStashItems(stashId, items)
+	if Stashes[stashId].label ~= "Stash-None" then
+		if items ~= nil then
+			for slot, item in pairs(items) do
+				item.description = nil
+			end
+			exports.oxmysql:insert('INSERT INTO stashitems (stash, items) VALUES (:stash, :items) ON DUPLICATE KEY UPDATE items = :items', {
+				['stash'] = stashId,
+				['items'] = json.encode(items)
+			})
+			Stashes[stashId].isOpen = false
+		end
+	end
+end
+
+function AddToStash(stashId, slot, otherslot, itemName, amount, info)
+	local amount = tonumber(amount)
+	local ItemData = QBCore.Shared.Items[itemName]
+	if not ItemData.unique then
+		if Stashes[stashId].items[slot] ~= nil and Stashes[stashId].items[slot].name == itemName then
+			Stashes[stashId].items[slot].amount = Stashes[stashId].items[slot].amount + amount
+		else
+			local itemInfo = QBCore.Shared.Items[itemName:lower()]
+			Stashes[stashId].items[slot] = {
+				name = itemInfo["name"],
+				amount = amount,
+				info = info ~= nil and info or "",
+				label = itemInfo["label"],
+				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
+				image = itemInfo["image"],
+				slot = slot,
+			}
+		end
+	else
+		if Stashes[stashId].items[slot] ~= nil and Stashes[stashId].items[slot].name == itemName then
+			local itemInfo = QBCore.Shared.Items[itemName:lower()]
+			Stashes[stashId].items[otherslot] = {
+				name = itemInfo["name"],
+				amount = amount,
+				info = info ~= nil and info or "",
+				label = itemInfo["label"],
+				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
+				image = itemInfo["image"],
+				slot = otherslot,
+			}
+		else
+			local itemInfo = QBCore.Shared.Items[itemName:lower()]
+			Stashes[stashId].items[slot] = {
+				name = itemInfo["name"],
+				amount = amount,
+				info = info ~= nil and info or "",
+				label = itemInfo["label"],
+				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
+				image = itemInfo["image"],
+				slot = slot,
+			}
+		end
+	end
+end
+
+function RemoveFromStash(stashId, slot, itemName, amount)
+	local amount = tonumber(amount)
+	if Stashes[stashId].items[slot] ~= nil and Stashes[stashId].items[slot].name == itemName then
+		if Stashes[stashId].items[slot].amount > amount then
+			Stashes[stashId].items[slot].amount = Stashes[stashId].items[slot].amount - amount
+		else
+			Stashes[stashId].items[slot] = nil
+			if next(Stashes[stashId].items) == nil then
+				Stashes[stashId].items = {}
+			end
+		end
+	else
+		Stashes[stashId].items[slot] = nil
+		if Stashes[stashId].items == nil then
+			Stashes[stashId].items[slot] = nil
+		end
+	end
+end
+
+-- Trunk items
+function GetOwnedVehicleItems(plate)
+	local items = {}
+	local result = exports.oxmysql:scalarSync('SELECT items FROM trunkitems WHERE plate = ?', {plate})
+	if result then
+		local trunkItems = json.decode(result)
+		if trunkItems then
+			for k, item in pairs(trunkItems) do
+				local itemInfo = QBCore.Shared.Items[item.name:lower()]
+				if itemInfo then
+					items[item.slot] = {
+						name = itemInfo["name"],
+						amount = tonumber(item.amount),
+						info = item.info ~= nil and item.info or "",
+						label = itemInfo["label"],
+						description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
+						weight = itemInfo["weight"],
+						type = itemInfo["type"],
+						unique = itemInfo["unique"],
+						useable = itemInfo["useable"],
+						image = itemInfo["image"],
+						slot = item.slot,
+					}
+				end
+			end
+		end
+	end
+	return items
+end
+
+function SaveOwnedVehicleItems(plate, items)
+	if Trunks[plate].label ~= "Trunk-None" then
+		if items ~= nil then
+			for slot, item in pairs(items) do
+				item.description = nil
+			end
+			exports.oxmysql:insert('INSERT INTO trunkitems (plate, items) VALUES (:plate, :items) ON DUPLICATE KEY UPDATE items = :items', {
+				['plate'] = plate,
+				['items'] = json.encode(items)
+			})
+			Trunks[plate].isOpen = false
+		end
+	end
+end
+
+function AddToTrunk(plate, slot, otherslot, itemName, amount, info)
+	local amount = tonumber(amount)
+	local ItemData = QBCore.Shared.Items[itemName]
+
+	if not ItemData.unique then
+		if Trunks[plate].items[slot] ~= nil and Trunks[plate].items[slot].name == itemName then
+			Trunks[plate].items[slot].amount = Trunks[plate].items[slot].amount + amount
+		else
+			local itemInfo = QBCore.Shared.Items[itemName:lower()]
+			Trunks[plate].items[slot] = {
+				name = itemInfo["name"],
+				amount = amount,
+				info = info ~= nil and info or "",
+				label = itemInfo["label"],
+				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
+				image = itemInfo["image"],
+				slot = slot,
+			}
+		end
+	else
+		if Trunks[plate].items[slot] ~= nil and Trunks[plate].items[slot].name == itemName then
+			local itemInfo = QBCore.Shared.Items[itemName:lower()]
+			Trunks[plate].items[otherslot] = {
+				name = itemInfo["name"],
+				amount = amount,
+				info = info ~= nil and info or "",
+				label = itemInfo["label"],
+				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
+				image = itemInfo["image"],
+				slot = otherslot,
+			}
+		else
+			local itemInfo = QBCore.Shared.Items[itemName:lower()]
+			Trunks[plate].items[slot] = {
+				name = itemInfo["name"],
+				amount = amount,
+				info = info ~= nil and info or "",
+				label = itemInfo["label"],
+				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
+				image = itemInfo["image"],
+				slot = slot,
+			}
+		end
+	end
+end
+
+function RemoveFromTrunk(plate, slot, itemName, amount)
+	if Trunks[plate].items[slot] ~= nil and Trunks[plate].items[slot].name == itemName then
+		if Trunks[plate].items[slot].amount > amount then
+			Trunks[plate].items[slot].amount = Trunks[plate].items[slot].amount - amount
+		else
+			Trunks[plate].items[slot] = nil
+			if next(Trunks[plate].items) == nil then
+				Trunks[plate].items = {}
+			end
+		end
+	else
+		Trunks[plate].items[slot]= nil
+		if Trunks[plate].items == nil then
+			Trunks[plate].items[slot] = nil
+		end
+	end
+end
+
+-- Glovebox items
+function GetOwnedVehicleGloveboxItems(plate)
+	local items = {}
+	local result = exports.oxmysql:scalarSync('SELECT items FROM gloveboxitems WHERE plate = ?', {plate})
+	if result then
+		local gloveboxItems = json.decode(result)
+		if gloveboxItems then
+			for k, item in pairs(gloveboxItems) do
+				local itemInfo = QBCore.Shared.Items[item.name:lower()]
+				if itemInfo then
+					items[item.slot] = {
+						name = itemInfo["name"],
+						amount = tonumber(item.amount),
+						info = item.info ~= nil and item.info or "",
+						label = itemInfo["label"],
+						description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
+						weight = itemInfo["weight"],
+						type = itemInfo["type"],
+						unique = itemInfo["unique"],
+						useable = itemInfo["useable"],
+						image = itemInfo["image"],
+						slot = item.slot,
+					}
+				end
+			end
+		end
+	end
+	return items
+end
+
+function SaveOwnedGloveboxItems(plate, items)
+	if Gloveboxes[plate].label ~= "Glovebox-None" then
+		if items ~= nil then
+			for slot, item in pairs(items) do
+				item.description = nil
+			end
+			exports.oxmysql:insert('INSERT INTO gloveboxitems (plate, items) VALUES (:plate, :items) ON DUPLICATE KEY UPDATE items = :items', {
+				['plate'] = plate,
+				['items'] = json.encode(items)
+			})
+			Gloveboxes[plate].isOpen = false
+		end
+	end
+end
+
+function AddToGlovebox(plate, slot, otherslot, itemName, amount, info)
+	local amount = tonumber(amount)
+	local ItemData = QBCore.Shared.Items[itemName]
+
+	if not ItemData.unique then
+		if Gloveboxes[plate].items[slot] ~= nil and Gloveboxes[plate].items[slot].name == itemName then
+			Gloveboxes[plate].items[slot].amount = Gloveboxes[plate].items[slot].amount + amount
+		else
+			local itemInfo = QBCore.Shared.Items[itemName:lower()]
+			Gloveboxes[plate].items[slot] = {
+				name = itemInfo["name"],
+				amount = amount,
+				info = info ~= nil and info or "",
+				label = itemInfo["label"],
+				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
+				image = itemInfo["image"],
+				slot = slot,
+			}
+		end
+	else
+		if Gloveboxes[plate].items[slot] ~= nil and Gloveboxes[plate].items[slot].name == itemName then
+			local itemInfo = QBCore.Shared.Items[itemName:lower()]
+			Gloveboxes[plate].items[otherslot] = {
+				name = itemInfo["name"],
+				amount = amount,
+				info = info ~= nil and info or "",
+				label = itemInfo["label"],
+				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
+				image = itemInfo["image"],
+				slot = otherslot,
+			}
+		else
+			local itemInfo = QBCore.Shared.Items[itemName:lower()]
+			Gloveboxes[plate].items[slot] = {
+				name = itemInfo["name"],
+				amount = amount,
+				info = info ~= nil and info or "",
+				label = itemInfo["label"],
+				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
+				image = itemInfo["image"],
+				slot = slot,
+			}
+		end
+	end
+end
+
+function RemoveFromGlovebox(plate, slot, itemName, amount)
+	if Gloveboxes[plate].items[slot] ~= nil and Gloveboxes[plate].items[slot].name == itemName then
+		if Gloveboxes[plate].items[slot].amount > amount then
+			Gloveboxes[plate].items[slot].amount = Gloveboxes[plate].items[slot].amount - amount
+		else
+			Gloveboxes[plate].items[slot] = nil
+			if next(Gloveboxes[plate].items) == nil then
+				Gloveboxes[plate].items = {}
+			end
+		end
+	else
+		Gloveboxes[plate].items[slot]= nil
+		if Gloveboxes[plate].items == nil then
+			Gloveboxes[plate].items[slot] = nil
+		end
+	end
+end
+
+-- Drop items
+function AddToDrop(dropId, slot, itemName, amount, info)
+	local amount = tonumber(amount)
+	if Drops[dropId].items[slot] ~= nil and Drops[dropId].items[slot].name == itemName then
+		Drops[dropId].items[slot].amount = Drops[dropId].items[slot].amount + amount
+	else
+		local itemInfo = QBCore.Shared.Items[itemName:lower()]
+		Drops[dropId].items[slot] = {
+			name = itemInfo["name"],
+			amount = amount,
+			info = info ~= nil and info or "",
+			label = itemInfo["label"],
+			description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
+			weight = itemInfo["weight"],
+			type = itemInfo["type"],
+			unique = itemInfo["unique"],
+			useable = itemInfo["useable"],
+			image = itemInfo["image"],
+			slot = slot,
+			id = dropId,
+		}
+	end
+end
+
+function RemoveFromDrop(dropId, slot, itemName, amount)
+	if Drops[dropId].items[slot] ~= nil and Drops[dropId].items[slot].name == itemName then
+		if Drops[dropId].items[slot].amount > amount then
+			Drops[dropId].items[slot].amount = Drops[dropId].items[slot].amount - amount
+		else
+			Drops[dropId].items[slot] = nil
+			if next(Drops[dropId].items) == nil then
+				Drops[dropId].items = {}
+				--TriggerClientEvent("inventory:client:RemoveDropItem", -1, dropId)
+			end
+		end
+	else
+		Drops[dropId].items[slot] = nil
+		if Drops[dropId].items == nil then
+			Drops[dropId].items[slot] = nil
+			--TriggerClientEvent("inventory:client:RemoveDropItem", -1, dropId)
+		end
+	end
+end
+
+function CreateDropId()
+	if Drops ~= nil then
+		local id = math.random(10000, 99999)
+		local dropid = id
+		while Drops[dropid] ~= nil do
+			id = math.random(10000, 99999)
+			dropid = id
+		end
+		return dropid
+	else
+		local id = math.random(10000, 99999)
+		local dropid = id
+		return dropid
+	end
+end
+
+function CreateNewDrop(source, fromSlot, toSlot, itemAmount)
+	local Player = QBCore.Functions.GetPlayer(source)
+	local itemData = Player.Functions.GetItemBySlot(fromSlot)
+	local coords = GetEntityCoords(GetPlayerPed(source))
+	if Player.Functions.RemoveItem(itemData.name, itemAmount, itemData.slot) then
+		TriggerClientEvent("inventory:client:CheckWeapon", source, itemData.name)
+		local itemInfo = QBCore.Shared.Items[itemData.name:lower()]
+		local dropId = CreateDropId()
+		Drops[dropId] = {}
+		Drops[dropId].items = {}
+
+		Drops[dropId].items[toSlot] = {
+			name = itemInfo["name"],
+			amount = itemAmount,
+			info = itemData.info ~= nil and itemData.info or "",
+			label = itemInfo["label"],
+			description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
+			weight = itemInfo["weight"],
+			type = itemInfo["type"],
+			unique = itemInfo["unique"],
+			useable = itemInfo["useable"],
+			image = itemInfo["image"],
+			slot = toSlot,
+			id = dropId,
+		}
+		TriggerEvent("qb-log:server:CreateLog", "drop", "New Item Drop", "red", "**".. GetPlayerName(source) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..source.."*) dropped new item; name: **"..itemData.name.."**, amount: **" .. itemAmount .. "**")
+		TriggerClientEvent("inventory:client:DropItemAnim", source)
+		TriggerClientEvent("inventory:client:AddDropItem", -1, dropId, source, coords)
+		if itemData.name:lower() == "radio" then
+			TriggerClientEvent('Radio.Set', source, false)
+		end
+	else
+		TriggerClientEvent("QBCore:Notify", source, "You don't have this item!", "error")
+		return
+	end
+end
+
+-- Events
+
+RegisterNetEvent('inventory:server:addTrunkItems', function(plate, items)
+	Trunks[plate] = {}
+	Trunks[plate].items = items
+end)
 
 RegisterNetEvent('inventory:server:combineItem', function(item, fromItem, toItem)
 	local src = source
@@ -351,7 +862,6 @@ RegisterNetEvent('inventory:server:UseItem', function(inventory, item)
 		end
 	end
 end)
-
 
 RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, toInventory, fromSlot, toSlot, fromAmount, toAmount)
 	local src = source
@@ -885,86 +1395,6 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 	end
 end)
 
-function hasCraftItems(source, CostItems, amount)
-	local Player = QBCore.Functions.GetPlayer(source)
-	for k, v in pairs(CostItems) do
-		if Player.Functions.GetItemByName(k) ~= nil then
-			if Player.Functions.GetItemByName(k).amount < (v * amount) then
-				return false
-			end
-		else
-			return false
-		end
-	end
-	return true
-end
-
-function IsVehicleOwned(plate)
-    local result = exports.oxmysql:scalarSync('SELECT 1 from player_vehicles WHERE plate = ?', {plate})
-    if result then return true else return false end
-end
-
--- Shop Items
-function SetupShopItems(shop, shopItems)
-	local items = {}
-	if shopItems ~= nil and next(shopItems) ~= nil then
-		for k, item in pairs(shopItems) do
-			local itemInfo = QBCore.Shared.Items[item.name:lower()]
-			if itemInfo then
-				items[item.slot] = {
-					name = itemInfo["name"],
-					amount = tonumber(item.amount),
-					info = item.info ~= nil and item.info or "",
-					label = itemInfo["label"],
-					description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-					weight = itemInfo["weight"],
-					type = itemInfo["type"],
-					unique = itemInfo["unique"],
-					useable = itemInfo["useable"],
-					price = item.price,
-					image = itemInfo["image"],
-					slot = item.slot,
-				}
-			end
-		end
-	end
-	return items
-end
-
--- Stash Items
-function GetStashItems(stashId)
-	local items = {}
-	local result = exports.oxmysql:scalarSync('SELECT items FROM stashitems WHERE stash = ?', {stashId})
-	if result then
-		local stashItems = json.decode(result)
-		if stashItems then
-			for k, item in pairs(stashItems) do
-				local itemInfo = QBCore.Shared.Items[item.name:lower()]
-				if itemInfo then
-					items[item.slot] = {
-						name = itemInfo["name"],
-						amount = tonumber(item.amount),
-						info = item.info ~= nil and item.info or "",
-						label = itemInfo["label"],
-						description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-						weight = itemInfo["weight"],
-						type = itemInfo["type"],
-						unique = itemInfo["unique"],
-						useable = itemInfo["useable"],
-						image = itemInfo["image"],
-						slot = item.slot,
-					}
-				end
-			end
-		end
-	end
-	return items
-end
-
-QBCore.Functions.CreateCallback('qb-inventory:server:GetStashItems', function(source, cb, stashId)
-	cb(GetStashItems(stashId))
-end)
-
 RegisterNetEvent('qb-inventory:server:SaveStashItems', function(stashId, items)
     exports.oxmysql:insert('INSERT INTO stashitems (stash, items) VALUES (:stash, :items) ON DUPLICATE KEY UPDATE items = :items', {
         ['stash'] = stashId,
@@ -972,435 +1402,13 @@ RegisterNetEvent('qb-inventory:server:SaveStashItems', function(stashId, items)
     })
 end)
 
-function SaveStashItems(stashId, items)
-	if Stashes[stashId].label ~= "Stash-None" then
-		if items ~= nil then
-			for slot, item in pairs(items) do
-				item.description = nil
-			end
-			exports.oxmysql:insert('INSERT INTO stashitems (stash, items) VALUES (:stash, :items) ON DUPLICATE KEY UPDATE items = :items', {
-				['stash'] = stashId,
-				['items'] = json.encode(items)
-			})
-			Stashes[stashId].isOpen = false
-		end
-	end
-end
+-- callback
 
-function AddToStash(stashId, slot, otherslot, itemName, amount, info)
-	local amount = tonumber(amount)
-	local ItemData = QBCore.Shared.Items[itemName]
-	if not ItemData.unique then
-		if Stashes[stashId].items[slot] ~= nil and Stashes[stashId].items[slot].name == itemName then
-			Stashes[stashId].items[slot].amount = Stashes[stashId].items[slot].amount + amount
-		else
-			local itemInfo = QBCore.Shared.Items[itemName:lower()]
-			Stashes[stashId].items[slot] = {
-				name = itemInfo["name"],
-				amount = amount,
-				info = info ~= nil and info or "",
-				label = itemInfo["label"],
-				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"],
-				type = itemInfo["type"],
-				unique = itemInfo["unique"],
-				useable = itemInfo["useable"],
-				image = itemInfo["image"],
-				slot = slot,
-			}
-		end
-	else
-		if Stashes[stashId].items[slot] ~= nil and Stashes[stashId].items[slot].name == itemName then
-			local itemInfo = QBCore.Shared.Items[itemName:lower()]
-			Stashes[stashId].items[otherslot] = {
-				name = itemInfo["name"],
-				amount = amount,
-				info = info ~= nil and info or "",
-				label = itemInfo["label"],
-				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"],
-				type = itemInfo["type"],
-				unique = itemInfo["unique"],
-				useable = itemInfo["useable"],
-				image = itemInfo["image"],
-				slot = otherslot,
-			}
-		else
-			local itemInfo = QBCore.Shared.Items[itemName:lower()]
-			Stashes[stashId].items[slot] = {
-				name = itemInfo["name"],
-				amount = amount,
-				info = info ~= nil and info or "",
-				label = itemInfo["label"],
-				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"],
-				type = itemInfo["type"],
-				unique = itemInfo["unique"],
-				useable = itemInfo["useable"],
-				image = itemInfo["image"],
-				slot = slot,
-			}
-		end
-	end
-end
+QBCore.Functions.CreateCallback('qb-inventory:server:GetStashItems', function(source, cb, stashId)
+	cb(GetStashItems(stashId))
+end)
 
-function RemoveFromStash(stashId, slot, itemName, amount)
-	local amount = tonumber(amount)
-	if Stashes[stashId].items[slot] ~= nil and Stashes[stashId].items[slot].name == itemName then
-		if Stashes[stashId].items[slot].amount > amount then
-			Stashes[stashId].items[slot].amount = Stashes[stashId].items[slot].amount - amount
-		else
-			Stashes[stashId].items[slot] = nil
-			if next(Stashes[stashId].items) == nil then
-				Stashes[stashId].items = {}
-			end
-		end
-	else
-		Stashes[stashId].items[slot] = nil
-		if Stashes[stashId].items == nil then
-			Stashes[stashId].items[slot] = nil
-		end
-	end
-end
-
--- Trunk items
-function GetOwnedVehicleItems(plate)
-	local items = {}
-	local result = exports.oxmysql:scalarSync('SELECT items FROM trunkitems WHERE plate = ?', {plate})
-	if result then
-		local trunkItems = json.decode(result)
-		if trunkItems then
-			for k, item in pairs(trunkItems) do
-				local itemInfo = QBCore.Shared.Items[item.name:lower()]
-				if itemInfo then
-					items[item.slot] = {
-						name = itemInfo["name"],
-						amount = tonumber(item.amount),
-						info = item.info ~= nil and item.info or "",
-						label = itemInfo["label"],
-						description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-						weight = itemInfo["weight"],
-						type = itemInfo["type"],
-						unique = itemInfo["unique"],
-						useable = itemInfo["useable"],
-						image = itemInfo["image"],
-						slot = item.slot,
-					}
-				end
-			end
-		end
-	end
-	return items
-end
-
-function SaveOwnedVehicleItems(plate, items)
-	if Trunks[plate].label ~= "Trunk-None" then
-		if items ~= nil then
-			for slot, item in pairs(items) do
-				item.description = nil
-			end
-			exports.oxmysql:insert('INSERT INTO trunkitems (plate, items) VALUES (:plate, :items) ON DUPLICATE KEY UPDATE items = :items', {
-				['plate'] = plate,
-				['items'] = json.encode(items)
-			})
-			Trunks[plate].isOpen = false
-		end
-	end
-end
-
-function AddToTrunk(plate, slot, otherslot, itemName, amount, info)
-	local amount = tonumber(amount)
-	local ItemData = QBCore.Shared.Items[itemName]
-
-	if not ItemData.unique then
-		if Trunks[plate].items[slot] ~= nil and Trunks[plate].items[slot].name == itemName then
-			Trunks[plate].items[slot].amount = Trunks[plate].items[slot].amount + amount
-		else
-			local itemInfo = QBCore.Shared.Items[itemName:lower()]
-			Trunks[plate].items[slot] = {
-				name = itemInfo["name"],
-				amount = amount,
-				info = info ~= nil and info or "",
-				label = itemInfo["label"],
-				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"],
-				type = itemInfo["type"],
-				unique = itemInfo["unique"],
-				useable = itemInfo["useable"],
-				image = itemInfo["image"],
-				slot = slot,
-			}
-		end
-	else
-		if Trunks[plate].items[slot] ~= nil and Trunks[plate].items[slot].name == itemName then
-			local itemInfo = QBCore.Shared.Items[itemName:lower()]
-			Trunks[plate].items[otherslot] = {
-				name = itemInfo["name"],
-				amount = amount,
-				info = info ~= nil and info or "",
-				label = itemInfo["label"],
-				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"],
-				type = itemInfo["type"],
-				unique = itemInfo["unique"],
-				useable = itemInfo["useable"],
-				image = itemInfo["image"],
-				slot = otherslot,
-			}
-		else
-			local itemInfo = QBCore.Shared.Items[itemName:lower()]
-			Trunks[plate].items[slot] = {
-				name = itemInfo["name"],
-				amount = amount,
-				info = info ~= nil and info or "",
-				label = itemInfo["label"],
-				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"],
-				type = itemInfo["type"],
-				unique = itemInfo["unique"],
-				useable = itemInfo["useable"],
-				image = itemInfo["image"],
-				slot = slot,
-			}
-		end
-	end
-end
-
-function RemoveFromTrunk(plate, slot, itemName, amount)
-	if Trunks[plate].items[slot] ~= nil and Trunks[plate].items[slot].name == itemName then
-		if Trunks[plate].items[slot].amount > amount then
-			Trunks[plate].items[slot].amount = Trunks[plate].items[slot].amount - amount
-		else
-			Trunks[plate].items[slot] = nil
-			if next(Trunks[plate].items) == nil then
-				Trunks[plate].items = {}
-			end
-		end
-	else
-		Trunks[plate].items[slot]= nil
-		if Trunks[plate].items == nil then
-			Trunks[plate].items[slot] = nil
-		end
-	end
-end
-
--- Glovebox items
-function GetOwnedVehicleGloveboxItems(plate)
-	local items = {}
-	local result = exports.oxmysql:scalarSync('SELECT items FROM gloveboxitems WHERE plate = ?', {plate})
-	if result then
-		local gloveboxItems = json.decode(result)
-		if gloveboxItems then
-			for k, item in pairs(gloveboxItems) do
-				local itemInfo = QBCore.Shared.Items[item.name:lower()]
-				if itemInfo then
-					items[item.slot] = {
-						name = itemInfo["name"],
-						amount = tonumber(item.amount),
-						info = item.info ~= nil and item.info or "",
-						label = itemInfo["label"],
-						description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-						weight = itemInfo["weight"],
-						type = itemInfo["type"],
-						unique = itemInfo["unique"],
-						useable = itemInfo["useable"],
-						image = itemInfo["image"],
-						slot = item.slot,
-					}
-				end
-			end
-		end
-	end
-	return items
-end
-
-function SaveOwnedGloveboxItems(plate, items)
-	if Gloveboxes[plate].label ~= "Glovebox-None" then
-		if items ~= nil then
-			for slot, item in pairs(items) do
-				item.description = nil
-			end
-			exports.oxmysql:insert('INSERT INTO gloveboxitems (plate, items) VALUES (:plate, :items) ON DUPLICATE KEY UPDATE items = :items', {
-				['plate'] = plate,
-				['items'] = json.encode(items)
-			})
-			Gloveboxes[plate].isOpen = false
-		end
-	end
-end
-
-function AddToGlovebox(plate, slot, otherslot, itemName, amount, info)
-	local amount = tonumber(amount)
-	local ItemData = QBCore.Shared.Items[itemName]
-
-	if not ItemData.unique then
-		if Gloveboxes[plate].items[slot] ~= nil and Gloveboxes[plate].items[slot].name == itemName then
-			Gloveboxes[plate].items[slot].amount = Gloveboxes[plate].items[slot].amount + amount
-		else
-			local itemInfo = QBCore.Shared.Items[itemName:lower()]
-			Gloveboxes[plate].items[slot] = {
-				name = itemInfo["name"],
-				amount = amount,
-				info = info ~= nil and info or "",
-				label = itemInfo["label"],
-				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"],
-				type = itemInfo["type"],
-				unique = itemInfo["unique"],
-				useable = itemInfo["useable"],
-				image = itemInfo["image"],
-				slot = slot,
-			}
-		end
-	else
-		if Gloveboxes[plate].items[slot] ~= nil and Gloveboxes[plate].items[slot].name == itemName then
-			local itemInfo = QBCore.Shared.Items[itemName:lower()]
-			Gloveboxes[plate].items[otherslot] = {
-				name = itemInfo["name"],
-				amount = amount,
-				info = info ~= nil and info or "",
-				label = itemInfo["label"],
-				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"],
-				type = itemInfo["type"],
-				unique = itemInfo["unique"],
-				useable = itemInfo["useable"],
-				image = itemInfo["image"],
-				slot = otherslot,
-			}
-		else
-			local itemInfo = QBCore.Shared.Items[itemName:lower()]
-			Gloveboxes[plate].items[slot] = {
-				name = itemInfo["name"],
-				amount = amount,
-				info = info ~= nil and info or "",
-				label = itemInfo["label"],
-				description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-				weight = itemInfo["weight"],
-				type = itemInfo["type"],
-				unique = itemInfo["unique"],
-				useable = itemInfo["useable"],
-				image = itemInfo["image"],
-				slot = slot,
-			}
-		end
-	end
-end
-
-function RemoveFromGlovebox(plate, slot, itemName, amount)
-	if Gloveboxes[plate].items[slot] ~= nil and Gloveboxes[plate].items[slot].name == itemName then
-		if Gloveboxes[plate].items[slot].amount > amount then
-			Gloveboxes[plate].items[slot].amount = Gloveboxes[plate].items[slot].amount - amount
-		else
-			Gloveboxes[plate].items[slot] = nil
-			if next(Gloveboxes[plate].items) == nil then
-				Gloveboxes[plate].items = {}
-			end
-		end
-	else
-		Gloveboxes[plate].items[slot]= nil
-		if Gloveboxes[plate].items == nil then
-			Gloveboxes[plate].items[slot] = nil
-		end
-	end
-end
-
--- Drop items
-function AddToDrop(dropId, slot, itemName, amount, info)
-	local amount = tonumber(amount)
-	if Drops[dropId].items[slot] ~= nil and Drops[dropId].items[slot].name == itemName then
-		Drops[dropId].items[slot].amount = Drops[dropId].items[slot].amount + amount
-	else
-		local itemInfo = QBCore.Shared.Items[itemName:lower()]
-		Drops[dropId].items[slot] = {
-			name = itemInfo["name"],
-			amount = amount,
-			info = info ~= nil and info or "",
-			label = itemInfo["label"],
-			description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-			weight = itemInfo["weight"],
-			type = itemInfo["type"],
-			unique = itemInfo["unique"],
-			useable = itemInfo["useable"],
-			image = itemInfo["image"],
-			slot = slot,
-			id = dropId,
-		}
-	end
-end
-
-function RemoveFromDrop(dropId, slot, itemName, amount)
-	if Drops[dropId].items[slot] ~= nil and Drops[dropId].items[slot].name == itemName then
-		if Drops[dropId].items[slot].amount > amount then
-			Drops[dropId].items[slot].amount = Drops[dropId].items[slot].amount - amount
-		else
-			Drops[dropId].items[slot] = nil
-			if next(Drops[dropId].items) == nil then
-				Drops[dropId].items = {}
-				--TriggerClientEvent("inventory:client:RemoveDropItem", -1, dropId)
-			end
-		end
-	else
-		Drops[dropId].items[slot] = nil
-		if Drops[dropId].items == nil then
-			Drops[dropId].items[slot] = nil
-			--TriggerClientEvent("inventory:client:RemoveDropItem", -1, dropId)
-		end
-	end
-end
-
-function CreateDropId()
-	if Drops ~= nil then
-		local id = math.random(10000, 99999)
-		local dropid = id
-		while Drops[dropid] ~= nil do
-			id = math.random(10000, 99999)
-			dropid = id
-		end
-		return dropid
-	else
-		local id = math.random(10000, 99999)
-		local dropid = id
-		return dropid
-	end
-end
-
-function CreateNewDrop(source, fromSlot, toSlot, itemAmount)
-	local Player = QBCore.Functions.GetPlayer(source)
-	local itemData = Player.Functions.GetItemBySlot(fromSlot)
-	local coords = GetEntityCoords(GetPlayerPed(source))
-	if Player.Functions.RemoveItem(itemData.name, itemAmount, itemData.slot) then
-		TriggerClientEvent("inventory:client:CheckWeapon", source, itemData.name)
-		local itemInfo = QBCore.Shared.Items[itemData.name:lower()]
-		local dropId = CreateDropId()
-		Drops[dropId] = {}
-		Drops[dropId].items = {}
-
-		Drops[dropId].items[toSlot] = {
-			name = itemInfo["name"],
-			amount = itemAmount,
-			info = itemData.info ~= nil and itemData.info or "",
-			label = itemInfo["label"],
-			description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
-			weight = itemInfo["weight"],
-			type = itemInfo["type"],
-			unique = itemInfo["unique"],
-			useable = itemInfo["useable"],
-			image = itemInfo["image"],
-			slot = toSlot,
-			id = dropId,
-		}
-		TriggerEvent("qb-log:server:CreateLog", "drop", "New Item Drop", "red", "**".. GetPlayerName(source) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..source.."*) dropped new item; name: **"..itemData.name.."**, amount: **" .. itemAmount .. "**")
-		TriggerClientEvent("inventory:client:DropItemAnim", source)
-		TriggerClientEvent("inventory:client:AddDropItem", -1, dropId, source, coords)
-		if itemData.name:lower() == "radio" then
-			TriggerClientEvent('Radio.Set', source, false)
-		end
-	else
-		TriggerClientEvent("QBCore:Notify", source, "You don't have this item!", "error")
-		return
-	end
-end
+-- command
 
 QBCore.Commands.Add("resetinv", "Reset Inventory (Admin Only)", {{name="type", help="stash/trunk/glovebox"},{name="id/plate", help="ID of stash or license plate"}}, true, function(source, args)
 	local invType = args[1]:lower()
@@ -1505,6 +1513,8 @@ QBCore.Commands.Add("randomitems", "Give Random Items (God Only)", {}, false, fu
 		end
 	end
 end, "god")
+
+-- item
 
 QBCore.Functions.CreateUseableItem("snowball", function(source, item)
 	local Player = QBCore.Functions.GetPlayer(source)
