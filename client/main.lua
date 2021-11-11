@@ -1,5 +1,6 @@
-local QBCore = exports['qb-core']:GetCoreObject()
+-- Variables
 
+local QBCore = exports['qb-core']:GetCoreObject()
 local inInventory = false
 local currentWeapon = nil
 local CurrentWeaponData = {}
@@ -13,6 +14,134 @@ local CurrentStash = nil
 local isCrafting = false
 local isHotbar = false
 local showTrunkPos = false
+
+-- Functions
+
+function GetClosestVending()
+    local ped = PlayerPedId()
+    local pos = GetEntityCoords(ped)
+    local object = nil
+    for _, machine in pairs(Config.VendingObjects) do
+        local ClosestObject = GetClosestObjectOfType(pos.x, pos.y, pos.z, 0.75, GetHashKey(machine), 0, 0, 0)
+        if ClosestObject ~= 0 and ClosestObject ~= nil then
+            if object == nil then
+                object = ClosestObject
+            end
+        end
+    end
+    return object
+end
+
+function DrawText3Ds(x, y, z, text)
+	SetTextScale(0.35, 0.35)
+    SetTextFont(4)
+    SetTextProportional(1)
+    SetTextColour(255, 255, 255, 215)
+    SetTextEntry("STRING")
+    SetTextCentre(true)
+    AddTextComponentString(text)
+    SetDrawOrigin(x,y,z, 0)
+    DrawText(0.0, 0.0)
+    local factor = (string.len(text)) / 370
+    DrawRect(0.0, 0.0+0.0125, 0.017+ factor, 0.03, 0, 0, 0, 75)
+    ClearDrawOrigin()
+end
+
+function FormatWeaponAttachments(itemdata)
+    local attachments = {}
+    itemdata.name = itemdata.name:upper()
+    if itemdata.info.attachments ~= nil and next(itemdata.info.attachments) ~= nil then
+        for k, v in pairs(itemdata.info.attachments) do
+            if WeaponAttachments[itemdata.name] ~= nil then
+                for key, value in pairs(WeaponAttachments[itemdata.name]) do
+                    if value.component == v.component then
+                        attachments[#attachments+1] = {
+                            attachment = key,
+                            label = value.label
+                        }
+                    end
+                end
+            end
+        end
+    end
+    return attachments
+end
+
+function OpenTrunk()
+    local vehicle = QBCore.Functions.GetClosestVehicle()
+    while (not HasAnimDictLoaded("amb@prop_human_bum_bin@idle_b")) do
+        RequestAnimDict("amb@prop_human_bum_bin@idle_b")
+        Wait(100)
+    end
+    TaskPlayAnim(PlayerPedId(), "amb@prop_human_bum_bin@idle_b", "idle_d", 4.0, 4.0, -1, 50, 0, false, false, false)
+    if (IsBackEngine(GetEntityModel(vehicle))) then
+        SetVehicleDoorOpen(vehicle, 4, false, false)
+    else
+        SetVehicleDoorOpen(vehicle, 5, false, false)
+    end
+end
+
+function CloseTrunk()
+    local vehicle = QBCore.Functions.GetClosestVehicle()
+    while (not HasAnimDictLoaded("amb@prop_human_bum_bin@idle_b")) do
+        RequestAnimDict("amb@prop_human_bum_bin@idle_b")
+        Wait(100)
+    end
+    TaskPlayAnim(PlayerPedId(), "amb@prop_human_bum_bin@idle_b", "exit", 4.0, 4.0, -1, 50, 0, false, false, false)
+    if (IsBackEngine(GetEntityModel(vehicle))) then
+        SetVehicleDoorShut(vehicle, 4, false)
+    else
+        SetVehicleDoorShut(vehicle, 5, false)
+    end
+end
+
+function IsBackEngine(vehModel)
+    for _, model in pairs(BackEngineVehicles) do
+        if GetHashKey(model) == vehModel then
+            return true
+        end
+    end
+    return false
+end
+
+function closeInventory()
+    SendNUIMessage({
+        action = "close",
+    })
+end
+
+function ToggleHotbar(toggle)
+    local HotbarItems = {
+        [1] = QBCore.Functions.GetPlayerData().items[1],
+        [2] = QBCore.Functions.GetPlayerData().items[2],
+        [3] = QBCore.Functions.GetPlayerData().items[3],
+        [4] = QBCore.Functions.GetPlayerData().items[4],
+        [5] = QBCore.Functions.GetPlayerData().items[5],
+        [41] = QBCore.Functions.GetPlayerData().items[41],
+    }
+
+    if toggle then
+        SendNUIMessage({
+            action = "toggleHotbar",
+            open = true,
+            items = HotbarItems
+        })
+    else
+        SendNUIMessage({
+            action = "toggleHotbar",
+            open = false,
+        })
+    end
+end
+
+function LoadAnimDict( dict )
+    while ( not HasAnimDictLoaded( dict ) ) do
+        RequestAnimDict( dict )
+        Wait( 5 )
+    end
+end
+
+-- Events
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
     LocalPlayer.state:set("inv_busy", false, true)
@@ -47,215 +176,6 @@ RegisterNetEvent('weapons:client:SetCurrentWeapon', function(data, bool)
     end
 end)
 
-function GetClosestVending()
-    local ped = PlayerPedId()
-    local pos = GetEntityCoords(ped)
-    local object = nil
-    for _, machine in pairs(Config.VendingObjects) do
-        local ClosestObject = GetClosestObjectOfType(pos.x, pos.y, pos.z, 0.75, GetHashKey(machine), 0, 0, 0)
-        if ClosestObject ~= 0 and ClosestObject ~= nil then
-            if object == nil then
-                object = ClosestObject
-            end
-        end
-    end
-    return object
-end
-
-function DrawText3Ds(x, y, z, text)
-	SetTextScale(0.35, 0.35)
-    SetTextFont(4)
-    SetTextProportional(1)
-    SetTextColour(255, 255, 255, 215)
-    SetTextEntry("STRING")
-    SetTextCentre(true)
-    AddTextComponentString(text)
-    SetDrawOrigin(x,y,z, 0)
-    DrawText(0.0, 0.0)
-    local factor = (string.len(text)) / 370
-    DrawRect(0.0, 0.0+0.0125, 0.017+ factor, 0.03, 0, 0, 0, 75)
-    ClearDrawOrigin()
-end
-
-CreateThread(function()
-    while true do
-        Wait(7)
-        if showTrunkPos and not inInventory then
-            local vehicle = QBCore.Functions.GetClosestVehicle()
-            if vehicle ~= 0 and vehicle ~= nil then
-                local ped = PlayerPedId()
-                local pos = GetEntityCoords(ped)
-                local vehpos = GetEntityCoords(vehicle)
-                if #(pos - vehpos) < 5.0 and not IsPedInAnyVehicle(ped) then
-                    local drawpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, -2.5, 0)
-                    if (IsBackEngine(GetEntityModel(vehicle))) then
-                        drawpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, 2.5, 0)
-                    end
-                    DrawText3Ds(drawpos.x, drawpos.y, drawpos.z, "Trunk")
-                    if #(pos - drawpos) < 2.0 and not IsPedInAnyVehicle(ped) then
-                        CurrentVehicle = QBCore.Functions.GetPlate(vehicle)
-                        showTrunkPos = false
-                    end
-                else
-                    showTrunkPos = false
-                end
-            end
-        end
-    end
-end)
-
--- CloseInventory very rare if scuff
-RegisterCommand('closeinv', function()
-    closeInventory()
-end, false)
-
--- Inventory Main Thread
-RegisterCommand('inventory', function()
-    if not isCrafting and not inInventory then
-        QBCore.Functions.GetPlayerData(function(PlayerData)
-            if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() then
-                local ped = PlayerPedId()
-                local curVeh = nil
-                local VendingMachine = GetClosestVending()
-
-                -- Is Player In Vehicle
-
-                if IsPedInAnyVehicle(ped) then
-                    local vehicle = GetVehiclePedIsIn(ped, false)
-                    CurrentGlovebox = QBCore.Functions.GetPlate(vehicle)
-                    curVeh = vehicle
-                    CurrentVehicle = nil
-                else
-                    local vehicle = QBCore.Functions.GetClosestVehicle()
-                    if vehicle ~= 0 and vehicle ~= nil then
-                        local pos = GetEntityCoords(ped)
-                        local trunkpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, -2.5, 0)
-                        if (IsBackEngine(GetEntityModel(vehicle))) then
-                            trunkpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, 2.5, 0)
-                        end
-                        if #(pos - trunkpos) < 2.0 and not IsPedInAnyVehicle(ped) then
-                            if GetVehicleDoorLockStatus(vehicle) < 2 then
-                                CurrentVehicle = QBCore.Functions.GetPlate(vehicle)
-                                curVeh = vehicle
-                                CurrentGlovebox = nil
-                            else
-                                QBCore.Functions.Notify("Vehicle Locked", "error")
-                                return
-                            end
-                        else
-                            CurrentVehicle = nil
-                        end
-                    else
-                        CurrentVehicle = nil
-                    end
-                end
-
-                -- Trunk
-
-                if CurrentVehicle ~= nil then
-                    local vehicleClass = GetVehicleClass(curVeh)
-                    local maxweight = 0
-                    local slots = 0
-                    if vehicleClass == 0 then
-                        maxweight = 38000
-                        slots = 30
-                    elseif vehicleClass == 1 then
-                        maxweight = 50000
-                        slots = 40
-                    elseif vehicleClass == 2 then
-                        maxweight = 75000
-                        slots = 50
-                    elseif vehicleClass == 3 then
-                        maxweight = 42000
-                        slots = 35
-                    elseif vehicleClass == 4 then
-                        maxweight = 38000
-                        slots = 30
-                    elseif vehicleClass == 5 then
-                        maxweight = 30000
-                        slots = 25
-                    elseif vehicleClass == 6 then
-                        maxweight = 30000
-                        slots = 25
-                    elseif vehicleClass == 7 then
-                        maxweight = 30000
-                        slots = 25
-                    elseif vehicleClass == 8 then
-                        maxweight = 15000
-                        slots = 15
-                    elseif vehicleClass == 9 then
-                        maxweight = 60000
-                        slots = 35
-                    elseif vehicleClass == 12 then
-                        maxweight = 120000
-                        slots = 35
-		    elseif vehicleClass == 13 then
-                        maxweight = 0
-                        slots = 0
-                    elseif vehicleClass == 14 then
-                        maxweight = 120000
-                        slots = 50
-                    elseif vehicleClass == 15 then
-                        maxweight = 120000
-                        slots = 50
-                    elseif vehicleClass == 16 then
-                        maxweight = 120000
-                        slots = 50
-                    else
-                        maxweight = 60000
-                        slots = 35
-                    end
-                    local other = {
-                        maxweight = maxweight,
-                        slots = slots,
-                    }
-                    TriggerServerEvent("inventory:server:OpenInventory", "trunk", CurrentVehicle, other)
-                    OpenTrunk()
-                elseif CurrentGlovebox ~= nil then
-                    TriggerServerEvent("inventory:server:OpenInventory", "glovebox", CurrentGlovebox)
-                elseif CurrentDrop ~= 0 then
-                    TriggerServerEvent("inventory:server:OpenInventory", "drop", CurrentDrop)
-                elseif VendingMachine ~= nil then
-                    local ShopItems = {}
-                    ShopItems.label = "Vending Machine"
-                    ShopItems.items = Config.VendingItem
-                    ShopItems.slots = #Config.VendingItem
-                    TriggerServerEvent("inventory:server:OpenInventory", "shop", "Vendingshop_"..math.random(1, 99), ShopItems)
-                else
-                    TriggerServerEvent("inventory:server:OpenInventory")
-                end
-            end
-        end)
-    end
-end)
-
-RegisterKeyMapping('inventory', 'Open Inventory', 'keyboard', 'TAB')
-
-RegisterCommand('hotbar', function()
-    isHotbar = not isHotbar
-	QBCore.Functions.GetPlayerData(function(PlayerData)
-        if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() then
-			ToggleHotbar(isHotbar)
-		end
-	end)
-end)
-
-RegisterKeyMapping('hotbar', 'Toggles keybind slots', 'keyboard', 'z')
-
-for i=1, 6 do
-    RegisterCommand('slot' .. i,function()
-        QBCore.Functions.GetPlayerData(function(PlayerData)
-            if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() then
-                if i == 6 then
-                    i = MaxInventorySlots
-                end
-                TriggerServerEvent("inventory:server:UseItemSlot", i)
-            end
-        end)
-    end)
-    RegisterKeyMapping('slot' .. i, 'Uses the item in slot ' .. i, 'keyboard', i)
-end
-
 RegisterNetEvent('inventory:client:ItemBox', function(itemData, type)
     SendNUIMessage({
         action = "itemBox",
@@ -263,7 +183,6 @@ RegisterNetEvent('inventory:client:ItemBox', function(itemData, type)
         type = type
     })
 end)
-
 
 RegisterNetEvent('inventory:client:requiredItems', function(items, bool)
     local itemTable = {}
@@ -284,58 +203,11 @@ RegisterNetEvent('inventory:client:requiredItems', function(items, bool)
     })
 end)
 
-CreateThread(function()
-    while true do
-        Wait(1)
-        if DropsNear ~= nil then
-            for k, v in pairs(DropsNear) do
-                if DropsNear[k] ~= nil then
-                    DrawMarker(2, v.coords.x, v.coords.y, v.coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.15, 120, 10, 20, 155, false, false, false, 1, false, false, false)
-                end
-            end
-        end
-    end
-end)
-
-CreateThread(function()
-    while true do
-        if Drops ~= nil and next(Drops) ~= nil then
-            local pos = GetEntityCoords(PlayerPedId(), true)
-            for k, v in pairs(Drops) do
-                if Drops[k] ~= nil then
-                    local dist = #(pos - vector3(v.coords.x, v.coords.y, v.coords.z))
-                    if dist < 7.5 then
-                        DropsNear[k] = v
-                        if dist < 2 then
-                            CurrentDrop = k
-                        else
-                            CurrentDrop = nil
-                        end
-                    else
-                        DropsNear[k] = nil
-                    end
-                end
-            end
-        else
-            DropsNear = {}
-        end
-        Wait(500)
-    end
-end)
-
 RegisterNetEvent('inventory:server:RobPlayer', function(TargetId)
     SendNUIMessage({
         action = "RobMoney",
         TargetId = TargetId,
     })
-end)
-
-RegisterNUICallback('RobMoney', function(data, cb)
-    TriggerServerEvent("police:server:RobPlayer", data.TargetId)
-end)
-
-RegisterNUICallback('Notify', function(data, cb)
-    QBCore.Functions.Notify(data.message, data.type)
 end)
 
 RegisterNetEvent('inventory:client:OpenInventory', function(PlayerAmmo, inventory, other)
@@ -494,65 +366,6 @@ RegisterNetEvent('inventory:client:UseWeapon', function(weaponData, shootbool)
     end
 end)
 
-function FormatWeaponAttachments(itemdata)
-    local attachments = {}
-    itemdata.name = itemdata.name:upper()
-    if itemdata.info.attachments ~= nil and next(itemdata.info.attachments) ~= nil then
-        for k, v in pairs(itemdata.info.attachments) do
-            if WeaponAttachments[itemdata.name] ~= nil then
-                for key, value in pairs(WeaponAttachments[itemdata.name]) do
-                    if value.component == v.component then
-                        attachments[#attachments+1] = {
-                            attachment = key,
-                            label = value.label
-                        }
-                    end
-                end
-            end
-        end
-    end
-    return attachments
-end
-
-RegisterNUICallback('GetWeaponData', function(data, cb)
-    local data = {
-        WeaponData = QBCore.Shared.Items[data.weapon],
-        AttachmentData = FormatWeaponAttachments(data.ItemData)
-    }
-    cb(data)
-end)
-
-RegisterNUICallback('RemoveAttachment', function(data, cb)
-    local ped = PlayerPedId()
-    local WeaponData = QBCore.Shared.Items[data.WeaponData.name]
-    local Attachment = WeaponAttachments[WeaponData.name:upper()][data.AttachmentData.attachment]
-
-    QBCore.Functions.TriggerCallback('weapons:server:RemoveAttachment', function(NewAttachments)
-        if NewAttachments ~= false then
-            local Attachies = {}
-            RemoveWeaponComponentFromPed(ped, GetHashKey(data.WeaponData.name), GetHashKey(Attachment.component))
-            for k, v in pairs(NewAttachments) do
-                for wep, pew in pairs(WeaponAttachments[WeaponData.name:upper()]) do
-                    if v.component == pew.component then
-                        Attachies[#Attachies+1] = {
-                            attachment = pew.item,
-                            label = pew.label,
-                        }
-                    end
-                end
-            end
-            local DJATA = {
-                Attachments = Attachies,
-                WeaponData = WeaponData,
-            }
-            cb(DJATA)
-        else
-            RemoveWeaponComponentFromPed(ped, GetHashKey(data.WeaponData.name), GetHashKey(Attachment.component))
-            cb({})
-        end
-    end, data.AttachmentData, data.WeaponData)
-end)
-
 RegisterNetEvent('inventory:client:CheckWeapon', function(weaponName)
     local ped = PlayerPedId()
     if currentWeapon == weaponName then
@@ -597,6 +410,203 @@ end)
 
 RegisterNetEvent('inventory:client:SetCurrentStash', function(stash)
     CurrentStash = stash
+end)
+
+-- Commands
+
+RegisterCommand('closeinv', function()
+    closeInventory()
+end, false)
+
+RegisterCommand('inventory', function()
+    if not isCrafting and not inInventory then
+        QBCore.Functions.GetPlayerData(function(PlayerData)
+            if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() then
+                local ped = PlayerPedId()
+                local curVeh = nil
+                local VendingMachine = GetClosestVending()
+            
+                if IsPedInAnyVehicle(ped) then -- Is Player In Vehicle
+                    local vehicle = GetVehiclePedIsIn(ped, false)
+                    CurrentGlovebox = QBCore.Functions.GetPlate(vehicle)
+                    curVeh = vehicle
+                    CurrentVehicle = nil
+                else
+                    local vehicle = QBCore.Functions.GetClosestVehicle()
+                    if vehicle ~= 0 and vehicle ~= nil then
+                        local pos = GetEntityCoords(ped)
+                        local trunkpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, -2.5, 0)
+                        if (IsBackEngine(GetEntityModel(vehicle))) then
+                            trunkpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, 2.5, 0)
+                        end
+                        if #(pos - trunkpos) < 2.0 and not IsPedInAnyVehicle(ped) then
+                            if GetVehicleDoorLockStatus(vehicle) < 2 then
+                                CurrentVehicle = QBCore.Functions.GetPlate(vehicle)
+                                curVeh = vehicle
+                                CurrentGlovebox = nil
+                            else
+                                QBCore.Functions.Notify("Vehicle Locked", "error")
+                                return
+                            end
+                        else
+                            CurrentVehicle = nil
+                        end
+                    else
+                        CurrentVehicle = nil
+                    end
+                end
+
+                if CurrentVehicle ~= nil then		-- Trunk
+                    local vehicleClass = GetVehicleClass(curVeh)
+                    local maxweight = 0
+                    local slots = 0
+                    if vehicleClass == 0 then
+                        maxweight = 38000
+                        slots = 30
+                    elseif vehicleClass == 1 then
+                        maxweight = 50000
+                        slots = 40
+                    elseif vehicleClass == 2 then
+                        maxweight = 75000
+                        slots = 50
+                    elseif vehicleClass == 3 then
+                        maxweight = 42000
+                        slots = 35
+                    elseif vehicleClass == 4 then
+                        maxweight = 38000
+                        slots = 30
+                    elseif vehicleClass == 5 then
+                        maxweight = 30000
+                        slots = 25
+                    elseif vehicleClass == 6 then
+                        maxweight = 30000
+                        slots = 25
+                    elseif vehicleClass == 7 then
+                        maxweight = 30000
+                        slots = 25
+                    elseif vehicleClass == 8 then
+                        maxweight = 15000
+                        slots = 15
+                    elseif vehicleClass == 9 then
+                        maxweight = 60000
+                        slots = 35
+                    elseif vehicleClass == 12 then
+                        maxweight = 120000
+                        slots = 35
+		    elseif vehicleClass == 13 then
+                        maxweight = 0
+                        slots = 0
+                    elseif vehicleClass == 14 then
+                        maxweight = 120000
+                        slots = 50
+                    elseif vehicleClass == 15 then
+                        maxweight = 120000
+                        slots = 50
+                    elseif vehicleClass == 16 then
+                        maxweight = 120000
+                        slots = 50
+                    else
+                        maxweight = 60000
+                        slots = 35
+                    end
+                    local other = {
+                        maxweight = maxweight,
+                        slots = slots,
+                    }
+                    TriggerServerEvent("inventory:server:OpenInventory", "trunk", CurrentVehicle, other)
+                    OpenTrunk()
+                elseif CurrentGlovebox ~= nil then
+                    TriggerServerEvent("inventory:server:OpenInventory", "glovebox", CurrentGlovebox)
+                elseif CurrentDrop ~= 0 then
+                    TriggerServerEvent("inventory:server:OpenInventory", "drop", CurrentDrop)
+                elseif VendingMachine ~= nil then
+                    local ShopItems = {}
+                    ShopItems.label = "Vending Machine"
+                    ShopItems.items = Config.VendingItem
+                    ShopItems.slots = #Config.VendingItem
+                    TriggerServerEvent("inventory:server:OpenInventory", "shop", "Vendingshop_"..math.random(1, 99), ShopItems)
+                else
+                    TriggerServerEvent("inventory:server:OpenInventory")
+                end
+            end
+        end)
+    end
+end)
+
+RegisterKeyMapping('inventory', 'Open Inventory', 'keyboard', 'TAB')
+
+RegisterCommand('hotbar', function()
+    isHotbar = not isHotbar
+	QBCore.Functions.GetPlayerData(function(PlayerData)
+        if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() then
+			ToggleHotbar(isHotbar)
+		end
+	end)
+end)
+
+RegisterKeyMapping('hotbar', 'Toggles keybind slots', 'keyboard', 'z')
+
+for i=1, 6 do
+    RegisterCommand('slot' .. i,function()
+        QBCore.Functions.GetPlayerData(function(PlayerData)
+            if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() then
+                if i == 6 then
+                    i = MaxInventorySlots
+                end
+                TriggerServerEvent("inventory:server:UseItemSlot", i)
+            end
+        end)
+    end)
+    RegisterKeyMapping('slot' .. i, 'Uses the item in slot ' .. i, 'keyboard', i)
+end
+
+-- NUI
+
+RegisterNUICallback('RobMoney', function(data, cb)
+    TriggerServerEvent("police:server:RobPlayer", data.TargetId)
+end)
+
+RegisterNUICallback('Notify', function(data, cb)
+    QBCore.Functions.Notify(data.message, data.type)
+end)
+
+RegisterNUICallback('GetWeaponData', function(data, cb)
+    local data = {
+        WeaponData = QBCore.Shared.Items[data.weapon],
+        AttachmentData = FormatWeaponAttachments(data.ItemData)
+    }
+    cb(data)
+end)
+
+RegisterNUICallback('RemoveAttachment', function(data, cb)
+    local ped = PlayerPedId()
+    local WeaponData = QBCore.Shared.Items[data.WeaponData.name]
+    local Attachment = WeaponAttachments[WeaponData.name:upper()][data.AttachmentData.attachment]
+
+    QBCore.Functions.TriggerCallback('weapons:server:RemoveAttachment', function(NewAttachments)
+        if NewAttachments ~= false then
+            local Attachies = {}
+            RemoveWeaponComponentFromPed(ped, GetHashKey(data.WeaponData.name), GetHashKey(Attachment.component))
+            for k, v in pairs(NewAttachments) do
+                for wep, pew in pairs(WeaponAttachments[WeaponData.name:upper()]) do
+                    if v.component == pew.component then
+                        Attachies[#Attachies+1] = {
+                            attachment = pew.item,
+                            label = pew.label,
+                        }
+                    end
+                end
+            end
+            local DJATA = {
+                Attachments = Attachies,
+                WeaponData = WeaponData,
+            }
+            cb(DJATA)
+        else
+            RemoveWeaponComponentFromPed(ped, GetHashKey(data.WeaponData.name), GetHashKey(Attachment.component))
+            cb({})
+        end
+    end, data.AttachmentData, data.WeaponData)
 end)
 
 RegisterNUICallback('getCombineItem', function(data, cb)
@@ -678,76 +688,70 @@ RegisterNUICallback("PlayDropFail", function(data, cb)
     PlaySound(-1, "Place_Prop_Fail", "DLC_Dmod_Prop_Editor_Sounds", 0, 0, 1)
 end)
 
-function OpenTrunk()
-    local vehicle = QBCore.Functions.GetClosestVehicle()
-    while (not HasAnimDictLoaded("amb@prop_human_bum_bin@idle_b")) do
-        RequestAnimDict("amb@prop_human_bum_bin@idle_b")
-        Wait(100)
-    end
-    TaskPlayAnim(PlayerPedId(), "amb@prop_human_bum_bin@idle_b", "idle_d", 4.0, 4.0, -1, 50, 0, false, false, false)
-    if (IsBackEngine(GetEntityModel(vehicle))) then
-        SetVehicleDoorOpen(vehicle, 4, false, false)
-    else
-        SetVehicleDoorOpen(vehicle, 5, false, false)
-    end
-end
+-- Threads
 
-function CloseTrunk()
-    local vehicle = QBCore.Functions.GetClosestVehicle()
-    while (not HasAnimDictLoaded("amb@prop_human_bum_bin@idle_b")) do
-        RequestAnimDict("amb@prop_human_bum_bin@idle_b")
-        Wait(100)
-    end
-    TaskPlayAnim(PlayerPedId(), "amb@prop_human_bum_bin@idle_b", "exit", 4.0, 4.0, -1, 50, 0, false, false, false)
-    if (IsBackEngine(GetEntityModel(vehicle))) then
-        SetVehicleDoorShut(vehicle, 4, false)
-    else
-        SetVehicleDoorShut(vehicle, 5, false)
-    end
-end
-
-function IsBackEngine(vehModel)
-    for _, model in pairs(BackEngineVehicles) do
-        if GetHashKey(model) == vehModel then
-            return true
+CreateThread(function()
+    while true do
+        Wait(7)
+        if showTrunkPos and not inInventory then
+            local vehicle = QBCore.Functions.GetClosestVehicle()
+            if vehicle ~= 0 and vehicle ~= nil then
+                local ped = PlayerPedId()
+                local pos = GetEntityCoords(ped)
+                local vehpos = GetEntityCoords(vehicle)
+                if #(pos - vehpos) < 5.0 and not IsPedInAnyVehicle(ped) then
+                    local drawpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, -2.5, 0)
+                    if (IsBackEngine(GetEntityModel(vehicle))) then
+                        drawpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, 2.5, 0)
+                    end
+                    DrawText3Ds(drawpos.x, drawpos.y, drawpos.z, "Trunk")
+                    if #(pos - drawpos) < 2.0 and not IsPedInAnyVehicle(ped) then
+                        CurrentVehicle = QBCore.Functions.GetPlate(vehicle)
+                        showTrunkPos = false
+                    end
+                else
+                    showTrunkPos = false
+                end
+            end
         end
     end
-    return false
-end
+end)
 
-function closeInventory()
-    SendNUIMessage({
-        action = "close",
-    })
-end
-
-function ToggleHotbar(toggle)
-    local HotbarItems = {
-        [1] = QBCore.Functions.GetPlayerData().items[1],
-        [2] = QBCore.Functions.GetPlayerData().items[2],
-        [3] = QBCore.Functions.GetPlayerData().items[3],
-        [4] = QBCore.Functions.GetPlayerData().items[4],
-        [5] = QBCore.Functions.GetPlayerData().items[5],
-        [41] = QBCore.Functions.GetPlayerData().items[41],
-    }
-
-    if toggle then
-        SendNUIMessage({
-            action = "toggleHotbar",
-            open = true,
-            items = HotbarItems
-        })
-    else
-        SendNUIMessage({
-            action = "toggleHotbar",
-            open = false,
-        })
+CreateThread(function()
+    while true do
+        Wait(1)
+        if DropsNear ~= nil then
+            for k, v in pairs(DropsNear) do
+                if DropsNear[k] ~= nil then
+                    DrawMarker(2, v.coords.x, v.coords.y, v.coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.15, 120, 10, 20, 155, false, false, false, 1, false, false, false)
+                end
+            end
+        end
     end
-end
+end)
 
-function LoadAnimDict( dict )
-    while ( not HasAnimDictLoaded( dict ) ) do
-        RequestAnimDict( dict )
-        Wait( 5 )
+CreateThread(function()
+    while true do
+        if Drops ~= nil and next(Drops) ~= nil then
+            local pos = GetEntityCoords(PlayerPedId(), true)
+            for k, v in pairs(Drops) do
+                if Drops[k] ~= nil then
+                    local dist = #(pos - vector3(v.coords.x, v.coords.y, v.coords.z))
+                    if dist < 7.5 then
+                        DropsNear[k] = v
+                        if dist < 2 then
+                            CurrentDrop = k
+                        else
+                            CurrentDrop = nil
+                        end
+                    else
+                        DropsNear[k] = nil
+                    end
+                end
+            end
+        else
+            DropsNear = {}
+        end
+        Wait(500)
     end
-end
+end)
