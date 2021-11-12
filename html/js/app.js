@@ -191,6 +191,11 @@ $(document).on("click", ".item-slot", function(e) {
     }
 });
 
+$(document).on("click", "#inv-close", function(e) {
+    e.preventDefault();
+    Inventory.Close();
+});
+
 $(document).on("click", ".weapon-attachments-back", function(e) {
     e.preventDefault();
     $("#qbcore-inventory").css({ display: "block" });
@@ -2928,4 +2933,29 @@ $(document).on("click", "#rob-money", function(e) {
         })
     );
     $("#rob-money").remove();
+});
+
+// Give
+
+$("#item-give").droppable({
+    hoverClass: "button-hover",
+    drop: function(event, ui) {
+        setTimeout(function() {
+            IsDragging = false;
+        }, 300);
+        fromData = ui.draggable.data("item");
+        fromInventory = ui.draggable.parent().attr("data-inventory");
+        amount = $("#item-amount").val();
+        if (amount == 0) {
+            amount = fromData.amount;
+        }
+        $.post(
+            "https://qb-inventory/GiveItem",
+            JSON.stringify({
+                inventory: fromInventory,
+                item: fromData,
+                amount: parseInt(amount),
+            })
+        );
+    },
 });

@@ -19,7 +19,7 @@ local function recipeContains(recipe, fromItem)
 	return false
 end
 
-function hasCraftItems(source, CostItems, amount)
+local function hasCraftItems(source, CostItems, amount)
 	local Player = QBCore.Functions.GetPlayer(source)
 	for k, v in pairs(CostItems) do
 		if Player.Functions.GetItemByName(k) ~= nil then
@@ -33,13 +33,13 @@ function hasCraftItems(source, CostItems, amount)
 	return true
 end
 
-function IsVehicleOwned(plate)
+local function IsVehicleOwned(plate)
     local result = exports.oxmysql:scalarSync('SELECT 1 from player_vehicles WHERE plate = ?', {plate})
     if result then return true else return false end
 end
 
 -- Shop Items
-function SetupShopItems(shop, shopItems)
+local function SetupShopItems(shop, shopItems)
 	local items = {}
 	if shopItems ~= nil and next(shopItems) ~= nil then
 		for k, item in pairs(shopItems) do
@@ -66,7 +66,7 @@ function SetupShopItems(shop, shopItems)
 end
 
 -- Stash Items
-function GetStashItems(stashId)
+local function GetStashItems(stashId)
 	local items = {}
 	local result = exports.oxmysql:scalarSync('SELECT items FROM stashitems WHERE stash = ?', {stashId})
 	if result then
@@ -95,7 +95,7 @@ function GetStashItems(stashId)
 	return items
 end
 
-function SaveStashItems(stashId, items)
+local function SaveStashItems(stashId, items)
 	if Stashes[stashId].label ~= "Stash-None" then
 		if items ~= nil then
 			for slot, item in pairs(items) do
@@ -110,7 +110,7 @@ function SaveStashItems(stashId, items)
 	end
 end
 
-function AddToStash(stashId, slot, otherslot, itemName, amount, info)
+local function AddToStash(stashId, slot, otherslot, itemName, amount, info)
 	local amount = tonumber(amount)
 	local ItemData = QBCore.Shared.Items[itemName]
 	if not ItemData.unique then
@@ -167,7 +167,7 @@ function AddToStash(stashId, slot, otherslot, itemName, amount, info)
 	end
 end
 
-function RemoveFromStash(stashId, slot, itemName, amount)
+local function RemoveFromStash(stashId, slot, itemName, amount)
 	local amount = tonumber(amount)
 	if Stashes[stashId].items[slot] ~= nil and Stashes[stashId].items[slot].name == itemName then
 		if Stashes[stashId].items[slot].amount > amount then
@@ -187,7 +187,7 @@ function RemoveFromStash(stashId, slot, itemName, amount)
 end
 
 -- Trunk items
-function GetOwnedVehicleItems(plate)
+local function GetOwnedVehicleItems(plate)
 	local items = {}
 	local result = exports.oxmysql:scalarSync('SELECT items FROM trunkitems WHERE plate = ?', {plate})
 	if result then
@@ -216,7 +216,7 @@ function GetOwnedVehicleItems(plate)
 	return items
 end
 
-function SaveOwnedVehicleItems(plate, items)
+local function SaveOwnedVehicleItems(plate, items)
 	if Trunks[plate].label ~= "Trunk-None" then
 		if items ~= nil then
 			for slot, item in pairs(items) do
@@ -231,7 +231,7 @@ function SaveOwnedVehicleItems(plate, items)
 	end
 end
 
-function AddToTrunk(plate, slot, otherslot, itemName, amount, info)
+local function AddToTrunk(plate, slot, otherslot, itemName, amount, info)
 	local amount = tonumber(amount)
 	local ItemData = QBCore.Shared.Items[itemName]
 
@@ -289,7 +289,7 @@ function AddToTrunk(plate, slot, otherslot, itemName, amount, info)
 	end
 end
 
-function RemoveFromTrunk(plate, slot, itemName, amount)
+local function RemoveFromTrunk(plate, slot, itemName, amount)
 	if Trunks[plate].items[slot] ~= nil and Trunks[plate].items[slot].name == itemName then
 		if Trunks[plate].items[slot].amount > amount then
 			Trunks[plate].items[slot].amount = Trunks[plate].items[slot].amount - amount
@@ -308,7 +308,7 @@ function RemoveFromTrunk(plate, slot, itemName, amount)
 end
 
 -- Glovebox items
-function GetOwnedVehicleGloveboxItems(plate)
+local function GetOwnedVehicleGloveboxItems(plate)
 	local items = {}
 	local result = exports.oxmysql:scalarSync('SELECT items FROM gloveboxitems WHERE plate = ?', {plate})
 	if result then
@@ -337,7 +337,7 @@ function GetOwnedVehicleGloveboxItems(plate)
 	return items
 end
 
-function SaveOwnedGloveboxItems(plate, items)
+local function SaveOwnedGloveboxItems(plate, items)
 	if Gloveboxes[plate].label ~= "Glovebox-None" then
 		if items ~= nil then
 			for slot, item in pairs(items) do
@@ -352,7 +352,7 @@ function SaveOwnedGloveboxItems(plate, items)
 	end
 end
 
-function AddToGlovebox(plate, slot, otherslot, itemName, amount, info)
+local function AddToGlovebox(plate, slot, otherslot, itemName, amount, info)
 	local amount = tonumber(amount)
 	local ItemData = QBCore.Shared.Items[itemName]
 
@@ -410,7 +410,7 @@ function AddToGlovebox(plate, slot, otherslot, itemName, amount, info)
 	end
 end
 
-function RemoveFromGlovebox(plate, slot, itemName, amount)
+local function RemoveFromGlovebox(plate, slot, itemName, amount)
 	if Gloveboxes[plate].items[slot] ~= nil and Gloveboxes[plate].items[slot].name == itemName then
 		if Gloveboxes[plate].items[slot].amount > amount then
 			Gloveboxes[plate].items[slot].amount = Gloveboxes[plate].items[slot].amount - amount
@@ -429,7 +429,7 @@ function RemoveFromGlovebox(plate, slot, itemName, amount)
 end
 
 -- Drop items
-function AddToDrop(dropId, slot, itemName, amount, info)
+local function AddToDrop(dropId, slot, itemName, amount, info)
 	local amount = tonumber(amount)
 	if Drops[dropId].items[slot] ~= nil and Drops[dropId].items[slot].name == itemName then
 		Drops[dropId].items[slot].amount = Drops[dropId].items[slot].amount + amount
@@ -452,7 +452,7 @@ function AddToDrop(dropId, slot, itemName, amount, info)
 	end
 end
 
-function RemoveFromDrop(dropId, slot, itemName, amount)
+local function RemoveFromDrop(dropId, slot, itemName, amount)
 	if Drops[dropId].items[slot] ~= nil and Drops[dropId].items[slot].name == itemName then
 		if Drops[dropId].items[slot].amount > amount then
 			Drops[dropId].items[slot].amount = Drops[dropId].items[slot].amount - amount
@@ -472,7 +472,7 @@ function RemoveFromDrop(dropId, slot, itemName, amount)
 	end
 end
 
-function CreateDropId()
+local function CreateDropId()
 	if Drops ~= nil then
 		local id = math.random(10000, 99999)
 		local dropid = id
@@ -488,7 +488,7 @@ function CreateDropId()
 	end
 end
 
-function CreateNewDrop(source, fromSlot, toSlot, itemAmount)
+local function CreateNewDrop(source, fromSlot, toSlot, itemAmount)
 	local Player = QBCore.Functions.GetPlayer(source)
 	local itemData = Player.Functions.GetItemBySlot(fromSlot)
 	local coords = GetEntityCoords(GetPlayerPed(source))
@@ -1402,6 +1402,40 @@ RegisterNetEvent('qb-inventory:server:SaveStashItems', function(stashId, items)
     })
 end)
 
+RegisterServerEvent("inventory:server:GiveItem", function(target, inventory, item, amount)
+    local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+    local OtherPlayer = QBCore.Functions.GetPlayer(tonumber(target))
+    local dist = #(GetEntityCoords(GetPlayerPed(src))-GetEntityCoords(GetPlayerPed(target)))
+    if dist < 2 then
+        if amount <= item.amount then
+            if amount == 0 then
+                amount = item.amount -- If 0 gives all of an item the player has
+            end
+            if OtherPlayer.Functions.AddItem(item.name, amount, false, item.info) then
+                TriggerClientEvent('inventory:client:ItemBox',target, QBCore.Shared.Items[item.name], "add")
+                TriggerClientEvent('QBCore:Notify', target, "You Received "..amount..' '..item.label.." From "..Player.PlayerData.charinfo.firstname.." "..Player.PlayerData.charinfo.lastname)
+				TriggerClientEvent("inventory:client:UpdatePlayerInventory", target, true)
+                Player.Functions.RemoveItem(item.name, amount, item.slot)
+                TriggerClientEvent('inventory:client:ItemBox',src, QBCore.Shared.Items[item.name], "remove")
+                TriggerClientEvent('QBCore:Notify', src, "You gave " .. OtherPlayer.PlayerData.charinfo.firstname.." "..OtherPlayer.PlayerData.charinfo.lastname.. " " .. amount .. " " .. item.label .."!")
+				TriggerClientEvent("inventory:client:UpdatePlayerInventory", src, true)
+				TriggerClientEvent('qb-inventory:client:giveAnim', src)
+				TriggerClientEvent('qb-inventory:client:giveAnim', target)
+            else
+                TriggerClientEvent('QBCore:Notify', src,  "The other players inventory is full!", "error")
+                TriggerClientEvent('QBCore:Notify', target,  "Your inventory is full!", "error")
+				TriggerClientEvent("inventory:client:UpdatePlayerInventory", src, false)
+				TriggerClientEvent("inventory:client:UpdatePlayerInventory", target, false)
+            end
+        else
+            TriggerClientEvent('QBCore:Notify', src, "You do not have enough items to transfer")
+        end
+    else
+        TriggerClientEvent('QBCore:Notify', src, "You are too far away to give items!")
+    end
+end)
+
 -- callback
 
 QBCore.Functions.CreateCallback('qb-inventory:server:GetStashItems', function(source, cb, stashId)
@@ -1434,10 +1468,6 @@ QBCore.Commands.Add("resetinv", "Reset Inventory (Admin Only)", {{name="type", h
 		TriggerClientEvent('QBCore:Notify', source,  "Arguments not filled out correctly..", "error")
 	end
 end, "admin")
-
-QBCore.Commands.Add("trunkpos", "View Trunk Location", {}, false, function(source, args)
-	TriggerClientEvent("inventory:client:ShowTrunkPos", source)
-end)
 
 QBCore.Commands.Add("rob", "Rob Player", {}, false, function(source, args)
 	TriggerClientEvent("police:client:RobPlayer", source)
