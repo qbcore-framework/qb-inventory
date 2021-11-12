@@ -17,7 +17,7 @@ local showTrunkPos = false
 
 -- Functions
 
-function GetClosestVending()
+local function GetClosestVending()
     local ped = PlayerPedId()
     local pos = GetEntityCoords(ped)
     local object = nil
@@ -32,7 +32,7 @@ function GetClosestVending()
     return object
 end
 
-function DrawText3Ds(x, y, z, text)
+local function DrawText3Ds(x, y, z, text)
 	SetTextScale(0.35, 0.35)
     SetTextFont(4)
     SetTextProportional(1)
@@ -47,7 +47,7 @@ function DrawText3Ds(x, y, z, text)
     ClearDrawOrigin()
 end
 
-function FormatWeaponAttachments(itemdata)
+local function FormatWeaponAttachments(itemdata)
     local attachments = {}
     itemdata.name = itemdata.name:upper()
     if itemdata.info.attachments ~= nil and next(itemdata.info.attachments) ~= nil then
@@ -67,7 +67,16 @@ function FormatWeaponAttachments(itemdata)
     return attachments
 end
 
-function OpenTrunk()
+local function IsBackEngine(vehModel)
+    for _, model in pairs(BackEngineVehicles) do
+        if GetHashKey(model) == vehModel then
+            return true
+        end
+    end
+    return false
+end
+
+local function OpenTrunk()
     local vehicle = QBCore.Functions.GetClosestVehicle()
     while (not HasAnimDictLoaded("amb@prop_human_bum_bin@idle_b")) do
         RequestAnimDict("amb@prop_human_bum_bin@idle_b")
@@ -81,7 +90,7 @@ function OpenTrunk()
     end
 end
 
-function CloseTrunk()
+local function CloseTrunk()
     local vehicle = QBCore.Functions.GetClosestVehicle()
     while (not HasAnimDictLoaded("amb@prop_human_bum_bin@idle_b")) do
         RequestAnimDict("amb@prop_human_bum_bin@idle_b")
@@ -95,22 +104,13 @@ function CloseTrunk()
     end
 end
 
-function IsBackEngine(vehModel)
-    for _, model in pairs(BackEngineVehicles) do
-        if GetHashKey(model) == vehModel then
-            return true
-        end
-    end
-    return false
-end
-
-function closeInventory()
+local function closeInventory()
     SendNUIMessage({
         action = "close",
     })
 end
 
-function ToggleHotbar(toggle)
+local function ToggleHotbar(toggle)
     local HotbarItems = {
         [1] = QBCore.Functions.GetPlayerData().items[1],
         [2] = QBCore.Functions.GetPlayerData().items[2],
@@ -134,11 +134,16 @@ function ToggleHotbar(toggle)
     end
 end
 
-function LoadAnimDict( dict )
+local function LoadAnimDict( dict )
     while ( not HasAnimDictLoaded( dict ) ) do
         RequestAnimDict( dict )
         Wait( 5 )
     end
+end
+
+local function openAnim()
+    LoadAnimDict('pickup_object')
+    TaskPlayAnim(PlayerPedId(),'pickup_object', 'putdown_low', 5.0, 1.5, 1.0, 48, 0.0, 0, 0, 0)
 end
 
 -- Events
@@ -228,10 +233,6 @@ RegisterNetEvent('inventory:client:OpenInventory', function(PlayerAmmo, inventor
         })
         inInventory = true
     end
-end)
-
-RegisterNetEvent('inventory:client:ShowTrunkPos', function()
-    showTrunkPos = true
 end)
 
 RegisterNetEvent('inventory:client:UpdatePlayerInventory', function(isError)
@@ -425,7 +426,7 @@ RegisterCommand('inventory', function()
                 local ped = PlayerPedId()
                 local curVeh = nil
                 local VendingMachine = GetClosestVending()
-            
+
                 if IsPedInAnyVehicle(ped) then -- Is Player In Vehicle
                     local vehicle = GetVehiclePedIsIn(ped, false)
                     CurrentGlovebox = QBCore.Functions.GetPlate(vehicle)
@@ -493,7 +494,7 @@ RegisterCommand('inventory', function()
                     elseif vehicleClass == 12 then
                         maxweight = 120000
                         slots = 35
-		    elseif vehicleClass == 13 then
+		            elseif vehicleClass == 13 then
                         maxweight = 0
                         slots = 0
                     elseif vehicleClass == 14 then
@@ -526,6 +527,7 @@ RegisterCommand('inventory', function()
                     ShopItems.slots = #Config.VendingItem
                     TriggerServerEvent("inventory:server:OpenInventory", "shop", "Vendingshop_"..math.random(1, 99), ShopItems)
                 else
+                    openAnim()
                     TriggerServerEvent("inventory:server:OpenInventory")
                 end
             end
@@ -559,6 +561,11 @@ for i=1, 6 do
     end)
     RegisterKeyMapping('slot' .. i, 'Uses the item in slot ' .. i, 'keyboard', i)
 end
+
+RegisterNetEvent('qb-inventory:client:giveAnim', function()
+    LoadAnimDict('mp_common')
+	TaskPlayAnim(PlayerPedId(), 'mp_common', 'givetake1_b', 8.0, 1.0, -1, 16, 0, 0, 0, 0)
+end)
 
 -- NUI
 
@@ -688,34 +695,22 @@ RegisterNUICallback("PlayDropFail", function(data, cb)
     PlaySound(-1, "Place_Prop_Fail", "DLC_Dmod_Prop_Editor_Sounds", 0, 0, 1)
 end)
 
--- Threads
-
-CreateThread(function()
-    while true do
-        Wait(7)
-        if showTrunkPos and not inInventory then
-            local vehicle = QBCore.Functions.GetClosestVehicle()
-            if vehicle ~= 0 and vehicle ~= nil then
-                local ped = PlayerPedId()
-                local pos = GetEntityCoords(ped)
-                local vehpos = GetEntityCoords(vehicle)
-                if #(pos - vehpos) < 5.0 and not IsPedInAnyVehicle(ped) then
-                    local drawpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, -2.5, 0)
-                    if (IsBackEngine(GetEntityModel(vehicle))) then
-                        drawpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, 2.5, 0)
-                    end
-                    DrawText3Ds(drawpos.x, drawpos.y, drawpos.z, "Trunk")
-                    if #(pos - drawpos) < 2.0 and not IsPedInAnyVehicle(ped) then
-                        CurrentVehicle = QBCore.Functions.GetPlate(vehicle)
-                        showTrunkPos = false
-                    end
-                else
-                    showTrunkPos = false
-                end
-            end
+RegisterNUICallback("GiveItem", function(data, cb)
+    local player, distance = QBCore.Functions.GetClosestPlayer(GetEntityCoords(PlayerPedId()))
+    if player ~= -1 and distance < 3 then
+        if (data.inventory == 'player') then
+            local playerId = GetPlayerServerId(player)
+            SetCurrentPedWeapon(PlayerPedId(),'WEAPON_UNARMED',true)
+            TriggerServerEvent("inventory:server:GiveItem", playerId, data.inventory, data.item, data.amount)
+        else
+            QBCore.Functions.Notify("You do not own this item!", "error")
         end
+    else
+        QBCore.Functions.Notify("No one nearby!", "error")
     end
 end)
+
+-- Threads
 
 CreateThread(function()
     while true do
