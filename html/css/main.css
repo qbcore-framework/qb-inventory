@@ -23,7 +23,7 @@ input[type=number]::-webkit-outer-spin-button {
 
 ::-webkit-scrollbar-thumb {
     border-radius: 50px;
-    background: #dc143c;
+    background: #61bd9e;
 }
 
 body {
@@ -201,7 +201,7 @@ body {
     text-transform: uppercase;
     font-size: 1.2vh;
     font-weight: 900;
-    background-color: rgba(220, 20, 60, 0.6);
+    background-color: rgba(95, 180, 159, 0.6);
     font-family: 'Poppins', sans-serif;
 }
 
@@ -223,7 +223,7 @@ body {
     margin-top: 20%;
     width: 60%;
     color: white;
-    background-color: #dc143c;
+    background-color: #7ccfc8;
     border-radius: .7vh;
     text-align: center;
     line-height: 48px;
@@ -242,7 +242,7 @@ body {
 }
 
 .btn-combine:hover {
-    background-color: #dc143c;
+    background-color: #6fcac6;
 }
 
 .item-slot-amount {
@@ -629,7 +629,7 @@ body {
     top: 0;
     width: 100%;
     height: 5vh;
-    background-color: rgba(120, 10, 20, 0.5);
+    background-color: rgba(94, 182, 153, 0.5);
     text-align: center;
     color: rgba(216, 216, 216, 0.897);
 }
