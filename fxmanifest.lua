@@ -28,3 +28,5 @@ files {
 }
 
 dependency 'qb-weapons'
+
+lua54 'yes'
