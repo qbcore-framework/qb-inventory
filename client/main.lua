@@ -457,27 +457,30 @@ RegisterCommand('inventory', function()
                     end
                 end
 
-                if CurrentVehicle ~= nil then		-- Trunk
-                    local maxweight = 0
-                    local slots = 0
-                    -- Grab Weight and Slots from shared.lua
-                    local modelName = GetDisplayNameFromVehicleModel(GetEntityModel(curVeh)):lower()
-                    if maxweight == 0 and QBCore.Shared.Vehicles[modelName] ~= nil then
-                      maxweight = QBCore.Shared.Vehicles[modelName]['trunkslots']
-                    end
+                -- Trunk
+                if CurrentVehicle ~= nil then
+                local maxweight = 0
+                local slots = 0
+                -- GRAB WEIGHT AND SLOTS FROM SHARED LUA
+                local modelName = GetDisplayNameFromVehicleModel(GetEntityModel(curVeh)):lower()
 
-                    if maxweight == 0 then
-                        maxweight == 30000
-                    end
-                    if slots == 0 then
-                        slots = 15
-                    end
-                    local other = {
-                        maxweight = maxweight,
-                        slots = slots,
-                    }
-                    TriggerServerEvent("inventory:server:OpenInventory", "trunk", CurrentVehicle, other)
-                    OpenTrunk()
+                if maxweight == 0 and QBCore.Shared.Vehicles[modelName] ~= nil then
+                    maxweight = QBCore.Shared.Vehicles[modelName]['trunkspace']
+                    slots = QBCore.Shared.Vehicles[modelName]['trunkslots']
+                end
+                
+                if maxweight == 0 then
+                    maxweight = 30000
+                end
+                if slots == 0 then
+                    slots = 15
+                end
+                local other = {
+                    maxweight = maxweight,
+                    slots = slots,
+                }
+                TriggerServerEvent("inventory:server:OpenInventory", "trunk", CurrentVehicle, other)
+                OpenTrunk()
                 elseif CurrentGlovebox ~= nil then
                     TriggerServerEvent("inventory:server:OpenInventory", "glovebox", CurrentGlovebox)
                 elseif CurrentDrop ~= 0 then
