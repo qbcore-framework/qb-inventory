@@ -458,57 +458,19 @@ RegisterCommand('inventory', function()
                 end
 
                 if CurrentVehicle ~= nil then		-- Trunk
-                    local vehicleClass = GetVehicleClass(curVeh)
                     local maxweight = 0
                     local slots = 0
-                    if vehicleClass == 0 then
-                        maxweight = 38000
-                        slots = 30
-                    elseif vehicleClass == 1 then
-                        maxweight = 50000
-                        slots = 40
-                    elseif vehicleClass == 2 then
-                        maxweight = 75000
-                        slots = 50
-                    elseif vehicleClass == 3 then
-                        maxweight = 42000
-                        slots = 35
-                    elseif vehicleClass == 4 then
-                        maxweight = 38000
-                        slots = 30
-                    elseif vehicleClass == 5 then
-                        maxweight = 30000
-                        slots = 25
-                    elseif vehicleClass == 6 then
-                        maxweight = 30000
-                        slots = 25
-                    elseif vehicleClass == 7 then
-                        maxweight = 30000
-                        slots = 25
-                    elseif vehicleClass == 8 then
-                        maxweight = 15000
+                    -- Grab Weight and Slots from shared.lua
+                    local modelName = GetDisplayNameFromVehicleModel(GetEntityModel(curVeh)):lower()
+                    if maxweight == 0 and QBCore.Shared.Vehicles[modelName] ~= nil then
+                      maxweight = QBCore.Shared.Vehicles[modelName]['trunkslots']
+                    end
+
+                    if maxweight == 0 then
+                        maxweight == 30000
+                    end
+                    if slots == 0 then
                         slots = 15
-                    elseif vehicleClass == 9 then
-                        maxweight = 60000
-                        slots = 35
-                    elseif vehicleClass == 12 then
-                        maxweight = 120000
-                        slots = 35
-		            elseif vehicleClass == 13 then
-                        maxweight = 0
-                        slots = 0
-                    elseif vehicleClass == 14 then
-                        maxweight = 120000
-                        slots = 50
-                    elseif vehicleClass == 15 then
-                        maxweight = 120000
-                        slots = 50
-                    elseif vehicleClass == 16 then
-                        maxweight = 120000
-                        slots = 50
-                    else
-                        maxweight = 60000
-                        slots = 35
                     end
                     local other = {
                         maxweight = maxweight,
