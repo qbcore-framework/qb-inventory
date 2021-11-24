@@ -1542,6 +1542,17 @@ QBCore.Commands.Add("randomitems", "Give Random Items (God Only)", {}, false, fu
 	end
 end, "god")
 
+QBCore.Commands.Add('clearinv', 'Clear Players Inventory (Admin Only)', { { name = 'id', help = 'Player ID' } }, false, function(source, args)
+    local src = source
+    local playerId = args[1] or src
+    local Player = QBCore.Functions.GetPlayer(tonumber(playerId))
+    if Player then
+        Player.Functions.ClearInventory()
+    else
+        TriggerClientEvent('QBCore:Notify', src, 'Player Not Online', 'error')
+    end
+end, 'admin')
+
 -- item
 
 QBCore.Functions.CreateUseableItem("snowball", function(source, item)
