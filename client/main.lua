@@ -333,7 +333,7 @@ RegisterNetEvent('inventory:client:UseWeapon', function(weaponData, shootbool)
         RemoveAllPedWeapons(ped, true)
         TriggerEvent('weapons:client:SetCurrentWeapon', nil, shootbool)
         currentWeapon = nil
-    elseif weaponName == "weapon_stickybomb" then
+    elseif weaponName == "weapon_stickybomb" or weaponName == "weapon_pipebomb" or weaponName == "weapon_smokegrenade" or weaponName == "weapon_flare" or weaponName == "weapon_proxmine" or weaponName == "weapon_ball"  or weaponName == "weapon_molotov" or weaponName == "weapon_grenade" or weaponName == "weapon_bzgas" then
         GiveWeaponToPed(ped, GetHashKey(weaponName), 1, false, false)
         SetPedAmmo(ped, GetHashKey(weaponName), 1)
         SetCurrentPedWeapon(ped, GetHashKey(weaponName), true)
