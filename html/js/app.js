@@ -994,6 +994,8 @@ function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
         return false;
     }
 
+    var per =(totalWeight/1000)/(playerMaxWeight/100000)
+    $(".pro").css("width",per+"%")
     $("#player-inv-weight").html(
         "⚖️: " +
         (parseInt(totalWeight) / 1000).toFixed(2) +
@@ -1013,6 +1015,8 @@ function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
             " / " +
             (otherMaxWeight / 1000).toFixed(2)
         );
+        var per1 =(totalWeightOther/1000)/(otherMaxWeight/100000)
+        $(".pro1").css("width",per1+"%");
     }
 
     return true;
@@ -2537,6 +2541,8 @@ var requiredItemOpen = false;
             });
         }
 
+        var per =(totalWeight/1000)/(data.maxweight/100000)
+        $(".pro").css("width",per+"%");
         $("#player-inv-weight").html(
             "⚖️: " +
             (totalWeight / 1000).toFixed(2) +
@@ -2562,6 +2568,8 @@ var requiredItemOpen = false;
             }
             otherMaxWeight = data.other.maxweight;
             otherLabel = data.other.label;
+            var per1 =(totalWeightOther/1000)/(otherMaxWeight/100000)
+            $(".pro1").css("width",per1+"%");
         } else {
             $("#other-inv-label").html(Inventory.droplabel);
             $("#other-inv-weight").html(
@@ -2572,6 +2580,8 @@ var requiredItemOpen = false;
             );
             otherMaxWeight = Inventory.dropmaxweight;
             otherLabel = Inventory.droplabel;
+            var per1 =(totalWeightOther/1000)/(otherMaxWeight/100000)
+            $(".pro1").css("width",per1+"%");
         }
 
         $.each(data.maxammo, function(index, ammotype) {
@@ -2726,6 +2736,8 @@ var requiredItemOpen = false;
             }
         });
 
+        var per =(totalWeight/1000)/(data.maxweight/100000)
+        $(".pro").css("width",per+"%");
         $("#player-inv-weight").html(
             "⚖️: " +
             (totalWeight / 1000).toFixed(2) +
