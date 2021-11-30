@@ -436,7 +436,7 @@ RegisterNetEvent('inventory:client:UseWeapon', function(weaponData, shootbool)
         GiveWeaponToPed(ped, GetHashKey(weaponName), 1, false, false)
         SetPedAmmo(ped, GetHashKey(weaponName), 1)
         SetCurrentPedWeapon(ped, GetHashKey(weaponName), true)
-        -- TriggerServerEvent('QBCore:Server:RemoveItem', weaponName, 1)
+--         TriggerServerEvent('QBCore:Server:RemoveItem', weaponName, 1) -- Commented out as qb-weapons handles this in a way it deleted after you have thrown it
         TriggerEvent('weapons:client:SetCurrentWeapon', weaponData, shootbool)
         currentWeapon = weaponName
     elseif weaponName == "weapon_snowball" then
