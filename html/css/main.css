@@ -5,7 +5,7 @@ p {
 }
 
 :root {
-    --main-label-color: 0, 0, 0;
+    --main-label-color: 38, 41, 60;
 }
 
 /* rgb() */
@@ -18,12 +18,37 @@ input[type=number]::-webkit-outer-spin-button {
 
 ::-webkit-scrollbar
 {
-	width: 2px;
+	width: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background: #4b526c;
+}
+
+#progressbar {
+    margin-left: 5%;
+    margin-top: 5%;
     border-radius: 50px;
-    background: #dc143c;
+    background-color: rgba(24, 26, 30, 0.6);
+   }
+   .pro {
+     background: linear-gradient(to right, #389f46a9, #f35858b0 500px);
+     height: 10px;
+     border-radius: 50px;
+   }
+   .pro1 {
+     background: linear-gradient(to right, #389f46a9, #f35858b0 500px);
+     height: 10px;
+     border-radius: 50px;
+}
+
+.weight-img {
+    margin-top:4%;
+    width:3%;
+    left:5px;
+    position:absolute;
+    display:left
 }
 
 body {
@@ -56,9 +81,11 @@ body {
 .player-inventory {
     position: absolute;
     top: 26%;
-    left: 14.2%;
-    width: 28%;
-    height: 47.16%;
+    left: 10.2%;
+    width: 31.5%;
+    max-width: 31.5%;
+    height: 40.90%;
+    max-height: 40.90%;
     float: left;
     overflow-x: hidden;
     overflow-y: scroll;
@@ -68,14 +95,17 @@ body {
 .other-inventory {
     position: absolute;
     top: 26%;
-    right: 16%;
-    width: 28%;
-    height: 47.16%;
+    right: 10.2%;
+    width: 31.5%;
+    max-width: 31.5%;
+    height: 40.90%;
+    max-height: 40.90%;
     float: left;
     overflow-x: hidden;
     overflow-y: scroll;
     z-index: 100;
 }
+
 
 .ply-hotbar-inventory {
     position: absolute;
@@ -97,12 +127,14 @@ body {
 }
 
 .inv-options {
-    position: absolute;
-    margin: 0 auto;
+    margin: 16% auto;
+    background-color: rgba(24, 26, 30, 0.5);
     right: 0;
     width: 9%;
-    top: 28%;
-    left: 1vh;
+/*     height: 40%; */
+    left: 3vh;
+    border-radius:8px;
+    padding-bottom: 30px;
 }
 
 .combine-option-container {
@@ -117,8 +149,8 @@ body {
 
 .item-slot {
     position: relative;
-    width: 9.5vh;
-    height: 11.5vh;
+    width: 10.5vh;
+    height: 12.5vh;
     float: left;
     background-color: rgba(0, 0, 0, 0.3);
     border: 1px solid rgb(68 68 68 / 40%);
@@ -198,36 +230,47 @@ body {
     text-align: center;
     line-height: 48px;
     text-transform: uppercase;
-    font-size: 1.2vh;
-    font-weight: 900;
-    background-color: rgba(220, 20, 60, 0.6);
-    font-family: 'Poppins', sans-serif;
+    font-size: 1.1vh;
+    font-family: 'Verdana';
 }
 
 .inv-option-item {
-    width: 75%;
+    margin-top: 20%;
+    width: 80%;
     height: 50px;
-    background-color: rgb(0 0 0 / 30%); /* rgba(20, 20, 20, 0.5) */
+    margin-left: 10%;
+    background-color: #4b526c;
+    border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, .01);
     color: white;
     transition: background-color .1s linear;
 }
 
+.inv-option-hand {
+    position: relative;
+    margin-top: 0%;
+    width: 120px;
+    height: 120px;
+    top: 30px;
+    margin-left: 30px;
+    transition: background-color .1s linear;
+}
+
 .inv-option-item:hover {
-    background-color: rgb(0 0 0 / 20%); /* rgba(20, 20, 20, 0.5) */
+    background-color: #4b526cb3; /* rgba(20, 20, 20, 0.5) */
 }
 
 .btn-combine {
     position: relative;
-    margin-top: 20px;
-    width: 78%;
-    left: 2px;
-    color: white;
+    margin-top: 30px;
+    width: 85%;
+    left: 12px;
+    top: 4.5vh;
+    background-color: #4b526c;
+    border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, .01);
-    background-color: rgba(220, 20, 60, 0.6);
     text-align: center;
     line-height: 48px;
-    text-transform: uppercase;
     font-size: 1.2vh;
     transition: background-color .1s linear;
     font-weight: 900;
@@ -241,7 +284,7 @@ body {
     text-transform: uppercase;
     font-size: 1.1vh;
     font-family: 'Poppins', sans-serif;
-    background-color: rgb(0 0 0 / 20%);
+
 }
 
 .item-slot-amount {
@@ -253,7 +296,7 @@ body {
 .item-slot-amount > p {
     color: #ffffff;
     text-align: right;
-    font-size: 0.8vh;
+    font-size: 1.0vh;
 }
 
 .item-slot-label {
@@ -288,7 +331,7 @@ body {
 .item-slot-quality-bar {
     position: absolute;
     width: 0%;
-    height: 100%;
+    height: 150%;
     background-color: green;
     z-index: 1;
 }
@@ -307,11 +350,15 @@ body {
     display:block;
     position: relative;
     margin: 0 auto;
-    margin-top: 21%;
-    width: 70px;
-    height: 70px;
+    margin-top: 20%;
+    width: 80px;
+    height: 80px;
     max-width: 100%;
     max-height: 100%;
+}
+
+.item-slot-img2 img {
+    display:block;
 }
 
 .ui-draggable-dragging {
@@ -320,29 +367,33 @@ body {
 
 .player-inv-info {
     position: absolute;
-    left: 14.5%;
-    top: 22.2%;
+    left: 10.3%;
+    top: 19.5%;
+    width: 28.8%;
 }
 
 #player-inv-label {
     position: relative;
     color: white;
     font-size: 16px;
-    font-style: italic;
-    font-family: 'Poppins', sans-serif;
+/*     font-style: italic; */
+/*     font-family: 'Poppins', sans-serif; */
     font-weight: bold;
     letter-spacing: 0.2vh;
-    bottom: 0px;
+    left: 0px;
+    top: 20px;
     float: left;
     text-transform: uppercase;
 }
 
 #player-inv-weight {
-    color: white;
+    position: relative;
+    color: rgb(255 255 255 / 0%);
     font-size: 12px;
-    font-weight: 900;
-    font-family: 'Poppins', sans-serif;
-    letter-spacing: 0.2vh;
+    font-family: 'Mukta', monospace;
+    letter-spacing: 0.1vh;
+    bottom: 18px;
+    left: 30px;
     float: left;
 }
 
@@ -350,28 +401,30 @@ body {
     position: relative;
     color: white;
     font-size: 16px;
-    font-style: italic;
-    font-family: 'Poppins', sans-serif;
+/*     font-style: italic; */
+/*     font-family: 'Poppins', sans-serif; */
     font-weight: bold;
     letter-spacing: 0.2vh;
-    bottom: 0px;
+    top: 20px;
     float: left;
     text-transform: uppercase;
 }
 
 #other-inv-weight {
-    color: white;
+    position: relative;
+    color: rgb(255 255 255 / 0%);
     font-size: 12px;
-    font-weight: 900;
-    font-family: 'Poppins', sans-serif;
-    letter-spacing: 0.2vh;
+    font-family: 'Mukta', monospace;
+    letter-spacing: 0.1vh;
+    bottom: 18px;
+    left: 30px;
     float: left;
 }
 
 .player-inv-weight {
     position: absolute;
     left: 38%;
-    top: 12%;
+    top: 10%;
 }
 
 .player-inv-weight > p {
@@ -382,39 +435,49 @@ body {
 
 .other-inv-info {
     position: absolute;
-    left: 56%;
-    top: 22.2%;
+    left: 58.3%;
+    top: 19.5%;
+    width: 28.8%;
 }
 
 .ply-iteminfo-container {
-    font-family: 'Poppins', sans-serif;
-    display: none;
+    background-color: rgb(38, 41, 60);
+    border-radius: 5px;
+    color: rgba(220, 220, 220, 1);
+    border: 1px solid rgba(220, 240, 220, 0.05);
+    font-size: 1.35vh;
+    font-weight: 0;
+    left: 41%;
+    max-height: 25%;
+    min-height: 50px;
+    overflow: hidden;
+    padding: 1%;
+    pointer-events: none;
     position: absolute;
-    bottom: 3%;
-    margin: 0 auto;
-    left: 100px;
-    right: 0;
-    text-align: right;
-    width: 103.4vh;
-    height: 23vh;
+    text-decoration: none;
+    top: 78%;
+    transition: opacity 0.6s ease;
+    width: 13%;
+    z-index: 999;
 }
 
 .item-info-title {
     text-transform: uppercase;
     font-weight: 900;
     font-family: sans-serif;
-    font-size: 1.3vh;
+    font-size: 1.7vh;
     color: white;
     font-family: 'Poppins', sans-serif;
-    padding-top: 1px;
+    padding-top: 5px;
+    padding-left: 5px;
 }
 
 .item-info-line {
     position: absolute;
     font-family: 'Poppins', sans-serif;
-    width: 100%;
-    background-color: white;
-    height: 0vh;
+    width: 85%;
+    background-color: #6d6d6d96;
+    height: 0.23vh;
 }
 
 .item-info-description {
@@ -422,11 +485,12 @@ body {
     font-size: 1vh;
     font-family: 'Poppins', sans-serif;
     color: white;
+    padding-left: 5px;
     padding-top: .5vh;
 }
 
 .itemboxes-container {
-    height: 130px;
+    height: 140px;
     min-width: 110px;
     max-width: 550px;
     width: fit-content;
@@ -446,8 +510,8 @@ body {
     float: left;
     margin: 0 auto;
     margin-right: 1vh;
-    width: 9vh;
-    height: 11vh;
+    width: 10vh;
+    height: 13vh;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
     background-color: rgba(0, 0, 0, 0.3);
@@ -464,7 +528,8 @@ body {
 }
 
 #itembox-action > p {
-    font-size: 10px;
+    font-size: 12px;
+    font-weight:bolder;
     font-family: 'Poppins', sans-serif;
 }
 
@@ -475,6 +540,12 @@ body {
     background-color: rgba(var(--main-label-color), 0.35);
     min-height: 2.2vh;
     height: fit-content;
+}
+
+.itembox-image {
+    max-width: 10%;
+    max-height: 100%;
+    padding: 0.10vw;
 }
 
 #itembox-label > p {
@@ -558,8 +629,8 @@ body {
 
 .z-hotbar-item-slot {
     position: relative;
-    width: 8.5vh;
-    height: 10.5vh;
+    width: 10.5vh;
+    height: 12.5vh;
     float: left;
     margin-left: 2px;
     margin-bottom: 2px;
@@ -605,14 +676,14 @@ body {
 .z-hotbar-item-slot-img {
     max-width: 100%;
     max-height: 100%;
-    padding: 0.9vw;
+    padding: 0.8vw;
 }
 
 .z-hotbar-item-slot-img img {
-    margin-top: 21%;
+    margin-top: 8%;
     display:block;
-    width: 60px;
-    height: 60px;
+    width: 80px;
+    height: 80px;
     max-width: 100%;
     max-height: 100%;
 }
