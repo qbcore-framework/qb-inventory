@@ -55,10 +55,10 @@ body {
 
 .player-inventory {
     position: absolute;
-    top: 26%;
-    left: 14.2%;
-    width: 28%;
-    height: 47.16%;
+    top: 66%;
+    left: 4.2%;
+    width: 92%;
+    height: 24.16%;
     float: left;
     overflow-x: hidden;
     overflow-y: scroll;
@@ -67,10 +67,10 @@ body {
 
 .other-inventory {
     position: absolute;
-    top: 26%;
-    right: 16%;
-    width: 28%;
-    height: 47.16%;
+    top: 16%;
+    right: 5%;
+    width: 62%;
+    height: 24.16%;
     float: left;
     overflow-x: hidden;
     overflow-y: scroll;
@@ -99,10 +99,10 @@ body {
 .inv-options {
     position: absolute;
     margin: 0 auto;
-    right: 0;
-    width: 9%;
-    top: 28%;
-    left: 1vh;
+    right: -108px;
+    width: 15%;
+    top: 12%;
+    left: -90vh;
 }
 
 .combine-option-container {
@@ -117,14 +117,14 @@ body {
 
 .item-slot {
     position: relative;
-    width: 9.5vh;
+    width: 11.5vh;
     height: 11.5vh;
     float: left;
     background-color: rgba(0, 0, 0, 0.3);
     border: 1px solid rgb(68 68 68 / 40%);
-    margin: 2px;
+    margin: 4px;
     transition: opacity 0.2s;
-    opacity: 1.0;
+    opacity: 7;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
 }
@@ -320,8 +320,8 @@ body {
 
 .player-inv-info {
     position: absolute;
-    left: 14.5%;
-    top: 22.2%;
+    left: 5.5%;
+    top: 62.2%;
 }
 
 #player-inv-label {
@@ -382,21 +382,21 @@ body {
 
 .other-inv-info {
     position: absolute;
-    left: 56%;
-    top: 22.2%;
+    left: 34%;
+    top: 12.2%;
 }
 
 .ply-iteminfo-container {
     font-family: 'Poppins', sans-serif;
     display: none;
     position: absolute;
-    bottom: 3%;
+    bottom: 13%;
     margin: 0 auto;
-    left: 100px;
+    left: 479px;
     right: 0;
     text-align: right;
-    width: 103.4vh;
-    height: 23vh;
+    width: 101.4vh;
+    height: 25vh;
 }
 
 .item-info-title {
@@ -406,7 +406,7 @@ body {
     font-size: 1.3vh;
     color: white;
     font-family: 'Poppins', sans-serif;
-    padding-top: 1px;
+    padding-top: 0px;
 }
 
 .item-info-line {
