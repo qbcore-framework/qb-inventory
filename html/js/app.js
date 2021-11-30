@@ -41,7 +41,7 @@ $(document).on("dblclick", ".item-slot", function(e) {
     if (ItemData) {
         Inventory.Close();
         $.post(
-            "https://qb-inventory/UseItem",
+            "https://aj-inventory/UseItem",
             JSON.stringify({
                 inventory: ItemInventory,
                 item: ItemData,
@@ -60,12 +60,19 @@ $(document).on("keyup", function() {
 
 $(document).on("mouseenter", ".item-slot", function(e) {
     e.preventDefault();
+    $(".ply-iteminfo-container").css("opacity", "0.0");
     if ($(this).data("item") != null) {
+        $(".ply-iteminfo-container").css("opacity", "1.0");
         $(".ply-iteminfo-container").fadeIn(150);
-        FormatItemInfo($(this).data("item"));
+        // FormatItemInfo($(this).data("item"));
+        FormatItemInfo($(this).data("item"), $(this));
     } else {
         $(".ply-iteminfo-container").fadeOut(100);
     }
+});
+
+$(document).on("mouseleave", ".item-slot", function (e) {
+    $(".ply-iteminfo-container").css("opacity", "0.0");
 });
 
 // Autostack Quickmove
@@ -217,7 +224,7 @@ $(document).on("click", ".weapon-attachments-back", function(e) {
 
 function FormatAttachmentInfo(data) {
     $.post(
-        "https://qb-inventory/GetWeaponData",
+        "https://aj-inventory/GetWeaponData",
         JSON.stringify({
             weapon: data.name,
             ItemData: ClickedItemData,
@@ -241,7 +248,7 @@ function FormatAttachmentInfo(data) {
                 data.WeaponData.description
             );
             $(".weapon-attachments-container-details").html(
-                '<span style="font-weight: bold; letter-spacing: .1vh;">Serial Number</span><br> ' +
+                '<span style="font-weight: bold; letter-spacing: .1vh;">Serial</span><br> ' +
                 ClickedItemData.info.serie +
                 '<br><br><span style="font-weight: bold; letter-spacing: .1vh;">Durability - ' +
                 Durability.toFixed() +
@@ -318,7 +325,7 @@ function handleAttachmentDrag() {
         hoverClass: "weapon-attachments-remove-hover",
         drop: function(event, ui) {
             $.post(
-                "https://qb-inventory/RemoveAttachment",
+                "https://aj-inventory/RemoveAttachment",
                 JSON.stringify({
                     AttachmentData: AttachmentDraggingData,
                     WeaponData: ClickedItemData,
@@ -386,7 +393,7 @@ $(document).on("click", "#weapon-attachments", function(e) {
         FormatAttachmentInfo(ClickedItemData);
     } else {
         $.post(
-            "https://qb-inventory/Notify",
+            "https://aj-inventory/Notify",
             JSON.stringify({
                 message: "Attachments are unavailable for this gun.",
                 type: "error",
@@ -395,7 +402,17 @@ $(document).on("click", "#weapon-attachments", function(e) {
     }
 });
 
-function FormatItemInfo(itemData) {
+function FormatItemInfo(itemData, dom) {
+
+    let element = $('.ply-iteminfo-container');
+    let itemOffset = $(dom).offset();
+    element.css('top', itemOffset.top - element.height());
+    let leftOffset = itemOffset.left + 92;
+    if (leftOffset + element.width() > $(window).width()) {
+        leftOffset = $(window).width() - element.width() - 20;
+    }
+    element.css('left', leftOffset);
+
     if (itemData != null && itemData.info != "") {
         if (itemData.name == "id_card") {
             var gender = "Man";
@@ -477,9 +494,9 @@ function FormatItemInfo(itemData) {
                     }
                 });
                 $(".item-info-description").html(
-                    "<p><strong>Serial Number: </strong><span>" +
+                    "<p><strong>Serial: </strong><span>" +
                     itemData.info.serie +
-                    "</span></p><p><strong>Munition: </strong><span>" +
+                    "</span></p><p><strong>Ammo: </strong><span>" +
                     itemData.info.ammo +
                     "</span></p><p><strong>Attachments: </strong><span>" +
                     attachmentString +
@@ -487,9 +504,9 @@ function FormatItemInfo(itemData) {
                 );
             } else {
                 $(".item-info-description").html(
-                    "<p><strong>Serial Number: </strong><span>" +
+                    "<p><strong>Serial: </strong><span>" +
                     itemData.info.serie +
-                    "</span></p><p><strong>Munition: </strong><span>" +
+                    "</span></p><p><strong>Ammo: </strong><span>" +
                     itemData.info.ammo +
                     "</span></p><p>" +
                     itemData.description +
@@ -506,7 +523,7 @@ function FormatItemInfo(itemData) {
                     itemData.info.ammotype +
                     "</span></p><p><strong>Caliber: </strong><span>" +
                     itemData.info.ammolabel +
-                    "</span></p><p><strong>Serial Number: </strong><span>" +
+                    "</span></p><p><strong>Serial: </strong><span>" +
                     itemData.info.serie +
                     "</span></p><p><strong>Crime scene: </strong><span>" +
                     itemData.info.street +
@@ -605,7 +622,7 @@ function handleDragDrop() {
             var itemData = $(this).data("item");
             var dragAmount = $("#item-amount").val();
             if (!itemData.useable) {
-                $("#item-use").css("background", "rgba(35,35,35, 0.5");
+                // $("#item-use").css("background", "rgba(35,35,35, 0.5");
             }
 
             if (dragAmount == 0) {
@@ -715,7 +732,7 @@ function handleDragDrop() {
             }, 300);
             $(this).css("background", "rgba(0, 0, 0, 0.3)");
             $(this).find("img").css("filter", "brightness(100%)");
-            $("#item-use").css("background", "rgba(" + InventoryOption + ", 0.3)");
+            // $("#item-use").css("background", "rgba(" + InventoryOption + ", 0.3)");
         },
     });
 
@@ -757,7 +774,7 @@ function handleDragDrop() {
                     Inventory.Close();
                 }
                 $.post(
-                    "https://qb-inventory/UseItem",
+                    "https://aj-inventory/UseItem",
                     JSON.stringify({
                         inventory: fromInventory,
                         item: fromData,
@@ -781,7 +798,7 @@ function handleDragDrop() {
             }
             $(this).css("background", "rgba(35,35,35, 0.7");
             $.post(
-                "https://qb-inventory/DropItem",
+                "https://aj-inventory/DropItem",
                 JSON.stringify({
                     inventory: fromInventory,
                     item: fromData,
@@ -994,8 +1011,10 @@ function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
         return false;
     }
 
+    var per =(totalWeight/1000)/(playerMaxWeight/100000)
+    $(".pro").css("width",per+"%")
     $("#player-inv-weight").html(
-        "⚖️: " +
+        // "⚖️: " +
         (parseInt(totalWeight) / 1000).toFixed(2) +
         " / " +
         (playerMaxWeight / 1000).toFixed(2)
@@ -1008,11 +1027,13 @@ function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
     ) {
         $("#other-inv-label").html(otherLabel);
         $("#other-inv-weight").html(
-            "⚖️: " +
+            // "⚖️: " +
             (parseInt(totalWeightOther) / 1000).toFixed(2) +
             " / " +
             (otherMaxWeight / 1000).toFixed(2)
         );
+        var per1 =(totalWeightOther/1000)/(otherMaxWeight/100000)
+        $(".pro1").css("width",per1+"%");
     }
 
     return true;
@@ -1024,7 +1045,7 @@ $(document).on("click", ".CombineItem", function(e) {
     e.preventDefault();
     if (combineslotData.toData.combinable.anim != null) {
         $.post(
-            "https://qb-inventory/combineWithAnim",
+            "https://aj-inventory/combineWithAnim",
             JSON.stringify({
                 combineData: combineslotData.toData.combinable,
                 usedItem: combineslotData.toData.name,
@@ -1033,7 +1054,7 @@ $(document).on("click", ".CombineItem", function(e) {
         );
     } else {
         $.post(
-            "https://qb-inventory/combineItem",
+            "https://aj-inventory/combineItem",
             JSON.stringify({
                 reward: combineslotData.toData.combinable.reward,
                 toItem: combineslotData.toData.name,
@@ -1155,7 +1176,7 @@ function optionSwitch(
     }
 
     $.post(
-        "https://qb-inventory/SetInventoryData",
+        "https://aj-inventory/SetInventoryData",
         JSON.stringify({
             fromInventory: $fromInv.attr("data-inventory"),
             toInventory: $toInv.attr("data-inventory"),
@@ -1579,9 +1600,9 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                     }
                 }
             }
-            $.post("https://qb-inventory/PlayDropSound", JSON.stringify({}));
+            $.post("https://aj-inventory/PlayDropSound", JSON.stringify({}));
             $.post(
-                "https://qb-inventory/SetInventoryData",
+                "https://aj-inventory/SetInventoryData",
                 JSON.stringify({
                     fromInventory: $fromInv.attr("data-inventory"),
                     toInventory: $toInv.attr("data-inventory"),
@@ -1598,7 +1619,7 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                     isItemAllowed(fromData.name, toData.combinable.accept)
                 ) {
                     $.post(
-                        "https://qb-inventory/getCombineItem",
+                        "https://aj-inventory/getCombineItem",
                         JSON.stringify({ item: toData.combinable.reward }),
                         function(item) {
                             $(".combine-option-text").html(
@@ -1830,7 +1851,7 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                     }
 
                     $.post(
-                        "https://qb-inventory/SetInventoryData",
+                        "https://aj-inventory/SetInventoryData",
                         JSON.stringify({
                             fromInventory: $fromInv.attr("data-inventory"),
                             toInventory: $toInv.attr("data-inventory"),
@@ -1876,7 +1897,7 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                     }
 
                     $.post(
-                        "https://qb-inventory/SetInventoryData",
+                        "https://aj-inventory/SetInventoryData",
                         JSON.stringify({
                             fromInventory: $fromInv.attr("data-inventory"),
                             toInventory: $toInv.attr("data-inventory"),
@@ -1886,7 +1907,7 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                         })
                     );
                 }
-                $.post("https://qb-inventory/PlayDropSound", JSON.stringify({}));
+                $.post("https://aj-inventory/PlayDropSound", JSON.stringify({}));
             } else if (
                 fromData.amount > $toAmount &&
                 (toData == undefined || toData == null)
@@ -2152,9 +2173,9 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                         }
                     }
                 }
-                $.post("https://qb-inventory/PlayDropSound", JSON.stringify({}));
+                $.post("https://aj-inventory/PlayDropSound", JSON.stringify({}));
                 $.post(
-                    "https://qb-inventory/SetInventoryData",
+                    "https://aj-inventory/SetInventoryData",
                     JSON.stringify({
                         fromInventory: $fromInv.attr("data-inventory"),
                         toInventory: $toInv.attr("data-inventory"),
@@ -2193,7 +2214,7 @@ function InventoryError($elinv, $elslot) {
             .find("[data-slot=" + $elslot + "]")
             .css("background", "rgba(255, 255, 255, 0.3)");
     }, 500);
-    $.post("https://qb-inventory/PlayDropFail", JSON.stringify({}));
+    $.post("https://aj-inventory/PlayDropFail", JSON.stringify({}));
 }
 
 var requiredItemOpen = false;
@@ -2208,20 +2229,13 @@ var requiredItemOpen = false;
     Inventory.dropmaxweight = 100000;
 
     Inventory.Error = function() {
-        $.post("https://qb-inventory/PlayDropFail", JSON.stringify({}));
+        $.post("https://aj-inventory/PlayDropFail", JSON.stringify({}));
     };
 
     Inventory.IsWeaponBlocked = function(WeaponName) {
         var DurabilityBlockedWeapons = [
-            /*             "weapon_pistol_mk2",
-                              "weapon_pistol",
-                              "weapon_stungun",
-                              "weapon_pumpshotgun",
-                              "weapon_smg",
-                              "weapon_carbinerifle",
-                              "weapon_nightstick",
-                              "weapon_flashlight", */
             "weapon_unarmed",
+            "weapon_stickybomb",
         ];
 
         var retval = false;
@@ -2332,6 +2346,8 @@ var requiredItemOpen = false;
 
         $(".player-inventory").find(".item-slot").remove();
         $(".ply-hotbar-inventory").find(".item-slot").remove();
+        $(".ply-iteminfo-container").css("opacity", "0.0");
+
 
         if (requiredItemOpen) {
             $(".requiredItem-container").hide();
@@ -2537,8 +2553,10 @@ var requiredItemOpen = false;
             });
         }
 
+        var per =(totalWeight/1000)/(data.maxweight/100000)
+        $(".pro").css("width",per+"%");
         $("#player-inv-weight").html(
-            "⚖️: " +
+            // "⚖️: " +
             (totalWeight / 1000).toFixed(2) +
             " / " +
             (data.maxweight / 1000).toFixed(2)
@@ -2554,7 +2572,7 @@ var requiredItemOpen = false;
             } else {
                 $("#other-inv-label").html(data.other.label);
                 $("#other-inv-weight").html(
-                    "⚖️: " +
+                    // "⚖️: " +
                     (totalWeightOther / 1000).toFixed(2) +
                     " / " +
                     (data.other.maxweight / 1000).toFixed(2)
@@ -2562,16 +2580,20 @@ var requiredItemOpen = false;
             }
             otherMaxWeight = data.other.maxweight;
             otherLabel = data.other.label;
+            var per1 =(totalWeightOther/1000)/(otherMaxWeight/100000)
+            $(".pro1").css("width",per1+"%");
         } else {
             $("#other-inv-label").html(Inventory.droplabel);
             $("#other-inv-weight").html(
-                "⚖️: " +
+                // "⚖️: " +
                 (totalWeightOther / 1000).toFixed(2) +
                 " / " +
                 (Inventory.dropmaxweight / 1000).toFixed(2)
             );
             otherMaxWeight = Inventory.dropmaxweight;
             otherLabel = Inventory.droplabel;
+            var per1 =(totalWeightOther/1000)/(otherMaxWeight/100000)
+            $(".pro1").css("width",per1+"%");
         }
 
         $.each(data.maxammo, function(index, ammotype) {
@@ -2604,14 +2626,15 @@ var requiredItemOpen = false;
     Inventory.Close = function() {
         $(".item-slot").css("border", "1px solid rgba(255, 255, 255, 0.1)");
         $(".ply-hotbar-inventory").css("display", "block");
-        $(".ply-iteminfo-container").css("display", "none");
+        // $(".ply-iteminfo-container").css("display", "none");
+        $(".ply-iteminfo-container").css("opacity", "0.0");
         $("#qbcore-inventory").fadeOut(300);
         $(".combine-option-container").hide();
         $(".item-slot").remove();
         if ($("#rob-money").length) {
             $("#rob-money").remove();
         }
-        $.post("https://qb-inventory/CloseInventory", JSON.stringify({}));
+        $.post("https://aj-inventory/CloseInventory", JSON.stringify({}));
 
         if (AttachmentScreenActive) {
             $("#qbcore-inventory").css({ left: "0vw" });
@@ -2726,8 +2749,10 @@ var requiredItemOpen = false;
             }
         });
 
+        var per =(totalWeight/1000)/(data.maxweight/100000)
+        $(".pro").css("width",per+"%");
         $("#player-inv-weight").html(
-            "⚖️: " +
+            // "⚖️: " +
             (totalWeight / 1000).toFixed(2) +
             " / " +
             (data.maxweight / 1000).toFixed(2)
@@ -2810,7 +2835,7 @@ var requiredItemOpen = false;
     Inventory.UseItem = function(data) {
         $(".itembox-container").hide();
         $(".itembox-container").fadeIn(250);
-        $("#itembox-action").html("<p>Used</p>");
+        $("#itembox-action").html("<p>Used x1</p>");
         $("#itembox-label").html("<p>" + data.item.label + "</p>");
         $("#itembox-image").html(
             '<div class="item-slot-img"><img src="images/' +
@@ -2831,7 +2856,7 @@ var requiredItemOpen = false;
         if (itemBoxtimer !== null) {
             clearTimeout(itemBoxtimer);
         }
-        var type = "Used";
+        var type = "Used x1";
         if (data.type == "add") {
             type = "Received";
         } else if (data.type == "remove") {
@@ -2927,7 +2952,7 @@ $(document).on("click", "#rob-money", function(e) {
     e.preventDefault();
     var TargetId = $(this).data("TargetId");
     $.post(
-        "https://qb-inventory/RobMoney",
+        "https://aj-inventory/RobMoney",
         JSON.stringify({
             TargetId: TargetId,
         })
@@ -2950,7 +2975,7 @@ $("#item-give").droppable({
             amount = fromData.amount;
         }
         $.post(
-            "https://qb-inventory/GiveItem",
+            "https://aj-inventory/GiveItem",
             JSON.stringify({
                 inventory: fromInventory,
                 item: fromData,
