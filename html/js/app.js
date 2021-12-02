@@ -1,21 +1,15 @@
 var InventoryOption = "0, 0, 0";
-
 var totalWeight = 0;
 var totalWeightOther = 0;
-
 var playerMaxWeight = 0;
 var otherMaxWeight = 0;
-
 var otherLabel = "";
-
 var ClickedItemData = {};
-
 var SelectedAttachment = null;
 var AttachmentScreenActive = false;
 var ControlPressed = false;
 var disableRightMouse = false;
 var selectedItem = null;
-
 var IsDragging = false;
 
 $(document).on("keydown", function() {
@@ -68,7 +62,6 @@ $(document).on("mouseenter", ".item-slot", function(e) {
     }
 });
 
-// Autostack Quickmove
 function GetFirstFreeSlot($toInv, $fromSlot) {
     var retval = null;
     $.each($toInv.find(".item-slot"), function(i, slot) {
@@ -84,11 +77,6 @@ function GetFirstFreeSlot($toInv, $fromSlot) {
 function CanQuickMove() {
     var otherinventory = otherLabel.toLowerCase();
     var retval = true;
-    // if (otherinventory == "grond") {
-    //     retval = false
-    // } else if (otherinventory.split("-")[0] == "dropped") {
-    //     retval = false;
-    // }
     if (otherinventory.split("-")[0] == "player") {
         retval = false;
     }
@@ -150,13 +138,11 @@ $(document).on("click", ".item-slot", function(e) {
         if (ItemData.name !== undefined) {
             if (ItemData.name.split("_")[0] == "weapon") {
                 if (!$("#weapon-attachments").length) {
-                    // if (ItemData.info.attachments !== null && ItemData.info.attachments !== undefined && ItemData.info.attachments.length > 0) {
                     $(".inv-options-list").append(
                         '<div class="inv-option-item" id="weapon-attachments"><p>ATTACHMENTS</p></div>'
                     );
                     $("#weapon-attachments").hide().fadeIn(250);
                     ClickedItemData = ItemData;
-                    // }
                 } else if (ClickedItemData == ItemData) {
                     $("#weapon-attachments").fadeOut(250, function() {
                         $("#weapon-attachments").remove();
@@ -597,11 +583,8 @@ function handleDragDrop() {
         cancel: ".item-nodrag",
         start: function(event, ui) {
             IsDragging = true;
-            // $(this).css("background", "rgba(20,20,20,1.0)");
             $(this).find("img").css("filter", "brightness(50%)");
-
             $(".item-slot").css("border", "1px solid rgba(255, 255, 255, 0.1)");
-
             var itemData = $(this).data("item");
             var dragAmount = $("#item-amount").val();
             if (!itemData.useable) {
@@ -616,7 +599,6 @@ function handleDragDrop() {
                         .html("(" + itemData.amount + ") $" + itemData.price);
                     $(".ui-draggable-dragging").find(".item-slot-key").remove();
                     if ($(this).parent().attr("data-inventory") == "hotbar") {
-                        // $(".ui-draggable-dragging").find(".item-slot-key").remove();
                     }
                 } else {
                     $(this).find(".item-slot-amount p").html("0 (0.0)");
@@ -630,7 +612,6 @@ function handleDragDrop() {
                         );
                     $(".ui-draggable-dragging").find(".item-slot-key").remove();
                     if ($(this).parent().attr("data-inventory") == "hotbar") {
-                        // $(".ui-draggable-dragging").find(".item-slot-key").remove();
                     }
                 }
             } else if (dragAmount > itemData.amount) {
@@ -639,7 +620,6 @@ function handleDragDrop() {
                         .find(".item-slot-amount p")
                         .html("(" + itemData.amount + ") $" + itemData.price);
                     if ($(this).parent().attr("data-inventory") == "hotbar") {
-                        // $(".ui-draggable-dragging").find(".item-slot-key").remove();
                     }
                 } else {
                     $(this)
@@ -651,7 +631,6 @@ function handleDragDrop() {
                             ")"
                         );
                     if ($(this).parent().attr("data-inventory") == "hotbar") {
-                        // $(".ui-draggable-dragging").find(".item-slot-key").remove();
                     }
                 }
                 InventoryError($(this).parent(), $(this).attr("data-slot"));
@@ -665,7 +644,6 @@ function handleDragDrop() {
                         .html("(" + itemData.amount + ") $" + itemData.price);
                     $(".ui-draggable-dragging").find(".item-slot-key").remove();
                     if ($(this).parent().attr("data-inventory") == "hotbar") {
-                        // $(".ui-draggable-dragging").find(".item-slot-key").remove();
                     }
                 } else {
                     $(this)
@@ -690,12 +668,10 @@ function handleDragDrop() {
                         );
                     $(".ui-draggable-dragging").find(".item-slot-key").remove();
                     if ($(this).parent().attr("data-inventory") == "hotbar") {
-                        // $(".ui-draggable-dragging").find(".item-slot-key").remove();
                     }
                 }
             } else {
                 if ($(this).parent().attr("data-inventory") == "hotbar") {
-                    // $(".ui-draggable-dragging").find(".item-slot-key").remove();
                 }
                 $(".ui-draggable-dragging").find(".item-slot-key").remove();
                 $(this)
@@ -1443,8 +1419,7 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                             .html(qualityLabel);
                     }
                 }
-
-                // From Data zooi
+				
                 $fromInv
                     .find("[data-slot=" + $fromSlot + "]")
                     .data("item", newDataFrom);
@@ -2168,7 +2143,6 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
             }
         }
     } else {
-        //InventoryError($fromInv, $fromSlot);
     }
     handleDragDrop();
 }
@@ -2213,14 +2187,6 @@ var requiredItemOpen = false;
 
     Inventory.IsWeaponBlocked = function(WeaponName) {
         var DurabilityBlockedWeapons = [
-            /*             "weapon_pistol_mk2",
-                              "weapon_pistol",
-                              "weapon_stungun",
-                              "weapon_pumpshotgun",
-                              "weapon_smg",
-                              "weapon_carbinerifle",
-                              "weapon_nightstick",
-                              "weapon_flashlight", */
             "weapon_unarmed",
         ];
 
@@ -2344,7 +2310,6 @@ var requiredItemOpen = false;
         } else {
             $(".other-inventory").attr("data-inventory", 0);
         }
-        // First 5 Slots
         for (i = 1; i < 6; i++) {
             $(".player-inventory").append(
                 '<div class="item-slot" data-slot="' +
@@ -2354,7 +2319,6 @@ var requiredItemOpen = false;
                 '</p></div><div class="item-slot-img"></div><div class="item-slot-label"><p>&nbsp;</p></div></div>'
             );
         }
-        // Inventory
         for (i = 6; i < data.slots + 1; i++) {
             if (i == 41) {
                 $(".player-inventory").append(
@@ -2934,8 +2898,6 @@ $(document).on("click", "#rob-money", function(e) {
     );
     $("#rob-money").remove();
 });
-
-// Give
 
 $("#item-give").droppable({
     hoverClass: "button-hover",
