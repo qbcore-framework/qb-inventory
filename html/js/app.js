@@ -460,10 +460,6 @@ function FormatItemInfo(itemData) {
             $(".item-info-description").html(
                 "<p>" + itemData.info.uses + " uses left.</p>"
             );
-        } else if (itemData.name == "duffel-bag") {
-            $(".item-info-title").html('<p>'+itemData.label+'</p>')
-            $(".item-info-description").html('<p><strong>Bag ID Number: </strong><span>' + itemData.info.bagid
-            );
         } else if (itemData.type == "weapon") {
             $(".item-info-title").html("<p>" + itemData.label + "</p>");
             if (itemData.info.ammo == undefined) {
