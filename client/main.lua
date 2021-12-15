@@ -161,6 +161,7 @@ local function ItemsToItemInfo()
 		[10] = {costs = QBCore.Shared.Items["aluminum"]["label"] .. ": 6x, " ..QBCore.Shared.Items["glass"]["label"] .. ": 6x."},
 		[11] = {costs = QBCore.Shared.Items["iron"]["label"] .. ": 5x, " ..QBCore.Shared.Items["steel"]["label"] .. ": 5x, "..QBCore.Shared.Items["plastic"]["label"] .. ": 6x, "..QBCore.Shared.Items["aluminum"]["label"] .. ": 5x."},
 		[12] = {costs = QBCore.Shared.Items["iron"]["label"] .. ": 5x, " ..QBCore.Shared.Items["steel"]["label"] .. ": 6x, "..QBCore.Shared.Items["screwdriverset"]["label"] .. ": 3x, "..QBCore.Shared.Items["advancedlockpick"]["label"] .. ": 5x."},
+        [13] = {costs = QBCore.Shared.Items["iron"]["label"] .. ": 1x, " ..QBCore.Shared.Items["steel"]["label"] .. ": 1x, "..QBCore.Shared.Items["screwdriverset"]["label"] .. ": 1x, "..QBCore.Shared.Items["thermite"]["label"] .. ": 1x."},
 	}
 
 	local items = {}

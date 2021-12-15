@@ -198,6 +198,21 @@ Config.CraftingItems = {
         threshold = 1750,
         points = 12,
     },
+    [13] = {
+        name = "atm_explosive",
+        amount = 50,
+        info = {},
+        costs = {
+            ["iron"] = 1,
+            ["steel"] = 1,
+            ["screwdriverset"] = 1,
+            ["thermite"] = 1,
+        },
+        type = "item",
+        slot = 13,
+        threshold = 75,
+        points = 12,
+    },
 }
 
 Config.AttachmentCrafting = {
