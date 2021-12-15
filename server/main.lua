@@ -1296,7 +1296,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				    TriggerClientEvent('qb-shops:client:UpdateShop', src, QBCore.Shared.SplitStr(shopType, "_")[2], itemData, fromAmount)
 				    TriggerClientEvent('QBCore:Notify', src, itemInfo["label"] .. " bought!", "success")
 				    TriggerEvent("qb-log:server:CreateLog", "shops", "Shop item bought", "green", "**"..GetPlayerName(src) .. "** bought a " .. itemInfo["label"] .. " for $"..price)
-				end
+				
 			elseif bankBalance >= price then
 				Player.Functions.RemoveMoney("bank", price, "itemshop-bought-item")
                 if QBCore.Shared.SplitStr(itemData.name, "_")[1] == "weapon" then
