@@ -617,11 +617,22 @@ RegisterCommand('inventory', function()
                 elseif CurrentDrop ~= 0 then
                     TriggerServerEvent("inventory:server:OpenInventory", "drop", CurrentDrop)
                 elseif VendingMachine ~= nil then
-                    local ShopItems = {}
-                    ShopItems.label = "Vending Machine"
-                    ShopItems.items = Config.VendingItem
-                    ShopItems.slots = #Config.VendingItem
-                    TriggerServerEvent("inventory:server:OpenInventory", "shop", "Vendingshop_"..math.random(1, 99), ShopItems)
+                    local typ
+                    local found = false
+                    for k, v in pairs(Config.VendingObjects) do
+                    	if GetHashKey(v[1]) == GetEntityModel(data.entity) then
+                    		typ = v
+                    		found = true
+                    		break
+                    	end
+		    end
+		    if found then
+			local ShopItems = {}
+			ShopItems.label = typ[3]
+			ShopItems.items = typ[2]
+			ShopItems.slots = #typ[2]
+			TriggerServerEvent("inventory:server:OpenInventory", "shop", "Vendingshop_"..math.random(1, 99), ShopItems)
+		    end							
                 else
                     openAnim()
                     TriggerServerEvent("inventory:server:OpenInventory")
