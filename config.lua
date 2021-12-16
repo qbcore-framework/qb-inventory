@@ -1,32 +1,60 @@
 Config = {}
 
-Config.VendingObjects = {
-    "prop_vend_soda_01",
-    "prop_vend_soda_02",
-    "prop_vend_water_01"
+Config.CoffeeDrinksItem = {
+    [1] = {
+        name = "coffee",
+        price = 10,
+        amount = 15,
+        info = {},
+        type = "item",
+        slot = 1,
+    },
 }
 
-Config.BinObjects = {
-    "prop_bin_05a",
-}
-
-Config.VendingItem = {
+Config.VendingDrinksItem = {
     [1] = {
         name = "kurkakola",
         price = 4,
-        amount = 50,
+        amount = 15,
         info = {},
         type = "item",
         slot = 1,
     },
     [2] = {
         name = "water_bottle",
-        price = 4,
-        amount = 50,
+        price = 6,
+        amount = 15,
         info = {},
         type = "item",
         slot = 2,
     },
+}
+
+Config.VendingFoodItems = {
+    [1] = {
+        name = "twerks_candy",
+        price = 4,
+        amount = 15,
+        info = {},
+        type = "item",
+        slot = 1,
+    },
+    [2] = {
+        name = "snikkel_candy",
+        price = 4,
+        amount = 15,
+        info = {},
+        type = "item",
+        slot = 2,
+    },
+}
+
+Config.VendingObjects = {
+    {"prop_vend_soda_01", Config.VendingDrinksItem, 'Vending Machine'},
+    {"prop_vend_soda_02", Config.VendingDrinksItem, 'Vending Machine'},
+    {"prop_vend_water_01", Config.VendingDrinksItem, 'Vending Machine'},
+    {'prop_vend_coffe_01', Config.CoffeeDrinksItem, 'Coffee Machine'},
+    {'prop_vend_snak_01', Config.VendingFoodItems, 'Vending Machine'}
 }
 
 Config.CraftingItems = {
