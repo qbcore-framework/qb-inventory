@@ -839,12 +839,12 @@ CreateThread(function()
 	while true do
 		local pos = GetEntityCoords(PlayerPedId())
 		local inRange = false
-		local distance = #(pos - vector3(Config.AttachmentCrafting["location"].x, Config.AttachmentCrafting["location"].y, Config.AttachmentCrafting["location"].z))
+		local distance = #(pos - Config.AttachmentCraftingLocation)
 
 		if distance < 10 then
 			inRange = true
 			if distance < 1.5 then
-				DrawText3Ds(Config.AttachmentCrafting["location"].x, Config.AttachmentCrafting["location"].y, Config.AttachmentCrafting["location"].z, "~g~E~w~ - Craft")
+				DrawText3Ds(Config.AttachmentCraftingLocation, "~g~E~w~ - Craft")
 				if IsControlJustPressed(0, 38) then
 					local crafting = {}
 					crafting.label = "Attachment Crafting"

@@ -388,7 +388,7 @@ Config.CraftingItems = {
 	},
 }
 
-Config.AttachmentCraftingLocation = vector3(88.91, 3743.88, 40.77)
+Config.AttachmentCraftingLocation = vector3(88.91, 3743.88, 40.77) 
 
 Config.AttachmentCrafting = {
 	[1] = {
@@ -657,7 +657,6 @@ BackEngineVehicles = {
     [`stingergt`] = true,
     [`surfer`] = true,
     [`surfer2`] = true,
-    [`comet3`] = true,
     [`gp1`] = true,
     [`autarch`] = true,
     [`tyrant`] = true
