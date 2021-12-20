@@ -625,7 +625,6 @@ BackEngineVehicles = {
     [`stingergt`] = true,
     [`surfer`] = true,
     [`surfer2`] = true,
-    [`comet3`] = true,
     [`gp1`] = true,
     [`autarch`] = true,
     [`tyrant`] = true
