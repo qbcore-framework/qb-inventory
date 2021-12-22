@@ -532,6 +532,23 @@ RegisterNetEvent('inventory:server:addTrunkItems', function(plate, items)
 	Trunks[plate].items = items
 end)
 
+RegisterNetEvent('inventory:server:clearTrunkItems', function(plate)
+	if(Trunks[plate] ~= nil) then
+		Trunks[plate].items = items
+	end
+end)
+
+RegisterNetEvent('inventory:server:addGloveBoxItems', function(plate, items)
+	Gloveboxes[plate] = {}
+	Gloveboxes[plate].items = items
+end)
+
+RegisterNetEvent('inventory:server:clearGloveBoxItems', function(plate)
+	if(Gloveboxes[plate] ~= nil) then
+		Gloveboxes[plate].items = items
+	end
+end)
+
 RegisterNetEvent('inventory:server:combineItem', function(item, fromItem, toItem)
 	local src = source
 	local ply = QBCore.Functions.GetPlayer(src)
