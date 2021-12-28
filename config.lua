@@ -10,6 +10,8 @@ Config.BinObjects = {
     "prop_bin_05a",
 }
 
+Config.CraftingObject = `prop_toolchest_05`
+
 Config.VendingItem = {
     [1] = {
         name = "kurkakola",
@@ -356,7 +358,7 @@ Config.CraftingItems = {
 	},
 }
 
-Config.AttachmentCraftingLocation = vector3(88.91, 3743.88, 40.77) 
+Config.AttachmentCraftingLocation = vector3(88.91, 3743.88, 40.77)
 
 Config.AttachmentCrafting = {
 	[1] = {
