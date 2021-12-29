@@ -239,6 +239,18 @@ local function GetAttachmentThresholdItems()
 	return items
 end
 
+local function hasItem(item, amount)
+    local retval = promise.new()
+    QBCore.Functions.TriggerCallback('QBCore:HasItem', function(result)
+        retval:resolve(result)
+		print(result)
+    end, item, amount)
+	
+    return Citizen.Await(retval)
+end
+
+exports('hasItem', hasItem)
+
 -- Events
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
