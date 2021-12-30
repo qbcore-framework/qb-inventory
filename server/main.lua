@@ -1402,6 +1402,33 @@ RegisterNetEvent('qb-inventory:server:SaveStashItems', function(stashId, items)
     })
 end)
 
+RegisterNetEvent("inventory:server:spawnOnGround", function(source, itemData, itemAmount) 
+	local coords = GetEntityCoords(GetPlayerPed(source))
+	local itemInfo = QBCore.Shared.Items[itemData.name:lower()]
+	local dropId = CreateDropId()
+	Drops[dropId] = {}
+	Drops[dropId].items = {}
+
+	Drops[dropId].items[1] = {
+		name = itemInfo["name"],
+		amount = itemAmount,
+		info = itemData.info ~= nil and itemData.info or "",
+		label = itemInfo["label"],
+		description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
+		weight = itemInfo["weight"],
+		type = itemInfo["type"],
+		unique = itemInfo["unique"],
+		useable = itemInfo["useable"],
+		image = itemInfo["image"],
+		slot = 1,
+		id = dropId,
+	}
+	local Ply = QBCore.Functions.GetPlayer(source)
+	TriggerEvent("qb-log:server:CreateLog", "drop", "New Item Spawn as Drop", "red", "**".. GetPlayerName(source) .. "** (citizenid: *"..Ply.PlayerData.citizenid.."* | id: *"..source.."*) overflowed inventory into drop; name: **"..itemData.name.."**, amount: **" .. itemAmount .. "**")
+	TriggerClientEvent("inventory:client:AddDropItem", -1, dropId, source, coords)
+end)
+
+
 RegisterServerEvent("inventory:server:GiveItem", function(target, inventory, item, amount)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
