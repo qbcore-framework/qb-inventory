@@ -1,5 +1,7 @@
 # qb-inventory
 
+qb-inventory for https://github.com/mknzz/qb-durability
+
 # License
 
     QBCore Framework
