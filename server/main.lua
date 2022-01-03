@@ -1402,8 +1402,12 @@ RegisterNetEvent('qb-inventory:server:SaveStashItems', function(stashId, items)
     })
 end)
 
-RegisterServerEvent("inventory:server:GiveItem", function(target, inventory, item, amount)
+RegisterServerEvent("inventory:server:GiveItem", function(data)
     local src = source
+	local target = data.target
+	local inventory = data.inventory
+	local item = data.item
+	local amount = data.amount
     local Player = QBCore.Functions.GetPlayer(src)
     local OtherPlayer = QBCore.Functions.GetPlayer(tonumber(target))
     local dist = #(GetEntityCoords(GetPlayerPed(src))-GetEntityCoords(GetPlayerPed(target)))
@@ -1598,4 +1602,31 @@ QBCore.Functions.CreateUseableItem("id_card", function(source, item)
 			)
 		end
 	end
+end)
+
+QBCore.Functions.CreateCallback('inventory:server:getplayers', function(source, cb)
+	local src = source
+	local players = {}
+	local PlayerPed = GetPlayerPed(src)
+	local pCoords = GetEntityCoords(PlayerPed)
+	for k, v in pairs(QBCore.Functions.GetPlayers()) do
+		local targetped = GetPlayerPed(v)
+		local tCoords = GetEntityCoords(targetped)
+		local dist = #(pCoords - tCoords)
+		if PlayerPed ~= targetped and dist < 3 then
+			local ped = QBCore.Functions.GetPlayer(v)
+			players[#players+1] = {
+			id = v,
+			coords = GetEntityCoords(targetped),
+			name = ped.PlayerData.charinfo.firstname .. " " .. ped.PlayerData.charinfo.lastname,
+			citizenid = ped.PlayerData.citizenid,
+			sources = GetPlayerPed(ped.PlayerData.source),
+			sourceplayer = ped.PlayerData.source
+			}
+		end
+	end
+		table.sort(players, function(a, b)
+			return a.name < b.name
+		end)
+	cb(players)
 end)
