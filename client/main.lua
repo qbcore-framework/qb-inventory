@@ -794,7 +794,41 @@ RegisterNUICallback("GiveItem", function(data, cb)
         if (data.inventory == 'player') then
             local playerId = GetPlayerServerId(player)
             SetCurrentPedWeapon(PlayerPedId(),'WEAPON_UNARMED',true)
-            TriggerServerEvent("inventory:server:GiveItem", playerId, data.inventory, data.item, data.amount)
+            --TriggerServerEvent("inventory:server:GiveItem", playerId, data.inventory, data.item, data.amount)
+	            --TriggerServerEvent("inventory:server:GiveItem", playerId, data.inventory, data.item, data.amount)
+		QBCore.Functions.TriggerCallback('inventory:server:getplayers', function(players)
+		for k,v in pairs(players) do
+			if v and v ~= PlayerId() then
+				local giveitemClosestPlayer = {
+					{
+						header = "Closest Player",
+						isMenuHeader = true
+					},
+				}
+				giveitemClosestPlayer[#giveitemClosestPlayer+1] = {
+					header = v.name,
+					txt = "CID: " ..v.citizenid.. " - ID: " ..v.sourceplayer,
+					params = {
+						isServer = true,
+						event = "inventory:server:GiveItem",
+						args = { 
+							target = v.sourceplayer,
+							inventory = data.inventory,
+							item = data.item,
+							amount = data.amount
+						}
+					}
+				}
+				giveitemClosestPlayer[#giveitemClosestPlayer+1] = {
+					header = "Close",
+					params = {
+						event = "qb-menu:closeMenu",
+					}
+				}
+				exports['qb-menu']:openMenu(giveitemClosestPlayer)
+			end
+		end
+		end)
         else
             QBCore.Functions.Notify("You do not own this item!", "error")
         end
