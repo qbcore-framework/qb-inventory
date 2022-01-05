@@ -600,6 +600,33 @@ RegisterNetEvent('inventory:server:SetIsOpenState', function(IsOpen, type, id)
 	end
 end)
 
+
+RegisterNetEvent("inventory:server:spawnOnGround", function(source, itemData, itemAmount) 
+	local coords = GetEntityCoords(GetPlayerPed(source))
+	local itemInfo = QBCore.Shared.Items[itemData.name:lower()]
+	local dropId = CreateDropId()
+	Drops[dropId] = {}
+	Drops[dropId].items = {}
+
+	Drops[dropId].items[1] = {
+		name = itemInfo["name"],
+		amount = itemAmount,
+		info = itemData.info ~= nil and itemData.info or "",
+		label = itemInfo["label"],
+		description = itemInfo["description"] ~= nil and itemInfo["description"] or "",
+		weight = itemInfo["weight"],
+		type = itemInfo["type"],
+		unique = itemInfo["unique"],
+		useable = itemInfo["useable"],
+		image = itemInfo["image"],
+		slot = 1,
+		id = dropId,
+	}
+	local Ply = QBCore.Functions.GetPlayer(source)
+	TriggerEvent("qb-log:server:CreateLog", "drop", "New Item Spawn as Drop", "red", "**".. GetPlayerName(source) .. "** (citizenid: *"..Ply.PlayerData.citizenid.."* | id: *"..source.."*) overflowed inventory into drop; name: **"..itemData.name.."**, amount: **" .. itemAmount .. "**")
+	TriggerClientEvent("inventory:client:AddDropItem", -1, dropId, source, coords)
+end)
+
 RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 	local src = source
 	local ply = Player(src)
@@ -1497,15 +1524,13 @@ QBCore.Commands.Add("giveitem", "Give An Item (Admin Only)", {{name="id", help="
 					info.serie = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
 				elseif itemData["name"] == "harness" then
 					info.uses = 20
-				elseif itemData["name"] == "markedbills" then
-					info.worth = math.random(5000, 10000)
 				elseif itemData["name"] == "labkey" then
 					info.lab = exports["qb-methlab"]:GenerateRandomLab()
 				elseif itemData["name"] == "printerdocument" then
 					info.url = "https://cdn.discordapp.com/attachments/870094209783308299/870104331142189126/Logo_-_Display_Picture_-_Stylized_-_Red.png"
 				end
 
-				if Player.Functions.AddItem(itemData["name"], amount, false, info) then
+				if Player.Functions.AddItem(itemData["name"], amount, false, info, true) then
 					TriggerClientEvent('QBCore:Notify', source, "You Have Given " ..GetPlayerName(tonumber(args[1])).." "..amount.." "..itemData["name"].. "", "success")
 				else
 					TriggerClientEvent('QBCore:Notify', source,  "Can't give item!", "error")
