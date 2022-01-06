@@ -105,7 +105,6 @@ local function SaveStashItems(stashId, items)
 				['stash'] = stashId,
 				['items'] = json.encode(items)
 			})
-			Stashes[stashId].isOpen = false
 		end
 	end
 end
@@ -816,6 +815,7 @@ RegisterNetEvent('inventory:server:SaveInventory', function(type, id)
 		end
 	elseif type == "stash" then
 		SaveStashItems(id, Stashes[id].items)
+		Stashes[id].isOpen = false
 	elseif type == "drop" then
 		if Drops[id] ~= nil then
 			Drops[id].isOpen = false
