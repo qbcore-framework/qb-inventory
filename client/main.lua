@@ -485,7 +485,7 @@ end)
 
 RegisterNetEvent('inventory:client:RemoveDropItem', function(dropId)
     Drops[dropId] = nil
-    DropsNear[dropId] = nil
+    if Config.UseItemDrop then RemoveNearbyDrop(dropId) else DropsNear[dropId] = nil end
 end)
 
 RegisterNetEvent('inventory:client:DropItemAnim', function()
@@ -628,7 +628,7 @@ RegisterCommand('inventory', function()
     end
 end)
 
-RegisterKeyMapping('inventory', 'Open Inventory', 'keyboard', 'TAB')
+RegisterKeyMapping('inventory', 'Open Inventory', 'keyboard', 'F2')
 
 RegisterCommand('hotbar', function()
     isHotbar = not isHotbar
@@ -639,7 +639,7 @@ RegisterCommand('hotbar', function()
 	end)
 end)
 
-RegisterKeyMapping('hotbar', 'Toggles keybind slots', 'keyboard', 'z')
+RegisterKeyMapping('hotbar', 'Toggles keybind slots', 'keyboard', 'GRAVE')
 
 for i=1, 6 do
     RegisterCommand('slot' .. i,function()
@@ -652,7 +652,7 @@ for i=1, 6 do
             end
         end)
     end)
-    RegisterKeyMapping('slot' .. i, 'Uses the item in slot ' .. i, 'keyboard', i)
+    RegisterKeyMapping('slot' .. i, 'Use Slot ' .. i .. ' Item', 'keyboard', i)
 end
 
 RegisterNetEvent('qb-inventory:client:giveAnim', function()
@@ -807,14 +807,22 @@ end)
 
 CreateThread(function()
     while true do
-        Wait(1)
+        local sleep = 100
         if DropsNear ~= nil then
             for k, v in pairs(DropsNear) do
                 if DropsNear[k] ~= nil then
-                    DrawMarker(2, v.coords.x, v.coords.y, v.coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.15, 120, 10, 20, 155, false, false, false, 1, false, false, false)
+                    if Config.UseItemDrop then
+                        if not v.isDropShowing then
+                            CreateItemDrop(k)
+                        end
+                    else
+                        sleep = 1
+                        DrawMarker(2, v.coords.x, v.coords.y, v.coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.15, 120, 10, 20, 155, false, false, false, 1, false, false, false)
+                    end
                 end
             end
         end
+        Wait(sleep)
     end
 end)
 
@@ -825,7 +833,7 @@ CreateThread(function()
             for k, v in pairs(Drops) do
                 if Drops[k] ~= nil then
                     local dist = #(pos - vector3(v.coords.x, v.coords.y, v.coords.z))
-                    if dist < 7.5 then
+                    if dist < Config.MaxDropViewDistance then
                         DropsNear[k] = v
                         if dist < 2 then
                             CurrentDrop = k
@@ -833,7 +841,11 @@ CreateThread(function()
                             CurrentDrop = nil
                         end
                     else
-                        DropsNear[k] = nil
+                        if Config.UseItemDrop and DropsNear[k] then
+                            RemoveNearbyDrop(k)
+                        else
+                            DropsNear[k] = nil
+                        end
                     end
                 end
             end
@@ -895,3 +907,35 @@ CreateThread(function()
 		Wait(3)
 	end
 end)
+
+AddEventHandler('onResourceStop', function(name)
+    if name == GetCurrentResourceName() and Config.UseItemDrop then
+        for k, _ in pairs(DropsNear) do
+            RemoveNearbyDrop(k)
+        end
+    end
+end)
+
+function CreateItemDrop(index)
+    local dropItem = CreateObject(Config.ItemDropObject, DropsNear[index].coords.x, DropsNear[index].coords.y, DropsNear[index].coords.z, false, false, false)
+    DropsNear[index].object = dropItem
+    DropsNear[index].isDropShowing = true
+    PlaceObjectOnGroundProperly(dropItem)
+    FreezeEntityPosition(dropItem)
+    SetEntityCollision(dropItem, false, false)
+end
+
+function RemoveNearbyDrop(index) 
+    if DropsNear[index] then
+        local dropItem = DropsNear[index].object
+        if DoesEntityExist(dropItem) then
+            DeleteEntity(dropItem)
+        end
+
+        DropsNear[index] = nil
+        if Drops[index] then
+            Drops[index].object = nil
+            Drops[index].isDropShowing = nil
+        end
+    end
+end
