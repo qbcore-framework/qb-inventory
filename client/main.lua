@@ -652,7 +652,7 @@ for i=1, 6 do
             end
         end)
     end)
-    RegisterKeyMapping('slot' .. i, 'Use Slot ' .. i .. ' Item', 'keyboard', i)
+    RegisterKeyMapping('slot' .. i, 'Uses the item in slot ' .. i, 'keyboard', i)
 end
 
 RegisterNetEvent('qb-inventory:client:giveAnim', function()
