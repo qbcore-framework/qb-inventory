@@ -847,8 +847,8 @@ CreateThread(function()
 end)
 
 CreateThread(function()
-	  while true do
-		    local sleep = 1000
+    while true do
+        local sleep = 1000
         if LocalPlayer.state['isLoggedIn'] then
             local pos = GetEntityCoords(PlayerPedId())
             local craftObject = GetClosestObjectOfType(pos, 2.0, Config.CraftingObject, false, false, false)
@@ -868,11 +868,11 @@ CreateThread(function()
             end
         end
         Wait(sleep)
-	  end
+    end
 end)
 
 CreateThread(function()
-	  while true do
+    while true do
         local sleep = 1000
         if LocalPlayer.state['isLoggedIn'] then
             local pos = GetEntityCoords(PlayerPedId())
@@ -891,6 +891,6 @@ CreateThread(function()
                 end
             end
         end
-		    Wait(sleep)
-	  end
+        Wait(sleep)
+    end
 end)
