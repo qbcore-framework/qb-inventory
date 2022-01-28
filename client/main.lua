@@ -46,7 +46,6 @@ local function FindObjectFromRayCast(distance)
 		z = cameraCoord.z + direction.z * distance
 	}
 	local a, b, c, d, e = GetShapeTestResult(StartShapeTestRay(cameraCoord.x, cameraCoord.y, cameraCoord.z, destination.x, destination.y, destination.z, -1, PlayerPedId(), 0))
-	print(e)
     return e
 end
 
