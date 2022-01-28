@@ -18,19 +18,71 @@ local itemInfos = {}
 
 -- Functions
 
+local function RotationToDirection(rotation)
+	local adjustedRotation =
+	{
+		x = (math.pi / 180) * rotation.x,
+		y = (math.pi / 180) * rotation.y,
+		z = (math.pi / 180) * rotation.z
+	}
+	local direction =
+	{
+		x = -math.sin(adjustedRotation.z) * math.abs(math.cos(adjustedRotation.x)),
+		y = math.cos(adjustedRotation.z) * math.abs(math.cos(adjustedRotation.x)),
+		z = math.sin(adjustedRotation.x)
+	}
+	return direction
+end
+
+
+local function FindObjectFromRayCast(distance)
+    local cameraRotation = GetGameplayCamRot()
+	local cameraCoord = GetGameplayCamCoord()
+	local direction = RotationToDirection(cameraRotation)
+	local destination =
+	{
+		x = cameraCoord.x + direction.x * distance,
+		y = cameraCoord.y + direction.y * distance,
+		z = cameraCoord.z + direction.z * distance
+	}
+	local a, b, c, d, e = GetShapeTestResult(StartShapeTestRay(cameraCoord.x, cameraCoord.y, cameraCoord.z, destination.x, destination.y, destination.z, -1, PlayerPedId(), 0))
+	print(e)
+    return e
+end
+
 local function GetClosestVending()
     local ped = PlayerPedId()
     local pos = GetEntityCoords(ped)
     local object = nil
-    for _, machine in pairs(Config.VendingObjects) do
-        local ClosestObject = GetClosestObjectOfType(pos.x, pos.y, pos.z, 0.75, GetHashKey(machine), 0, 0, 0)
-        if ClosestObject ~= 0 and ClosestObject ~= nil then
-            if object == nil then
-                object = ClosestObject
+    local type = nil
+    for _, soda in pairs(Config.SodaMachine) do
+        for _, coffee in pairs(Config.CoffeeMachine) do
+            for _, snack in pairs(Config.SnackMachine) do
+                for _, water in pairs(Config.WaterDispenser) do
+                    if object == nil then
+                        object = FindObjectFromRayCast(3.5)
+                        model = GetEntityModel(object)
+                        if model == GetHashKey(coffee) then 
+                            type = "coffee"
+                            break
+                        elseif model == GetHashKey(water) then
+                            type = "water"
+                            break
+                        elseif model == GetHashKey(snack) then
+                            type = "snack"
+                            break
+                        elseif model == GetHashKey(soda) then
+                            type = "soda"
+                            break
+                        else object = nil
+                        end
+                            
+                    end
+                end
             end
         end
     end
-    return object
+    return object, type
 end
 
 local function DrawText3Ds(x, y, z, text)
@@ -519,7 +571,7 @@ RegisterCommand('inventory', function()
             if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() then
                 local ped = PlayerPedId()
                 local curVeh = nil
-                local VendingMachine = GetClosestVending()
+                local VendingMachine, VendingType = GetClosestVending()
 
                 if IsPedInAnyVehicle(ped) then -- Is Player In Vehicle
                     local vehicle = GetVehiclePedIsIn(ped, false)
@@ -616,10 +668,27 @@ RegisterCommand('inventory', function()
                     TriggerServerEvent("inventory:server:OpenInventory", "drop", CurrentDrop)
                 elseif VendingMachine ~= nil then
                     local ShopItems = {}
-                    ShopItems.label = "Vending Machine"
-                    ShopItems.items = Config.VendingItem
-                    ShopItems.slots = #Config.VendingItem
-                    TriggerServerEvent("inventory:server:OpenInventory", "shop", "Vendingshop_"..math.random(1, 99), ShopItems)
+                    if VendingType == "coffee" then
+                        ShopItems.label = "Coffee Machine"
+                        ShopItems.items = Config.CoffeeItem
+                        ShopItems.slots = #Config.CoffeeItem
+                        TriggerServerEvent("inventory:server:OpenInventory", "shop", "Coffeemachine_"..math.random(1, 99), ShopItems)
+                    elseif VendingType == "water" then
+                        ShopItems.label = "Water Dispenser"
+                        ShopItems.items = Config.WaterItem
+                        ShopItems.slots = #Config.WaterItem
+                        TriggerServerEvent("inventory:server:OpenInventory", "shop", "Waterdispenser_"..math.random(1, 99), ShopItems)
+                    elseif VendingType == "snack" then
+                        ShopItems.label = "Snack Machine"
+                        ShopItems.items = Config.SnackItem
+                        ShopItems.slots = #Config.SnackItem
+                        TriggerServerEvent("inventory:server:OpenInventory", "shop", "Snackmachine_"..math.random(1, 99), ShopItems)
+                    elseif VendingType == "soda" then
+                        ShopItems.label = "Soda Machine"
+                        ShopItems.items = Config.SodaItem
+                        ShopItems.slots = #Config.SodaItem
+                        TriggerServerEvent("inventory:server:OpenInventory", "shop", "Sodamachine_"..math.random(1, 99), ShopItems)
+		    end
                 else
                     openAnim()
                     TriggerServerEvent("inventory:server:OpenInventory")
