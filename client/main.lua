@@ -59,7 +59,7 @@ local function GetClosestVending()
             for _, snack in pairs(Config.SnackMachine) do
                 for _, water in pairs(Config.WaterDispenser) do
                     if object == nil then
-                        object = FindObjectFromRayCast(3.5)
+                        object = FindObjectFromRayCast(5.0)
                         model = GetEntityModel(object)
                         if model == GetHashKey(coffee) then 
                             type = "coffee"
