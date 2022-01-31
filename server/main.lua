@@ -1402,13 +1402,17 @@ RegisterNetEvent('qb-inventory:server:SaveStashItems', function(stashId, items)
     })
 end)
 
-RegisterServerEvent("inventory:server:GiveItem", function(target, inventory, item, amount)
+RegisterServerEvent("inventory:server:GiveItem", function(target, name, amount, slot)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     local OtherPlayer = QBCore.Functions.GetPlayer(tonumber(target))
     local dist = #(GetEntityCoords(GetPlayerPed(src))-GetEntityCoords(GetPlayerPed(target)))
 	if Player == OtherPlayer then return TriggerClientEvent('QBCore:Notify', src, "You can't give yourself an item?") end
 	if dist > 2 then return TriggerClientEvent('QBCore:Notify', src, "You are too far away to give items!") end
+	local item = Player.Functions.GetItemBySlot(slot)
+	if not item then TriggerClientEvent('QBCore:Notify', src, "Item you tried giving not found!"); return end
+	if item.name ~= name then TriggerClientEvent('QBCore:Notify', src, "Incorrect item found try again!"); return end
+
 	if amount <= item.amount then
 		if amount == 0 then
 			amount = item.amount
