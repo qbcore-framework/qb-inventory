@@ -491,7 +491,7 @@ end)
 
 RegisterNetEvent('inventory:client:RemoveDropItem', function(dropId)
     Drops[dropId] = nil
-    DropsNear[dropId] = nil
+    if Config.UseItemDrop then RemoveNearbyDrop(dropId) else DropsNear[dropId] = nil end
 end)
 
 RegisterNetEvent('inventory:client:DropItemAnim', function()
@@ -810,12 +810,18 @@ end)
 
 CreateThread(function()
     while true do
-        local sleep = 1000
-        if DropsNear then
+        local sleep = 100
+        if DropsNear ~= nil then
             for k, v in pairs(DropsNear) do
-                if DropsNear[k] then
-                    sleep = 0
-                    DrawMarker(2, v.coords.x, v.coords.y, v.coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.15, 120, 10, 20, 155, false, false, false, 1, false, false, false)
+                if DropsNear[k] ~= nil then
+                    if Config.UseItemDrop then
+                        if not v.isDropShowing then
+                            CreateItemDrop(k)
+                        end
+                    else
+                        sleep = 1
+                        DrawMarker(2, v.coords.x, v.coords.y, v.coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.15, 120, 10, 20, 155, false, false, false, 1, false, false, false)
+                    end
                 end
             end
         end
@@ -830,7 +836,7 @@ CreateThread(function()
             for k, v in pairs(Drops) do
                 if Drops[k] then
                     local dist = #(pos - vector3(v.coords.x, v.coords.y, v.coords.z))
-                    if dist < 7.5 then
+                    if dist < Config.MaxDropViewDistance then
                         DropsNear[k] = v
                         if dist < 2 then
                             CurrentDrop = k
@@ -838,7 +844,11 @@ CreateThread(function()
                             CurrentDrop = nil
                         end
                     else
-                        DropsNear[k] = nil
+                        if Config.UseItemDrop and DropsNear[k] then
+                            RemoveNearbyDrop(k)
+                        else
+                            DropsNear[k] = nil
+                        end
                     end
                 end
             end
@@ -897,3 +907,35 @@ CreateThread(function()
         Wait(sleep)
     end
 end)
+
+AddEventHandler('onResourceStop', function(name)
+    if name == GetCurrentResourceName() and Config.UseItemDrop then
+        for k, _ in pairs(DropsNear) do
+            RemoveNearbyDrop(k)
+        end
+    end
+end)
+
+function CreateItemDrop(index)
+    local dropItem = CreateObject(Config.ItemDropObject, DropsNear[index].coords.x, DropsNear[index].coords.y, DropsNear[index].coords.z, false, false, false)
+    DropsNear[index].object = dropItem
+    DropsNear[index].isDropShowing = true
+    PlaceObjectOnGroundProperly(dropItem)
+    FreezeEntityPosition(dropItem)
+    SetEntityCollision(dropItem, false, false)
+end
+
+function RemoveNearbyDrop(index) 
+    if DropsNear[index] then
+        local dropItem = DropsNear[index].object
+        if DoesEntityExist(dropItem) then
+            DeleteEntity(dropItem)
+        end
+
+        DropsNear[index] = nil
+        if Drops[index] then
+            Drops[index].object = nil
+            Drops[index].isDropShowing = nil
+        end
+    end
+end

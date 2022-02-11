@@ -1,5 +1,9 @@
 Config = {}
 
+Config.MaxDropViewDistance = 12.5
+Config.UseItemDrop = false
+Config.ItemDropObject = `prop_nigel_bag_pickup`
+
 Config.VendingObjects = {
     "prop_vend_soda_01",
     "prop_vend_soda_02",
