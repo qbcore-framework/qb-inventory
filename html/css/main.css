@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
 p {
     margin: 0 !important;
@@ -27,10 +27,19 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 #progressbar {
-    margin-left: 5%;
-    margin-top: 5%;
+    width: 103.0%;
+    margin-left: 0%;
+    margin-top: 4.7%;
     border-radius: 50px;
-    background-color: rgba(24, 26, 30, 0.6);
+    background-color: rgb(39 39 49);
+}
+
+#progressbar-other {
+    width: 103.0%;
+    margin-left: 0.5%;
+    margin-top: 4.7%;
+    border-radius: 50px;
+    background-color: rgb(39 39 49);
 }
 
 .pro {
@@ -67,6 +76,7 @@ body {
     height: 100%;
     left: 0vw;
     display: none;
+    user-select: none;
 }
 
 .inv-background {
@@ -129,7 +139,7 @@ body {
     text-align: left;
     font-size: 1.1vh;
     line-height: 1.8vh;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Roboto', sans-serif;
 }
 
 .inv-options {
@@ -141,16 +151,16 @@ body {
     left: 3vh;
     border-radius:8px;
     padding-bottom: 30px;
+    cursor: pointer;
 }
 
 .combine-option-container {
     display: none;
-    position: absolute;
-    margin: 0 auto;
-    right: 0;
-    width: 8.5%;
-    top: 59%;
+    position: relative;
+    right: 0px;
+    width: auto;
     left: 0vh;
+    margin: 0px auto;
 }
 
 .item-slot {
@@ -172,7 +182,7 @@ body {
 }
 
 .item-slot:hover {
-    opacity: .7;
+    background-color: rgba(56, 48, 48, 0.3) !important;
 }
 
 .inv-option-item {
@@ -189,8 +199,9 @@ body {
 #item-amount {
     color: white;
     text-align: center;
-    font-size: 1.25vh;
-    font-family: 'Poppins', sans-serif;
+    font-size: 1.5vh;
+    font-weight: 300;
+    font-family: 'Roboto', sans-serif !important;
     outline: none;
 }
 
@@ -209,7 +220,7 @@ body {
     /* background-color: rgba(5, 5, 5, 0.5); */
     width: 100%;
     color: white;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Roboto', sans-serif;
     background-color: rgba(0, 0, 0, 0.192);
     font-size: 1.vh;
     padding: .4vh;
@@ -218,7 +229,7 @@ body {
 .ammo-info {
     position: relative;
     color: white;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Roboto', sans-serif;
     font-weight: 200;
     font-size: 1.vh;
     margin-left: .8vh;
@@ -237,7 +248,7 @@ body {
     line-height: 48px;
     text-transform: uppercase;
     font-size: 1.1vh;
-    font-family: 'Verdana';
+    font-family: 'Roboto';
 }
 
 .inv-option-item {
@@ -266,19 +277,21 @@ body {
 
 .btn-combine {
     position: relative;
-    margin-top: 30px;
-    width: 85%;
-    left: 12px;
-    top: 4.5vh;
-    background-color: #4b526c;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, .01);
+    margin: 25px auto;
+    width: 13vh;
+    top: 0vh;
+    left: 0px;
+    background-color: #4b526c !important;
     text-align: center;
     line-height: 48px;
     font-size: 1.2vh;
-    transition: background-color .1s linear;
-    font-weight: 900;
-    font-family: 'Poppins', sans-serif;
+    font-family: Roboto, sans-serif !important;
+    border-radius: 10px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgba(255, 255, 255, 0.01);
+    border-image: initial;
+    transition: background-color 0.1s linear 0s;
 }
 
 .btn-combine > p {
@@ -287,8 +300,11 @@ body {
     line-height: 48px;
     text-transform: uppercase;
     font-size: 1.1vh;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Roboto', sans-serif;
+}
 
+.btn-combine:hover {
+    background-color: #4b526cb3 !important;
 }
 
 .item-slot-amount {
@@ -301,6 +317,7 @@ body {
     color: #ffffff;
     text-align: right;
     font-size: 1.0vh;
+    cursor: none;
 }
 
 .item-slot-label {
@@ -320,8 +337,8 @@ body {
     padding: 3px;
     text-align: center;
     letter-spacing: 1px;
-    font-family: 'Poppins', sans-serif;
-
+    font-family: 'Roboto', sans-serif;
+    cursor: none;
 }
 
 .item-slot-quality {
@@ -374,6 +391,7 @@ body {
     left: 10.3%;
     top: 19.5%;
     width: 28.8%;
+    cursor: none;
 }
 
 #player-inv-label {
@@ -381,13 +399,14 @@ body {
     color: white;
     font-size: 16px;
 /*     font-style: italic; */
-/*     font-family: 'Poppins', sans-serif; */
+/*     font-family: 'Roboto', sans-serif; */
     font-weight: bold;
     letter-spacing: 0.2vh;
     left: 0px;
     top: 20px;
     float: left;
     text-transform: uppercase;
+    cursor: none;
 }
 
 #player-inv-weight {
@@ -406,12 +425,13 @@ body {
     color: white;
     font-size: 16px;
 /*     font-style: italic; */
-/*     font-family: 'Poppins', sans-serif; */
+/*     font-family: 'Roboto', sans-serif; */
     font-weight: bold;
     letter-spacing: 0.2vh;
     top: 20px;
     float: left;
     text-transform: uppercase;
+    cursor: none;
 }
 
 #other-inv-weight {
@@ -423,6 +443,7 @@ body {
     bottom: 18px;
     left: 30px;
     float: left;
+    cursor: none;
 }
 
 .player-inv-weight {
@@ -434,7 +455,7 @@ body {
 .player-inv-weight > p {
     color: white;
     font-size: 12px;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Roboto', sans-serif;
 }
 
 .other-inv-info {
@@ -471,14 +492,14 @@ body {
     font-family: sans-serif;
     font-size: 1.7vh;
     color: white;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Roboto', sans-serif;
     padding-top: 5px;
     padding-left: 5px;
 }
 
 .item-info-line {
     position: absolute;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Roboto', sans-serif;
     width: 85%;
     background-color: #6d6d6d96;
     height: 0.23vh;
@@ -487,7 +508,7 @@ body {
 .item-info-description {
     text-transform: uppercase;
     font-size: 1vh;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Roboto', sans-serif;
     color: white;
     padding-left: 5px;
     padding-top: .5vh;
@@ -500,7 +521,7 @@ body {
     width: fit-content;
     position: absolute;
     left: 47%;
-    bottom: 20%;
+    bottom: 12%;
     overflow: hidden;
 }
 
@@ -534,7 +555,7 @@ body {
 #itembox-action > p {
     font-size: 12px;
     font-weight:bolder;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Roboto', sans-serif;
 }
 
 #itembox-label {
@@ -588,7 +609,7 @@ body {
     color: white;
     padding: 3px;
     font-size: 10px;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Roboto', sans-serif;
 }
 
 #requiredItem-label {
@@ -628,7 +649,7 @@ body {
     text-align: left;
     font-size: 1.1vh;
     line-height: 1.8vh;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Roboto', sans-serif;
 }
 
 .z-hotbar-item-slot {
@@ -673,7 +694,7 @@ body {
     font-size: 11.5px;
     text-align: center;
     text-transform: lowercase;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Roboto', sans-serif;
     font-variant: small-caps;
 }
 
@@ -741,7 +762,7 @@ body {
     bottom: 0;
     right: 0;
     margin: .3vh;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Roboto', sans-serif;
 }
 
 .ammo-box-amount {
@@ -783,7 +804,7 @@ body {
     margin: 5vh;
     font-size: 3vh;
     color: rgb(255, 255, 255);
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Roboto', sans-serif;
 }
 
 .weapon-attachments-container-description {
@@ -792,7 +813,7 @@ body {
     top: 5vh;
     font-size: 1.7vh;
     color: rgba(255, 255, 255, 0.8);
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Roboto', sans-serif;
 }
 
 .weapon-attachments-container-details {
@@ -801,7 +822,7 @@ body {
     top: 9vh;
     font-size: 1.4vh;
     color: rgba(255, 255, 255, 0.8);
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Roboto', sans-serif;
 }
 
 .weapon-attachments-container-detail-durability {
@@ -841,7 +862,7 @@ body {
     left: 0;
     margin: 5vh;
     color: rgba(255, 255, 255, 0.8);
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Roboto', sans-serif;
     font-size: 1.4vh
 }
 
@@ -876,7 +897,7 @@ body {
     text-align: center;
     text-transform: uppercase;
     line-height: 1.9vh;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Roboto', sans-serif;
     font-weight: 100;
 }
 
@@ -956,7 +977,7 @@ body {
     text-align: center;
     line-height: 6vh;
     color: white;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Roboto', sans-serif;
     transition: .05s linear;
 }
 
