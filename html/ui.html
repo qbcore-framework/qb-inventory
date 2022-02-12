@@ -19,7 +19,7 @@
             <div class="inventory-info">
                 <div class="player-inv-info">
                     <span id="player-inv-label">Player</span><br>
-                    <img class="weight-img" src="images/weight.png">
+                    <!-- <img class="weight-img" src="images/weight.png"> -->
                         <div>
                             <div id="progressbar">
                                 <div class="pro"></div>
@@ -29,9 +29,9 @@
                 </div>
                 <div class="other-inv-info">
                     <span id="other-inv-label"></span><br>
-                    <img class="weight-img" src="images/weight.png">
+                    <!-- <img class="weight-img" src="images/weight.png"> -->
                     <div>
-                        <div id="progressbar">
+                        <div id="progressbar-other">
                             <div class="pro1"></div>
                         </div>
                     </div>
@@ -44,11 +44,15 @@
                 </div>
                 <div class="inv-options">
                     <div class="inv-options-list">
-                        <input type="number" id="item-amount" class="inv-option-item" min=0 value="0" oninput="validity.valid||(value='');"></input>
-                        <!-- <div class="inv-option-item" id="item-use"><p>USE</p></div> -->
-                        <img class="inv-option-hand" id= "item-use" src="images/hand-1.png">
+                        <input type="number" id="item-amount" class="inv-option-item" min=0 placeholder="Amount" oninput="validity.valid||(value='');"></input>
+                        <div class="inv-option-item" id="item-use"><p>USE</p></div>
+                        <!-- <img class="inv-option-hand" id= "item-use" src="images/hand-1.png"> -->
                         <div class="inv-option-item" id="item-give"><p>GIVE</p></div>
                         <div class="inv-option-item" id="inv-close"><p>CLOSE</p></div>
+                        <div class="combine-option-container">
+                            <div class="btn-combine CombineItem"><p>COMBINE</p></div>
+                            <div class="btn-combine SwitchItem"><p>SWITCH</p></div>
+                        </div>
                     </div>
                 </div>
                 <div class="oth-inv-container">
@@ -84,10 +88,6 @@
             <div class="weapon-attachments-remove"><i class="fas fa-trash"></i></div>
 
             <div class="weapon-attachments-back"><p>RETURN</p></div>
-        </div>
-        <div class="combine-option-container">
-            <div class="btn-combine CombineItem"><p>Combine</p></div>
-            <div class="btn-combine SwitchItem"><p>Switch</p></div>
         </div>
         <div class="itemboxes-container"></div>
         <div class="itembox-container template"></div>
