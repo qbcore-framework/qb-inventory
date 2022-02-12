@@ -826,24 +826,47 @@ end)
 CreateThread(function()
     while true do
         if Drops and next(Drops) then
-            local pos = GetEntityCoords(PlayerPedId(), true)
             for k, v in pairs(Drops) do
                 if Drops[k] then
-                    local dist = #(pos - vector3(v.coords.x, v.coords.y, v.coords.z))
-                    if dist < 7.5 then
+                    local playerCoords = GetEntityCoords(PlayerPedId(), true)
+                    local dropCoords = vector3(v.coords.x, v.coords.y, v.coords.z)
+                    local dist = #(playerCoords - dropCoords)
+                    if dist < 8 then
                         DropsNear[k] = v
-                        if dist < 2 then
-                            CurrentDrop = k
-                        else
-                            CurrentDrop = nil
-                        end
+                        DropsNear[k].dist = dist
                     else
                         DropsNear[k] = nil
                     end
                 end
             end
+            if DropsNear and next(DropsNear) then
+                print("Found near drops")
+                local nearestDropId = nil
+                local min = 3
+                for k, v in pairs(DropsNear) do
+                    if DropsNear[k] then
+                        print("Near drop distance " .. v.dist)
+                        if v.dist < 2 then
+                            if v.dist < min then
+                                print("Setting new near drop min")
+                                min = v.dist
+                                nearestDropId = k
+                            end
+                        end
+                    end
+                end
+                if nearestDropId then
+                    CurrentDrop = nearestDropId
+                else
+                    CurrentDrop = nil
+                end
+            else
+                print("No near drops")
+                CurrentDrop = nil
+            end
         else
             DropsNear = {}
+            CurrentDrop = nil
         end
         Wait(500)
     end
