@@ -44,3 +44,6 @@
 ### Manual
 - Download the script, rename it to `aj-inventory` and put it in the `[qb]` directory.
 - Start the server
+
+## Credits
+Im not the best when it comes to CSS so some code was used from [LJ-Inventory](https://github.com/loljoshie/lj-inventory) by [loljoshie](https://github.com/loljoshie) ❤️
