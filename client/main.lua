@@ -840,15 +840,12 @@ CreateThread(function()
                 end
             end
             if DropsNear and next(DropsNear) then
-                print("Found near drops")
                 local nearestDropId = nil
                 local min = 3
                 for k, v in pairs(DropsNear) do
                     if DropsNear[k] then
-                        print("Near drop distance " .. v.dist)
                         if v.dist < 2 then
                             if v.dist < min then
-                                print("Setting new near drop min")
                                 min = v.dist
                                 nearestDropId = k
                             end
@@ -861,7 +858,6 @@ CreateThread(function()
                     CurrentDrop = nil
                 end
             else
-                print("No near drops")
                 CurrentDrop = nil
             end
         else
