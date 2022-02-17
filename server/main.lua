@@ -96,7 +96,7 @@ local function GetStashItems(stashId)
 end
 
 local function SaveStashItems(stashId, items)
-	if Stashes[stashId].label ~= "Stash-None" then
+	if Stashes[stashId].label ~= Lang:t("info.stash_none") then
 		if items then
 			for slot, item in pairs(items) do
 				item.description = nil
@@ -217,7 +217,7 @@ local function GetOwnedVehicleItems(plate)
 end
 
 local function SaveOwnedVehicleItems(plate, items)
-	if Trunks[plate].label ~= "Trunk-None" then
+	if Trunks[plate].label ~= Lang:t("info.trunk_none") then
 		if items ~= nil then
 			for slot, item in pairs(items) do
 				item.description = nil
@@ -338,7 +338,7 @@ local function GetOwnedVehicleGloveboxItems(plate)
 end
 
 local function SaveOwnedGloveboxItems(plate, items)
-	if Gloveboxes[plate].label ~= "Glovebox-None" then
+	if Gloveboxes[plate].label ~= Lang:t("info.glove_none") then
 		if items ~= nil then
 			for slot, item in pairs(items) do
 				item.description = nil
@@ -625,7 +625,7 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 					slots = other.slots or 50
 				end
 				secondInv.name = "stash-"..id
-				secondInv.label = "Stash-"..id
+				secondInv.label = Lang:t("info.stash")..id
 				secondInv.maxweight = maxweight
 				secondInv.inventory = {}
 				secondInv.slots = slots
@@ -662,7 +662,7 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 					end
 				end
 				secondInv.name = "trunk-"..id
-				secondInv.label = "Trunk-"..id
+				secondInv.label = Lang:t("info.trunk")..id
 				secondInv.maxweight = other.maxweight or 60000
 				secondInv.inventory = {}
 				secondInv.slots = other.slots or 50
@@ -705,7 +705,7 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 					end
 				end
 				secondInv.name = "glovebox-"..id
-				secondInv.label = "Glovebox-"..id
+				secondInv.label = Lang:t("info.glovebox")..id
 				secondInv.maxweight = 10000
 				secondInv.inventory = {}
 				secondInv.slots = 5
@@ -787,7 +787,7 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 				end
 				if Drops[id] and not Drops[id].isOpen then
 					secondInv.name = id
-					secondInv.label = "Dropped-"..tostring(id)
+					secondInv.label = Lang:t("info.dropped")..tostring(id)
 					secondInv.maxweight = 100000
 					secondInv.inventory = Drops[id].items
 					secondInv.slots = 30
@@ -795,7 +795,7 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 					Drops[id].label = secondInv.label
 				else
 					secondInv.name = "none-inv"
-					secondInv.label = "Dropped-None"
+					secondInv.label = Lang:t("info.dropped_none")
 					secondInv.maxweight = 100000
 					secondInv.inventory = {}
 					secondInv.slots = 0
@@ -806,7 +806,7 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 			TriggerClientEvent("inventory:client:OpenInventory", src, {}, Player.PlayerData.items)
 		end
 	else
-		TriggerClientEvent('QBCore:Notify', src, 'Not Accessible', 'error')
+		TriggerClientEvent('QBCore:Notify', src, Lang:t("error.no_access"), 'error')
 	end
 end)
 
