@@ -25,6 +25,7 @@ files {
 	'html/ui.html',
 	'html/css/main.css',
 	'html/js/app.js',
+	'html/images/*.svg',
 	'html/images/*.png',
 	'html/images/*.jpg',
 	'html/ammo_images/*.png',
