@@ -16,6 +16,7 @@ local CurrentStash = nil
 local isCrafting = false
 local isHotbar = false
 local itemInfos = {}
+local showBlur = true
 
 -- Functions
 
@@ -318,7 +319,11 @@ end)
 
 RegisterNetEvent('inventory:client:OpenInventory', function(PlayerAmmo, inventory, other)
     if not IsEntityDead(PlayerPedId()) then
-        ToggleHotbar(false)
+        Wait(500)
+		ToggleHotbar(false)
+        if showBlur == true then
+            TriggerScreenblurFadeIn(1000)
+        end
         SetNuiFocus(true, true)
         if other then
             currentOtherInventory = other.name
@@ -513,6 +518,16 @@ RegisterNetEvent('inventory:client:SetCurrentStash', function(stash)
     CurrentStash = stash
 end)
 
+RegisterNetEvent('inventory:client:giveAnim', function()
+    LoadAnimDict('mp_common')
+	TaskPlayAnim(PlayerPedId(), 'mp_common', 'givetake1_b', 8.0, 1.0, -1, 16, 0, 0, 0, 0)
+end)
+
+RegisterNetEvent("inventory:client:showBlur", function()
+    Wait(50)
+    showBlur = not showBlur
+end)
+
 -- Commands
 
 RegisterCommand('closeinv', function()
@@ -656,11 +671,6 @@ for i = 1, 6 do
     RegisterKeyMapping('slot' .. i, 'Uses the item in slot ' .. i, 'keyboard', i)
 end
 
-RegisterNetEvent('qb-inventory:client:giveAnim', function()
-    LoadAnimDict('mp_common')
-	TaskPlayAnim(PlayerPedId(), 'mp_common', 'givetake1_b', 8.0, 1.0, -1, 16, 0, 0, 0, 0)
-end)
-
 -- NUI
 
 RegisterNUICallback('RobMoney', function(data)
@@ -724,6 +734,7 @@ RegisterNUICallback("CloseInventory", function()
         CurrentStash = nil
         SetNuiFocus(false, false)
         inInventory = false
+		TriggerScreenblurFadeOut(1000)							  
         ClearPedTasks(PlayerPedId())
         return
     end
@@ -741,6 +752,8 @@ RegisterNUICallback("CloseInventory", function()
         TriggerServerEvent("inventory:server:SaveInventory", "drop", CurrentDrop)
         CurrentDrop = nil
     end
+    Wait(50)
+    TriggerScreenblurFadeOut(1000)
     SetNuiFocus(false, false)
     inInventory = false
 end)
@@ -807,6 +820,11 @@ RegisterNUICallback("GiveItem", function(data)
     end
 end)
 
+RegisterNUICallback('showBlur', function()
+    Wait(50)
+    TriggerEvent("inventory:client:showBlur")
+end) 
+
 -- Threads
 
 CreateThread(function()
@@ -816,7 +834,7 @@ CreateThread(function()
             for k, v in pairs(DropsNear) do
                 if DropsNear[k] then
                     sleep = 0
-                    DrawMarker(2, v.coords.x, v.coords.y, v.coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.15, 120, 10, 20, 155, false, false, false, 1, false, false, false)
+					DrawMarker(20, v.coords.x, v.coords.y, v.coords.z - 0.6, 0, 0, 0, 0, 0, 0, 0.35, 0.5, 0.15, 252, 255, 255, 91, 0, 0, 0, 0)
                 end
             end
         end
