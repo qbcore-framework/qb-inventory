@@ -330,6 +330,7 @@ RegisterNetEvent('inventory:client:OpenInventory', function(PlayerAmmo, inventor
             maxweight = QBCore.Config.Player.MaxWeight,
             Ammo = PlayerAmmo,
             maxammo = Config.MaximumAmmoValues,
+            money = QBCore.Functions.GetPlayerData().money['cash']
         })
         inInventory = true
     end
@@ -342,6 +343,7 @@ RegisterNetEvent('inventory:client:UpdatePlayerInventory', function(isError)
         maxweight = QBCore.Config.Player.MaxWeight,
         slots = MaxInventorySlots,
         error = isError,
+        money = QBCore.Functions.GetPlayerData().money['cash']
     })
 end)
 

@@ -2511,7 +2511,9 @@ var requiredItemOpen = false;
             "⚖️: " +
             (totalWeight / 1000).toFixed(2) +
             " / " +
-            (data.maxweight / 1000).toFixed(2)
+            (data.maxweight / 1000).toFixed(2) +
+            " | 💰 : " +
+            data.money.toString()
         );
         playerMaxWeight = data.maxweight;
         if (data.other != null) {
@@ -2700,7 +2702,9 @@ var requiredItemOpen = false;
             "⚖️: " +
             (totalWeight / 1000).toFixed(2) +
             " / " +
-            (data.maxweight / 1000).toFixed(2)
+            (data.maxweight / 1000).toFixed(2) +
+            " | 💰 : " +
+            data.money.toString()
         );
 
         handleDragDrop();
