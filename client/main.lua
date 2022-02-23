@@ -2,6 +2,8 @@
 
 local QBCore = exports['qb-core']:GetCoreObject()
 local PlayerData = QBCore.Functions.GetPlayerData()
+local isLoggedIn = LocalPlayer.state['isLoggedIn']
+local QBItems = QBCore.Shared.Items
 local inInventory = false
 local currentWeapon = nil
 local CurrentWeaponData = {}
@@ -15,6 +17,7 @@ local CurrentStash = nil
 local isCrafting = false
 local isHotbar = false
 local itemInfos = {}
+local showBlur = true
 
 -- Functions
 
@@ -59,7 +62,7 @@ local function FormatWeaponAttachments(itemdata)
                         item = value.item
                         attachments[#attachments+1] = {
                             attachment = key,
-                            label = QBCore.Shared.Items[item].label
+                            label = QBItems[item].label
                             --label = value.label
                         }
                     end
@@ -147,23 +150,23 @@ end
 
 local function ItemsToItemInfo()
 	itemInfos = {
-		[1] = {costs = QBCore.Shared.Items["metalscrap"]["label"] .. ": 22x, " ..QBCore.Shared.Items["plastic"]["label"] .. ": 32x."},
-		[2] = {costs = QBCore.Shared.Items["metalscrap"]["label"] .. ": 30x, " ..QBCore.Shared.Items["plastic"]["label"] .. ": 42x."},
-		[3] = {costs = QBCore.Shared.Items["metalscrap"]["label"] .. ": 30x, " ..QBCore.Shared.Items["plastic"]["label"] .. ": 45x, "..QBCore.Shared.Items["aluminum"]["label"] .. ": 28x."},
-		[4] = {costs = QBCore.Shared.Items["electronickit"]["label"] .. ": 2x, " ..QBCore.Shared.Items["plastic"]["label"] .. ": 52x, "..QBCore.Shared.Items["steel"]["label"] .. ": 40x."},
-		[5] = {costs = QBCore.Shared.Items["metalscrap"]["label"] .. ": 10x, " ..QBCore.Shared.Items["plastic"]["label"] .. ": 50x, "..QBCore.Shared.Items["aluminum"]["label"] .. ": 30x, "..QBCore.Shared.Items["iron"]["label"] .. ": 17x, "..QBCore.Shared.Items["electronickit"]["label"] .. ": 1x."},
-		[6] = {costs = QBCore.Shared.Items["metalscrap"]["label"] .. ": 36x, " ..QBCore.Shared.Items["steel"]["label"] .. ": 24x, "..QBCore.Shared.Items["aluminum"]["label"] .. ": 28x."},
-		[7] = {costs = QBCore.Shared.Items["metalscrap"]["label"] .. ": 32x, " ..QBCore.Shared.Items["steel"]["label"] .. ": 43x, "..QBCore.Shared.Items["plastic"]["label"] .. ": 61x."},
-		[8] = {costs = QBCore.Shared.Items["metalscrap"]["label"] .. ": 50x, " ..QBCore.Shared.Items["steel"]["label"] .. ": 37x, "..QBCore.Shared.Items["copper"]["label"] .. ": 26x."},
-		[9] = {costs = QBCore.Shared.Items["iron"]["label"] .. ": 60x, " ..QBCore.Shared.Items["glass"]["label"] .. ": 30x."},
-		[10] = {costs = QBCore.Shared.Items["aluminum"]["label"] .. ": 60x, " ..QBCore.Shared.Items["glass"]["label"] .. ": 30x."},
-		[11] = {costs = QBCore.Shared.Items["iron"]["label"] .. ": 33x, " ..QBCore.Shared.Items["steel"]["label"] .. ": 44x, "..QBCore.Shared.Items["plastic"]["label"] .. ": 55x, "..QBCore.Shared.Items["aluminum"]["label"] .. ": 22x."},
-		[12] = {costs = QBCore.Shared.Items["iron"]["label"] .. ": 50x, " ..QBCore.Shared.Items["steel"]["label"] .. ": 50x, "..QBCore.Shared.Items["screwdriverset"]["label"] .. ": 3x, "..QBCore.Shared.Items["advancedlockpick"]["label"] .. ": 2x."},
+		[1] = {costs = QBItems["metalscrap"]["label"] .. ": 22x, " ..QBItems["plastic"]["label"] .. ": 32x."},
+		[2] = {costs = QBItems["metalscrap"]["label"] .. ": 30x, " ..QBItems["plastic"]["label"] .. ": 42x."},
+		[3] = {costs = QBItems["metalscrap"]["label"] .. ": 30x, " ..QBItems["plastic"]["label"] .. ": 45x, "..QBItems["aluminum"]["label"] .. ": 28x."},
+		[4] = {costs = QBItems["electronickit"]["label"] .. ": 2x, " ..QBItems["plastic"]["label"] .. ": 52x, "..QBItems["steel"]["label"] .. ": 40x."},
+		[5] = {costs = QBItems["metalscrap"]["label"] .. ": 10x, " ..QBItems["plastic"]["label"] .. ": 50x, "..QBItems["aluminum"]["label"] .. ": 30x, "..QBItems["iron"]["label"] .. ": 17x, "..QBItems["electronickit"]["label"] .. ": 1x."},
+		[6] = {costs = QBItems["metalscrap"]["label"] .. ": 36x, " ..QBItems["steel"]["label"] .. ": 24x, "..QBItems["aluminum"]["label"] .. ": 28x."},
+		[7] = {costs = QBItems["metalscrap"]["label"] .. ": 32x, " ..QBItems["steel"]["label"] .. ": 43x, "..QBItems["plastic"]["label"] .. ": 61x."},
+		[8] = {costs = QBItems["metalscrap"]["label"] .. ": 50x, " ..QBItems["steel"]["label"] .. ": 37x, "..QBItems["copper"]["label"] .. ": 26x."},
+		[9] = {costs = QBItems["iron"]["label"] .. ": 60x, " ..QBItems["glass"]["label"] .. ": 30x."},
+		[10] = {costs = QBItems["aluminum"]["label"] .. ": 60x, " ..QBItems["glass"]["label"] .. ": 30x."},
+		[11] = {costs = QBItems["iron"]["label"] .. ": 33x, " ..QBItems["steel"]["label"] .. ": 44x, "..QBItems["plastic"]["label"] .. ": 55x, "..QBItems["aluminum"]["label"] .. ": 22x."},
+		[12] = {costs = QBItems["iron"]["label"] .. ": 50x, " ..QBItems["steel"]["label"] .. ": 50x, "..QBItems["screwdriverset"]["label"] .. ": 3x, "..QBItems["advancedlockpick"]["label"] .. ": 2x."},
 	}
 
 	local items = {}
 	for k, item in pairs(Config.CraftingItems) do
-		local itemInfo = QBCore.Shared.Items[item.name:lower()]
+		local itemInfo = QBItems[item.name:lower()]
 		items[item.slot] = {
 			name = itemInfo["name"],
 			amount = tonumber(item.amount),
@@ -186,19 +189,19 @@ end
 
 local function SetupAttachmentItemsInfo()
 	itemInfos = {
-		[1] = {costs = QBCore.Shared.Items["metalscrap"]["label"] .. ": 140x, " .. QBCore.Shared.Items["steel"]["label"] .. ": 250x, " .. QBCore.Shared.Items["rubber"]["label"] .. ": 60x"},
-		[2] = {costs = QBCore.Shared.Items["metalscrap"]["label"] .. ": 165x, " .. QBCore.Shared.Items["steel"]["label"] .. ": 285x, " .. QBCore.Shared.Items["rubber"]["label"] .. ": 75x"},
-		[3] = {costs = QBCore.Shared.Items["metalscrap"]["label"] .. ": 190x, " .. QBCore.Shared.Items["steel"]["label"] .. ": 305x, " .. QBCore.Shared.Items["rubber"]["label"] .. ": 85x, " .. QBCore.Shared.Items["smg_extendedclip"]["label"] .. ": 1x"},
-		[4] = {costs = QBCore.Shared.Items["metalscrap"]["label"] .. ": 205x, " .. QBCore.Shared.Items["steel"]["label"] .. ": 340x, " .. QBCore.Shared.Items["rubber"]["label"] .. ": 110x, " .. QBCore.Shared.Items["smg_extendedclip"]["label"] .. ": 2x"},
-		[5] = {costs = QBCore.Shared.Items["metalscrap"]["label"] .. ": 230x, " .. QBCore.Shared.Items["steel"]["label"] .. ": 365x, " .. QBCore.Shared.Items["rubber"]["label"] .. ": 130x"},
-		[6] = {costs = QBCore.Shared.Items["metalscrap"]["label"] .. ": 255x, " .. QBCore.Shared.Items["steel"]["label"] .. ": 390x, " .. QBCore.Shared.Items["rubber"]["label"] .. ": 145x"},
-		[7] = {costs = QBCore.Shared.Items["metalscrap"]["label"] .. ": 270x, " .. QBCore.Shared.Items["steel"]["label"] .. ": 435x, " .. QBCore.Shared.Items["rubber"]["label"] .. ": 155x"},
-		[8] = {costs = QBCore.Shared.Items["metalscrap"]["label"] .. ": 300x, " .. QBCore.Shared.Items["steel"]["label"] .. ": 469x, " .. QBCore.Shared.Items["rubber"]["label"] .. ": 170x"},
+		[1] = {costs = QBItems["metalscrap"]["label"] .. ": 140x, " .. QBItems["steel"]["label"] .. ": 250x, " .. QBItems["rubber"]["label"] .. ": 60x"},
+		[2] = {costs = QBItems["metalscrap"]["label"] .. ": 165x, " .. QBItems["steel"]["label"] .. ": 285x, " .. QBItems["rubber"]["label"] .. ": 75x"},
+		[3] = {costs = QBItems["metalscrap"]["label"] .. ": 190x, " .. QBItems["steel"]["label"] .. ": 305x, " .. QBItems["rubber"]["label"] .. ": 85x, " .. QBItems["smg_extendedclip"]["label"] .. ": 1x"},
+		[4] = {costs = QBItems["metalscrap"]["label"] .. ": 205x, " .. QBItems["steel"]["label"] .. ": 340x, " .. QBItems["rubber"]["label"] .. ": 110x, " .. QBItems["smg_extendedclip"]["label"] .. ": 2x"},
+		[5] = {costs = QBItems["metalscrap"]["label"] .. ": 230x, " .. QBItems["steel"]["label"] .. ": 365x, " .. QBItems["rubber"]["label"] .. ": 130x"},
+		[6] = {costs = QBItems["metalscrap"]["label"] .. ": 255x, " .. QBItems["steel"]["label"] .. ": 390x, " .. QBItems["rubber"]["label"] .. ": 145x"},
+		[7] = {costs = QBItems["metalscrap"]["label"] .. ": 270x, " .. QBItems["steel"]["label"] .. ": 435x, " .. QBItems["rubber"]["label"] .. ": 155x"},
+		[8] = {costs = QBItems["metalscrap"]["label"] .. ": 300x, " .. QBItems["steel"]["label"] .. ": 469x, " .. QBItems["rubber"]["label"] .. ": 170x"},
 	}
 
 	local items = {}
 	for k, item in pairs(Config.AttachmentCrafting["items"]) do
-		local itemInfo = QBCore.Shared.Items[item.name:lower()]
+		local itemInfo = QBItems[item.name:lower()]
 		items[item.slot] = {
 			name = itemInfo["name"],
 			amount = tonumber(item.amount),
@@ -295,7 +298,7 @@ RegisterNetEvent('inventory:client:requiredItems', function(items, bool)
         for k, v in pairs(items) do
             itemTable[#itemTable+1] = {
                 item = items[k].name,
-                label = QBCore.Shared.Items[items[k].name]["label"],
+                label = QBItems[items[k].name]["label"],
                 image = items[k].image,
             }
         end
@@ -317,7 +320,11 @@ end)
 
 RegisterNetEvent('inventory:client:OpenInventory', function(PlayerAmmo, inventory, other)
     if not IsEntityDead(PlayerPedId()) then
-        ToggleHotbar(false)
+        Wait(500)
+		ToggleHotbar(false)
+        if showBlur == true then
+            TriggerScreenblurFadeIn(1000)
+        end
         SetNuiFocus(true, true)
         if other then
             currentOtherInventory = other.name
@@ -363,11 +370,11 @@ RegisterNetEvent('inventory:client:CraftItems', function(itemName, itemCosts, am
 	}, {}, {}, function() -- Done
 		StopAnimTask(ped, "mini@repair", "fixing_a_player", 1.0)
         TriggerServerEvent("inventory:server:CraftItems", itemName, itemCosts, amount, toSlot, points)
-        TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items[itemName], 'add')
+        TriggerEvent('inventory:client:ItemBox', QBItems[itemName], 'add')
         isCrafting = false
 	end, function() -- Cancel
 		StopAnimTask(ped, "mini@repair", "fixing_a_player", 1.0)
-        QBCore.Functions.Notify("Failed", "error")
+		QBCore.Functions.Notify("Failed", "error")
         isCrafting = false
 	end)
 end)
@@ -390,7 +397,7 @@ RegisterNetEvent('inventory:client:CraftAttachment', function(itemName, itemCost
 	}, {}, {}, function() -- Done
 		StopAnimTask(ped, "mini@repair", "fixing_a_player", 1.0)
         TriggerServerEvent("inventory:server:CraftAttachment", itemName, itemCosts, amount, toSlot, points)
-        TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items[itemName], 'add')
+        TriggerEvent('inventory:client:ItemBox', QBItems[itemName], 'add')
         isCrafting = false
 	end, function() -- Cancel
 		StopAnimTask(ped, "mini@repair", "fixing_a_player", 1.0)
@@ -411,7 +418,7 @@ RegisterNetEvent('inventory:client:PickupSnowballs', function()
     }, {}, {}, {}, function() -- Done
         ClearPedTasks(ped)
         TriggerServerEvent('QBCore:Server:AddItem', "snowball", 1)
-        TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items["snowball"], "add")
+        TriggerEvent('inventory:client:ItemBox', QBItems["snowball"], "add")
     end, function() -- Cancel
         ClearPedTasks(ped)
         QBCore.Functions.Notify("Canceled", "error")
@@ -510,6 +517,16 @@ end)
 
 RegisterNetEvent('inventory:client:SetCurrentStash', function(stash)
     CurrentStash = stash
+end)
+
+RegisterNetEvent('inventory:client:giveAnim', function()
+    LoadAnimDict('mp_common')
+	TaskPlayAnim(PlayerPedId(), 'mp_common', 'givetake1_b', 8.0, 1.0, -1, 16, 0, 0, 0, 0)
+end)
+
+RegisterNetEvent("inventory:client:showBlur", function()
+    Wait(50)
+    showBlur = not showBlur
 end)
 
 -- Commands
@@ -655,11 +672,6 @@ for i = 1, 6 do
     RegisterKeyMapping('slot' .. i, 'Uses the item in slot ' .. i, 'keyboard', i)
 end
 
-RegisterNetEvent('qb-inventory:client:giveAnim', function()
-    LoadAnimDict('mp_common')
-	TaskPlayAnim(PlayerPedId(), 'mp_common', 'givetake1_b', 8.0, 1.0, -1, 16, 0, 0, 0, 0)
-end)
-
 -- NUI
 
 RegisterNUICallback('RobMoney', function(data)
@@ -672,7 +684,7 @@ end)
 
 RegisterNUICallback('GetWeaponData', function(data, cb)
     local data = {
-        WeaponData = QBCore.Shared.Items[data.weapon],
+        WeaponData = QBItems[data.weapon],
         AttachmentData = FormatWeaponAttachments(data.ItemData)
     }
     cb(data)
@@ -680,8 +692,8 @@ end)
 
 RegisterNUICallback('RemoveAttachment', function(data, cb)
     local ped = PlayerPedId()
-    local WeaponData = QBCore.Shared.Items[data.WeaponData.name]
-    local label = QBCore.Shared.Items
+    local WeaponData = QBItems[data.WeaponData.name]
+    local label = QBItems
     local Attachment = WeaponAttachments[WeaponData.name:upper()][data.AttachmentData.attachment]
 
     QBCore.Functions.TriggerCallback('weapons:server:RemoveAttachment', function(NewAttachments)
@@ -694,7 +706,7 @@ RegisterNUICallback('RemoveAttachment', function(data, cb)
                         item = pew.item
                         Attachies[#Attachies+1] = {
                             attachment = pew.item,
-                            label = QBCore.Shared.Items[item].label,
+                            label = QBItems[item].label,
                         }
                     end
                 end
@@ -712,7 +724,7 @@ RegisterNUICallback('RemoveAttachment', function(data, cb)
 end)
 
 RegisterNUICallback('getCombineItem', function(data, cb)
-    cb(QBCore.Shared.Items[data.item])
+    cb(QBItems[data.item])
 end)
 
 RegisterNUICallback("CloseInventory", function()
@@ -723,6 +735,7 @@ RegisterNUICallback("CloseInventory", function()
         CurrentStash = nil
         SetNuiFocus(false, false)
         inInventory = false
+		TriggerScreenblurFadeOut(1000)							  
         ClearPedTasks(PlayerPedId())
         return
     end
@@ -740,6 +753,8 @@ RegisterNUICallback("CloseInventory", function()
         TriggerServerEvent("inventory:server:SaveInventory", "drop", CurrentDrop)
         CurrentDrop = nil
     end
+    Wait(50)
+    TriggerScreenblurFadeOut(1000)
     SetNuiFocus(false, false)
     inInventory = false
 end)
@@ -806,6 +821,11 @@ RegisterNUICallback("GiveItem", function(data)
     end
 end)
 
+RegisterNUICallback('showBlur', function()
+    Wait(50)
+    TriggerEvent("inventory:client:showBlur")
+end) 
+
 -- Threads
 
 CreateThread(function()
@@ -815,7 +835,7 @@ CreateThread(function()
             for k, v in pairs(DropsNear) do
                 if DropsNear[k] then
                     sleep = 0
-                    DrawMarker(2, v.coords.x, v.coords.y, v.coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.15, 120, 10, 20, 155, false, false, false, 1, false, false, false)
+					DrawMarker(20, v.coords.x, v.coords.y, v.coords.z - 0.6, 0, 0, 0, 0, 0, 0, 0.35, 0.5, 0.15, 252, 255, 255, 91, 0, 0, 0, 0)
                 end
             end
         end
@@ -852,14 +872,14 @@ end)
 CreateThread(function()
     while true do
         local sleep = 1000
-        if LocalPlayer.state['isLoggedIn'] then
+        if isLoggedIn then
             local pos = GetEntityCoords(PlayerPedId())
             local craftObject = GetClosestObjectOfType(pos, 2.0, Config.CraftingObject, false, false, false)
             if craftObject ~= 0 then
                 local objectPos = GetEntityCoords(craftObject)
                 if #(pos - objectPos) < 1.5 then
                     sleep = 0
-                    DrawText3Ds(objectPos.x, objectPos.y, objectPos.z + 1.0, "~g~E~w~ - Craft")
+					DrawText3Ds(objectPos.x, objectPos.y, objectPos.z + 1.0, "~g~[E]~s~ - Craft")
                     if IsControlJustReleased(0, 38) then
                         local crafting = {}
                         crafting.label = "Crafting"
@@ -877,13 +897,13 @@ end)
 CreateThread(function()
     while true do
         local sleep = 1000
-        if LocalPlayer.state['isLoggedIn'] then
+        if isLoggedIn then
             local pos = GetEntityCoords(PlayerPedId())
             local distance = #(pos - Config.AttachmentCraftingLocation)
             if distance < 10 then
                 if distance < 1.5 then
                     sleep = 0
-                    DrawText3Ds(Config.AttachmentCraftingLocation, "~g~E~w~ - Craft")
+                    DrawText3Ds(Config.AttachmentCraftingLocation, "~g~[E]~s~ - Craft")
                     if IsControlJustPressed(0, 38) then
                         local crafting = {}
                         crafting.label = "Attachment Crafting"
