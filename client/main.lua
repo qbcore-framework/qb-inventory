@@ -75,8 +75,7 @@ local function IsBackEngine(vehModel)
     return false
 end
 
-local function OpenTrunk()
-    local vehicle = QBCore.Functions.GetClosestVehicle()
+local function OpenTrunk(vehicle)
     while (not HasAnimDictLoaded("amb@prop_human_bum_bin@idle_b")) do
         RequestAnimDict("amb@prop_human_bum_bin@idle_b")
         Wait(100)
@@ -613,7 +612,7 @@ RegisterCommand('inventory', function()
                     slots = slots,
                 }
                 TriggerServerEvent("inventory:server:OpenInventory", "trunk", CurrentVehicle, other)
-                OpenTrunk()
+                OpenTrunk(curVeh)
             elseif CurrentGlovebox then
                 TriggerServerEvent("inventory:server:OpenInventory", "glovebox", CurrentGlovebox)
             elseif CurrentDrop then
