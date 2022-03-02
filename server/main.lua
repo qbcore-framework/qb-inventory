@@ -7,6 +7,11 @@ local Gloveboxes = {}
 local Stashes = {}
 local ShopItems = {}
 
+RegisterNetEvent('QBCore:Server:UpdateObject', function()
+        if source ~= '' then return false end -- Safety check if the event was not called from the server.
+	QBCore = exports['qb-core']:GetCoreObject()
+end)
+
 -- Functions
 
 local function recipeContains(recipe, fromItem)
