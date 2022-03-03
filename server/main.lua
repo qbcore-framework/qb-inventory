@@ -1410,6 +1410,14 @@ RegisterNetEvent('qb-inventory:server:SaveStashItems', function(stashId, items)
     })
 end)
 
+RegisterNetEvent('inventory:server:PickupSnowball', function()
+    local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+    if Player then
+        Player.Functions.AddItem('snowball', 1)
+    end
+end)
+
 RegisterServerEvent("inventory:server:GiveItem", function(target, name, amount, slot)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
