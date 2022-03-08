@@ -38,6 +38,16 @@ local function IsVehicleOwned(plate)
     if result then return true else return false end
 end
 
+local function weightCheck(maxweight, currentweight, amount, weight)
+	local maxweight = (maxweight * 1000)
+	local totalAdd = (weight * amount)
+	if currentweight + totalAdd <= maxweight then
+		return true
+	else
+		return false
+	end
+end
+
 -- Shop Items
 local function SetupShopItems(shop, shopItems)
 	local items = {}
