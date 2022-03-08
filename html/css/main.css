@@ -423,7 +423,7 @@ body {
 }
 
 .itemboxes-container {
-	height: 130px;
+	height: 11vh;
 	min-width: 110px;
 	max-width: 550px;
 	width: fit-content;
