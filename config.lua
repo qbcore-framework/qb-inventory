@@ -1,34 +1,38 @@
 Config = {}
 
-Config.Entities = {
-    1825026, --prop_vend_soda_01
-    1978114, --prop_vend_soda_02
-    2059778, --prop_vend_coffe_01
-    2093058, --prop_watercooler
-    2153474, --prop_watercooler_dark
-    2009090, --prop_vend_water_01
-    2179842, --prop_vend_snak_01
-    2197762--prop_vend_snak_01_tu
-}
-
-Config.SodaMachine = {
-    "prop_vend_soda_01",
-    "prop_vend_soda_02",
-    "prop_vend_water_01"
-}
-
-Config.CoffeeMachine = {
-    "prop_vend_coffe_01"
-}
-
-Config.WaterDispenser = {
-    "prop_watercooler",
-    "prop_watercooler_dark"
-}
-
-Config.SnackMachine = {
-    "prop_vend_snak_01",
-    "prop_vend_snak_01_tu"
+Config.VendingMachines = {
+    [1] = {
+        ['model'] = 'prop_vend_soda_01',
+        ['type'] = 'soda'
+    },
+    [2] = {
+        ['model'] = 'prop_vend_soda_02',
+        ['type'] = 'soda'
+    },
+    [3] = {
+        ['model'] = 'prop_vend_coffe_01',
+        ['type'] = 'coffee'
+    },
+    [4] = {
+        ['model'] = 'prop_watercooler',
+        ['type'] = 'water'
+    },
+    [5] = {
+        ['model'] = 'prop_watercooler_dark',
+        ['type'] = 'water'
+    },
+    [6] = {
+        ['model'] = 'prop_vend_water_01',
+        ['type'] = 'water'
+    },
+    [7] = {
+        ['model'] = 'prop_vend_snak_01',
+        ['type'] = 'snack'
+    },
+    [8] = {
+        ['model'] = 'prop_vend_snak_01_tu',
+        ['type'] = 'snack'
+    },
 }
 
 Config.SodaItem = {
