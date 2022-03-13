@@ -1,5 +1,16 @@
 Config = {}
 
+Config.Entities = {
+    1825026, --prop_vend_soda_01
+    1978114, --prop_vend_soda_02
+    2059778, --prop_vend_coffe_01
+    2093058, --prop_watercooler
+    2153474, --prop_watercooler_dark
+    2009090, --prop_vend_water_01
+    2179842, --prop_vend_snak_01
+    2197762--prop_vend_snak_01_tu
+}
+
 Config.SodaMachine = {
     "prop_vend_soda_01",
     "prop_vend_soda_02",
