@@ -46,7 +46,9 @@ local function FindObjectFromRayCast(distance)
 		z = cameraCoord.z + direction.z * distance
 	}
 	local a, b, c, d, e = GetShapeTestResult(StartShapeTestRay(cameraCoord.x, cameraCoord.y, cameraCoord.z, destination.x, destination.y, destination.z, -1, PlayerPedId(), 0))
-    return e
+    if IsEntityAnObject(e) then
+    	return e
+    end
 end
 
 local function GetClosestVending()
@@ -54,44 +56,19 @@ local function GetClosestVending()
     local pos = GetEntityCoords(ped)
     local object = nil
     local type = nil
-    for _, entityHit in pairs(Config.Entities) do
-        for _, soda in pairs(Config.SodaMachine) do
-            for _, coffee in pairs(Config.CoffeeMachine) do
-                for _, snack in pairs(Config.SnackMachine) do
-                    for _, water in pairs(Config.WaterDispenser) do
-                        if object == nil then
-                            object = FindObjectFromRayCast(5.0)
-                            if object == entityHit then
-                            model = GetEntityModel(object)
-                                if model ~= nil then
-                                    if model == GetHashKey(coffee) then 
-                                        type = "coffee"
-                                        break
-                                    elseif model == GetHashKey(water) then
-                                        type = "water"
-                                        break
-                                    elseif model == GetHashKey(snack) then
-                                        type = "snack"
-                                        break
-                                    elseif model == GetHashKey(soda) then
-                                        type = "soda"
-                                        break
-                                    else object = nil
-                                    end
-                                end
-                            else
-                                object = nil
-                                break
-                            end
-                        end
-                    end
+        for vending, _ in pairs(Config.VendingMachines) do
+            if object == nil then
+                object = FindObjectFromRayCast(5.0)
+                model = GetEntityModel(object)
+                if model == GetHashKey(Config.VendingMachines[vending]['model']) then
+                    type = Config.VendingMachines[vending]['type']
+                else
+                    object = nil
                 end
             end
         end
-    end
     return object, type
 end
-
 
 local function DrawText3Ds(x, y, z, text)
 	SetTextScale(0.35, 0.35)
