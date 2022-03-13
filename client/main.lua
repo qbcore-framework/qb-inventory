@@ -61,7 +61,6 @@ local function GetClosestVending()
                     for _, water in pairs(Config.WaterDispenser) do
                         if object == nil then
                             object = FindObjectFromRayCast(5.0)
-                            --print(object)
                             if object == entityHit then
                             model = GetEntityModel(object)
                                 if model ~= nil then
