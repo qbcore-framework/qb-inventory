@@ -11,20 +11,26 @@ var ControlPressed = false;
 var disableRightMouse = false;
 var selectedItem = null;
 var IsDragging = false;
+var otherinventory = "";
 
 $(document).on("keydown", function() {
-    if (event.repeat) {
+    if (event.repeat)
         return;
-    }
     switch (event.keyCode) {
         case 27: // ESC
-            Inventory.Close();
-            break;
         case 9: // TAB
             Inventory.Close();
             break;
         case 17: // TAB
             ControlPressed = true;
+            break;
+    }
+});
+
+$(document).on("keyup", function() {
+    switch (event.keyCode) {
+        case 17: // TAB
+            ControlPressed = false;
             break;
     }
 });
@@ -44,13 +50,55 @@ $(document).on("dblclick", ".item-slot", function(e) {
     }
 });
 
-$(document).on("keyup", function() {
-    switch (event.keyCode) {
-        case 17: // TAB
-            ControlPressed = false;
-            break;
+function isPlayerInventory(inventoryName) {
+    return inventoryName.toLowerCase()
+                .split("-")[0] == "player";
+}
+
+function isPlayerHotbarInventory(inventoryName) {
+    return inventoryName.toLowerCase()
+                .split("-")[0] == "hotbar";
+}
+
+function isDropInventory(inventoryName) {
+    return inventoryName.toLowerCase()
+                .split("-")[0] == "dropped";
+}
+
+function isItemshopInventory(inventoryName) {
+    return inventoryName.toLowerCase()
+                .split("-")[0] == "itemshop";
+}
+
+function isCraftingInventory(inventoryName) {
+    return inventoryName.toLowerCase()
+                .split("-")[0] == "crafting";
+}
+
+/**
+ * Is the inventories array contains only inventoriesWhitelist
+ * 
+ * @param {Array} inventories the inventories name
+ * @param {Array} inventoriesWhitelist a list of wanted inventories
+ * @return {boolean}
+ */
+ function isSameInventory(inventories, inventoriesWhitelist) {
+    var cond = true;
+
+    // Apply a "unique" filter
+    inventories = inventories.filter((value, index, self) => {
+        return self.indexOf(value) === index;
+    });
+
+    if (inventoriesWhitelist.length == 0)
+        return false;
+
+    for (const inv of inventories) {
+        cond = cond && inventoriesWhitelist.includes(inv);
     }
-});
+
+    return cond;
+}
 
 $(document).on("mouseenter", ".item-slot", function(e) {
     e.preventDefault();
@@ -62,71 +110,199 @@ $(document).on("mouseenter", ".item-slot", function(e) {
     }
 });
 
-function GetFirstFreeSlot($toInv, $fromSlot) {
+function GetFirstFreeSlot($toInv) {
     var retval = null;
     $.each($toInv.find(".item-slot"), function(i, slot) {
-        if ($(slot).data("item") === undefined) {
-            if (retval === null) {
-                retval = i + 1;
-            }
-        }
+        if ($(slot).data("item") === undefined && retval === null)
+            retval = i + 1;
     });
     return retval;
 }
 
 function CanQuickMove() {
-    var otherinventory = otherLabel.toLowerCase();
-    var retval = true;
-    if (otherinventory.split("-")[0] == "player") {
-        retval = false;
+    return !isPlayerInventory(otherinventory);
+}
+
+function setInventoryPlace(inventory, slot) {
+    var itemData = inventory.find("[data-slot=" + slot + "]").data("item");
+
+    if (isItemshopInventory(inventory.attr("data-inventory"))) {
+        inventory
+            .find("[data-slot=" + slot + "]")
+            .html(
+                '<div class="item-slot-img"><img src="images/' +
+                itemData.image +
+                '" alt="' +
+                itemData.name +
+                '" /></div><div class="item-slot-amount"><p>(' +
+                itemData.amount +
+                ") $" +
+                itemData.price +
+                '</p></div><div class="item-slot-label"><p>' +
+                itemData.label +
+                "</p></div>"
+            );
+    } else {
+        inventory
+            .find("[data-slot=" + slot + "]")
+            .html(
+                '<div class="item-slot-img"><img src="images/' +
+                itemData.image +
+                '" alt="' +
+                itemData.name +
+                '" /></div><div class="item-slot-amount"><p>' +
+                itemData.amount +
+                " (" +
+                ((itemData.weight * itemData.amount) / 1000).toFixed(1) +
+                ')</p></div><div class="item-slot-label"><p>' +
+                itemData.label +
+                "</p></div>"
+            );
     }
-    return retval;
+
+    InventoryError(inventory, slot);
+    return false;
+}
+
+function getItemFromInvSlot(inventory, slot) {
+    return inventory.find("[data-slot=" + slot + "]").data("item")
+}
+
+function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
+    otherinventory = otherLabel.toLowerCase();
+
+    if (isDropInventory(otherinventory)) {
+        toData = $toInv.find("[data-slot=" + $toSlot + "]").data("item");
+        if (toData !== null && toData !== undefined) {
+            InventoryError($fromInv, $fromSlot);
+            return false;
+        }
+    }
+
+    if (isSameInventory([$fromInv.attr("data-inventory"), $toInv.attr("data-inventory")], ['player', 'hotbar']))
+        return true;
+
+    if ((isItemshopInventory($fromInv.attr("data-inventory")) && isItemshopInventory($toInv.attr("data-inventory"))) ||
+        (isCraftingInventory($fromInv.attr("data-inventory")) && isCraftingInventory($toInv.attr("data-inventory"))) ||
+        ($toAmount == 0 && (isItemshopInventory($fromInv.attr("data-inventory")) || isCraftingInventory($fromInv.attr("data-inventory"))))
+    )
+    {
+        return setInventoryPlace($fromInv, $fromSlot);
+    }
+
+    if (isItemshopInventory($toInv.attr("data-inventory")) || isCraftingInventory($toInv.attr("data-inventory"))) {
+        return setInventoryPlace($toInv, $toSlot);
+    }
+
+    if ($fromInv.attr("data-inventory") != $toInv.attr("data-inventory")) {
+        fromData = getItemFromInvSlot($fromInv, $fromSlot);
+        toData = getItemFromInvSlot($toInv, $toSlot);
+
+        if ($toAmount == 0) {
+            $toAmount = fromData.amount;
+        }
+        if (toData == null || fromData.name == toData.name) {
+            if (
+                isPlayerInventory($fromInv.attr("data-inventory")) ||
+                isPlayerHotbarInventory($fromInv.attr("data-inventory"))
+            ) {
+                totalWeight = totalWeight - fromData.weight * $toAmount;
+                totalWeightOther = totalWeightOther + fromData.weight * $toAmount;
+            } else {
+                totalWeight = totalWeight + fromData.weight * $toAmount;
+                totalWeightOther = totalWeightOther - fromData.weight * $toAmount;
+            }
+        } else {
+            if (
+                isPlayerInventory($fromInv.attr("data-inventory")) ||
+                isPlayerHotbarInventory($fromInv.attr("data-inventory"))
+            ) {
+                totalWeight = totalWeight - fromData.weight * $toAmount;
+                totalWeight = totalWeight + toData.weight * toData.amount;
+
+                totalWeightOther = totalWeightOther + fromData.weight * $toAmount;
+                totalWeightOther = totalWeightOther - toData.weight * toData.amount;
+            } else {
+                totalWeight = totalWeight + fromData.weight * $toAmount;
+                totalWeight = totalWeight - toData.weight * toData.amount;
+
+                totalWeightOther = totalWeightOther - fromData.weight * $toAmount;
+                totalWeightOther = totalWeightOther + toData.weight * toData.amount;
+            }
+        }
+    }
+
+    if (totalWeight > playerMaxWeight ||
+        (totalWeightOther > otherMaxWeight &&
+            !isItemshopInventory($fromInv.attr("data-inventory")) &&
+            !isCraftingInventory($fromInv.attr("data-inventory")))
+    ) {
+        InventoryError($fromInv, $fromSlot);
+        return false;
+    }
+
+    $("#player-inv-weight").html(
+        "⚖️: " +
+        (parseInt(totalWeight) / 1000).toFixed(2) +
+        " / " +
+        (playerMaxWeight / 1000).toFixed(2)
+    );
+    if (
+        !isItemshopInventory($fromInv.attr("data-inventory")) &&
+        !isItemshopInventory($toInv.attr("data-inventory")) &&
+        !isCraftingInventory($fromInv.attr("data-inventory")) &&
+        !isCraftingInventory($toInv.attr("data-inventory"))
+    ) {
+        $("#other-inv-label").html(otherLabel);
+        $("#other-inv-weight").html(
+            "⚖️: " +
+            (parseInt(totalWeightOther) / 1000).toFixed(2) +
+            " / " +
+            (otherMaxWeight / 1000).toFixed(2)
+        );
+    }
+
+    return true;
 }
 
 $(document).on("mousedown", ".item-slot", function(event) {
-    switch (event.which) {
-        case 3:
-            fromSlot = $(this).attr("data-slot");
-            fromInventory = $(this).parent();
+    if (event.which != 3)
+        return
 
-            if ($(fromInventory).attr("data-inventory") == "player") {
-                toInventory = $(".other-inventory");
-            } else {
-                toInventory = $(".player-inventory");
-            }
-            toSlot = GetFirstFreeSlot(toInventory, $(this));
-            if ($(this).data("item") === undefined) {
-                return;
-            }
-            toAmount = $(this).data("item").amount;
-            if (toAmount > 1) {
-                toAmount = 1;
-            }
-            if (CanQuickMove()) {
-                if (toSlot === null) {
-                    InventoryError(fromInventory, fromSlot);
-                    return;
-                }
-                if (fromSlot == toSlot && fromInventory == toInventory) {
-                    return;
-                }
-                if (toAmount >= 0) {
-                    if (
-                        updateweights(
-                            fromSlot,
-                            toSlot,
-                            fromInventory,
-                            toInventory,
-                            toAmount
-                        )
-                    ) {
-                        swap(fromSlot, toSlot, fromInventory, toInventory, toAmount);
-                    }
-                }
-            } else {
-                InventoryError(fromInventory, fromSlot);
-            }
-            break;
+    var fromSlot = $(this).attr("data-slot");
+    var fromInventory = $(this).parent();
+    var toInventory = $(".player-inventory");
+    var toAmount = $(this).data("item").amount;
+
+    if (isPlayerInventory($(fromInventory).attr("data-inventory")))
+        toInventory = $(".other-inventory");
+
+    var toSlot = GetFirstFreeSlot(toInventory);
+
+    if ($(this).data("item") === undefined)
+        return;
+
+    if (toAmount > 1)
+        toAmount = 1;
+
+    if (CanQuickMove()) {
+        if (toSlot === null) {
+            InventoryError(fromInventory, fromSlot);
+            return;
+        }
+        if (fromSlot == toSlot && fromInventory == toInventory)
+            return;
+        if (toAmount >= 0 && updateweights(
+            fromSlot,
+            toSlot,
+            fromInventory,
+            toInventory,
+            toAmount
+        )) {
+            swap(fromSlot, toSlot, fromInventory, toInventory, toAmount);
+        }
+    } else {
+        InventoryError(fromInventory, fromSlot);
     }
 });
 
@@ -772,232 +948,6 @@ function handleDragDrop() {
             );
         },
     });
-}
-
-function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
-    var otherinventory = otherLabel.toLowerCase();
-    if (otherinventory.split("-")[0] == "dropped") {
-        toData = $toInv.find("[data-slot=" + $toSlot + "]").data("item");
-        if (toData !== null && toData !== undefined) {
-            InventoryError($fromInv, $fromSlot);
-            return false;
-        }
-    }
-
-    if (
-        ($fromInv.attr("data-inventory") == "hotbar" &&
-            $toInv.attr("data-inventory") == "player") ||
-        ($fromInv.attr("data-inventory") == "player" &&
-            $toInv.attr("data-inventory") == "hotbar") ||
-        ($fromInv.attr("data-inventory") == "player" &&
-            $toInv.attr("data-inventory") == "player") ||
-        ($fromInv.attr("data-inventory") == "hotbar" &&
-            $toInv.attr("data-inventory") == "hotbar")
-    ) {
-        return true;
-    }
-
-    if (
-        ($fromInv.attr("data-inventory").split("-")[0] == "itemshop" &&
-            $toInv.attr("data-inventory").split("-")[0] == "itemshop") ||
-        ($fromInv.attr("data-inventory") == "crafting" &&
-            $toInv.attr("data-inventory") == "crafting")
-    ) {
-        itemData = $fromInv.find("[data-slot=" + $fromSlot + "]").data("item");
-        if ($fromInv.attr("data-inventory").split("-")[0] == "itemshop") {
-            $fromInv
-                .find("[data-slot=" + $fromSlot + "]")
-                .html(
-                    '<div class="item-slot-img"><img src="images/' +
-                    itemData.image +
-                    '" alt="' +
-                    itemData.name +
-                    '" /></div><div class="item-slot-amount"><p>(' +
-                    itemData.amount +
-                    ") $" +
-                    itemData.price +
-                    '</p></div><div class="item-slot-label"><p>' +
-                    itemData.label +
-                    "</p></div>"
-                );
-        } else {
-            $fromInv
-                .find("[data-slot=" + $fromSlot + "]")
-                .html(
-                    '<div class="item-slot-img"><img src="images/' +
-                    itemData.image +
-                    '" alt="' +
-                    itemData.name +
-                    '" /></div><div class="item-slot-amount"><p>' +
-                    itemData.amount +
-                    " (" +
-                    ((itemData.weight * itemData.amount) / 1000).toFixed(1) +
-                    ')</p></div><div class="item-slot-label"><p>' +
-                    itemData.label +
-                    "</p></div>"
-                );
-        }
-
-        InventoryError($fromInv, $fromSlot);
-        return false;
-    }
-
-    if (
-        $toAmount == 0 &&
-        ($fromInv.attr("data-inventory").split("-")[0] == "itemshop" ||
-            $fromInv.attr("data-inventory") == "crafting")
-    ) {
-        itemData = $fromInv.find("[data-slot=" + $fromSlot + "]").data("item");
-        if ($fromInv.attr("data-inventory").split("-")[0] == "itemshop") {
-            $fromInv
-                .find("[data-slot=" + $fromSlot + "]")
-                .html(
-                    '<div class="item-slot-img"><img src="images/' +
-                    itemData.image +
-                    '" alt="' +
-                    itemData.name +
-                    '" /></div><div class="item-slot-amount"><p>(' +
-                    itemData.amount +
-                    ") $" +
-                    itemData.price +
-                    '</p></div><div class="item-slot-label"><p>' +
-                    itemData.label +
-                    "</p></div>"
-                );
-        } else {
-            $fromInv
-                .find("[data-slot=" + $fromSlot + "]")
-                .html(
-                    '<div class="item-slot-img"><img src="images/' +
-                    itemData.image +
-                    '" alt="' +
-                    itemData.name +
-                    '" /></div><div class="item-slot-amount"><p>' +
-                    itemData.amount +
-                    " (" +
-                    ((itemData.weight * itemData.amount) / 1000).toFixed(1) +
-                    ')</p></div><div class="item-slot-label"><p>' +
-                    itemData.label +
-                    "</p></div>"
-                );
-        }
-
-        InventoryError($fromInv, $fromSlot);
-        return false;
-    }
-
-    if (
-        $toInv.attr("data-inventory").split("-")[0] == "itemshop" ||
-        $toInv.attr("data-inventory") == "crafting"
-    ) {
-        itemData = $toInv.find("[data-slot=" + $toSlot + "]").data("item");
-        if ($toInv.attr("data-inventory").split("-")[0] == "itemshop") {
-            $toInv
-                .find("[data-slot=" + $toSlot + "]")
-                .html(
-                    '<div class="item-slot-img"><img src="images/' +
-                    itemData.image +
-                    '" alt="' +
-                    itemData.name +
-                    '" /></div><div class="item-slot-amount"><p>(' +
-                    itemData.amount +
-                    ") $" +
-                    itemData.price +
-                    '</p></div><div class="item-slot-label"><p>' +
-                    itemData.label +
-                    "</p></div>"
-                );
-        } else {
-            $toInv
-                .find("[data-slot=" + $toSlot + "]")
-                .html(
-                    '<div class="item-slot-img"><img src="images/' +
-                    itemData.image +
-                    '" alt="' +
-                    itemData.name +
-                    '" /></div><div class="item-slot-amount"><p>' +
-                    itemData.amount +
-                    " (" +
-                    ((itemData.weight * itemData.amount) / 1000).toFixed(1) +
-                    ')</p></div><div class="item-slot-label"><p>' +
-                    itemData.label +
-                    "</p></div>"
-                );
-        }
-
-        InventoryError($fromInv, $fromSlot);
-        return false;
-    }
-
-    if ($fromInv.attr("data-inventory") != $toInv.attr("data-inventory")) {
-        fromData = $fromInv.find("[data-slot=" + $fromSlot + "]").data("item");
-        toData = $toInv.find("[data-slot=" + $toSlot + "]").data("item");
-        if ($toAmount == 0) {
-            $toAmount = fromData.amount;
-        }
-        if (toData == null || fromData.name == toData.name) {
-            if (
-                $fromInv.attr("data-inventory") == "player" ||
-                $fromInv.attr("data-inventory") == "hotbar"
-            ) {
-                totalWeight = totalWeight - fromData.weight * $toAmount;
-                totalWeightOther = totalWeightOther + fromData.weight * $toAmount;
-            } else {
-                totalWeight = totalWeight + fromData.weight * $toAmount;
-                totalWeightOther = totalWeightOther - fromData.weight * $toAmount;
-            }
-        } else {
-            if (
-                $fromInv.attr("data-inventory") == "player" ||
-                $fromInv.attr("data-inventory") == "hotbar"
-            ) {
-                totalWeight = totalWeight - fromData.weight * $toAmount;
-                totalWeight = totalWeight + toData.weight * toData.amount;
-
-                totalWeightOther = totalWeightOther + fromData.weight * $toAmount;
-                totalWeightOther = totalWeightOther - toData.weight * toData.amount;
-            } else {
-                totalWeight = totalWeight + fromData.weight * $toAmount;
-                totalWeight = totalWeight - toData.weight * toData.amount;
-
-                totalWeightOther = totalWeightOther - fromData.weight * $toAmount;
-                totalWeightOther = totalWeightOther + toData.weight * toData.amount;
-            }
-        }
-    }
-
-    if (
-        totalWeight > playerMaxWeight ||
-        (totalWeightOther > otherMaxWeight &&
-            $fromInv.attr("data-inventory").split("-")[0] != "itemshop" &&
-            $fromInv.attr("data-inventory") != "crafting")
-    ) {
-        InventoryError($fromInv, $fromSlot);
-        return false;
-    }
-
-    $("#player-inv-weight").html(
-        "⚖️: " +
-        (parseInt(totalWeight) / 1000).toFixed(2) +
-        " / " +
-        (playerMaxWeight / 1000).toFixed(2)
-    );
-    if (
-        $fromInv.attr("data-inventory").split("-")[0] != "itemshop" &&
-        $toInv.attr("data-inventory").split("-")[0] != "itemshop" &&
-        $fromInv.attr("data-inventory") != "crafting" &&
-        $toInv.attr("data-inventory") != "crafting"
-    ) {
-        $("#other-inv-label").html(otherLabel);
-        $("#other-inv-weight").html(
-            "⚖️: " +
-            (parseInt(totalWeightOther) / 1000).toFixed(2) +
-            " / " +
-            (otherMaxWeight / 1000).toFixed(2)
-        );
-    }
-
-    return true;
 }
 
 var combineslotData = null;
