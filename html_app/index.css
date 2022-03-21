@@ -1,0 +1,909 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200&display=swap');
+
+p {
+	margin: 0 !important;
+}
+
+:root {
+	--main-label-color: 0, 0, 0;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+::-webkit-scrollbar {
+	width: 2px;
+}
+
+::-webkit-scrollbar-thumb {
+	border-radius: 50px;
+	background: #dc143c;
+}
+
+body {
+	overflow-x: hidden;
+}
+
+#qbcore-inventory {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	left: 0vw;
+	display: none;
+}
+
+.inv-background {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: -1;
+}
+
+.inv-container {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+
+.player-inventory {
+	position: absolute;
+	top: 26%;
+	left: 14.2%;
+	width: 28%;
+	height: 47.16%;
+	float: left;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	z-index: 100;
+}
+
+.other-inventory {
+	position: absolute;
+	top: 26%;
+	right: 16%;
+	width: 28%;
+	height: 47.16%;
+	float: left;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	z-index: 100;
+}
+
+.ply-hotbar-inventory {
+	position: absolute;
+	bottom: 10%;
+	left: 35.5%;
+	z-index: 105;
+}
+
+.player-inventory>.item-slot>.item-slot-key>p {
+	position: absolute;
+	font-weight: bolder;
+	color: white;
+	padding: .3vh;
+	padding-left: .5vh;
+	text-align: left;
+	font-size: 1.1vh;
+	line-height: 1.8vh;
+	font-family: 'Poppins', sans-serif;
+}
+
+.inv-options {
+	position: absolute;
+	margin: 0 auto;
+	right: 0;
+	width: 9%;
+	top: 28%;
+	left: 1vh;
+}
+
+.combine-option-container {
+	display: none;
+	position: absolute;
+	margin: 0 auto;
+	right: 0;
+	width: 8.5%;
+	top: 59%;
+	left: 0vh;
+}
+
+.item-slot {
+	position: relative;
+	width: 9.5vh;
+	height: 11.5vh;
+	float: left;
+	background-color: rgba(0, 0, 0, 0.3);
+	border: 1px solid rgb(68 68 68 / 40%);
+	margin: 2px;
+	transition: opacity 0.2s;
+	opacity: 1.0;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+}
+
+.item-slot-hoverClass {
+	opacity: .6;
+}
+
+.item-slot:hover {
+	opacity: .7;
+}
+
+.inv-option-item {
+	margin-top: 10%;
+}
+
+.btn-inv {
+	width: 100%!important;
+	max-width: 100%!important;
+	padding: 10%!important;
+	background-color: rgba(235, 235, 235, 0);
+}
+
+#item-amount {
+	color: white;
+	text-align: center;
+	font-size: 1.25vh;
+	font-family: 'Poppins', sans-serif;
+	outline: none;
+}
+
+.ammo-info-block {
+	position: absolute;
+	margin: 0 auto;
+	left: 0;
+	right: 0;
+	width: 22vh;
+	height: 11vh;
+	background-color: rgba(235, 235, 235, 0.08);
+	border: 1px solid rgba(255, 255, 255, 0.01);
+	top: 2vh;
+}
+
+.ammo-info-header {
+	width: 100%;
+	color: white;
+	font-family: 'Poppins', sans-serif;
+	background-color: rgba(0, 0, 0, 0.192);
+	font-size: 1.vh;
+	padding: .4vh;
+	text-align: center;
+}
+
+.ammo-info {
+	position: relative;
+	color: white;
+	font-family: 'Poppins', sans-serif;
+	font-weight: 200;
+	font-size: 1.vh;
+	margin-left: .8vh;
+	margin-top: .4vh;
+	margin-bottom: .25vh;
+	top: .6vh;
+}
+
+.ammo-info span {
+	margin-right: 1vh;
+	float: right;
+}
+
+.inv-option-item>p {
+	color: white;
+	text-align: center;
+	line-height: 48px;
+	text-transform: uppercase;
+	font-size: 1.2vh;
+	font-weight: 900;
+	background-color: rgba(220, 20, 60, 0.6);
+	font-family: 'Poppins', sans-serif;
+}
+
+.inv-option-item {
+	width: 75%;
+	height: 50px;
+	background-color: rgb(0 0 0 / 30%);
+	border: 1px solid rgba(255, 255, 255, .01);
+	color: white;
+	transition: background-color .1s linear;
+}
+
+.inv-option-item:hover {
+	background-color: rgb(0 0 0 / 20%);
+}
+
+.btn-combine {
+	position: relative;
+	margin-top: 20px;
+	width: 78%;
+	left: 2px;
+	color: white;
+	border: 1px solid rgba(255, 255, 255, .01);
+	background-color: rgba(220, 20, 60, 0.6);
+	text-align: center;
+	line-height: 48px;
+	text-transform: uppercase;
+	font-size: 1.2vh;
+	transition: background-color .1s linear;
+	font-weight: 900;
+	font-family: 'Poppins', sans-serif;
+}
+
+.btn-combine>p {
+	color: white;
+	text-align: center;
+	line-height: 48px;
+	text-transform: uppercase;
+	font-size: 1.1vh;
+	font-family: 'Poppins', sans-serif;
+	background-color: rgb(0 0 0 / 20%);
+}
+
+.item-slot-amount {
+	position: absolute;
+	top: 0.6vh;
+	right: 0.2vw;
+}
+
+.item-slot-amount>p {
+	color: #ffffff;
+	text-align: right;
+	font-size: 0.8vh;
+}
+
+.item-slot-label {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	background-color: rgba(var(--main-label-color), 0.7);
+}
+
+.item-slot-label>p {
+	text-transform: uppercase;
+	font-weight: 900;
+	color: white;
+	font-size: 0.8vh;
+	padding: 3px;
+	text-align: center;
+	letter-spacing: 1px;
+	font-family: 'Poppins', sans-serif;
+}
+
+.item-slot-quality {
+	position: absolute;
+	bottom: 1.7vh;
+	width: 100%;
+	height: .3vh;
+	background-color: rgba(32, 6, 6, 0.15);
+}
+
+.item-slot-quality-bar {
+	position: absolute;
+	width: 0%;
+	height: 100%;
+	background-color: green;
+	z-index: 1;
+}
+
+.item-slot-quality p {
+	color: transparent;
+}
+
+.item-slot-img {
+	max-width: 100%;
+	max-height: 100%;
+	padding: 0.5vw;
+}
+
+.item-slot-img img {
+	display: block;
+	position: relative;
+	margin: 0 auto;
+	margin-top: 21%;
+	width: 70px;
+	height: 70px;
+	max-width: 100%;
+	max-height: 100%;
+}
+
+.ui-draggable-dragging {
+	background: rgba(0, 0, 0, 0.3);
+}
+
+.player-inv-info {
+	position: absolute;
+	left: 14.5%;
+	top: 22.2%;
+}
+
+#player-inv-label {
+	position: relative;
+	color: white;
+	font-size: 16px;
+	font-style: italic;
+	font-family: 'Poppins', sans-serif;
+	font-weight: bold;
+	letter-spacing: 0.2vh;
+	bottom: 0px;
+	float: left;
+	text-transform: uppercase;
+}
+
+#player-inv-weight {
+	color: white;
+	font-size: 12px;
+	font-weight: 900;
+	font-family: 'Poppins', sans-serif;
+	letter-spacing: 0.2vh;
+	float: left;
+}
+
+#other-inv-label {
+	position: relative;
+	color: white;
+	font-size: 16px;
+	font-style: italic;
+	font-family: 'Poppins', sans-serif;
+	font-weight: bold;
+	letter-spacing: 0.2vh;
+	bottom: 0px;
+	float: left;
+	text-transform: uppercase;
+}
+
+#other-inv-weight {
+	color: white;
+	font-size: 12px;
+	font-weight: 900;
+	font-family: 'Poppins', sans-serif;
+	letter-spacing: 0.2vh;
+	float: left;
+}
+
+.player-inv-weight {
+	position: absolute;
+	left: 38%;
+	top: 12%;
+}
+
+.player-inv-weight>p {
+	color: white;
+	font-size: 12px;
+	font-family: 'Poppins', sans-serif;
+}
+
+.other-inv-info {
+	position: absolute;
+	left: 56%;
+	top: 22.2%;
+}
+
+.ply-iteminfo-container {
+	font-family: 'Poppins', sans-serif;
+	display: none;
+	position: absolute;
+	bottom: 3%;
+	margin: 0 auto;
+	left: 100px;
+	right: 0;
+	text-align: right;
+	width: 103.4vh;
+	height: 23vh;
+}
+
+.item-info-title {
+	text-transform: uppercase;
+	font-weight: 900;
+	font-family: 'Poppins', sans-serif;
+	font-size: 1.3vh;
+	color: white;
+	padding-top: 1px;
+}
+
+.item-info-line {
+	position: absolute;
+	font-family: 'Poppins', sans-serif;
+	width: 100%;
+	background-color: white;
+	height: 0vh;
+}
+
+.item-info-description {
+	text-transform: uppercase;
+	font-size: 1vh;
+	font-family: 'Poppins', sans-serif;
+	color: white;
+	padding-top: .5vh;
+}
+
+.itemboxes-container {
+	height: 130px;
+	min-width: 110px;
+	max-width: 550px;
+	width: fit-content;
+	position: absolute;
+	left: 47%;
+	bottom: 20%;
+	overflow: hidden;
+}
+
+.template {
+	display: none;
+}
+
+.itembox-container {
+	display: none;
+	position: relative;
+	float: left;
+	margin: 0 auto;
+	margin-right: 1vh;
+	width: 9vh;
+	height: 11vh;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	background-color: rgba(0, 0, 0, 0.3);
+	border: 1px solid rgb(68 68 68 / 40%);
+}
+
+#itembox-action {
+	position: absolute;
+	color: white;
+	border-top-left-radius: 1px;
+	padding: 4px;
+	top: 0;
+	left: 0;
+}
+
+#itembox-action>p {
+	font-size: 10px;
+	font-family: 'Poppins', sans-serif;
+}
+
+#itembox-label {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	background-color: rgba(var(--main-label-color), 0.35);
+	min-height: 2.2vh;
+	height: fit-content;
+}
+
+#itembox-label>p {
+	color: #ffffff;
+	font-size: 11px;
+	text-align: center;
+	text-transform: uppercase;
+	line-height: 3vh;
+}
+
+.requiredItem-container {
+	display: none;
+	position: absolute;
+	height: 100vh;
+	width: 100vw;
+}
+
+.requiredItem-box {
+	position: relative;
+	top: 70%;
+	left: 42%;
+	width: 9vh;
+	height: 11vh;
+	float: left;
+	margin-left: 20px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	background-color: rgba(0, 0, 0, 0.3);
+	border: 1px solid rgb(68 68 68 / 40%);
+}
+
+#requiredItem-action {
+	position: absolute;
+	left: 0;
+	top: 0;
+	color: white;
+	padding: 3px;
+	font-size: 10px;
+	font-family: 'Poppins', sans-serif;
+}
+
+#requiredItem-label {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	background-color: rgb(0 0 0 / 20%);
+	height: 2.6vh;
+}
+
+#requiredItem-label>p {
+	color: #ffffff;
+	font-size: 11px;
+	text-align: center;
+	text-transform: uppercase;
+	line-height: 3vh;
+}
+
+.z-hotbar-inventory {
+	display: none;
+	position: absolute;
+	bottom: 1%;
+	margin: 0 auto;
+	left: 0;
+	right: 0;
+	width: fit-content;
+	z-index: 105;
+}
+
+.z-hotbar-inventory>.z-hotbar-item-slot>.z-hotbar-item-slot-key>p {
+	position: absolute;
+	color: #ffffff;
+	border-top-left-radius: 1px;
+	padding: .3vh;
+	padding-left: .5vh;
+	padding-right: .5vh;
+	text-align: left;
+	font-size: 1.1vh;
+	line-height: 1.8vh;
+	font-family: 'Poppins', sans-serif;
+}
+
+.z-hotbar-item-slot {
+	position: relative;
+	width: 8.5vh;
+	height: 10.5vh;
+	float: left;
+	margin-left: 2px;
+	margin-bottom: 2px;
+	border: 1px solid rgb(68 68 68 / 40%);
+	margin: 3px;
+	transition: opacity 0.2s;
+	opacity: 1.0;
+	background-color: rgba(0, 0, 0, 0.3);
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+}
+
+.z-hotbar-item-slot-amount {
+	position: absolute;
+	top: 0.3vh;
+	right: 0.3vw;
+}
+
+.z-hotbar-item-slot-amount>p {
+	color: #ffffff;
+	text-align: right;
+	font-size: 10px;
+}
+
+.z-hotbar-item-slot-label {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	background-color: rgba(var(--main-label-color), 0.35);
+	min-height: 2.2vh;
+	height: fit-content;
+}
+
+.z-hotbar-item-slot-label>p {
+	color: rgb(247, 247, 247);
+	font-size: 11.5px;
+	text-align: center;
+	text-transform: lowercase;
+	font-family: 'Poppins', sans-serif;
+	font-variant: small-caps;
+}
+
+.z-hotbar-item-slot-img {
+	max-width: 100%;
+	max-height: 100%;
+	padding: 0.9vw;
+}
+
+.z-hotbar-item-slot-img img {
+	margin-top: 21%;
+	display: block;
+	width: 60px;
+	height: 60px;
+	max-width: 100%;
+	max-height: 100%;
+}
+
+.ammo-container {
+	position: absolute;
+	background-color: rgba(20, 18, 32, 0.2);
+	width: 3.25%;
+	height: 44.16%;
+	top: 26%;
+	left: 6%;
+}
+
+.ammo-container-header {
+	position: absolute;
+	top: 0;
+	width: 100%;
+	height: 5vh;
+	background-color: rgba(120, 10, 20, 0.5);
+	text-align: center;
+	color: rgba(216, 216, 216, 0.897);
+}
+
+.ammo-container-header>i {
+	line-height: 5vh;
+	font-size: 1.8vh;
+}
+
+.ammo-box {
+	position: relative;
+	width: 100%;
+	height: 6vh;
+	top: 5vh;
+	background-color: rgba(0, 0, 0, .4);
+	margin-bottom: .5vh;
+	margin-top: .5vh;
+}
+
+.ammo-box>img {
+	position: absolute;
+	top: .15vh;
+	left: .2vh;
+	width: 5.25vh;
+	opacity: .25;
+}
+
+.ammo-box>span {
+	position: absolute;
+	color: rgba(255, 255, 255, 0.95);
+	font-size: .93vh;
+	bottom: 0;
+	right: 0;
+	margin: .3vh;
+	font-family: 'Poppins', sans-serif;
+}
+
+.ammo-box-amount {
+	position: absolute;
+	width: 100%;
+	background-color: rgba(36, 36, 36, 0.4);
+	bottom: 0;
+	max-height: 100%;
+}
+
+#pistol_ammo>.ammo-box-amount {
+	height: 0%;
+}
+
+#smg_ammo>.ammo-box-amount {
+	height: 0%;
+}
+
+#shotgun_ammo>.ammo-box-amount {
+	height: 0%;
+}
+
+#rifle_ammo>.ammo-box-amount {
+	height: 0%;
+}
+
+/* Weapon Attachments */
+
+.weapon-attachments-container {
+	position: absolute;
+	left: -100vw;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+}
+
+.weapon-attachments-container-title {
+	position: absolute;
+	margin: 5vh;
+	font-size: 3vh;
+	color: rgb(255, 255, 255);
+	font-family: 'Poppins', sans-serif;
+}
+
+.weapon-attachments-container-description {
+	position: absolute;
+	margin: 5vh;
+	top: 5vh;
+	font-size: 1.7vh;
+	color: rgba(255, 255, 255, 0.8);
+	font-family: 'Poppins', sans-serif;
+}
+
+.weapon-attachments-container-details {
+	position: absolute;
+	margin: 5vh;
+	top: 9vh;
+	font-size: 1.4vh;
+	color: rgba(255, 255, 255, 0.8);
+	font-family: 'Poppins', sans-serif;
+}
+
+.weapon-attachments-container-detail-durability {
+	height: 1.5vh;
+	width: 10vh;
+	background-color: rgba(0, 0, 0, 0.3);
+	border-radius: 1px;
+}
+
+.weapon-attachments-container-detail-durability-total {
+	height: 100%;
+	width: 50%;
+	background-color: rgb(39, 174, 96);
+}
+
+.weapon-attachments-container-image {
+	position: absolute;
+	margin: 0 auto;
+	left: 0;
+	right: 0;
+	top: 32%;
+	width: 30%;
+}
+
+.weapon-attachments {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	margin: 5vh;
+	width: 50vh;
+	height: 12.5vh;
+}
+
+.weapon-attachments-title {
+	position: absolute;
+	bottom: 14vh;
+	left: 0;
+	margin: 5vh;
+	color: rgba(255, 255, 255, 0.8);
+	font-family: 'Poppins', sans-serif;
+	font-size: 1.4vh
+}
+
+.weapon-attachment {
+	position: relative;
+	height: 12.5vh;
+	width: 10.5vh;
+	background-color: rgba(0, 0, 0, 0.3);
+	border: 1px solid rgb(75, 75, 75);
+	margin-right: 1vh;
+	float: left;
+	transition: .05s linear;
+}
+
+.weapon-attachment:hover {
+	background-color: rgba(0, 0, 0, 0.4);
+	border: 1px solid rgb(29, 29, 29);
+	transition: .05s linear;
+}
+
+.weapon-attachment-label {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	background-color: rgba(var(--main-label-color), 0.3);
+	padding: 2.1%;
+}
+
+.weapon-attachment-label>p {
+	color: #ffffff;
+	font-size: 1.1vh;
+	text-align: center;
+	text-transform: uppercase;
+	line-height: 1.9vh;
+	font-family: 'Poppins', sans-serif;
+	font-weight: 100;
+}
+
+.weapon-attachment-img {
+	max-width: 100%;
+	max-height: 100%;
+	padding: 0.5vw;
+}
+
+.weapon-attachment-img>img {
+	display: block;
+	position: relative;
+	margin: 0 auto;
+	margin-top: 10%;
+	width: auto;
+	height: auto;
+	max-width: 100%;
+	max-height: 100%;
+}
+
+.weapon-attachments-remove {
+	position: absolute;
+	width: 6.5vh;
+	height: 6.5vh;
+	background-color: rgb(15, 15, 15);
+	border-radius: 1px;
+	margin: 0 auto;
+	left: 0;
+	right: 0;
+	bottom: 20vh;
+	text-align: center;
+	color: white;
+	font-size: 2vh;
+	transition: background-color .05s linear;
+}
+
+.weapon-attachments-remove:hover {
+	background-color: rgb(18, 18, 18);
+}
+
+.weapon-attachments-remove>i {
+	line-height: 6.5vh;
+}
+
+.weapon-attachments-remove-hover {
+	background-color: rgb(39, 174, 96);
+}
+
+.weapon-dragging-class {
+	animation: ShakeEffect .75s;
+	animation-iteration-count: infinite;
+}
+
+@keyframes ShakeEffect {
+	0% {
+		transform: translate(1px, 1px) rotate(0deg);
+	}
+	10% {
+		transform: translate(-1px, -2px) rotate(-1deg);
+	}
+	20% {
+		transform: translate(-3px, 0px) rotate(1deg);
+	}
+	30% {
+		transform: translate(3px, 2px) rotate(0deg);
+	}
+	40% {
+		transform: translate(1px, -1px) rotate(1deg);
+	}
+	50% {
+		transform: translate(-1px, 2px) rotate(-1deg);
+	}
+	60% {
+		transform: translate(-3px, 1px) rotate(0deg);
+	}
+	70% {
+		transform: translate(3px, 1px) rotate(-1deg);
+	}
+	80% {
+		transform: translate(-1px, -1px) rotate(1deg);
+	}
+	90% {
+		transform: translate(1px, 2px) rotate(0deg);
+	}
+	100% {
+		transform: translate(1px, -2px) rotate(-1deg);
+	}
+}
+
+.weapon-attachments-back {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	width: 10vh;
+	height: 6vh;
+	margin: 5vh;
+	background-color: rgb(15, 15, 15);
+	border-radius: 1px;
+	text-align: center;
+	line-height: 6vh;
+	color: white;
+	font-family: 'Poppins', sans-serif;
+	transition: .05s linear;
+}
+
+.weapon-attachments-back:hover {
+	background-color: rgb(18, 18, 18);
+}

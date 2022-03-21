@@ -21,8 +21,8 @@ ui_page {
 
 files {
 	'html/ui.html',
-	'html/css/main.css',
-	'html/js/app.js',
+	'html/index.css',
+	'html/app.js',
 	'html/images/*.png',
 	'html/images/*.jpg',
 	'html/ammo_images/*.png',
@@ -30,6 +30,13 @@ files {
 	'html/*.ttf'
 }
 
-dependency 'qb-weapons'
+dependencies {
+	'qb-weapons',
+	'yarn',
+	'webpack'
+}
+
+webpack_config 'webpack.config.js'
+
 
 lua54 'yes'
