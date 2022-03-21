@@ -15,6 +15,7 @@ local CurrentStash = nil
 local isCrafting = false
 local isHotbar = false
 local itemInfos = {}
+local robbingPlayerId = nil
 
 -- Functions
 
@@ -309,6 +310,7 @@ RegisterNetEvent('inventory:client:requiredItems', function(items, bool)
 end)
 
 RegisterNetEvent('inventory:server:RobPlayer', function(TargetId)
+    robbingPlayerId = TargetId
     SendNUIMessage({
         action = "RobMoney",
         TargetId = TargetId,
@@ -663,6 +665,8 @@ end)
 -- NUI
 
 RegisterNUICallback('RobMoney', function(data)
+    if robbingPlayerId ~= data.TargetId then return end
+    robbingPlayerId = nil
     TriggerServerEvent("police:server:RobPlayer", data.TargetId)
 end)
 
