@@ -12,6 +12,7 @@ var disableRightMouse = false;
 var selectedItem = null;
 var IsDragging = false;
 var otherinventory = "";
+var AttachmentDraggingData = {};
 
 $(document).on("keydown", function() {
     if (event.repeat)
@@ -75,6 +76,18 @@ function isCraftingInventory(inventoryName) {
                 .split("-")[0] == "crafting";
 }
 
+function canInvReceiveItem(inventoryName) {
+    return !(isCraftingInventory(inventoryName) || isItemshopInventory(inventoryName));
+}
+
+Array.prototype.containsList = function (list) {
+    for (const key of list) {
+        if (this.includes(key))
+            return true
+    }
+    return false;
+}
+
 /**
  * Is the inventories array contains only inventoriesWhitelist
  * 
@@ -82,7 +95,7 @@ function isCraftingInventory(inventoryName) {
  * @param {Array} inventoriesWhitelist a list of wanted inventories
  * @return {boolean}
  */
- function isSameInventory(inventories, inventoriesWhitelist) {
+function isSameInventory(inventories, inventoriesWhitelist) {
     var cond = true;
 
     // Apply a "unique" filter
@@ -94,7 +107,11 @@ function isCraftingInventory(inventoryName) {
         return false;
 
     for (const inv of inventories) {
-        cond = cond && inventoriesWhitelist.includes(inv);
+        var convertedList = [];
+        for (const invWL of inventoriesWhitelist) {
+            convertedList.push(invWL(inv))
+        }
+        cond = cond && convertedList.includes(inv);
     }
 
     return cond;
@@ -123,9 +140,14 @@ function CanQuickMove() {
     return !isPlayerInventory(otherinventory);
 }
 
-function setInventoryPlace(inventory, slot) {
-    var itemData = inventory.find("[data-slot=" + slot + "]").data("item");
+function getItemFromInvSlot(inventory, slot) {
+    return inventory.find("[data-slot=" + slot + "]").data("item");
+}
 
+function setInventoryPlace(inventory, slot) {
+    var itemData = getItemFromInvSlot(inventory, slot);
+
+    /** @todo need to transform this into a function */ 
     if (isItemshopInventory(inventory.attr("data-inventory"))) {
         inventory
             .find("[data-slot=" + slot + "]")
@@ -164,43 +186,36 @@ function setInventoryPlace(inventory, slot) {
     return false;
 }
 
-function getItemFromInvSlot(inventory, slot) {
-    return inventory.find("[data-slot=" + slot + "]").data("item")
-}
-
 function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
     otherinventory = otherLabel.toLowerCase();
 
     if (isDropInventory(otherinventory)) {
-        toData = $toInv.find("[data-slot=" + $toSlot + "]").data("item");
+        toData = getItemFromInvSlot($toInv, $toSlot);
         if (toData !== null && toData !== undefined) {
             InventoryError($fromInv, $fromSlot);
             return false;
         }
     }
 
-    if (isSameInventory([$fromInv.attr("data-inventory"), $toInv.attr("data-inventory")], ['player', 'hotbar']))
+    if (isSameInventory([$fromInv.attr("data-inventory"), $toInv.attr("data-inventory")], [isPlayerInventory, isPlayerHotbarInventory]))
         return true;
 
+    /** @todo Add an alert to tell the player to set a minimum amount */
     if ((isItemshopInventory($fromInv.attr("data-inventory")) && isItemshopInventory($toInv.attr("data-inventory"))) ||
         (isCraftingInventory($fromInv.attr("data-inventory")) && isCraftingInventory($toInv.attr("data-inventory"))) ||
-        ($toAmount == 0 && (isItemshopInventory($fromInv.attr("data-inventory")) || isCraftingInventory($fromInv.attr("data-inventory"))))
-    )
-    {
+        ($toAmount == 0 && (isItemshopInventory($fromInv.attr("data-inventory")) || isCraftingInventory($fromInv.attr("data-inventory")))))
         return setInventoryPlace($fromInv, $fromSlot);
-    }
 
-    if (isItemshopInventory($toInv.attr("data-inventory")) || isCraftingInventory($toInv.attr("data-inventory"))) {
+    if (isItemshopInventory($toInv.attr("data-inventory")) || isCraftingInventory($toInv.attr("data-inventory")))
         return setInventoryPlace($toInv, $toSlot);
-    }
 
     if ($fromInv.attr("data-inventory") != $toInv.attr("data-inventory")) {
         fromData = getItemFromInvSlot($fromInv, $fromSlot);
         toData = getItemFromInvSlot($toInv, $toSlot);
 
-        if ($toAmount == 0) {
+        if ($toAmount == 0)
             $toAmount = fromData.amount;
-        }
+            
         if (toData == null || fromData.name == toData.name) {
             if (
                 isPlayerInventory($fromInv.attr("data-inventory")) ||
@@ -232,6 +247,9 @@ function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
         }
     }
 
+    /** 
+     * @todo transform !isItemshopInventory($fromInv.attr("data-inventory")) && !isCraftingInventory($fromInv.attr("data-inventory")) into a function
+    */
     if (totalWeight > playerMaxWeight ||
         (totalWeightOther > otherMaxWeight &&
             !isItemshopInventory($fromInv.attr("data-inventory")) &&
@@ -247,12 +265,8 @@ function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
         " / " +
         (playerMaxWeight / 1000).toFixed(2)
     );
-    if (
-        !isItemshopInventory($fromInv.attr("data-inventory")) &&
-        !isItemshopInventory($toInv.attr("data-inventory")) &&
-        !isCraftingInventory($fromInv.attr("data-inventory")) &&
-        !isCraftingInventory($toInv.attr("data-inventory"))
-    ) {
+
+    if (![$fromInv, $toInv].containsList(["itemshop", "crafting"])) {
         $("#other-inv-label").html(otherLabel);
         $("#other-inv-weight").html(
             "⚖️: " +
@@ -310,38 +324,20 @@ $(document).on("click", ".item-slot", function(e) {
     e.preventDefault();
     var ItemData = $(this).data("item");
 
-    if (ItemData !== null && ItemData !== undefined) {
-        if (ItemData.name !== undefined) {
-            if (ItemData.name.split("_")[0] == "weapon") {
-                if (!$("#weapon-attachments").length) {
-                    $(".inv-options-list").append(
-                        '<div class="inv-option-item" id="weapon-attachments"><p>ATTACHMENTS</p></div>'
-                    );
-                    $("#weapon-attachments").hide().fadeIn(250);
-                    ClickedItemData = ItemData;
-                } else if (ClickedItemData == ItemData) {
-                    $("#weapon-attachments").fadeOut(250, function() {
-                        $("#weapon-attachments").remove();
-                    });
-                    ClickedItemData = {};
-                } else {
-                    ClickedItemData = ItemData;
-                }
-            } else {
-                ClickedItemData = {};
-                if ($("#weapon-attachments").length) {
-                    $("#weapon-attachments").fadeOut(250, function() {
-                        $("#weapon-attachments").remove();
-                    });
-                }
-            }
-        } else {
+    if (ItemData !== null && ItemData !== undefined && ItemData.name !== undefined && ItemData.name.split("_")[0] == "weapon") {
+        if (!$("#weapon-attachments").length) {
+            $(".inv-options-list").append(
+                '<div class="inv-option-item" id="weapon-attachments"><p>ATTACHMENTS</p></div>'
+            );
+            $("#weapon-attachments").hide().fadeIn(250);
+            ClickedItemData = ItemData;
+        } else if (ClickedItemData == ItemData) {
+            $("#weapon-attachments").fadeOut(250, function() {
+                $("#weapon-attachments").remove();
+            });
             ClickedItemData = {};
-            if ($("#weapon-attachments").length) {
-                $("#weapon-attachments").fadeOut(250, function() {
-                    $("#weapon-attachments").remove();
-                });
-            }
+        } else {
+            ClickedItemData = ItemData;
         }
     } else {
         ClickedItemData = {};
@@ -456,8 +452,6 @@ function FormatAttachmentInfo(data) {
         }
     );
 }
-
-var AttachmentDraggingData = {};
 
 function handleAttachmentDrag() {
     $(".weapon-attachment").draggable({
@@ -1118,10 +1112,8 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
         }
 
         if (
-            ($fromInv.attr("data-inventory") == "player" ||
-                $fromInv.attr("data-inventory") == "hotbar") &&
-            $toInv.attr("data-inventory").split("-")[0] == "itemshop" &&
-            $toInv.attr("data-inventory") == "crafting"
+            ($fromInv.attr("data-inventory") == "player" || $fromInv.attr("data-inventory") == "hotbar") &&
+            $toInv.attr("data-inventory").split("-")[0] == "itemshop" && $toInv.attr("data-inventory") == "crafting"
         ) {
             InventoryError($fromInv, $fromSlot);
             return;
@@ -2113,6 +2105,7 @@ function isItemAllowed(item, allowedItems) {
     return retval;
 }
 
+/** @todo add clear failure */
 function InventoryError($elinv, $elslot) {
     $elinv
         .find("[data-slot=" + $elslot + "]")
