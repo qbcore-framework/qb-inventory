@@ -37,6 +37,7 @@ dependencies {
 	'webpack'
 }
 
+-- Comment this when you developp, and in the cmd in this directory: npm run watch
 webpack_config 'webpack.config.js'
 
 
