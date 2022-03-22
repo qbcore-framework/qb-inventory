@@ -432,6 +432,7 @@ body {
 	bottom: 20%;
 	overflow: hidden;
 	transform: translateX(-50%);
+	transition: width .8s;
 }
 
 .template {

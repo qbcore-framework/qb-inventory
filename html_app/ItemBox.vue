@@ -35,9 +35,8 @@
         transform: translateX(20px);
         opacity: 0;
     }
-
     .fade-move {
-        transition: transform 1s;
+        transition: transform .8s;
     }
 </style>
 
