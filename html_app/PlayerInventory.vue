@@ -10,7 +10,7 @@
                 </div>
                 <div class="other-inv-info">
                     <span id="other-inv-label">{{ openedInventory.label }}</span><br>
-                    <span id="other-inv-weight">
+                    <span id="other-inv-weight" v-if="!isDisableDropInventory(openedInventory.type)">
                         ⚖️: {{ (totalWeightOther / 1000).toFixed(2) }} / {{ (openedInventory.maxweight / 1000).toFixed(2) }}
                     </span>
                 </div>
@@ -81,8 +81,11 @@
                             <div class="item-slot-label" v-if="item && item.isWeapon">
                                 <p>{{ item.label }}</p>
                             </div>
-                            <div class="item-slot-amount" v-if="item">
+                            <div class="item-slot-amount" v-if="item && !item.price">
                                 <p>{{ item.amount }} ({{ ((item.weight * item.amount) / 1000).toFixed(1) }})</p>
+                            </div>
+                            <div class="item-slot-amount" v-else-if="item.price">
+                                <p>{{ '$' }}{{ item.price }} ({{ (item.weight / 1000).toFixed(1) }}kg)</p>
                             </div>
                         </div>
                     </div>
@@ -110,6 +113,8 @@
  * 
  * @todo Add Language support on HTML side
 */
+const INVENTORY_TYPE_DISABLE_DROP = ['itemshop', 'crafting']
+
 export default {
     props: ['inventories'],
     data() {
@@ -127,7 +132,8 @@ export default {
                 maxweight: 100000,
             },
             TYPE_ITEM_PLAYER_INVENTORY: "player",
-            TYPE_ITEM_OPEN_INVENTORY: "other"
+            TYPE_ITEM_OPEN_INVENTORY: "other",
+            INVENTORY_TYPE_DISABLE_DROP: INVENTORY_TYPE_DISABLE_DROP
         }
     },
     mounted () {
@@ -137,43 +143,48 @@ export default {
         if (this.inventories.other != null && this.inventories.other != "") {
             this.openedInventory.name = this.inventories.other.name;
             this.openedInventory.slots = this.inventories.other.slots;
-            this.openedInventory.type = this.inventories.other.name.split('_')[0];
+            this.openedInventory.type = this.inventories.other.name.split('-')[0];
             this.openedInventory.label = this.inventories.other.label;
             this.openedInventory.maxweight = this.inventories.other.maxweight;
         }
 
         if (this.inventories.inventory !== null) {
             this.inventories.inventory.forEach((item) => {
-                /** @todo Add the common function to share with others component */
-                this.items.push({
-                    name: item.name,
-                    label: item.label,
-                    type: item.name.split("_")[0],
-                    inventory: this.TYPE_ITEM_PLAYER_INVENTORY,
-                    amount: item.amount,
-                    weight: item.weight,
-                    slot: item.slot,
-                    image: "images/" + item.image,
-                    isWeapon: item.name.split("_")[0] == "weapon" && !this.IsWeaponBlocked(item.name),
-                    weaponInfo: this.getWeaponInfo(item)
-                })
+                if (item != null) {
+                    /** @todo Add the common function to share with others component */
+                    this.items.push({
+                        name: item.name,
+                        label: item.label,
+                        type: item.name.split("_")[0],
+                        inventory: this.TYPE_ITEM_PLAYER_INVENTORY,
+                        amount: item.amount,
+                        weight: item.weight,
+                        slot: item.slot,
+                        image: "images/" + item.image,
+                        isWeapon: item.name.split("_")[0] == "weapon" && !this.IsWeaponBlocked(item.name),
+                        weaponInfo: this.getWeaponInfo(item)
+                    })
+                }
             });
         }
 
         if (this.inventories.other != null && this.inventories.other != "" && this.inventories.other.inventory != null) {
             this.inventories.other.inventory.forEach((item) => {
-                this.items.push({
-                    name: item.name,
-                    label: item.label,
-                    type: item.name.split("_")[0],
-                    inventory: this.TYPE_ITEM_OPEN_INVENTORY,
-                    amount: item.amount,
-                    weight: item.weight,
-                    slot: item.slot,
-                    image: "images/" + item.image,
-                    isWeapon: item.name.split("_")[0] == "weapon" && !this.IsWeaponBlocked(item.name),
-                    weaponInfo: this.getWeaponInfo(item)
-                })
+                if (item != null) {
+                    this.items.push({
+                        name: item.name,
+                        label: item.label,
+                        type: item.name.split("_")[0],
+                        inventory: this.TYPE_ITEM_OPEN_INVENTORY,
+                        amount: item.amount,
+                        weight: item.weight,
+                        price: item.price,
+                        slot: item.slot,
+                        image: "images/" + item.image,
+                        isWeapon: item.name.split("_")[0] == "weapon" && !this.IsWeaponBlocked(item.name),
+                        weaponInfo: this.getWeaponInfo(item)
+                    })
+                }
             })
         }
     },
@@ -197,6 +208,9 @@ export default {
         }
     },
     methods: {
+        isDisableDropInventory(inventory) {
+            return INVENTORY_TYPE_DISABLE_DROP.includes(inventory);
+        },
         getInventoryItemAtSlot: function(inventory, slot) {
             var selectedItem = this.items.filter((item) => item.inventory == inventory && item.slot == slot);
 
@@ -206,83 +220,12 @@ export default {
             return selectedItem[0];
         },
         base: function () {
-            totalWeight = 0;
-            totalWeightOther = 0;
-
             // ??? I dont't understand :[
             if (requiredItemOpen) {
                 $(".requiredItem-container").hide();
                 requiredItemOpen = false;
             }
 
-
-            if (
-                data.other != null &&
-                data.other != "" &&
-                data.other.inventory != null
-            ) {
-                $.each(data.other.inventory, function(i, item) {
-                    if (item != null) {
-                        totalWeightOther += item.weight * item.amount;
-                        var ItemLabel =
-                            '<div class="item-slot-label"><p>' + item.label + "</p></div>";
-                        if (item.name.split("_")[0] == "weapon") {
-                            if (!Inventory.IsWeaponBlocked(item.name)) {
-                                ItemLabel =
-                                    '<div class="item-slot-quality"><div class="item-slot-quality-bar"><p>100</p></div></div><div class="item-slot-label"><p>' +
-                                    item.label +
-                                    "</p></div>";
-                            }
-                        }
-                        $(".other-inventory")
-                            .find("[data-slot=" + item.slot + "]")
-                            .addClass("item-drag");
-                        if (item.price != null) {
-                            $(".other-inventory")
-                                .find("[data-slot=" + item.slot + "]")
-                                .html(
-                                    '<div class="item-slot-img"><img src="images/' +
-                                    item.image +
-                                    '" alt="' +
-                                    item.name +
-                                    '" /></div><div class="item-slot-amount"><p>(' +
-                                    item.amount +
-                                    ") $" +
-                                    item.price +
-                                    "</p></div>" +
-                                    ItemLabel
-                                );
-                        } else {
-                            $(".other-inventory")
-                                .find("[data-slot=" + item.slot + "]")
-                                .html(
-                                    '<div class="item-slot-img"><img src="images/' +
-                                    item.image +
-                                    '" alt="' +
-                                    item.name +
-                                    '" /></div><div class="item-slot-amount"><p>' +
-                                    item.amount +
-                                    " (" +
-                                    ((item.weight * item.amount) / 1000).toFixed(1) +
-                                    ")</p></div>" +
-                                    ItemLabel
-                                );
-                        }
-                        $(".other-inventory")
-                            .find("[data-slot=" + item.slot + "]")
-                            .data("item", item);
-                        Inventory.QualityCheck(item, false, true);
-                    }
-                });
-            }
-
-            $("#player-inv-weight").html(
-                "⚖️: " +
-                (totalWeight / 1000).toFixed(2) +
-                " / " +
-                (data.maxweight / 1000).toFixed(2)
-            );
-            playerMaxWeight = data.maxweight;
             if (data.other != null) {
                 var name = data.other.name.toString();
                 if (
