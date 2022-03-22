@@ -19,10 +19,13 @@
             <div class="inv-container">
                 <div class="ply-inv-container">
                     <div class="player-inventory" data-inventory="player">
-                        <div class="item-slot"
-                            v-for="slot in playerInventory.slots" 
+                        <div v-for="slot in playerInventory.slots" 
                             :data-slot="slot" :key="slot"
-                            :item="item = getInventoryItemAtSlot(TYPE_ITEM_PLAYER_INVENTORY, slot)">
+                            :item="item = getInventoryItemAtSlot(TYPE_ITEM_PLAYER_INVENTORY, slot)"
+                            :class="{ 'item-slot': true, 'draggable': !(!item) }"
+                            :ref="TYPE_ITEM_PLAYER_INVENTORY+'-'+slot"
+                            @mousedown.prevent="startDrag"
+                            @dragstart.prevent>
                             <div class="item-slot-key" v-if="slot < 6 || slot == 41">
                                 <p>{{ slot % 7 }}</p>
                             </div>
@@ -51,7 +54,7 @@
                 </div>
                 <div class="inv-options">
                     <div class="inv-options-list">
-                        <input type="number" id="item-amount" class="inv-option-item" min="0" value="0" oninput="validity.valid||(value='');"/>
+                        <input type="number" id="item-amount" v-model="amount" class="inv-option-item" min="0" oninput="validity.valid||(value='');"/>
                         <div class="inv-option-item" id="item-use"><p>USE</p></div>
                         <div class="inv-option-item" id="item-give"><p>GIVE</p></div>
                         <div class="inv-option-item" id="inv-close"><p>CLOSE</p></div>
@@ -59,11 +62,13 @@
                 </div>
                 <div class="oth-inv-container">
                     <div class="other-inventory" :data-inventory="openedInventory.name">
-                        <div class="item-slot"
+                        <div :class="{ 'item-slot': true, 'draggable': item }"
                             v-for="slot in openedInventory.slots" 
                             :data-slot="slot" :key="slot"
                             :style="[openedInventory.type == 'drop' ? {backgroundColor: 'rgba(0, 0, 0, 0.3)'} : '' ]"
-                            :item="item = getInventoryItemAtSlot(TYPE_ITEM_OPEN_INVENTORY, slot)">
+                            :item="item = getInventoryItemAtSlot(TYPE_ITEM_OPEN_INVENTORY, slot)"
+                            @mousedown.prevent="startDrag"
+                            @dragstart.prevent>
                             <div class="item-slot-img">
                                 <img :src="item.image" :alt="item.name" v-if="item">
                             </div>
@@ -119,7 +124,9 @@ export default {
     props: ['inventories'],
     data() {
         return {
+            id: 0,
             items: [],
+            isDragging: false,
             playerInventory: {
                 slots: 0,
                 maxweight: 0,
@@ -131,6 +138,7 @@ export default {
                 type: "drop",
                 maxweight: 100000,
             },
+            amount: 0,
             TYPE_ITEM_PLAYER_INVENTORY: "player",
             TYPE_ITEM_OPEN_INVENTORY: "other",
             INVENTORY_TYPE_DISABLE_DROP: INVENTORY_TYPE_DISABLE_DROP
@@ -153,6 +161,7 @@ export default {
                 if (item != null) {
                     /** @todo Add the common function to share with others component */
                     this.items.push({
+                        id: this.id++,
                         name: item.name,
                         label: item.label,
                         type: item.name.split("_")[0],
@@ -172,6 +181,7 @@ export default {
             this.inventories.other.inventory.forEach((item) => {
                 if (item != null) {
                     this.items.push({
+                        id: this.id++,
                         name: item.name,
                         label: item.label,
                         type: item.name.split("_")[0],
@@ -187,6 +197,20 @@ export default {
                 }
             })
         }
+
+        // var self = this
+        // this.$nextTick(function () {
+        //     $(self.$el).find(".item-slot.draggable").draggable({
+        //         helper: "clone",
+        //         appendTo: "body",
+        //         scroll: true,
+        //         revertDuration: 0,
+        //         revert: "invalid",
+        //         cancel: ".item-nodrag",
+        //         start: function(event, ui) {
+        //         }
+        //     });
+        // })
     },
     computed: {
         playerItemInventory() {
@@ -219,6 +243,44 @@ export default {
 
             return selectedItem[0];
         },
+
+        startDrag: function (event) {
+            if (!this.isDragging) {
+                var item = event.currentTarget.cloneNode(true);
+                document.body.appendChild(item);
+
+                // (1) prepare to moving: make absolute and on top by z-index
+                item.style.position = 'absolute';
+                item.style.zIndex = 1000;
+
+                // centers the ball at (pageX, pageY) coordinates
+                function moveAt(pageX, pageY) {
+                    item.style.left = pageX - item.offsetWidth / 2 + 'px';
+                    item.style.top = pageY - item.offsetHeight / 2 + 'px';
+                }
+
+                // move our absolutely positioned ball under the pointer
+                moveAt(event.pageX, event.pageY);
+
+                function onMouseMove(event) {
+                    moveAt(event.pageX, event.pageY);
+                }
+
+                var self = this
+
+                // (2) move the ball on mousemove
+                document.addEventListener('mousemove', onMouseMove);
+
+                // (3) drop the ball, remove unneeded handlers
+                item.onmouseup = function() {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    item.onmouseup = null;
+                    item.remove();
+                    self.isDragging = false;
+                };
+            }
+        },
+
         base: function () {
             // ??? I dont't understand :[
             if (requiredItemOpen) {
