@@ -4,10 +4,11 @@
         <transition name="slide-fade">
             <player-hotbar v-if="hotbar.open" :hotbar="hotbar"/>
         </transition>
+        <item-box ref="itemBox"/>
     </div>
 </template>
 
-<style scoped> 
+<style scoped>
     .slide-fade-enter-active {
         transition: all .2s ease-in-out;
     }
@@ -22,6 +23,7 @@
 <script>
 import PlayerInventory from './PlayerInventory.vue';
 import PlayerHotbar from './PlayerHotbar.vue';
+import ItemBox from './ItemBox.vue';
 
 const axios = require('axios').default;
 
@@ -36,7 +38,8 @@ importAll(require.context('./images', false, /\.(png|jpg)$/));
 export default {
     components: {
         PlayerInventory,
-        PlayerHotbar
+        PlayerHotbar,
+        ItemBox
     },
     data() {
         return {
@@ -78,11 +81,11 @@ export default {
                     this.close()
                     break;
                 case "update":
-                    console.log(event.data);
+                    // console.log(event.data);
                     // Inventory.Update(event.data);
                     break;
                 case "itemBox":
-                    // Inventory.itemBox(event.data);
+                    this.$refs.itemBox.AddItemBox(event.data);
                     break;
                 case "requiredItem":
                     // Inventory.RequiredItem(event.data);

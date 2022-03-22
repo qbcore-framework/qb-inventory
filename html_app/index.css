@@ -424,13 +424,14 @@ body {
 
 .itemboxes-container {
 	height: 130px;
-	min-width: 110px;
-	max-width: 550px;
+	min-width: 11vw;
+	max-width: 70vw;
 	width: fit-content;
 	position: absolute;
-	left: 47%;
+	left: 50%;
 	bottom: 20%;
 	overflow: hidden;
+	transform: translateX(-50%);
 }
 
 .template {
@@ -438,9 +439,8 @@ body {
 }
 
 .itembox-container {
-	display: none;
+	display: inline-block;
 	position: relative;
-	float: left;
 	margin: 0 auto;
 	margin-right: 1vh;
 	width: 9vh;
@@ -449,6 +449,7 @@ body {
 	border-bottom-right-radius: 5px;
 	background-color: rgba(0, 0, 0, 0.3);
 	border: 1px solid rgb(68 68 68 / 40%);
+	opacity: 1;
 }
 
 #itembox-action {
