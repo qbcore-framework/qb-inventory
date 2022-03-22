@@ -1,6 +1,6 @@
 <template>
     <div>
-        <player-inventory v-if="inventory.length > 0" :inventories="inventory" />
+        <player-inventory v-if="!hide" :inventories="inventory" />
         <transition name="slide-fade">
             <player-hotbar v-if="hotbar.open" :hotbar="hotbar"/>
         </transition>
@@ -81,7 +81,6 @@ export default {
                     this.close()
                     break;
                 case "update":
-                    // console.log(event.data);
                     // Inventory.Update(event.data);
                     break;
                 case "itemBox":
@@ -107,6 +106,7 @@ export default {
         },
         close() {
             this.hide = true;
+            this.inventory = {};
             axios.post("https://qb-inventory/CloseInventory", {});
         },
     },

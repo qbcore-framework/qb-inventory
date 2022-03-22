@@ -3,6 +3,9 @@
     "version": "1.0.0",
     "main": "index.js",
     "license": "MIT",
+    "scripts": {
+        "watch": "webpack --mode development --watch true"
+    },
     "dependencies": {
         "axios": "^0.26.1",
         "copy-webpack-plugin": "^5.1.1",
