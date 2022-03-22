@@ -1,9 +1,23 @@
 <template>
     <div>
         <player-inventory v-if="inventory.length > 0" :inventories="inventory" />
-        <player-hotbar v-if="hotbar.show" :hotbar="hotbar"/>
+        <transition name="slide-fade">
+            <player-hotbar v-if="hotbar.open" :hotbar="hotbar"/>
+        </transition>
     </div>
 </template>
+
+<style scoped> 
+    .slide-fade-enter-active {
+        transition: all .2s ease-in-out;
+    }
+    .slide-fade-leave-active {
+        transition: all .2s ease-in-out;
+    }
+    .slide-fade-enter-from, .slide-fade-leave-to {
+        transform: translateY(100px);
+    }
+</style>
 
 <script>
 import PlayerInventory from './PlayerInventory.vue';

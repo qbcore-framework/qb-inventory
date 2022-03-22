@@ -1,7 +1,7 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
 const { VueLoaderPlugin } = require("vue-loader");
 const CopyPlugin = require('copy-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = {
     mode: 'production',
@@ -19,6 +19,13 @@ module.exports = {
                     name: '[path][name].[ext]',
                     outputPath: url => url.slice(url.indexOf(`/`) + 1)
                 },
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    'css-loader'
+                ]
             }
         ]
     },
@@ -29,6 +36,7 @@ module.exports = {
             template: './html_app/index.html',
             filename: 'ui.html'
         }),
+        new MiniCssExtractPlugin(),
         // new HtmlWebpackInlineSourcePlugin(),
         new CopyPlugin([
             { from: 'html_app/index.css', to: 'index.css' }
