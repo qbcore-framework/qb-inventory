@@ -8,7 +8,7 @@ So I decided to re-build the JavaScript with Vue.JS, but keeping the whole HTML/
 
 ## Work On
 
-The folder `html_app` will be build under the name `html`.
+The folder `html_app` will be build under the name `html` (specified in `webpack.config.js` or `index.js`).
 
 __Worktree__:
  - `ammo_images/`       Contains every ammos images (*undex jpg or png extenstion*)
@@ -19,10 +19,6 @@ __Worktree__:
  - index.css            Global stylesheet of the project
  - index.js             Instanciate the VueJS3 App. 
  - App.vue              Manage the whole Vue App (refer to `components/` folder)
-
- 
-When you do "npm run watch":
- - It move every images from `ammo_images/` `attachment_images/` and `images/`
 
 ### Installation process
 
@@ -42,7 +38,7 @@ You just have to type in the same terminal:
 npm run watch
 ```
 
-(* PLEASE: you should restart the script in-game so the javascript get refreshed! *)
+(*PLEASE: you should restart the script in-game so the javascript get refreshed!*)
 
 ### Let lambda user install script
 
