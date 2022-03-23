@@ -92,6 +92,7 @@ app.config.globalProperties.convertItemFromQB = function(id, item, inventory, in
         description: item.description,
         useable: item.useable,
         unique: item.unique,
+        info: item.info,
     }
 }
 

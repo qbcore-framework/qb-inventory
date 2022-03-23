@@ -1,5 +1,5 @@
 <template>
-    <div class="item-slot">
+    <div class="item-slot" @mouseenter="$bus.trigger('setInfo', item)" @mouseleave="$bus.trigger('resetInfo')">
         <div :class="prefixClass + 'item-slot-key'" v-if="(inventory == 'player' || inventory == 'hotbar') && (slot < 6 || slot == 41)">
             <p>{{ slot % 7 }}</p>
         </div>

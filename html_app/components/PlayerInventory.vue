@@ -47,17 +47,7 @@
                     </div>
                 </div>
             </div>
-
-            <div class="ply-hotbar-inventory" data-inventory="hotbar"></div>
-            <div class="ply-iteminfo-container">
-                <div class="ply-iteminfo">
-                    <div class="iteminfo-content">
-                        <div class="item-info-title"></div>
-                        <div class="item-info-line"></div>
-                        <div class="item-info-description"></div>
-                    </div>
-                </div>
-            </div>
+            <item-info />
             <div class="inv-background"></div>
         </div>
     </div>
@@ -66,6 +56,7 @@
 <script>
 import axios from 'axios';
 import ItemSlot from './ItemSlot.vue';
+import ItemInfo from './ItemInfo.vue';
 var _ = require('lodash');
 
 const AXIOS_CONFIG = { headers: {'Content-Type': 'application/json'} };
@@ -76,7 +67,7 @@ const AXIOS_CONFIG = { headers: {'Content-Type': 'application/json'} };
  * @todo Add Language support on HTML side
 */
 export default {
-  components: { ItemSlot },
+  components: { ItemSlot, ItemInfo },
     props: ['inventories'],
     data() {
         return {
@@ -208,10 +199,12 @@ export default {
                  * @todo Disable items which shouldn't be dropped items
                  */
                 for (const slot of this.$refs.slotPlayer) {
+                    slot.$el.style.cursor = "copy";
                     slot.$el.onmouseup = (event) => this.handleDrop(event, slot, this.TYPE_ITEM_PLAYER_INVENTORY, slot.slot, item);
                 }
                 if (!this.isDisableDropInventory(this.openedInventory.type)) {
                     for (const slot of this.$refs.slotOther) {
+                        slot.$el.style.cursor = "copy";
                         slot.$el.onmouseup = (event) => this.handleDrop(event, slot, this.TYPE_ITEM_OPEN_INVENTORY, slot.slot, item);
                     }
                 }
@@ -222,6 +215,7 @@ export default {
 
                 // Disable the drop nowhere
                 this.$refs.global.onmouseup = (event) => this.handleDrop(event, -1, "none", -1);
+                this.$refs.global.style.cursor = "not-allowed";
             }
         },
 
@@ -248,10 +242,13 @@ export default {
                 this.$refs.useAction.onmouseup = null;
                 this.$refs.giveAction.onmouseup = null;
                 this.$refs.global.onmouseup = null;
+                this.$refs.global.style.cursor = "default";
                 for (const slot of this.$refs.slotPlayer) {
+                    slot.$el.style.cursor = "default";
                     slot.$el.onmouseup = null;
                 }
                 for (const slot of this.$refs.slotOther) {
+                    slot.$el.style.cursor = "default";
                     slot.$el.onmouseup = null;
                 }
 

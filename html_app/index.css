@@ -393,7 +393,7 @@ body {
 
 .ply-iteminfo-container {
 	font-family: 'Poppins', sans-serif;
-	display: none;
+	display: block;
 	position: absolute;
 	bottom: 3%;
 	margin: 0 auto;
