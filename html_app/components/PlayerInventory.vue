@@ -16,14 +16,14 @@
                 </div>
             </div>
 
-            <div class="inv-container">
+            <div class="inv-container" ref="global">
                 <div class="ply-inv-container">
                     <div class="player-inventory" data-inventory="player">
                         <div v-for="slot in playerInventory.slots" 
                             :data-slot="slot" :key="slot"
                             :item="item = getInventoryItemAtSlot(TYPE_ITEM_PLAYER_INVENTORY, slot)"
                             :class="{ 'item-slot': true, 'draggable': !(!item) }"
-                            @mousedown.prevent="startDrag"
+                            @mousedown.prevent="startDrag($event, TYPE_ITEM_PLAYER_INVENTORY, slot)"
                             ref="slotPlayer">
                             <div class="item-slot-key" v-if="slot < 6 || slot == 41">
                                 <p>{{ slot % 7 }}</p>
@@ -61,35 +61,35 @@
                 </div>
                 <div class="oth-inv-container">
                     <div class="other-inventory" :data-inventory="openedInventory.name">
-                        <div :class="{ 'item-slot': true, 'draggable': item }"
+                        <div :class="{ 'item-slot': true }"
                             v-for="slot in openedInventory.slots" 
                             :data-slot="slot" :key="slot"
                             :style="[openedInventory.type == 'drop' ? {backgroundColor: 'rgba(0, 0, 0, 0.3)'} : '' ]"
-                            :item="item = getInventoryItemAtSlot(TYPE_ITEM_OPEN_INVENTORY, slot)"
-                            ref="slotOther"
-                            @mousedown.prevent="startDrag">
+                            :item="itemOther = getInventoryItemAtSlot(TYPE_ITEM_OPEN_INVENTORY, slot)"
+                            @mousedown.prevent="startDrag($event, TYPE_ITEM_OPEN_INVENTORY, slot)"
+                            ref="slotOther">
                             <div class="item-slot-img">
-                                <img :src="item.image" :alt="item.name" v-if="item">
+                                <img :src="itemOther.image" :alt="itemOther.name" v-if="itemOther">
                             </div>
-                            <div class="item-slot-label" v-if="!item || !item.isWeapon">
-                                <p>{{ !item ? "&nbsp;" : item.label }}</p>
+                            <div class="item-slot-label" v-if="!itemOther || !itemOther.isWeapon">
+                                <p>{{ !itemOther ? "&nbsp;" : itemOther.label }}</p>
                             </div>
-                            <div class="item-slot-quality" v-if="item && item.isWeapon">
-                                <div class="item-slot-quality-bar" v-if="item.weaponInfo.label == 'BROKEN'" :style="{width: '100%', backgroundColor: item.weaponInfo.color}">
+                            <div class="item-slot-quality" v-if="itemOther && itemOther.isWeapon">
+                                <div class="item-slot-quality-bar" v-if="itemOther.weaponInfo.label == 'BROKEN'" :style="{width: '100%', backgroundColor: itemOther.weaponInfo.color}">
                                     <p>BROKEN</p>
                                 </div>
-                                <div class="item-slot-quality-bar" :style="{width: item.weaponInfo.label + '%', backgroundColor: item.weaponInfo.color}">
-                                    <p>{{ item.weaponInfo.label }}</p>
+                                <div class="item-slot-quality-bar" :style="{width: itemOther.weaponInfo.label + '%', backgroundColor: itemOther.weaponInfo.color}">
+                                    <p>{{ itemOther.weaponInfo.label }}</p>
                                 </div>
                             </div>
-                            <div class="item-slot-label" v-if="item && item.isWeapon">
-                                <p>{{ item.label }}</p>
+                            <div class="item-slot-label" v-if="itemOther && itemOther.isWeapon">
+                                <p>{{ itemOther.label }}</p>
                             </div>
-                            <div class="item-slot-amount" v-if="item && !item.price">
-                                <p>{{ item.amount }} ({{ ((item.weight * item.amount) / 1000).toFixed(1) }})</p>
+                            <div class="item-slot-amount" v-if="itemOther && !itemOther.price">
+                                <p>{{ itemOther.amount }} ({{ ((itemOther.weight * itemOther.amount) / 1000).toFixed(1) }})</p>
                             </div>
-                            <div class="item-slot-amount" v-else-if="item.price">
-                                <p>{{ '$' }}{{ item.price }} ({{ (item.weight / 1000).toFixed(1) }}kg)</p>
+                            <div class="item-slot-amount" v-else-if="itemOther.price">
+                                <p>{{ '$' }}{{ itemOther.price }} ({{ (itemOther.weight / 1000).toFixed(1) }}kg)</p>
                             </div>
                         </div>
                     </div>
@@ -116,6 +116,8 @@
  * Component to manage every inventory (or "tab") part
  * 
  * @todo Add Language support on HTML side
+ * @todo Add Item in component (it's actually a mess)
+ * @todo Add mousedown on actions buttons
 */
 const INVENTORY_TYPE_DISABLE_DROP = ['itemshop', 'crafting']
 
@@ -238,8 +240,9 @@ export default {
             this.moveAt(item, event.pageX, event.pageY);
         },
 
-        startDrag: function (event) {
-            if (!this.isDragging) {
+        startDrag: function (event, inventory, slot) {
+            var item = this.getInventoryItemAtSlot(inventory, slot);
+            if (!this.isDragging && item) {
                 this.isDragging = true;
                 this.draggedItem = event.currentTarget.cloneNode(true);
                 document.body.appendChild(this.draggedItem);
@@ -259,8 +262,13 @@ export default {
                 for (const slot of this.$refs.slotPlayer) {
                     slot.onmouseup = () => { this.handleDrop(slot, this.TYPE_ITEM_PLAYER_INVENTORY, slot.dataset.slot); };
                 }
-                for (const slot of this.$refs.slotOther) {
-                    slot.onmouseup = () => { this.handleDrop(slot, this.TYPE_ITEM_OPEN_INVENTORY, slot.dataset.slot); };
+                if (!this.isDisableDropInventory(this.openedInventory.type)) {
+                    for (const slot of this.$refs.slotOther) {
+                        slot.onmouseup = () => { this.handleDrop(slot, this.TYPE_ITEM_OPEN_INVENTORY, slot.dataset.slot); };
+                    }
+                }
+                this.$refs.global.onmouseup = () => {
+                    this.handleDrop(-1, "none", -1);
                 }
 
                 // (2) move the ball on mousemove
@@ -271,10 +279,17 @@ export default {
         },
         handleDrop: function (el, inventory, slot) {
             if (this.isDragging) {
-                console.log(slot, inventory, el);
+                if (inventory != "none") {
+                    // When the inventory and slot exists
+                    // This is where you should handle the this.draggedItem on the inventory/slot position.
+                    // Remember that you shouldn't use DOM to avoid hack/data leaks 
+                    console.log(slot, inventory, el);
+                }
+
                 document.removeEventListener('mousemove', (event) => {
                     this.onMouseMove(event, this.draggedItem)
                 });
+                this.$refs.global.onmouseup = null;
                 
                 for (const slot of this.$refs.slotPlayer) {
                     slot.onmouseup = null;
@@ -286,10 +301,6 @@ export default {
                 this.draggedItem.remove();
                 this.isDragging = false;
             }
-        },
-
-        csllog(info) {
-            console.log(info);
         },
 
         base: function () {
