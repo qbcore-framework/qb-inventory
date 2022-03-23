@@ -288,7 +288,7 @@ export default {
                 return false;
             }
 
-            if (["use", "give"].includes(inventory)) {
+            if (inventory == "use") {
                 axios.post("https://qb-inventory/UseItem", {
                     inventory: oldItemSlot.inventory,
                     item: this.convertItemToQB(oldItemSlot),
@@ -314,6 +314,15 @@ export default {
                 return;
             } else {
                 var amount = this.amount;
+            }
+
+            if (inventory == "give") {
+                axios.post("https://qb-inventory/GiveItem", {
+                    inventory: oldItemSlot.inventory,
+                    item: this.convertItemToQB(oldItemSlot),
+                    amount: parseInt(amount),
+                }, AXIOS_CONFIG)
+                return;
             }
 
             var indexItem = this.items.indexOf(oldItemSlot);
@@ -359,6 +368,7 @@ export default {
                 this.items.splice(indexItem, 1);
             }
 
+            // Check weight
             if (this.totalWeight > this.playerInventory.maxweight || this.totalWeightOther > this.openedInventory.maxweight) {
                 /** @todo Send an error warning */
                 Object.assign(this.items, backupItems);
