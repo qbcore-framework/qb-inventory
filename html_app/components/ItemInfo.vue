@@ -141,6 +141,7 @@ export default {
             this.item = null;
             this.title = "";
             this.description = "";
+            this.attachmentString = "";
         });
     },
 }

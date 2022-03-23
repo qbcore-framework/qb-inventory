@@ -199,12 +199,12 @@ export default {
                  * @todo Disable items which shouldn't be dropped items
                  */
                 for (const slot of this.$refs.slotPlayer) {
-                    slot.$el.style.cursor = "copy";
+                    slot.$el.style.cursor = "grabbing";
                     slot.$el.onmouseup = (event) => this.handleDrop(event, slot, this.TYPE_ITEM_PLAYER_INVENTORY, slot.slot, item);
                 }
                 if (!this.isDisableDropInventory(this.openedInventory.type)) {
                     for (const slot of this.$refs.slotOther) {
-                        slot.$el.style.cursor = "copy";
+                        slot.$el.style.cursor = "grabbing";
                         slot.$el.onmouseup = (event) => this.handleDrop(event, slot, this.TYPE_ITEM_OPEN_INVENTORY, slot.slot, item);
                     }
                 }
