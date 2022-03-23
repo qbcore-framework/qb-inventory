@@ -336,7 +336,6 @@ export default {
                 item.amount -= amount;
                 this.items[newItemIndex].amount += amount;
             } else {
-                console.log(this.isDisableDropInventory(this.items[indexItem].inventoryType))
                 if (this.isDisableDropInventory(this.items[indexItem].inventoryType)) {
                     return;
                 }
