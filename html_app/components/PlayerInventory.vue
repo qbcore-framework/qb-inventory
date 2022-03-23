@@ -23,9 +23,8 @@
                             :data-slot="slot" :key="slot"
                             :item="item = getInventoryItemAtSlot(TYPE_ITEM_PLAYER_INVENTORY, slot)"
                             :class="{ 'item-slot': true, 'draggable': !(!item) }"
-                            :ref="TYPE_ITEM_PLAYER_INVENTORY+'-'+slot"
                             @mousedown.prevent="startDrag"
-                            @dragstart.prevent>
+                            ref="slotPlayer">
                             <div class="item-slot-key" v-if="slot < 6 || slot == 41">
                                 <p>{{ slot % 7 }}</p>
                             </div>
@@ -67,8 +66,8 @@
                             :data-slot="slot" :key="slot"
                             :style="[openedInventory.type == 'drop' ? {backgroundColor: 'rgba(0, 0, 0, 0.3)'} : '' ]"
                             :item="item = getInventoryItemAtSlot(TYPE_ITEM_OPEN_INVENTORY, slot)"
-                            @mousedown.prevent="startDrag"
-                            @dragstart.prevent>
+                            ref="slotOther"
+                            @mousedown.prevent="startDrag">
                             <div class="item-slot-img">
                                 <img :src="item.image" :alt="item.name" v-if="item">
                             </div>
@@ -127,6 +126,7 @@ export default {
             id: 0,
             items: [],
             isDragging: false,
+            draggedItem: null,
             playerInventory: {
                 slots: 0,
                 maxweight: 0,
@@ -230,41 +230,66 @@ export default {
             return selectedItem[0];
         },
 
+        moveAt: function (item, pageX, pageY) {
+            item.style.left = pageX - item.offsetWidth / 2 + 'px';
+            item.style.top = pageY - item.offsetHeight / 2 + 'px';
+        },
+        onMouseMove: function(event, item) {
+            this.moveAt(item, event.pageX, event.pageY);
+        },
+
         startDrag: function (event) {
             if (!this.isDragging) {
-                var item = event.currentTarget.cloneNode(true);
-                document.body.appendChild(item);
+                this.isDragging = true;
+                this.draggedItem = event.currentTarget.cloneNode(true);
+                document.body.appendChild(this.draggedItem);
 
                 // (1) prepare to moving: make absolute and on top by z-index
-                item.style.position = 'absolute';
-                item.style.zIndex = 1000;
-
-                // centers the ball at (pageX, pageY) coordinates
-                function moveAt(pageX, pageY) {
-                    item.style.left = pageX - item.offsetWidth / 2 + 'px';
-                    item.style.top = pageY - item.offsetHeight / 2 + 'px';
-                }
+                this.draggedItem.style.position = 'absolute';
+                this.draggedItem.style.zIndex = 1000;
+                this.draggedItem.style.pointerEvents = "none";
 
                 // move our absolutely positioned ball under the pointer
-                moveAt(event.pageX, event.pageY);
+                this.moveAt(this.draggedItem, event.pageX, event.pageY);
 
-                function onMouseMove(event) {
-                    moveAt(event.pageX, event.pageY);
+                /**
+                 * @todo Find a more secure and reliable way to add event those handlers
+                 * @todo Disable items which shouldn't be dropped items
+                 */
+                for (const slot of this.$refs.slotPlayer) {
+                    slot.onmouseup = () => { this.handleDrop(slot, this.TYPE_ITEM_PLAYER_INVENTORY, slot.dataset.slot); };
+                }
+                for (const slot of this.$refs.slotOther) {
+                    slot.onmouseup = () => { this.handleDrop(slot, this.TYPE_ITEM_OPEN_INVENTORY, slot.dataset.slot); };
                 }
 
-                var self = this
-
                 // (2) move the ball on mousemove
-                document.addEventListener('mousemove', onMouseMove);
-
-                // (3) drop the ball, remove unneeded handlers
-                item.onmouseup = function() {
-                    document.removeEventListener('mousemove', onMouseMove);
-                    item.onmouseup = null;
-                    item.remove();
-                    self.isDragging = false;
-                };
+                document.addEventListener('mousemove', (event) => {
+                    this.onMouseMove(event, this.draggedItem)
+                });
             }
+        },
+        handleDrop: function (el, inventory, slot) {
+            if (this.isDragging) {
+                console.log(slot, inventory, el);
+                document.removeEventListener('mousemove', (event) => {
+                    this.onMouseMove(event, this.draggedItem)
+                });
+                
+                for (const slot of this.$refs.slotPlayer) {
+                    slot.onmouseup = null;
+                }
+                for (const slot of this.$refs.slotOther) {
+                    slot.onmouseup = null;
+                }
+
+                this.draggedItem.remove();
+                this.isDragging = false;
+            }
+        },
+
+        csllog(info) {
+            console.log(info);
         },
 
         base: function () {
@@ -272,36 +297,6 @@ export default {
             if (requiredItemOpen) {
                 $(".requiredItem-container").hide();
                 requiredItemOpen = false;
-            }
-
-            if (data.other != null) {
-                var name = data.other.name.toString();
-                if (
-                    name != null &&
-                    (name.split("-")[0] == "itemshop" || name == "crafting")
-                ) {
-                    $("#other-inv-label").html(data.other.label);
-                } else {
-                    $("#other-inv-label").html(data.other.label);
-                    $("#other-inv-weight").html(
-                        "⚖️: " +
-                        (totalWeightOther / 1000).toFixed(2) +
-                        " / " +
-                        (data.other.maxweight / 1000).toFixed(2)
-                    );
-                }
-                otherMaxWeight = data.other.maxweight;
-                otherLabel = data.other.label;
-            } else {
-                $("#other-inv-label").html(Inventory.droplabel);
-                $("#other-inv-weight").html(
-                    "⚖️: " +
-                    (totalWeightOther / 1000).toFixed(2) +
-                    " / " +
-                    (Inventory.dropmaxweight / 1000).toFixed(2)
-                );
-                otherMaxWeight = Inventory.dropmaxweight;
-                otherLabel = Inventory.droplabel;
             }
 
             $.each(data.maxammo, function(index, ammotype) {
