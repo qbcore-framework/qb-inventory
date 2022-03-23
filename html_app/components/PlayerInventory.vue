@@ -319,6 +319,7 @@ export default {
 
             var newItemIndex = this.items.indexOf(newItemSlot);
 
+            // If it's an empty slot
             if (!newItemSlot) {
                 item.amount -= amount;
 
@@ -330,12 +331,21 @@ export default {
                 item.slot = slot;
 
                 this.items.push(item);
+            // If the new slot is the same and is not unique
             } else if (oldItemSlot.name == newItemSlot.name && !oldItemSlot.unique && !newItemSlot.unique) {
                 item.amount -= amount;
                 this.items[newItemIndex].amount += amount;
             } else {
-                this.items[indexItem] = oldItemSlot;
-                this.items[newItemIndex] = newItemSlot;
+                var old_slot = this.items[indexItem].slot;
+                var old_inventory = this.items[indexItem].inventory;
+                var old_inventoryType = this.items[indexItem].inventoryType;
+
+                this.items[indexItem].slot = this.items[newItemIndex].slot
+                this.items[indexItem].inventory = this.items[newItemIndex].inventory
+                this.items[indexItem].inventoryType = this.items[newItemIndex].inventoryType
+                this.items[newItemIndex].inventory = old_inventory
+                this.items[newItemIndex].inventoryType = old_inventoryType
+                this.items[newItemIndex].slot = old_slot
             }
 
             // Remove source item if not amount
@@ -343,16 +353,14 @@ export default {
                 this.items.splice(indexItem, 1);
             }
 
-            if (!_.isEqual(backupItem, item)) {
-                axios.post("https://qb-inventory/PlayDropSound", {}, AXIOS_CONFIG)
-                axios.post("https://qb-inventory/SetInventoryData", {
-                    fromInventory: (backupItem.inventory == this.TYPE_ITEM_PLAYER_INVENTORY ? this.playerInventory.name : this.openedInventory.name),
-                    toInventory: inventoryName,
-                    fromSlot: backupItem.slot,
-                    toSlot: slot,
-                    fromAmount: amount,
-                }, AXIOS_CONFIG)
-            }
+            axios.post("https://qb-inventory/PlayDropSound", {}, AXIOS_CONFIG)
+            axios.post("https://qb-inventory/SetInventoryData", {
+                fromInventory: (backupItem.inventory == this.TYPE_ITEM_PLAYER_INVENTORY ? this.playerInventory.name : this.openedInventory.name),
+                toInventory: inventoryName,
+                fromSlot: backupItem.slot,
+                toSlot: slot,
+                fromAmount: amount,
+            }, AXIOS_CONFIG)
         }
     }
 }
