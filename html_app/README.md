@@ -11,14 +11,17 @@ So I decided to re-build the JavaScript with Vue.JS, but keeping the whole HTML/
 The folder `html_app` will be build under the name `html` (specified in `webpack.config.js` or `index.js`).
 
 __Worktree__:
- - `ammo_images/`       Contains every ammos images (*undex jpg or png extenstion*)
- - `attachment_images/` Contains every attachments images (*undex jpg or png extenstion*)
- - `images/`            Contains every others images (*undex jpg or png extenstion*)
- - `components/`        Contains every VueJS 3 components (*under .vue*)
- - index.html           Default Structure of the page and import default fonts and icons
- - index.css            Global stylesheet of the project
- - index.js             Instanciate the VueJS3 App. 
- - App.vue              Manage the whole Vue App (refer to `components/` folder)
+ - `ammo_images/`           Contains every ammos images (*undex jpg or png extenstion*)
+ - `attachment_images/`     Contains every attachments images (*undex jpg or png extenstion*)
+ - `images/`                Contains every others images (*undex jpg or png extenstion*)
+ - `components/`            Contains every VueJS 3 components (*under .vue*)
+    - `ItemBox.vue`         Contains the ItemBox component (display information if the item is used, removed or added)
+    - `PlayerHotbar.vue`    Describe the PlayerHotbar component (display the player's hotbar)
+    - `PlayerInventory.vue` Describe the PlayerInventory component (display the player inventory with actions around items)
+ - `index.html`             Default Structure of the page and import default fonts and icons
+ - `index.css`              Global stylesheet of the project
+ - `index.js`               Instanciate the VueJS3 App. And contains every global functions (IsWeaponBlocked, getWeaponInfo)
+ - `App.vue`                Manage the whole Vue App (refer to `components/` folder)
 
 ### Installation process
 
