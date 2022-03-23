@@ -277,6 +277,8 @@ export default {
             var newItemSlot = this.getInventoryItemAtSlot(inventory, slot);
             var backupItem = {...oldItemSlot}
 
+            var backupItems = _.cloneDeep(this.items);
+
             var inventoryName = inventory;
             if (inventory != this.TYPE_ITEM_PLAYER_INVENTORY) {
                 var inventoryName = this.openedInventory.name;
@@ -355,6 +357,13 @@ export default {
             // Remove source item if not amount
             if (this.items[indexItem].amount <= 0) {
                 this.items.splice(indexItem, 1);
+            }
+
+            if (this.totalWeight > this.playerInventory.maxweight || this.totalWeightOther > this.openedInventory.maxweight) {
+                /** @todo Send an error warning */
+                Object.assign(this.items, backupItems);
+                console.log(this.items);
+                return
             }
 
             axios.post("https://qb-inventory/PlayDropSound", {}, AXIOS_CONFIG)
