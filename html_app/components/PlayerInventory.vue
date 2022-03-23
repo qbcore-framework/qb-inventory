@@ -197,20 +197,6 @@ export default {
                 }
             })
         }
-
-        // var self = this
-        // this.$nextTick(function () {
-        //     $(self.$el).find(".item-slot.draggable").draggable({
-        //         helper: "clone",
-        //         appendTo: "body",
-        //         scroll: true,
-        //         revertDuration: 0,
-        //         revert: "invalid",
-        //         cancel: ".item-nodrag",
-        //         start: function(event, ui) {
-        //         }
-        //     });
-        // })
     },
     computed: {
         playerItemInventory() {

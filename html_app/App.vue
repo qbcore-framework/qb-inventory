@@ -21,9 +21,9 @@
 </style>
 
 <script>
-import PlayerInventory from './PlayerInventory.vue';
-import PlayerHotbar from './PlayerHotbar.vue';
-import ItemBox from './ItemBox.vue';
+import PlayerInventory from './components/PlayerInventory.vue';
+import PlayerHotbar from './components/PlayerHotbar.vue';
+import ItemBox from './components/ItemBox.vue';
 
 const axios = require('axios').default;
 
