@@ -53,4 +53,21 @@ app.config.globalProperties.getWeaponInfo = function(item) {
     return weaponInfo
 }
 
+app.config.globalProperties.convertItemToQB = function(item, slot) {
+    return {
+        name: item.name,
+        label: item.label,
+        amount: item.amount,
+        type: item.type,
+        description: item.description,
+        image: item.image,
+        weight: item.weight,
+        price: item.price,
+        info: item.info,
+        useable: item.useable,
+        unique: item.unique,
+        slot: parseInt(slot ? slot : item.slot),
+    }
+}
+
 app.mount('#app')

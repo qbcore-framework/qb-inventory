@@ -19,8 +19,8 @@
             <div class="inv-container" ref="global">
                 <div class="ply-inv-container">
                     <div class="player-inventory" data-inventory="player">
-                        <item-slot v-for="slot in openedInventory.slots" :key="slot"
-                            :inventory="playerInventory"
+                        <item-slot v-for="slot in playerInventory.slots" :key="slot"
+                            :inventory="playerInventory.type"
                             :slot="slot"
                             :item="getInventoryItemAtSlot(TYPE_ITEM_PLAYER_INVENTORY, slot)"
                             @mousedown.left.prevent="startDrag($event, TYPE_ITEM_PLAYER_INVENTORY, slot)"
@@ -38,7 +38,7 @@
                 <div class="oth-inv-container">
                     <div class="other-inventory" :data-inventory="openedInventory.name">
                         <item-slot v-for="slot in openedInventory.slots" :key="slot"
-                            :inventory="openedInventory"
+                            :inventory="openedInventory.type"
                             :slot="slot"
                             :style="[openedInventory.type == 'drop' ? {backgroundColor: 'rgba(0, 0, 0, 0.3)'} : '' ]"
                             :item="getInventoryItemAtSlot(TYPE_ITEM_OPEN_INVENTORY, slot)"
@@ -125,7 +125,7 @@ export default {
                 this.openedInventory.type = this.inventories.other.name;
             }
             this.openedInventory.slots = this.inventories.other.slots;
-            this.openedInventory.type = this.openedInventory.type.split("_")[0];
+            this.openedInventory.type = this.openedInventory.type.split("-")[0];
             this.openedInventory.label = this.inventories.other.label;
             this.openedInventory.maxweight = this.inventories.other.maxweight;
         }
@@ -257,6 +257,12 @@ export default {
                         slot.$el.onmouseup = (event) => this.handleDrop(event, slot, this.TYPE_ITEM_OPEN_INVENTORY, slot.slot, item);
                     }
                 }
+
+                // Drop on usage buttons
+                this.$refs.useAction.onmouseup = (event) => this.handleDrop(event, -1, "use", -1, item);
+                this.$refs.giveAction.onmouseup = (event) => this.handleDrop(event, -1, "give", -1, item);
+
+                // Disable the drop nowhere
                 this.$refs.global.onmouseup = (event) => this.handleDrop(event, -1, "none", -1);
             }
         },
@@ -271,8 +277,6 @@ export default {
          * @param {Object} oldItem The item before it get drop
          */
         handleDrop: function (event, el, inventory, slot, oldItem) {
-            console.log(el, inventory, slot, oldItem);
-
             if (this.isDragging && event.button == 0) {
                 if (inventory != "none") {
                     this.itemChangeSlot(el, inventory, slot, oldItem);
@@ -281,8 +285,11 @@ export default {
                 document.removeEventListener('mousemove', (event) => {
                     this.onMouseMove(event, this.draggedItem)
                 });
-                this.$refs.global.onmouseup = null;
                 
+                // Drop on usage buttons
+                this.$refs.useAction.onmouseup = null;
+                this.$refs.giveAction.onmouseup = null;
+                this.$refs.global.onmouseup = null;
                 for (const slot of this.$refs.slotPlayer) {
                     slot.$el.onmouseup = null;
                 }
@@ -308,18 +315,29 @@ export default {
             // This is where you should handle the this.draggedItem on the inventory/slot position.
             // Remember that you shouldn't use DOM to avoid hack/data leaks
             // You can use this line of code to see in nui_devTools console the variables
-            // console.log(slot, inventory, el, oldItem);
+            console.log(el, inventory, slot, oldItem);
             var backupItem = {...oldItem}
             var inventoryName = inventory;
 
-            console.log(el, inventory, slot, oldItem);
+            if (["use", "give"].includes(inventory)) {
+                axios.post("https://qb-inventory/UseItem", {
+                    inventory: oldItem.inventory,
+                    item: this.convertItemToQB(oldItem),
+                }, AXIOS_CONFIG)
+                this.$bus.trigger('close')
+                return;
+            }
 
             if (inventory != this.TYPE_ITEM_PLAYER_INVENTORY) {
                 var inventoryName = this.openedInventory.name;
-            } else {
             }
 
             if (this.amount == 0) {
+                if (this.openedInventory.type == "itemshop" || this.openedInventory.type == "crafting") {
+                    /** @todo Add an error */
+                    this.amount = 1;
+                    return;
+                }
                 var amount = oldItem.amount;
             } else if (this.amount < 0) {
                 /** @todo Add an error "can't set a negative amount" */
