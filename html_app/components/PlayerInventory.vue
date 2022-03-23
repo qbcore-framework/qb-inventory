@@ -23,7 +23,7 @@
                             :data-slot="slot" :key="slot"
                             :item="item = getInventoryItemAtSlot(TYPE_ITEM_PLAYER_INVENTORY, slot)"
                             :class="{ 'item-slot': true, 'draggable': !(!item) }"
-                            @mousedown.prevent="startDrag($event, TYPE_ITEM_PLAYER_INVENTORY, slot)"
+                            @mousedown.left.prevent="startDrag($event, TYPE_ITEM_PLAYER_INVENTORY, slot)"
                             ref="slotPlayer">
                             <div class="item-slot-key" v-if="slot < 6 || slot == 41">
                                 <p>{{ slot % 7 }}</p>
@@ -53,7 +53,7 @@
                 </div>
                 <div class="inv-options">
                     <div class="inv-options-list">
-                        <input type="number" id="item-amount" v-model="amount" class="inv-option-item" min="0" oninput="validity.valid||(value='');"/>
+                        <input type="number" id="item-amount" v-model="amount" class="inv-option-item" min="0"/>
                         <div class="inv-option-item" id="item-use"><p>USE</p></div>
                         <div class="inv-option-item" id="item-give"><p>GIVE</p></div>
                         <div class="inv-option-item" id="inv-close"><p>CLOSE</p></div>
@@ -66,7 +66,7 @@
                             :data-slot="slot" :key="slot"
                             :style="[openedInventory.type == 'drop' ? {backgroundColor: 'rgba(0, 0, 0, 0.3)'} : '' ]"
                             :item="itemOther = getInventoryItemAtSlot(TYPE_ITEM_OPEN_INVENTORY, slot)"
-                            @mousedown.prevent="startDrag($event, TYPE_ITEM_OPEN_INVENTORY, slot)"
+                            @mousedown.left.prevent="startDrag($event, TYPE_ITEM_OPEN_INVENTORY, slot)"
                             ref="slotOther">
                             <div class="item-slot-img">
                                 <img :src="itemOther.image" :alt="itemOther.name" v-if="itemOther">
@@ -112,6 +112,11 @@
 </template>
 
 <script>
+import axios from 'axios';
+
+const INVENTORY_TYPE_DISABLE_DROP = ['itemshop', 'crafting']
+const AXIOS_CONFIG = { headers: {'Content-Type': 'application/json'} };
+
 /**
  * Component to manage every inventory (or "tab") part
  * 
@@ -119,8 +124,6 @@
  * @todo Add Item in component (it's actually a mess)
  * @todo Add mousedown on actions buttons
 */
-const INVENTORY_TYPE_DISABLE_DROP = ['itemshop', 'crafting']
-
 export default {
     props: ['inventories'],
     data() {
@@ -159,7 +162,7 @@ export default {
         }
 
         if (this.inventories.inventory !== null) {
-            this.inventories.inventory.forEach((item) => {
+            for (const [slot, item] of Object.entries(this.inventories.inventory)) {
                 if (item != null) {
                     /** @todo Add the common function to share with others component */
                     this.items.push({
@@ -168,6 +171,7 @@ export default {
                         label: item.label,
                         type: item.name.split("_")[0],
                         inventory: this.TYPE_ITEM_PLAYER_INVENTORY,
+                        inventoryType: this.TYPE_ITEM_PLAYER_INVENTORY,
                         amount: item.amount,
                         weight: item.weight,
                         slot: item.slot,
@@ -176,29 +180,33 @@ export default {
                         weaponInfo: this.getWeaponInfo(item)
                     })
                 }
-            });
+            }
         }
 
         if (this.inventories.other != null && this.inventories.other != "" && this.inventories.other.inventory != null) {
-            this.inventories.other.inventory.forEach((item) => {
+
+            for (const [slot, item] of Object.entries(this.inventories.other.inventory)) {
                 if (item != null) {
+                    /** @todo Add the common function to share with others component */
                     this.items.push({
                         id: this.id++,
                         name: item.name,
                         label: item.label,
                         type: item.name.split("_")[0],
                         inventory: this.TYPE_ITEM_OPEN_INVENTORY,
+                        inventoryType: this.openedInventory.name,
                         amount: item.amount,
                         weight: item.weight,
-                        price: item.price,
                         slot: item.slot,
                         image: "images/" + item.image,
                         isWeapon: item.name.split("_")[0] == "weapon" && !this.IsWeaponBlocked(item.name),
                         weaponInfo: this.getWeaponInfo(item)
                     })
                 }
-            })
+            }
         }
+
+        this.setDefaultAmountValue();
     },
     computed: {
         playerItemInventory() {
@@ -231,6 +239,13 @@ export default {
 
             return selectedItem[0];
         },
+        setDefaultAmountValue: function() {
+            if (this.openedInventory.type == "itemshop") {
+                this.amount = 1;
+                return
+            }
+            this.amount = 0;
+        },
 
         moveAt: function (item, pageX, pageY) {
             item.style.left = pageX - item.offsetWidth / 2 + 'px';
@@ -240,6 +255,13 @@ export default {
             this.moveAt(item, event.pageX, event.pageY);
         },
 
+        /**
+         * Triggered when an element is left clicked 
+         * 
+         * @param {ClickEvent} event
+         * @param {string} inventory The selected inventory
+         * @param {number} slot The selected slot
+         */
         startDrag: function (event, inventory, slot) {
             var item = this.getInventoryItemAtSlot(inventory, slot);
             if (!this.isDragging && item) {
@@ -260,15 +282,15 @@ export default {
                  * @todo Disable items which shouldn't be dropped items
                  */
                 for (const slot of this.$refs.slotPlayer) {
-                    slot.onmouseup = () => { this.handleDrop(slot, this.TYPE_ITEM_PLAYER_INVENTORY, slot.dataset.slot); };
+                    slot.onmouseup = (event) => { this.handleDrop(event, slot, this.TYPE_ITEM_PLAYER_INVENTORY, slot.dataset.slot, item); };
                 }
                 if (!this.isDisableDropInventory(this.openedInventory.type)) {
                     for (const slot of this.$refs.slotOther) {
-                        slot.onmouseup = () => { this.handleDrop(slot, this.TYPE_ITEM_OPEN_INVENTORY, slot.dataset.slot); };
+                        slot.onmouseup = (event) => { this.handleDrop(event, slot, this.TYPE_ITEM_OPEN_INVENTORY, slot.dataset.slot, item); };
                     }
                 }
-                this.$refs.global.onmouseup = () => {
-                    this.handleDrop(-1, "none", -1);
+                this.$refs.global.onmouseup = (event) => {
+                    this.handleDrop(event, -1, "none", -1);
                 }
 
                 // (2) move the ball on mousemove
@@ -277,13 +299,20 @@ export default {
                 });
             }
         },
-        handleDrop: function (el, inventory, slot) {
-            if (this.isDragging) {
+
+        /**
+         * handle drop is called when the user drop an item on an allowed target
+         * 
+         * @param {ClickEvent} event The click dom event
+         * @param {Element} el The target DOM Element
+         * @param {string} inventory The Inventory Type (cf. constants)
+         * @param {number} slot The target inventory slot ID
+         * @param {Object} oldItem The item before it get drop
+         */
+        handleDrop: function (event, el, inventory, slot, oldItem) {
+            if (this.isDragging && event.button == 0) {
                 if (inventory != "none") {
-                    // When the inventory and slot exists
-                    // This is where you should handle the this.draggedItem on the inventory/slot position.
-                    // Remember that you shouldn't use DOM to avoid hack/data leaks 
-                    console.log(slot, inventory, el);
+                    this.itemChangeSlot(el, inventory, slot, oldItem);
                 }
 
                 document.removeEventListener('mousemove', (event) => {
@@ -303,38 +332,55 @@ export default {
             }
         },
 
-        base: function () {
-            // ??? I dont't understand :[
-            if (requiredItemOpen) {
-                $(".requiredItem-container").hide();
-                requiredItemOpen = false;
+        /**
+         * is triggered when the dropped item is in a checked target.
+         * 
+         * @param {Element} el The target DOM Element
+         * @param {string} inventory The Inventory Type (cf. constants)
+         * @param {number} slot The target inventory slot ID
+         * @param {Object} oldItem The item before it get drop
+         */
+        itemChangeSlot: function (el, inventory, slot, oldItem) {
+            // When the inventory and slot exists
+            // This is where you should handle the this.draggedItem on the inventory/slot position.
+            // Remember that you shouldn't use DOM to avoid hack/data leaks
+            // You can use this line of code to see in nui_devTools console the variables
+            // console.log(slot, inventory, el, oldItem);
+            var slotBackup = oldItem.slot;
+
+            if (this.amount == 0) {
+                var amount = oldItem.amount;
+            } else if (this.amount < 0) {
+                /** @todo Add an error "can't set a negative amount" */
+                this.amount = setDefaultAmountValue();
+                return;
+            } else if (this.amount > oldItem.amount) {
+                /** @todo Add an error "can't set a superior amount" */
+                this.amount = oldItem.amount;
+                return;
+            } else {
+                var amount = this.amount;
             }
 
-            $.each(data.maxammo, function(index, ammotype) {
-                $("#" + index + "_ammo")
-                    .find(".ammo-box-amount")
-                    .css({ height: "0%" });
-            });
+            var item = this.items[this.items.indexOf(oldItem)]
+            var newItem = this.getInventoryItemAtSlot(inventory, slot);
 
-            if (data.Ammo !== null) {
-                $.each(data.Ammo, function(i, amount) {
-                    var Handler = i.split("_");
-                    var Type = Handler[1].toLowerCase();
-                    if (amount > data.maxammo[Type]) {
-                        amount = data.maxammo[Type];
-                    }
-                    var Percentage = (amount / data.maxammo[Type]) * 100;
-
-                    $("#" + Type + "_ammo")
-                        .find(".ammo-box-amount")
-                        .css({ height: Percentage + "%" });
-                    $("#" + Type + "_ammo")
-                        .find("span")
-                        .html(amount + "x");
-                });
+            // If the item is changed of place in the inventory
+            if (oldItem.inventory == inventory) {
+                // Move the item in the new slot
+                if (oldItem.amount == amount && !newItem) {
+                    item.slot = slot;
+                }
             }
 
-            handleDragDrop();
+            axios.post("https://qb-inventory/PlayDropSound", {}, AXIOS_CONFIG)
+            axios.post("https://qb-inventory/SetInventoryData", {
+                fromInventory: oldItem.inventoryType,
+                toInventory: item.inventoryType,
+                fromSlot: slotBackup,
+                toSlot: slot,
+                fromAmount: amount,
+            }, AXIOS_CONFIG)
         }
     }
 }
