@@ -664,12 +664,12 @@ end)
 
 RegisterNUICallback('RobMoney', function(data, cb)
     TriggerServerEvent("police:server:RobPlayer", data.TargetId)
-    cb()
+    cb({})
 end)
 
 RegisterNUICallback('Notify', function(data, cb)
     QBCore.Functions.Notify(data.message, data.type)
-    cb()
+    cb({})
 end)
 
 RegisterNUICallback('GetWeaponData', function(data, cb)
@@ -726,7 +726,7 @@ RegisterNUICallback("CloseInventory", function(_, cb)
         SetNuiFocus(false, false)
         inInventory = false
         ClearPedTasks(PlayerPedId())
-        cb()
+        cb({})
         return
     end
     if CurrentVehicle ~= nil then
@@ -745,12 +745,12 @@ RegisterNUICallback("CloseInventory", function(_, cb)
     end
     SetNuiFocus(false, false)
     inInventory = false
-    cb()
+    cb({})
 end)
 
 RegisterNUICallback("UseItem", function(data, cb)
     TriggerServerEvent("inventory:server:UseItem", data.inventory, data.item)
-    cb()
+    cb({})
 end)
 
 RegisterNUICallback("combineItem", function(data, cb)
@@ -783,22 +783,22 @@ RegisterNUICallback('combineWithAnim', function(data, cb)
         QBCore.Functions.Notify("Failed!", "error")
     end)
 
-    cb()
+    cb({})
 end)
 
 RegisterNUICallback("SetInventoryData", function(data, cb)
     TriggerServerEvent("inventory:server:SetInventoryData", data.fromInventory, data.toInventory, data.fromSlot, data.toSlot, data.fromAmount, data.toAmount)
-    cb()
+    cb({})
 end)
 
 RegisterNUICallback("PlayDropSound", function(_, cb)
     PlaySound(-1, "CLICK_BACK", "WEB_NAVIGATION_SOUNDS_PHONE", 0, 0, 1)
-    cb()
+    cb({})
 end)
 
 RegisterNUICallback("PlayDropFail", function(_, cb)
     PlaySound(-1, "Place_Prop_Fail", "DLC_Dmod_Prop_Editor_Sounds", 0, 0, 1)
-    cb()
+    cb({})
 end)
 
 RegisterNUICallback("GiveItem", function(data, cb)
@@ -814,7 +814,7 @@ RegisterNUICallback("GiveItem", function(data, cb)
     else
         QBCore.Functions.Notify("No one nearby!", "error")
     end
-    cb()
+    cb({})
 end)
 
 -- Threads
