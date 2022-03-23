@@ -70,9 +70,9 @@
                     <br /><p>{{ item.description }}</p>
                 </div>
                 <div class="item-info-description" v-else-if="item.name == 'stickynote'">
-                    <p>{{ this.item.label }}</p>
+                    <p>{{ item.label }}</p>
                 </div>
-                <div class="item-info-description" v-else-if="item.info.costs != undefined && item.info.costs != null">
+                <div class="item-info-description" v-else-if="item.info && item.info.costs">
                     <p>{{ item.info.costs }}</p>
                     <p>{{ item.info.label }}</p>
                 </div>
