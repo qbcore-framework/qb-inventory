@@ -138,6 +138,11 @@ body {
 
 .inv-option-item {
 	margin-top: 10%;
+    cursor: default;
+}
+
+#inv-close {
+    cursor: pointer;
 }
 
 .btn-inv {

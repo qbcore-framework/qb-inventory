@@ -6,6 +6,10 @@ const app = createApp(App)
 
 app.config.globalProperties.$bus = $bus;
 
+app.config.globalProperties.TYPE_ITEM_PLAYER_INVENTORY = "player";
+app.config.globalProperties.INVENTORY_TYPE_DISABLE_DROP = ['itemshop', 'crafting'];
+app.config.globalProperties.TYPE_ITEM_OPEN_INVENTORY = "other";
+
 app.config.globalProperties.IsWeaponBlocked = function(WeaponName) {
     var DurabilityBlockedWeapons = [
         "weapon_unarmed",
@@ -67,6 +71,27 @@ app.config.globalProperties.convertItemToQB = function(item, slot) {
         useable: item.useable,
         unique: item.unique,
         slot: parseInt(slot ? slot : item.slot),
+    }
+}
+
+app.config.globalProperties.convertItemFromQB = function(id, item, inventory, inventoryType) {
+    return {
+        id: id,
+        name: item.name,
+        label: item.label,
+        type: item.name.split("_")[0],
+        inventory: inventory,
+        inventoryType: inventoryType,
+        amount: item.amount,
+        weight: item.weight,
+        slot: item.slot,
+        image: "images/" + item.image,
+        price: item.price,
+        isWeapon: item.name.split("_")[0] == "weapon" && !this.IsWeaponBlocked(item.name),
+        weaponInfo: this.getWeaponInfo(item),
+        description: item.description,
+        useable: item.useable,
+        unique: item.unique,
     }
 }
 

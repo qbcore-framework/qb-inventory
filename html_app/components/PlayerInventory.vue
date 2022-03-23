@@ -20,16 +20,16 @@
                 <div class="ply-inv-container">
                     <div class="player-inventory" data-inventory="player">
                         <item-slot v-for="slot in playerInventory.slots" :key="slot"
-                            :inventory="playerInventory.type"
-                            :slot="slot"
+                            :inventory="playerInventory.type" :slot="slot"
                             :item="getInventoryItemAtSlot(TYPE_ITEM_PLAYER_INVENTORY, slot)"
                             @mousedown.left.prevent="startDrag($event, TYPE_ITEM_PLAYER_INVENTORY, slot)"
-                            ref="slotPlayer"></item-slot>
+                            ref="slotPlayer">
+                        </item-slot>
                     </div>
                 </div>
                 <div class="inv-options">
                     <div class="inv-options-list">
-                        <input type="number" id="item-amount" v-model="amount" class="inv-option-item" min="0"/>
+                        <input type="number" id="item-amount" v-model="amount" class="inv-option-item" min="0" @input="event => amount = parseInt(event.target.value)"/>
                         <div class="inv-option-item" ref="useAction"><p>USE</p></div>
                         <div class="inv-option-item" ref="giveAction"><p>GIVE</p></div>
                         <div class="inv-option-item" @click.prevent="$bus.trigger('close')" id="inv-close"><p>CLOSE</p></div>
@@ -38,12 +38,12 @@
                 <div class="oth-inv-container">
                     <div class="other-inventory" :data-inventory="openedInventory.name">
                         <item-slot v-for="slot in openedInventory.slots" :key="slot"
-                            :inventory="openedInventory.type"
-                            :slot="slot"
+                            :inventory="openedInventory.type" :slot="slot"
                             :style="[openedInventory.type == 'drop' ? {backgroundColor: 'rgba(0, 0, 0, 0.3)'} : '' ]"
                             :item="getInventoryItemAtSlot(TYPE_ITEM_OPEN_INVENTORY, slot)"
                             @mousedown.left.prevent="startDrag($event, TYPE_ITEM_OPEN_INVENTORY, slot)"
-                            ref="slotOther"></item-slot>
+                            ref="slotOther">
+                        </item-slot>
                     </div>
                 </div>
             </div>
@@ -63,28 +63,17 @@
     </div>
 </template>
 
-<style scoped>
-.inv-option-item {
-    cursor: default;
-}
-#inv-close {
-    cursor: pointer;
-}
-</style>
-
 <script>
 import axios from 'axios';
 import ItemSlot from './ItemSlot.vue';
 var _ = require('lodash');
 
-const INVENTORY_TYPE_DISABLE_DROP = ['itemshop', 'crafting']
 const AXIOS_CONFIG = { headers: {'Content-Type': 'application/json'} };
 
 /**
  * Component to manage every inventory (or "tab") part
  * 
  * @todo Add Language support on HTML side
- * @todo Add mousedown on actions buttons
 */
 export default {
   components: { ItemSlot },
@@ -98,6 +87,7 @@ export default {
             playerInventory: {
                 slots: 0,
                 type: "player",
+                name: "player",
                 maxweight: 0,
             },
             openedInventory: {
@@ -108,9 +98,6 @@ export default {
                 maxweight: 100000,
             },
             amount: 0,
-            TYPE_ITEM_PLAYER_INVENTORY: "player",
-            TYPE_ITEM_OPEN_INVENTORY: "other",
-            INVENTORY_TYPE_DISABLE_DROP: INVENTORY_TYPE_DISABLE_DROP
         }
     },
     mounted () {
@@ -133,44 +120,15 @@ export default {
         if (this.inventories.inventory !== null) {
             for (const [slot, item] of Object.entries(this.inventories.inventory)) {
                 if (item != null) {
-                    /** @todo Add the common function to share with others component */
-                    this.items.push({
-                        id: this.id++,
-                        name: item.name,
-                        label: item.label,
-                        type: item.name.split("_")[0],
-                        inventory: this.TYPE_ITEM_PLAYER_INVENTORY,
-                        inventoryType: this.TYPE_ITEM_PLAYER_INVENTORY,
-                        amount: item.amount,
-                        weight: item.weight,
-                        slot: item.slot,
-                        image: "images/" + item.image,
-                        isWeapon: item.name.split("_")[0] == "weapon" && !this.IsWeaponBlocked(item.name),
-                        weaponInfo: this.getWeaponInfo(item)
-                    })
+                    this.items.push(this.convertItemFromQB(this.id++, item, this.TYPE_ITEM_PLAYER_INVENTORY, this.TYPE_ITEM_PLAYER_INVENTORY));
                 }
             }
         }
 
         if (this.inventories.other != null && this.inventories.other != "" && this.inventories.other.inventory != null) {
-
             for (const [slot, item] of Object.entries(this.inventories.other.inventory)) {
                 if (item != null) {
-                    /** @todo Add the common function to share with others component */
-                    this.items.push({
-                        id: this.id++,
-                        name: item.name,
-                        label: item.label,
-                        type: item.name.split("_")[0],
-                        inventory: this.TYPE_ITEM_OPEN_INVENTORY,
-                        inventoryType: this.openedInventory.type,
-                        amount: item.amount,
-                        weight: item.weight,
-                        slot: item.slot,
-                        image: "images/" + item.image,
-                        isWeapon: item.name.split("_")[0] == "weapon" && !this.IsWeaponBlocked(item.name),
-                        weaponInfo: this.getWeaponInfo(item)
-                    })
+                    this.items.push(this.convertItemFromQB(this.id++, item, this.TYPE_ITEM_OPEN_INVENTORY, this.openedInventory.type));
                 }
             }
         }
@@ -198,7 +156,7 @@ export default {
     },
     methods: {
         isDisableDropInventory(inventory) {
-            return INVENTORY_TYPE_DISABLE_DROP.includes(inventory);
+            return this.INVENTORY_TYPE_DISABLE_DROP.includes(inventory);
         },
         getInventoryItemAtSlot: function(inventory, slot) {
             var selectedItem = this.items.filter((item) => item.inventory == inventory && item.slot == slot);
@@ -310,26 +268,31 @@ export default {
          * @param {number} slot The target inventory slot ID
          * @param {Object} oldItem The item before it get drop
          */
-        itemChangeSlot: function (el, inventory, slot, oldItem) {
+        itemChangeSlot: function (el, inventory, slot, oldItemSlot) {
             // When the inventory and slot exists
             // This is where you should handle the this.draggedItem on the inventory/slot position.
             // Remember that you shouldn't use DOM to avoid hack/data leaks
             // You can use this line of code to see in nui_devTools console the variables
-            console.log(el, inventory, slot, oldItem);
-            var backupItem = {...oldItem}
+            // console.log(el, inventory, slot, oldItemSlot);
+            var newItemSlot = this.getInventoryItemAtSlot(inventory, slot);
+            var backupItem = {...oldItemSlot}
+
             var inventoryName = inventory;
+            if (inventory != this.TYPE_ITEM_PLAYER_INVENTORY) {
+                var inventoryName = this.openedInventory.name;
+            }
+
+            if (backupItem.inventory == inventory && backupItem.slot == slot) {
+                return false;
+            }
 
             if (["use", "give"].includes(inventory)) {
                 axios.post("https://qb-inventory/UseItem", {
-                    inventory: oldItem.inventory,
-                    item: this.convertItemToQB(oldItem),
+                    inventory: oldItemSlot.inventory,
+                    item: this.convertItemToQB(oldItemSlot),
                 }, AXIOS_CONFIG)
                 this.$bus.trigger('close')
                 return;
-            }
-
-            if (inventory != this.TYPE_ITEM_PLAYER_INVENTORY) {
-                var inventoryName = this.openedInventory.name;
             }
 
             if (this.amount == 0) {
@@ -338,42 +301,53 @@ export default {
                     this.amount = 1;
                     return;
                 }
-                var amount = oldItem.amount;
+                var amount = oldItemSlot.amount;
             } else if (this.amount < 0) {
                 /** @todo Add an error "can't set a negative amount" */
                 this.amount = setDefaultAmountValue();
                 return;
-            } else if (this.amount > oldItem.amount) {
+            } else if (this.amount > oldItemSlot.amount) {
                 /** @todo Add an error "can't set a superior amount" */
-                this.amount = oldItem.amount;
+                this.amount = oldItemSlot.amount;
                 return;
             } else {
                 var amount = this.amount;
             }
 
-            var item = this.items[this.items.indexOf(oldItem)]
-            var newItem = this.getInventoryItemAtSlot(inventory, slot);
+            var indexItem = this.items.indexOf(oldItemSlot);
+            var item = this.items[indexItem];
 
-            // If the item is changed of place in the same inventory
-            if (oldItem.inventory == inventory) {
-                // Move the item in the new slot
-                if (oldItem.amount == amount && !newItem) {
-                    item.slot = slot;
-                }
-            // Move item of inventory
+            var newItemIndex = this.items.indexOf(newItemSlot);
+
+            if (!newItemSlot) {
+                item.amount -= amount;
+
+                item = {...item};
+                item.id = this.id++;
+                item.inventory = inventory;
+                item.inventoryType = inventoryName;
+                item.amount = amount;
+                item.slot = slot;
+
+                this.items.push(item);
+            } else if (oldItemSlot.name == newItemSlot.name && !oldItemSlot.unique && !newItemSlot.unique) {
+                item.amount -= amount;
+                this.items[newItemIndex].amount += amount;
             } else {
-                if (oldItem.amount == amount && !newItem) {
-                    item.slot = slot;
-                    item.inventory = inventory;
-                    item.inventoryType = inventoryName;
-                }
+                this.items[indexItem] = oldItemSlot;
+                this.items[newItemIndex] = newItemSlot;
+            }
+
+            // Remove source item if not amount
+            if (this.items[indexItem].amount <= 0) {
+                this.items.splice(indexItem, 1);
             }
 
             if (!_.isEqual(backupItem, item)) {
                 axios.post("https://qb-inventory/PlayDropSound", {}, AXIOS_CONFIG)
                 axios.post("https://qb-inventory/SetInventoryData", {
-                    fromInventory: backupItem.inventoryType,
-                    toInventory: item.inventoryType,
+                    fromInventory: (backupItem.inventory == this.TYPE_ITEM_PLAYER_INVENTORY ? this.playerInventory.name : this.openedInventory.name),
+                    toInventory: inventoryName,
                     fromSlot: backupItem.slot,
                     toSlot: slot,
                     fromAmount: amount,
