@@ -122,6 +122,7 @@
 
 <script>
 import axios from 'axios';
+var _ = require('lodash');
 
 const INVENTORY_TYPE_DISABLE_DROP = ['itemshop', 'crafting']
 const AXIOS_CONFIG = { headers: {'Content-Type': 'application/json'} };
@@ -143,10 +144,11 @@ export default {
             draggedItem: null,
             playerInventory: {
                 slots: 0,
+                type: "player",
                 maxweight: 0,
             },
             openedInventory: {
-                name: 0,
+                name: "",
                 slots: 30,
                 label: "Drop",
                 type: "drop",
@@ -163,9 +165,14 @@ export default {
         this.playerInventory.maxweight = this.inventories.maxweight;
         
         if (this.inventories.other != null && this.inventories.other != "") {
-            this.openedInventory.name = this.inventories.other.name;
+            this.openedInventory.name = this.inventories.other.name + "";
+            if (this.inventories.other.label.toLowerCase().split('-')[0] == "dropped") {
+                this.openedInventory.type = this.inventories.other.label.split('-')[1];
+            } else {
+                this.openedInventory.type = this.inventories.other.name;
+            }
             this.openedInventory.slots = this.inventories.other.slots;
-            this.openedInventory.type = this.inventories.other.name.split('-')[0];
+            this.openedInventory.type = this.openedInventory.type.split("_")[0];
             this.openedInventory.label = this.inventories.other.label;
             this.openedInventory.maxweight = this.inventories.other.maxweight;
         }
@@ -203,7 +210,7 @@ export default {
                         label: item.label,
                         type: item.name.split("_")[0],
                         inventory: this.TYPE_ITEM_OPEN_INVENTORY,
-                        inventoryType: this.openedInventory.name,
+                        inventoryType: this.openedInventory.type,
                         amount: item.amount,
                         weight: item.weight,
                         slot: item.slot,
@@ -355,7 +362,13 @@ export default {
             // Remember that you shouldn't use DOM to avoid hack/data leaks
             // You can use this line of code to see in nui_devTools console the variables
             // console.log(slot, inventory, el, oldItem);
-            var slotBackup = oldItem.slot;
+            var backupItem = {...oldItem}
+            var inventoryName = inventory;
+
+            if (inventory != this.TYPE_ITEM_PLAYER_INVENTORY) {
+                var inventoryName = this.openedInventory.name;
+            } else {
+            }
 
             if (this.amount == 0) {
                 var amount = oldItem.amount;
@@ -374,22 +387,31 @@ export default {
             var item = this.items[this.items.indexOf(oldItem)]
             var newItem = this.getInventoryItemAtSlot(inventory, slot);
 
-            // If the item is changed of place in the inventory
+            // If the item is changed of place in the same inventory
             if (oldItem.inventory == inventory) {
                 // Move the item in the new slot
                 if (oldItem.amount == amount && !newItem) {
                     item.slot = slot;
                 }
+            // Move item of inventory
+            } else {
+                if (oldItem.amount == amount && !newItem) {
+                    item.slot = slot;
+                    item.inventory = inventory;
+                    item.inventoryType = inventoryName;
+                }
             }
 
-            axios.post("https://qb-inventory/PlayDropSound", {}, AXIOS_CONFIG)
-            axios.post("https://qb-inventory/SetInventoryData", {
-                fromInventory: oldItem.inventoryType,
-                toInventory: item.inventoryType,
-                fromSlot: slotBackup,
-                toSlot: slot,
-                fromAmount: amount,
-            }, AXIOS_CONFIG)
+            if (!_.isEqual(backupItem, item)) {
+                axios.post("https://qb-inventory/PlayDropSound", {}, AXIOS_CONFIG)
+                axios.post("https://qb-inventory/SetInventoryData", {
+                    fromInventory: backupItem.inventoryType,
+                    toInventory: item.inventoryType,
+                    fromSlot: backupItem.slot,
+                    toSlot: slot,
+                    fromAmount: amount,
+                }, AXIOS_CONFIG)
+            }
         }
     }
 }
