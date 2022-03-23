@@ -52,6 +52,10 @@ export default {
     mounted() {
         window.addEventListener('keydown', this.handleKeyboardInteractions);
         window.addEventListener("message", this.handleFivemMessages);
+
+        this.$bus.on('close', () => {
+            this.close();
+        })
     },
     destroyed() {
         window.removeEventListener('keydown', this.handleKeyboardInteractions);

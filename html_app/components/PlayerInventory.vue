@@ -54,9 +54,9 @@
                 <div class="inv-options">
                     <div class="inv-options-list">
                         <input type="number" id="item-amount" v-model="amount" class="inv-option-item" min="0"/>
-                        <div class="inv-option-item" id="item-use"><p>USE</p></div>
-                        <div class="inv-option-item" id="item-give"><p>GIVE</p></div>
-                        <div class="inv-option-item" id="inv-close"><p>CLOSE</p></div>
+                        <div class="inv-option-item" ref="useAction"><p>USE</p></div>
+                        <div class="inv-option-item" ref="giveAction"><p>GIVE</p></div>
+                        <div class="inv-option-item" @click.prevent="$bus.trigger('close')" id="inv-close"><p>CLOSE</p></div>
                     </div>
                 </div>
                 <div class="oth-inv-container">
@@ -110,6 +110,15 @@
         </div>
     </div>
 </template>
+
+<style scoped>
+.inv-option-item {
+    cursor: default;
+}
+#inv-close {
+    cursor: pointer;
+}
+</style>
 
 <script>
 import axios from 'axios';

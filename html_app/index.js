@@ -1,7 +1,10 @@
 import { createApp } from 'vue'
 import App from './App.vue'
+import $bus from './events.js';
 
 const app = createApp(App)
+
+app.config.globalProperties.$bus = $bus;
 
 app.config.globalProperties.IsWeaponBlocked = function(WeaponName) {
     var DurabilityBlockedWeapons = [

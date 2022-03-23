@@ -726,6 +726,7 @@ RegisterNUICallback("CloseInventory", function(_, cb)
         SetNuiFocus(false, false)
         inInventory = false
         ClearPedTasks(PlayerPedId())
+        cb()
         return
     end
     if CurrentVehicle ~= nil then
