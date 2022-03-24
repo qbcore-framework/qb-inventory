@@ -17,6 +17,11 @@
                 <p>{{ item.weaponInfo.label }}</p>
             </div>
         </div>
+        <div class="item-slot-quality" v-if="item && item.weaponInfo">
+            <div class="item-slot-quality-bar" :style="{width: item.info.uses * 5 + '%', backgroundColor: item.weaponInfo.color}">
+                <p>Remaining {{ item.info.uses }} usages</p>
+            </div>
+        </div>
         <div class="item-slot-label" v-if="item && item.isWeapon">
             <p>{{ item.label }}</p>
         </div>

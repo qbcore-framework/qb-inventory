@@ -38,7 +38,7 @@ app.config.globalProperties.getWeaponInfo = function(item) {
         weaponInfo.color = "rgb(39, 174, 96)";
         if (weaponInfo.quality < 25)
             weaponInfo.color = "rgb(192, 57, 43)";
-        else if (weaponInfo.quality > 25 && weaponInfo.quality < 50)
+        else if (weaponInfo.quality >= 25 && weaponInfo.quality < 50)
             weaponInfo.color = "rgb(230, 126, 34)";
         else if (weaponInfo.quality >= 50)
             weaponInfo.color = "rgb(39, 174, 96)";
@@ -52,6 +52,24 @@ app.config.globalProperties.getWeaponInfo = function(item) {
         if (weaponInfo.quality == 0) {
             weaponInfo.label = "BROKEN"; /** @todo: need translation support */
         }
+    } else if (item.info.uses != undefined && item.info.uses != null) {
+        weaponInfo = {
+            quality: item.info.uses
+        }
+        // Set weapon status from the quality
+        weaponInfo.color = "rgb(39, 174, 96)";
+        if (item.info.uses == 1)
+            weaponInfo.color = "rgb(192, 57, 43)";
+        else if (item.info.uses == 2)
+            weaponInfo.color = "rgb(230, 126, 34)";
+        else
+            weaponInfo.color = "rgb(39, 174, 96)";
+        
+        // Set the weaponInfo Label to the Quality
+        if (weaponInfo.quality !== undefined)
+            weaponInfo.label = weaponInfo.quality.toFixed();
+        else
+            weaponInfo.label = weaponInfo.quality;
     }
 
     return weaponInfo
