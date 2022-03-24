@@ -1,7 +1,7 @@
 <template>
     <div class="requiredItem-container" v-if="items">
         <div class="requiredItem-box" v-for="(item, index) in items" :key="index">
-            <div id="requiredItem-action">Required</div>
+            <div id="requiredItem-action">{{ i18n.requiredItem.required }}</div>
             <div id="requiredItem-label"><p>{{ item.label }}</p></div>
             <div id="requiredItem-image">
                 <div class="item-slot-img">

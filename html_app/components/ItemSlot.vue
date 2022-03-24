@@ -19,7 +19,7 @@
         </div>
         <div class="item-slot-quality" v-if="item && item.weaponInfo">
             <div class="item-slot-quality-bar" :style="{width: item.info.uses * 5 + '%', backgroundColor: item.weaponInfo.color}">
-                <p>Remaining {{ item.info.uses }} usages</p>
+                <p>{{ i18n.itemSlot.usages_remaining.replace('%{uses}', item.info.uses) }}</p>
             </div>
         </div>
         <div class="item-slot-label" v-if="item && item.isWeapon">
@@ -29,7 +29,7 @@
             <p>{{ item.amount }} ({{ ((item.weight * item.amount) / 1000).toFixed(1) }})</p>
         </div>
         <div class="item-slot-amount" v-else-if="item && item.price && inventory == 'itemshop'">
-            <p>{{ '$' }}{{ item.price }} ({{ (item.weight / 1000).toFixed(1) }}kg)</p>
+            <p>{{ i18n.itemSlot.item_shop_currency }}{{ item.price }} ({{ (item.weight / 1000).toFixed(1) }}kg)</p>
         </div>
     </div>
 </template>

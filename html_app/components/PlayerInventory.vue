@@ -3,7 +3,7 @@
         <div id="qbcore-inventory">
             <div class="inventory-info">
                 <div class="player-inv-info">
-                    <span id="player-inv-label">Player Inventory</span><br>
+                    <span id="player-inv-label">{{ i18n.playerInventory.player_inventory }}</span><br>
                     <img class="weight-img" src="images/weight.png">
                     <div>
                         <div class="progressbar">
@@ -42,12 +42,12 @@
                 <div class="inv-options">
                     <div class="inv-options-list">
                         <input type="number" id="item-amount" v-model="amount" class="inv-option-item" min="0" @input="event => amount = parseInt(event.target.value)"/>
-                        <div class="inv-option-item" ref="useAction"><p>USE</p></div>
-                        <div class="inv-option-item" ref="giveAction"><p>GIVE</p></div>
-                        <div class="inv-option-item" @click.prevent="$bus.trigger('close')" id="inv-close"><p>CLOSE</p></div>
+                        <div class="inv-option-item" ref="useAction"><p>{{ i18n.playerInventory.use }}</p></div>
+                        <div class="inv-option-item" ref="giveAction"><p>{{ i18n.playerInventory.give }}</p></div>
+                        <div class="inv-option-item" @click.prevent="$bus.trigger('close')" id="inv-close"><p>{{ i18n.playerInventory.close }}</p></div>
                         <div class="inv-option-item" @mouseup="handleDrop($event, -1, 'attachments', -1, draggedItem.item)" id="weapon-attachments" v-if="isDragging && draggedItem.item.type == 'weapon'"><p>ATTACHMENTS</p></div>
-                        <div class="inv-option-item" v-if="combination" @click.prevent="combineItems()" style="cursor: pointer"><p>Combine</p></div>
-                        <div class="inv-option-item" v-if="combination" @click.prevent="switchItems()" style="cursor: pointer"><p>Switch</p></div>
+                        <div class="inv-option-item" v-if="combination" @click.prevent="combineItems()" style="cursor: pointer"><p>{{ i18n.playerInventory.combine }}</p></div>
+                        <div class="inv-option-item" v-if="combination" @click.prevent="switchItems()" style="cursor: pointer"><p>{{ i18n.playerInventory.switch }}</p></div>
                     </div>
                 </div>
                 <div class="oth-inv-container">

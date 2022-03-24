@@ -6,7 +6,8 @@ version '1.0.0'
 
 shared_scripts {
 	'config.lua',
-	'@qb-weapons/config.lua'
+	'@qb-weapons/config.lua',
+	'locale/en.lua'
 }
 
 server_scripts {

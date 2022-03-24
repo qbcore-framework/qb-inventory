@@ -5,10 +5,10 @@
         </div>
         <div class="weapon-attachments-container-description">{{ weapon.description }}</div>
         <div class="weapon-attachments-container-details">
-            <span style="font-weight: bold; letter-spacing: .1vh;">Serial Number</span><br>
+            <span style="font-weight: bold; letter-spacing: .1vh;">{{ i18n.attachments.serial_number }}</span><br>
             {{ item.info.serie }}<br>
             <br>
-            <span style="font-weight: bold; letter-spacing: .1vh;">Durability {{ durability.toFixed() }}% </span>
+            <span style="font-weight: bold; letter-spacing: .1vh;">{{ i18n.attachments.durability }} {{ durability.toFixed() }}% </span>
             <div class="weapon-attachments-container-detail-durability">
                 <div class="weapon-attachments-container-detail-durability-total" :style="{width: durability + '%'}"></div>
             </div>
@@ -16,8 +16,8 @@
         <img :src="'./attachment_images/' + weapon.name + '.png'" class="weapon-attachments-container-image">
 
         <div class="weapon-attachments-title">
-            <span style="font-weight: bold; letter-spacing: .1vh;" v-if="attachments.length > 0">Attachments</span>
-            <span style="font-weight: bold; letter-spacing: .1vh;" v-else>This gun doesn't contain attachments</span>
+            <span style="font-weight: bold; letter-spacing: .1vh;" v-if="attachments.length > 0">{{ i18n.attachments.attachments }}</span>
+            <span style="font-weight: bold; letter-spacing: .1vh;" v-else>{{ i18n.attachments.no_attachment }}</span>
         </div>
         
         <div class="weapon-attachments">
@@ -36,7 +36,7 @@
 
         <div class="weapon-attachments-remove" ref="removeAction"><i class="fas fa-trash"></i></div>
 
-        <div class="weapon-attachments-back" @click.prevent="$bus.trigger('disableAttachments')"><p>RETURN</p></div>
+        <div class="weapon-attachments-back" @click.prevent="$bus.trigger('disableAttachments')"><p>{{ i18n.attachments.return_btn }}</p></div>
     </div>
 </template>
 

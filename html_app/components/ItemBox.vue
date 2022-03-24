@@ -53,11 +53,11 @@ export default {
     },
     methods: {
         AddItemBox: function(data) {
-            var type = "Used"; /** @todo Add translation support */
+            var type = this.i18n.itemBox.used;
             if (data.type == "add") {
-                type = "Received"; /** @todo Add translation support */
+                type = this.i18n.itemBox.received;
             } else if (data.type == "remove") {
-                type = "Removed"; /** @todo Add translation support */
+                type = this.i18n.itemBox.removed;
             }
 
             this.itemsShown.push({

@@ -1,10 +1,18 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import $bus from './events.js';
+import $bus from './events.js'
+import axios from 'axios'
 
 const app = createApp(App)
 
+var i18n = {};
+
 app.config.globalProperties.$bus = $bus;
+
+axios.post("https://qb-inventory/RetrieveTranslations", {}, { headers: {'Content-Type': 'application/json'} })
+    .then((data) => {
+        app.config.globalProperties.i18n = data.data
+    })
 
 app.config.globalProperties.TYPE_ITEM_PLAYER_INVENTORY = "player";
 app.config.globalProperties.INVENTORY_TYPE_DISABLE_DROP = ['itemshop', 'crafting'];

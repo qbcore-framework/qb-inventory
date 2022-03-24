@@ -61,7 +61,6 @@ export default {
         window.addEventListener('keydown', this.handleKeyboardInteractions);
         window.addEventListener("message", this.handleFivemMessages);
 
-        var self = this;
         this.$bus.on('enableAttachments', (data) => {
             this.showAttachments = true;
         })
@@ -89,7 +88,7 @@ export default {
             }
         },
         handleFivemMessages(event) {
-            console.log(event.data);
+            this.i18n = event.data.translations;
             switch (event.data.action) {
                 case "open":
                     this.reqItems = null;
