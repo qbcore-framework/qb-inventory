@@ -88,6 +88,7 @@ app.config.globalProperties.convertItemToQB = function(item, slot) {
         price: item.price,
         info: item.info,
         useable: item.useable,
+        combinable: item.combinable,
         unique: item.unique,
         slot: parseInt(slot ? slot : item.slot),
     }
@@ -111,6 +112,7 @@ app.config.globalProperties.convertItemFromQB = function(id, item, inventory, in
         description: item.description,
         useable: item.useable,
         unique: item.unique,
+        combinable: item.combinable,
         info: item.info,
     }
 }

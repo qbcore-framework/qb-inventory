@@ -33,7 +33,9 @@
                         <div class="inv-option-item" ref="useAction"><p>USE</p></div>
                         <div class="inv-option-item" ref="giveAction"><p>GIVE</p></div>
                         <div class="inv-option-item" @click.prevent="$bus.trigger('close')" id="inv-close"><p>CLOSE</p></div>
-                        <div class="inv-option-item"  @mouseup="handleDrop($event, -1, 'attachments', -1, draggedItem.item)" id="weapon-attachments" v-if="isDragging && draggedItem.item.type == 'weapon'"><p>ATTACHMENTS</p></div>
+                        <div class="inv-option-item" @mouseup="handleDrop($event, -1, 'attachments', -1, draggedItem.item)" id="weapon-attachments" v-if="isDragging && draggedItem.item.type == 'weapon'"><p>ATTACHMENTS</p></div>
+                        <div class="inv-option-item" v-if="combination" @click.prevent="combineItems()" style="cursor: pointer"><p>Combine</p></div>
+                        <div class="inv-option-item" v-if="combination" @click.prevent="switchItems()" style="cursor: pointer"><p>Switch</p></div>
                     </div>
                 </div>
                 <div class="oth-inv-container">
@@ -88,6 +90,7 @@ export default {
                 maxweight: 100000,
             },
             amount: 0,
+            combination: null,
         }
     },
     mounted () {
@@ -186,6 +189,8 @@ export default {
         startDrag: function (event, inventory, slot) {
             var item = this.getInventoryItemAtSlot(inventory, slot);
             if (!this.isDragging && item) {
+                this.combination = null
+
                 this.isDragging = true;
                 this.draggedItem = event.currentTarget.cloneNode(true);
                 document.body.appendChild(this.draggedItem);
@@ -352,6 +357,21 @@ export default {
             } else if (oldItemSlot.name == newItemSlot.name && !oldItemSlot.unique && !newItemSlot.unique) {
                 item.amount -= amount;
                 this.items[newItemIndex].amount += amount;
+            } else if (oldItemSlot && newItemSlot && !oldItemSlot.unique && !newItemSlot.unique
+                && newItemSlot.combinable != null) {
+                if (this.isCombinable(oldItemSlot.name, newItemSlot.combinable.accept)) {
+                    axios.post("https://qb-inventory/getCombineItem", {
+                        item: newItemSlot.combinable.reward
+                    }, this.AXIOS_CONFIG)
+                        .then((reward) => {
+                            this.combination = {};
+                            this.combination.fromData = oldItemSlot;
+                            this.combination.toData = newItemSlot;
+                            this.combination.toAmount = amount;
+                            this.combination.reward = reward.data;
+                        });
+                    return;
+            }
             } else {
                 if (this.isDisableDropInventory(this.items[indexItem].inventoryType)) {
                     return;
@@ -389,6 +409,55 @@ export default {
                 toSlot: slot,
                 fromAmount: amount,
             }, this.AXIOS_CONFIG)
+        },
+
+        isCombinable(base, ingredient) {
+            for (const [index, item] of Object.entries(ingredient)) {
+                if (item == base)
+                    return true;
+            }
+            return false;
+        },
+
+        combineItems() {
+            if (this.combination.toData.combinable.anim != null) {
+                axios.post("https://qb-inventory/combineWithAnim", {
+                        combineData: this.combination.toData.combinable,
+                        usedItem: this.combination.toData.name,
+                        requiredItem: this.combination.fromData.name,
+                    }, this.AXIOS_CONFIG);
+            } else {
+                axios.post("https://qb-inventory/combineItem", {
+                        reward: this.combination.toData.combinable.reward,
+                        toItem: this.combination.toData.name,
+                        fromItem: this.combination.fromData.name,
+                    }, this.AXIOS_CONFIG);
+            }
+            this.$bus.trigger('close');
+        },
+        
+
+        switchItems() {
+            var indexItem = this.items.indexOf(this.combination.fromData);
+            var newItemIndex = this.items.indexOf(this.combination.toData);
+
+            if (this.isDisableDropInventory(this.items[indexItem].inventoryType)) {
+                return;
+            }
+
+            var old_slot = this.items[indexItem].slot;
+            var old_inventory = this.items[indexItem].inventory;
+            var old_inventoryType = this.items[indexItem].inventoryType;
+
+            this.items[indexItem].slot = this.items[newItemIndex].slot
+            this.items[indexItem].inventory = this.items[newItemIndex].inventory
+            this.items[indexItem].inventoryType = this.items[newItemIndex].inventoryType
+            this.items[newItemIndex].inventory = old_inventory
+            this.items[newItemIndex].inventoryType = old_inventoryType
+            this.items[newItemIndex].slot = old_slot;
+
+            axios.post("https://qb-inventory/PlayDropSound", {}, this.AXIOS_CONFIG)
+            this.combination = null;
         }
     }
 }
