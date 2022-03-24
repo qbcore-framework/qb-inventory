@@ -704,10 +704,11 @@ body {
 
 .weapon-attachments-container {
 	position: absolute;
-	left: -100vw;
+	left: 0;
 	width: 100%;
 	height: 100%;
 	background-color: rgba(0, 0, 0, 0.5);
+	z-index: 999;
 }
 
 .weapon-attachments-container-title {
@@ -911,6 +912,7 @@ body {
 	line-height: 6vh;
 	color: white;
 	font-family: 'Poppins', sans-serif;
+	cursor: pointer;
 	transition: .05s linear;
 }
 

@@ -1,5 +1,6 @@
 <template>
     <div>
+        <attachment-menu />
         <player-inventory v-if="!hide" :inventories="inventory" />
         <transition name="slide-fade">
             <player-hotbar v-if="hotbar.open" :hotbar="hotbar"/>
@@ -24,6 +25,7 @@
 import PlayerInventory from './components/PlayerInventory.vue';
 import PlayerHotbar from './components/PlayerHotbar.vue';
 import ItemBox from './components/ItemBox.vue';
+import AttachmentMenu from './components/AttachmentMenu.vue';
 
 const axios = require('axios').default;
 
@@ -39,11 +41,13 @@ export default {
     components: {
         PlayerInventory,
         PlayerHotbar,
-        ItemBox
+        ItemBox,
+        AttachmentMenu
     },
     data() {
         return {
             hide: true,
+            showAttachments: false,
             count: 0,
             inventory: {},
             hotbar: {show: false}
@@ -52,6 +56,11 @@ export default {
     mounted() {
         window.addEventListener('keydown', this.handleKeyboardInteractions);
         window.addEventListener("message", this.handleFivemMessages);
+
+        var self = this;
+        this.$bus.on('enableAttachments', (data) => {
+            this.showAttachments = true;
+        })
 
         this.$bus.on('close', () => {
             this.close();
@@ -85,7 +94,7 @@ export default {
                     this.close()
                     break;
                 case "update":
-                    // Inventory.Update(event.data);
+                    this.open(event.data);
                     break;
                 case "itemBox":
                     this.$refs.itemBox.AddItemBox(event.data);
@@ -107,10 +116,15 @@ export default {
         open(data) {
             this.hide = false;
             this.inventory = data;
+            if (this.inventory.error) {
+                this.$bus.trigger('notifition', "error", this.inventory.error);
+            }
         },
         close() {
             this.hide = true;
+            this.showAttachments = false;
             this.inventory = {};
+            this.$bus.trigger('disableAttachments');
             axios.post("https://qb-inventory/CloseInventory", {});
         },
     },

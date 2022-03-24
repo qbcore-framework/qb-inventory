@@ -9,6 +9,7 @@ app.config.globalProperties.$bus = $bus;
 app.config.globalProperties.TYPE_ITEM_PLAYER_INVENTORY = "player";
 app.config.globalProperties.INVENTORY_TYPE_DISABLE_DROP = ['itemshop', 'crafting'];
 app.config.globalProperties.TYPE_ITEM_OPEN_INVENTORY = "other";
+app.config.globalProperties.AXIOS_CONFIG = { headers: {'Content-Type': 'application/json'} };
 
 app.config.globalProperties.IsWeaponBlocked = function(WeaponName) {
     var DurabilityBlockedWeapons = [

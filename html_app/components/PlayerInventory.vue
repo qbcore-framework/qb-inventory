@@ -33,6 +33,7 @@
                         <div class="inv-option-item" ref="useAction"><p>USE</p></div>
                         <div class="inv-option-item" ref="giveAction"><p>GIVE</p></div>
                         <div class="inv-option-item" @click.prevent="$bus.trigger('close')" id="inv-close"><p>CLOSE</p></div>
+                        <div class="inv-option-item"  @mouseup="handleDrop($event, -1, 'attachments', -1, draggedItem.item)" id="weapon-attachments" v-if="isDragging && draggedItem.item.type == 'weapon'"><p>ATTACHMENTS</p></div>
                     </div>
                 </div>
                 <div class="oth-inv-container">
@@ -58,8 +59,6 @@ import axios from 'axios';
 import ItemSlot from './ItemSlot.vue';
 import ItemInfo from './ItemInfo.vue';
 var _ = require('lodash');
-
-const AXIOS_CONFIG = { headers: {'Content-Type': 'application/json'} };
 
 /**
  * Component to manage every inventory (or "tab") part
@@ -190,6 +189,7 @@ export default {
                 this.draggedItem.style.position = 'absolute';
                 this.draggedItem.style.zIndex = 1000;
                 this.draggedItem.style.pointerEvents = "none";
+                this.draggedItem.item = item;
 
                 this.moveAt(this.draggedItem, event.pageX, event.pageY);
                 document.addEventListener('mousemove', (event) => this.onMouseMove(event, this.draggedItem));
@@ -238,7 +238,7 @@ export default {
                     this.onMouseMove(event, this.draggedItem)
                 });
                 
-                // Drop on usage buttons
+                // Reset drop on usage buttons
                 this.$refs.useAction.onmouseup = null;
                 this.$refs.giveAction.onmouseup = null;
                 this.$refs.global.onmouseup = null;
@@ -289,8 +289,13 @@ export default {
                 axios.post("https://qb-inventory/UseItem", {
                     inventory: oldItemSlot.inventory,
                     item: this.convertItemToQB(oldItemSlot),
-                }, AXIOS_CONFIG)
+                }, this.AXIOS_CONFIG)
                 this.$bus.trigger('close')
+                return;
+            }
+
+            if (inventory == "attachments") {
+                this.$bus.trigger('enableAttachments', {name: oldItemSlot.name, data: this.convertItemToQB(oldItemSlot)});
                 return;
             }
 
@@ -318,7 +323,7 @@ export default {
                     inventory: oldItemSlot.inventory,
                     item: this.convertItemToQB(oldItemSlot),
                     amount: parseInt(amount),
-                }, AXIOS_CONFIG)
+                }, this.AXIOS_CONFIG)
                 return;
             }
 
@@ -369,7 +374,6 @@ export default {
             if (this.totalWeight > this.playerInventory.maxweight || this.totalWeightOther > this.openedInventory.maxweight) {
                 /** @todo Send an error warning */
                 Object.assign(this.items, backupItems);
-                console.log(this.items);
                 return
             }
 
@@ -380,7 +384,7 @@ export default {
                 fromSlot: backupItem.slot,
                 toSlot: slot,
                 fromAmount: amount,
-            }, AXIOS_CONFIG)
+            }, this.AXIOS_CONFIG)
         }
     }
 }
