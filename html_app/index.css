@@ -329,8 +329,39 @@ body {
 	top: 22.2%;
 }
 
+.progressbar {
+    margin-left: 10%;
+    margin-top: 0.5%;
+    border-radius: 50px;
+    width: 80%;
+    background-color: rgba(24, 26, 30, 0.6);
+}
+
+.pro {
+	background: linear-gradient(to right, #389f46a9, #f35858b0 500px);
+	height: 10px;
+	border-radius: 50px;
+}
+.pro1 {
+	background: linear-gradient(to right, #389f46a9, #f35858b0 500px);
+	height: 10px;
+	border-radius: 50px;
+}
+
+.weight-img {
+	position: absolute;
+    float: left;
+    margin-top: 0;
+    margin-left: 3%;
+    height: 19px;
+    width: auto;
+	top: 15px;
+    left: 0px;
+}
+
+
 #player-inv-label {
-	position: relative;
+    position: absolute;
 	color: white;
 	font-size: 16px;
 	font-style: italic;
@@ -339,33 +370,36 @@ body {
 	letter-spacing: 0.2vh;
 	bottom: 0px;
 	float: left;
+	width: 16vh;
+    bottom: 3vh;
 	text-transform: uppercase;
 }
 
 #player-inv-weight {
-	color: white;
+	color: #ffffff00;
 	font-size: 12px;
 	font-weight: 900;
 	font-family: 'Poppins', sans-serif;
 	letter-spacing: 0.2vh;
+    width: 50vh;
 	float: left;
 }
 
 #other-inv-label {
-	position: relative;
+	position: absolute;
 	color: white;
 	font-size: 16px;
 	font-style: italic;
 	font-family: 'Poppins', sans-serif;
 	font-weight: bold;
 	letter-spacing: 0.2vh;
-	bottom: 0px;
+	bottom: 3vh;
 	float: left;
 	text-transform: uppercase;
 }
 
 #other-inv-weight {
-	color: white;
+	color: #ff000000;
 	font-size: 12px;
 	font-weight: 900;
 	font-family: 'Poppins', sans-serif;
@@ -387,8 +421,9 @@ body {
 
 .other-inv-info {
 	position: absolute;
-	left: 56%;
 	top: 22.2%;
+	left: 56.2%;
+    width: 28%;
 }
 
 .ply-iteminfo-container {
