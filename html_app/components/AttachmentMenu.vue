@@ -1,5 +1,5 @@
 <template>
-    <div class="weapon-attachments-container" v-if="weapon != null">
+    <div class="weapon-attachments-container" v-if="weapon != null" ref="global">
         <div class="weapon-attachments-container-title">
             {{ weapon.label }} | <span style="font-size: 2vh;">{{ ammoLabel }}</span>
         </div>
@@ -21,7 +21,10 @@
         </div>
         
         <div class="weapon-attachments">
-            <div class="weapon-attachment" v-for="(attachment, index) in attachments" :key="index">
+            <div class="weapon-attachment" 
+                v-for="(attachment, index) in attachments"
+                :key="index"
+                @mousedown.left.prevent="startDrag($event, attachment)">
                 <div class="weapon-attachment-label">
                     <p>{{ attachment.label }}</p>
                 </div> 
@@ -31,7 +34,7 @@
             </div>
         </div>
 
-        <div class="weapon-attachments-remove"><i class="fas fa-trash"></i></div>
+        <div class="weapon-attachments-remove" ref="removeAction"><i class="fas fa-trash"></i></div>
 
         <div class="weapon-attachments-back" @click.prevent="$bus.trigger('disableAttachments')"><p>RETURN</p></div>
     </div>
@@ -47,7 +50,9 @@ export default {
         return {
             weapon: null,
             item: null,
-            attachments: {}
+            attachments: {},
+            isDragging: false,
+            draggedItem: null,
         }
     },
     mounted() {
@@ -60,6 +65,10 @@ export default {
             this.item = null;
             this.attachments = {};
         })
+    },
+    unmounted () {
+        if (this.isDragging)
+            this.draggedItem.remove();
     },
     computed: {
         ammoLabel() {
@@ -100,9 +109,95 @@ export default {
                 if (data.AttachmentData !== null && data.AttachmentData !== undefined) {
                     self.attachments = data.AttachmentData;
                 }
-
-                console.log(self.item, self.weapon);
             })
+        },
+
+
+        moveAt: function (item, pageX, pageY) {
+            item.style.left = pageX - item.offsetWidth / 2 + 'px';
+            item.style.top = pageY - item.offsetHeight / 2 + 'px';
+        },
+        onMouseMove: function(event, item) {
+            this.moveAt(item, event.pageX, event.pageY);
+        },
+
+        /**
+         * Triggered when an element is left clicked 
+         * 
+         * @param {ClickEvent} event
+         * @param {string} inventory The selected inventory
+         * @param {number} slot The selected slot
+         */
+        startDrag: function (event, attachment) {
+            if (!this.isDragging) {
+                this.isDragging = true;
+                this.draggedItem = event.currentTarget.cloneNode(true);
+                document.body.appendChild(this.draggedItem);
+
+                this.draggedItem.style.position = 'absolute';
+                this.draggedItem.style.zIndex = 1000;
+                this.draggedItem.style.pointerEvents = "none";
+
+                this.moveAt(this.draggedItem, event.pageX, event.pageY);
+                document.addEventListener('mousemove', (event) => this.onMouseMove(event, this.draggedItem));
+
+                this.$refs.removeAction.onmouseup = (event) => this.handleDrop(event, attachment);
+
+                // Disable the drop nowhere
+                this.$refs.global.onmouseup = (event) => this.handleDrop(event, null);
+                this.$refs.global.style.cursor = "not-allowed";
+            }
+        },
+
+        /**
+         * handle drop is called when the user drop an item on an allowed target
+         * 
+         * @param {ClickEvent} event The click dom event
+         * @param {Element} el The target DOM Element
+         * @param {string} inventory The Inventory Type (cf. constants)
+         * @param {number} slot The target inventory slot ID
+         * @param {Object} oldItem The item before it get drop
+         */
+        handleDrop: function (event, attachment) {
+            if (this.isDragging && event.button == 0) {
+                if (attachment) {
+                    this.itemChangeSlot(attachment);
+                }
+
+                document.removeEventListener('mousemove', (event) => {
+                    this.onMouseMove(event, this.draggedItem, attachment)
+                });
+                
+                // Reset drop on usage buttons
+                this.$refs.removeAction.onmouseup = null;
+                this.$refs.global.onmouseup = null;
+                this.$refs.global.style.cursor = "default";
+
+                this.draggedItem.remove();
+                this.isDragging = false;
+            }
+        },
+
+        /**
+         * is triggered when the dropped item is in a delete box.
+         * 
+         */
+        itemChangeSlot: function (attachment) {
+            console.log(attachment, this.weapon);
+            axios.post("https://qb-inventory/RemoveAttachment",{
+                    AttachmentData: attachment,
+                    WeaponData: this.item,
+                }, this.AXIOS_CONFIG)
+                .then((data) => {
+                    data = data.data;
+                    console.log(data);
+                    
+                    if (data.AttachmentData !== null && data.AttachmentData !== undefined) {
+                        this.attachments = data.AttachmentData;
+                    } else {
+                        this.attachments = {}
+                    }
+                })
         }
     }
 }

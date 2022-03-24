@@ -125,6 +125,10 @@ export default {
 
         this.setDefaultAmountValue();
     },
+    unmounted () {
+        if (this.isDragging)
+            this.draggedItem.remove();
+    },
     computed: {
         playerItemInventory() {
             return this.items.filter((item) => item.inventory == this.TYPE_ITEM_PLAYER_INVENTORY);
@@ -377,7 +381,7 @@ export default {
                 return
             }
 
-            axios.post("https://qb-inventory/PlayDropSound", {}, AXIOS_CONFIG)
+            axios.post("https://qb-inventory/PlayDropSound", {}, this.AXIOS_CONFIG)
             axios.post("https://qb-inventory/SetInventoryData", {
                 fromInventory: (backupItem.inventory == this.TYPE_ITEM_PLAYER_INVENTORY ? this.playerInventory.name : this.openedInventory.name),
                 toInventory: inventoryName,

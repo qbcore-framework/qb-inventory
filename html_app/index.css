@@ -786,13 +786,11 @@ body {
 	border: 1px solid rgb(75, 75, 75);
 	margin-right: 1vh;
 	float: left;
-	transition: .05s linear;
 }
 
 .weapon-attachment:hover {
 	background-color: rgba(0, 0, 0, 0.4);
 	border: 1px solid rgb(29, 29, 29);
-	transition: .05s linear;
 }
 
 .weapon-attachment-label {
@@ -843,6 +841,7 @@ body {
 	text-align: center;
 	color: white;
 	font-size: 2vh;
+    cursor: default;
 	transition: background-color .05s linear;
 }
 
