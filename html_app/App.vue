@@ -88,7 +88,7 @@ export default {
             }
         },
         handleFivemMessages(event) {
-            this.i18n = event.data.translations;
+            console.log(event.data);
             switch (event.data.action) {
                 case "open":
                     this.reqItems = null;
@@ -98,7 +98,10 @@ export default {
                     this.close()
                     break;
                 case "update":
-                    this.open(event.data);
+                    this.$bus.trigger('updateInventory', event.data);
+                    if (event.data.error) {
+                        /** @todo Add error handling */
+                    }
                     break;
                 case "itemBox":
                     this.$refs.itemBox.AddItemBox(event.data);

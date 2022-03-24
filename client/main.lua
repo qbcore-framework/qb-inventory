@@ -106,7 +106,6 @@ end
 local function closeInventory()
     SendNUIMessage({
         action = "close",
-        translations = InventoryHUD,
     })
 end
 
@@ -125,13 +124,11 @@ local function ToggleHotbar(toggle)
             action = "toggleHotbar",
             open = true,
             items = HotbarItems,
-            translations = InventoryHUD,
         })
     else
         SendNUIMessage({
             action = "toggleHotbar",
             open = false,
-            translations = InventoryHUD,
         })
     end
 end
@@ -289,7 +286,6 @@ RegisterNetEvent('inventory:client:ItemBox', function(itemData, type)
         action = "itemBox",
         item = itemData,
         type = type,
-        translations = InventoryHUD,
     })
 end)
 
@@ -309,7 +305,6 @@ RegisterNetEvent('inventory:client:requiredItems', function(items, bool)
         action = "requiredItem",
         items = itemTable,
         toggle = bool,
-        translations = InventoryHUD,
     })
 end)
 
@@ -317,7 +312,6 @@ RegisterNetEvent('inventory:server:RobPlayer', function(TargetId)
     SendNUIMessage({
         action = "RobMoney",
         TargetId = TargetId,
-        translations = InventoryHUD,
     })
 end)
 
@@ -336,7 +330,6 @@ RegisterNetEvent('inventory:client:OpenInventory', function(PlayerAmmo, inventor
             maxweight = QBCore.Config.Player.MaxWeight,
             Ammo = PlayerAmmo,
             maxammo = Config.MaximumAmmoValues,
-            translations = InventoryHUD,
         })
         inInventory = true
     end
@@ -349,7 +342,6 @@ RegisterNetEvent('inventory:client:UpdatePlayerInventory', function(isError)
         maxweight = QBCore.Config.Player.MaxWeight,
         slots = MaxInventorySlots,
         error = isError,
-        translations = InventoryHUD,
     })
 end)
 
@@ -357,7 +349,6 @@ RegisterNetEvent('inventory:client:CraftItems', function(itemName, itemCosts, am
     local ped = PlayerPedId()
     SendNUIMessage({
         action = "close",
-        translations = InventoryHUD,
     })
     isCrafting = true
     QBCore.Functions.Progressbar("repair_vehicle", "Crafting..", (math.random(2000, 5000) * amount), false, true, {
@@ -385,7 +376,6 @@ RegisterNetEvent('inventory:client:CraftAttachment', function(itemName, itemCost
     local ped = PlayerPedId()
     SendNUIMessage({
         action = "close",
-        translations = InventoryHUD,
     })
     isCrafting = true
     QBCore.Functions.Progressbar("repair_vehicle", "Crafting..", (math.random(2000, 5000) * amount), false, true, {
@@ -508,7 +498,6 @@ RegisterNetEvent('inventory:client:DropItemAnim', function()
     local ped = PlayerPedId()
     SendNUIMessage({
         action = "close",
-        translations = InventoryHUD,
     })
     RequestAnimDict("pickup_object")
     while not HasAnimDictLoaded("pickup_object") do

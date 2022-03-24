@@ -106,39 +106,8 @@ export default {
         }
     },
     mounted () {
-        this.playerInventory.slots = this.inventories.slots;
-        this.playerInventory.maxweight = this.inventories.maxweight;
-        
-        if (this.inventories.other != null && this.inventories.other != "") {
-            this.openedInventory.name = this.inventories.other.name + "";
-            if (this.inventories.other.label.toLowerCase().split('-')[0] == "dropped") {
-                this.openedInventory.type = this.inventories.other.label.split('-')[1];
-            } else {
-                this.openedInventory.type = this.inventories.other.name;
-            }
-            this.openedInventory.slots = this.inventories.other.slots;
-            this.openedInventory.type = this.openedInventory.type.split("-")[0];
-            this.openedInventory.label = this.inventories.other.label;
-            this.openedInventory.maxweight = this.inventories.other.maxweight;
-        }
-
-        if (this.inventories.inventory !== null) {
-            for (const [slot, item] of Object.entries(this.inventories.inventory)) {
-                if (item != null) {
-                    this.items.push(this.convertItemFromQB(this.id++, item, this.TYPE_ITEM_PLAYER_INVENTORY, this.TYPE_ITEM_PLAYER_INVENTORY));
-                }
-            }
-        }
-
-        if (this.inventories.other != null && this.inventories.other != "" && this.inventories.other.inventory != null) {
-            for (const [slot, item] of Object.entries(this.inventories.other.inventory)) {
-                if (item != null) {
-                    this.items.push(this.convertItemFromQB(this.id++, item, this.TYPE_ITEM_OPEN_INVENTORY, this.openedInventory.type));
-                }
-            }
-        }
-
-        this.setDefaultAmountValue();
+        this.$bus.on('updateInventory', (data) => this.setInventoryData(data));
+        this.setInventoryData(this.inventories);
     },
     unmounted () {
         if (this.isDragging)
@@ -164,6 +133,42 @@ export default {
         }
     },
     methods: {
+        setInventoryData(data) {
+            this.playerInventory.slots = data.slots;
+            this.playerInventory.maxweight = data.maxweight;
+            
+            if (data.other != null && data.other != "") {
+                this.openedInventory.name = data.other.name + "";
+                if (data.other.label.toLowerCase().split('-')[0] == "dropped") {
+                    this.openedInventory.type = data.other.label.split('-')[1];
+                } else {
+                    this.openedInventory.type = data.other.name;
+                }
+                this.openedInventory.slots = data.other.slots;
+                this.openedInventory.type = this.openedInventory.type.split("-")[0];
+                this.openedInventory.label = data.other.label;
+                this.openedInventory.maxweight = data.other.maxweight;
+            }
+
+            if (data.inventory !== null) {
+                for (const [slot, item] of Object.entries(data.inventory)) {
+                    if (item != null) {
+                        this.items.push(this.convertItemFromQB(this.id++, item, this.TYPE_ITEM_PLAYER_INVENTORY, this.TYPE_ITEM_PLAYER_INVENTORY));
+                    }
+                }
+            }
+
+            if (data.other != null && data.other != "" && data.other.inventory != null) {
+                for (const [slot, item] of Object.entries(data.other.inventory)) {
+                    if (item != null) {
+                        this.items.push(this.convertItemFromQB(this.id++, item, this.TYPE_ITEM_OPEN_INVENTORY, this.openedInventory.type));
+                    }
+                }
+            }
+
+            this.setDefaultAmountValue();
+        },
+
         isDisableDropInventory(inventory) {
             return this.INVENTORY_TYPE_DISABLE_DROP.includes(inventory);
         },
