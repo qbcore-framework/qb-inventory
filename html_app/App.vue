@@ -6,6 +6,7 @@
             <player-hotbar v-if="hotbar.open" :hotbar="hotbar"/>
         </transition>
         <item-box ref="itemBox"/>
+        <required-items v-if="reqItems" :reqItemsData="reqItems"/>
     </div>
 </template>
 
@@ -26,6 +27,7 @@ import PlayerInventory from './components/PlayerInventory.vue';
 import PlayerHotbar from './components/PlayerHotbar.vue';
 import ItemBox from './components/ItemBox.vue';
 import AttachmentMenu from './components/AttachmentMenu.vue';
+import RequiredItems from './components/RequiredItems.vue';
 
 const axios = require('axios').default;
 
@@ -42,7 +44,8 @@ export default {
         PlayerInventory,
         PlayerHotbar,
         ItemBox,
-        AttachmentMenu
+        AttachmentMenu,
+        RequiredItems
     },
     data() {
         return {
@@ -50,7 +53,8 @@ export default {
             showAttachments: false,
             count: 0,
             inventory: {},
-            hotbar: {show: false}
+            hotbar: {show: false},
+            reqItems: null,
         }
     },
     mounted() {
@@ -88,6 +92,7 @@ export default {
             console.log(event.data);
             switch (event.data.action) {
                 case "open":
+                    this.reqItems = null;
                     this.open(event.data);
                     break;
                 case "close":
@@ -100,7 +105,11 @@ export default {
                     this.$refs.itemBox.AddItemBox(event.data);
                     break;
                 case "requiredItem":
-                    // Inventory.RequiredItem(event.data);
+                    if (!event.data.toggle) {
+                        this.reqItems = null;
+                        return;
+                    }
+                    this.reqItems = event.data;
                     break;
                 case "toggleHotbar":
                     this.hotbar = event.data;

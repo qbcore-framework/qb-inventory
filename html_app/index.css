@@ -528,7 +528,7 @@ body {
 }
 
 .requiredItem-container {
-	display: none;
+	display: block;
 	position: absolute;
 	height: 100vh;
 	width: 100vw;
