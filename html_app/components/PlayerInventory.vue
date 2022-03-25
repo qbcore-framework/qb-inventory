@@ -45,7 +45,7 @@
                         <div class="inv-option-item" ref="useAction"><p>{{ i18n.playerInventory.use }}</p></div>
                         <div class="inv-option-item" ref="giveAction"><p>{{ i18n.playerInventory.give }}</p></div>
                         <div class="inv-option-item" @click.prevent="$bus.trigger('close')" id="inv-close"><p>{{ i18n.playerInventory.close }}</p></div>
-                        <div class="inv-option-item" @mouseup="handleDrop($event, -1, 'attachments', -1, draggedItem.item)" id="weapon-attachments" v-if="isDragging && draggedItem.item.type == 'weapon'"><p>ATTACHMENTS</p></div>
+                        <div class="inv-option-item" @mouseup="handleDrop($event, -1, 'attachments', -1, draggedItem.item)" id="weapon-attachments" v-if="isDragging && draggedItem.item.type == 'weapon' && draggedItem.item.isWeapon"><p>ATTACHMENTS</p></div>
                         <div class="inv-option-item" v-if="combination" @click.prevent="combineItems()" style="cursor: pointer"><p>{{ i18n.playerInventory.combine }}</p></div>
                         <div class="inv-option-item" v-if="combination" @click.prevent="switchItems()" style="cursor: pointer"><p>{{ i18n.playerInventory.switch }}</p></div>
                     </div>
