@@ -383,20 +383,18 @@ export default {
                 item.amount -= amount;
                 this.items[newItemIndex].amount += amount;
             } else if (oldItemSlot && newItemSlot && !oldItemSlot.unique && !newItemSlot.unique
-                && newItemSlot.combinable != null) {
-                if (this.isCombinable(oldItemSlot.name, newItemSlot.combinable.accept)) {
-                    axios.post("https://qb-inventory/getCombineItem", {
-                        item: newItemSlot.combinable.reward
-                    }, this.AXIOS_CONFIG)
-                        .then((reward) => {
-                            this.combination = {};
-                            this.combination.fromData = oldItemSlot;
-                            this.combination.toData = newItemSlot;
-                            this.combination.toAmount = amount;
-                            this.combination.reward = reward.data;
-                        });
-                    return;
-            }
+                && newItemSlot.combinable != null && this.isCombinable(oldItemSlot.name, newItemSlot.combinable.accept)) {
+                axios.post("https://qb-inventory/getCombineItem", {
+                    item: newItemSlot.combinable.reward
+                }, this.AXIOS_CONFIG)
+                    .then((reward) => {
+                        this.combination = {};
+                        this.combination.fromData = oldItemSlot;
+                        this.combination.toData = newItemSlot;
+                        this.combination.toAmount = amount;
+                        this.combination.reward = reward.data;
+                    });
+                return;
             } else {
                 if (this.isDisableDropInventory(this.items[indexItem].inventoryType)) {
                     return;
