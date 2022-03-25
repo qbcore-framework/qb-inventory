@@ -104,15 +104,45 @@ export default {
             },
             amount: 0,
             combination: null,
+            splitItem: false,
         }
     },
     mounted () {
         this.$bus.on('updateInventory', (data) => this.setInventoryData(data));
         this.setInventoryData(this.inventories);
+
+        window.addEventListener('keydown', (e) => {
+            if (e.code == "ShiftLeft") {
+                e.preventDefault();
+                this.splitItem = true;
+            }
+        });
+        
+        window.addEventListener('keyup', (e) => {
+            if (e.code == "ShiftLeft") {
+                e.preventDefault();
+                this.splitItem = false;
+            }
+        });
+        
     },
     unmounted () {
         if (this.isDragging)
             this.draggedItem.remove();
+        
+        window.removeEventListener('keydown', (e) => {
+            if (e.code == "ShiftLeft") {
+                e.preventDefault();
+                this.splitItem = true;
+            }
+        })
+
+        window.removeEventListener('keyup', (e) => {
+            if (e.code == "ShiftLeft") {
+                e.preventDefault();
+                this.splitItem = false;
+            }
+        });
     },
     computed: {
         playerItemInventory() {
@@ -134,6 +164,7 @@ export default {
         }
     },
     methods: {
+
         setInventoryData(data) {
             this.playerInventory.slots = data.slots;
             this.playerInventory.maxweight = data.maxweight;
@@ -333,13 +364,20 @@ export default {
                 return;
             }
 
+            this.amount = parseInt(this.amount);
+
             if (this.amount == 0) {
                 if (this.openedInventory.type == "itemshop" || this.openedInventory.type == "crafting") {
                     /** @todo Add an error */
                     this.amount = 1;
                     return;
                 }
+
                 var amount = oldItemSlot.amount;
+                // Handle shift to split into two
+                if (this.splitItem && amount > 1) {
+                    amount /= 2;
+                }
             } else if (this.amount < 0) {
                 /** @todo Add an error "can't set a negative amount" */
                 this.amount = setDefaultAmountValue();
@@ -351,6 +389,8 @@ export default {
             } else {
                 var amount = this.amount;
             }
+
+            amount = parseInt(amount.toFixed());
 
             if (inventory == "give") {
                 axios.post("https://qb-inventory/GiveItem", {
