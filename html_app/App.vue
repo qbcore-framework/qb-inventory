@@ -99,9 +99,8 @@ export default {
                     break;
                 case "update":
                     this.$bus.trigger('updateInventory', event.data);
-                    if (event.data.error) {
-                        /** @todo Add error handling */
-                    }
+                    if (event.data.error)
+                        axios.post("https://qb-inventory/PlayDropFail", {}, this.AXIOS_CONFIG);
                     break;
                 case "itemBox":
                     this.$refs.itemBox.AddItemBox(event.data);
@@ -128,7 +127,7 @@ export default {
             this.hide = false;
             this.inventory = data;
             if (this.inventory.error) {
-                this.$bus.trigger('notifition', "error", this.inventory.error);
+                axios.post("https://qb-inventory/PlayDropFail", {}, this.AXIOS_CONFIG);
             }
         },
         close() {
