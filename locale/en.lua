@@ -44,6 +44,7 @@ InventoryHUD = {
         player_inventory = "Player Inventory",
         use = "USE",
         give = "GIVE",
+        take_money = "TAKE MONEY",
         close = "CLOSE",
         combine = "Combine",
         switch = "Switch",

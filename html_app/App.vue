@@ -1,7 +1,7 @@
 <template>
     <div>
         <attachment-menu />
-        <player-inventory v-if="!hide" :inventories="inventory" />
+        <player-inventory v-if="!hide" :inventories="inventory" :robbery="robberyTarget" />
         <transition name="slide-fade">
             <player-hotbar v-if="hotbar.open" :hotbar="hotbar"/>
         </transition>
@@ -55,6 +55,7 @@ export default {
             inventory: {},
             hotbar: {show: false},
             reqItems: null,
+            robberyTarget: null,
         }
     },
     mounted() {
@@ -88,7 +89,6 @@ export default {
             }
         },
         handleFivemMessages(event) {
-            console.log(event.data);
             switch (event.data.action) {
                 case "open":
                     this.reqItems = null;
@@ -116,10 +116,7 @@ export default {
                     this.hotbar = event.data;
                     break;
                 case "RobMoney":
-                    // $(".inv-options-list").append(
-                    //     '<div class="inv-option-item" id="rob-money"><p>TAKE MONEY</p></div>'
-                    // );
-                    // $("#rob-money").data("TargetId", event.data.TargetId);
+                    this.robberyTarget = event.data.TargetId;
                     break;
             }
         },
@@ -134,6 +131,7 @@ export default {
             this.hide = true;
             this.showAttachments = false;
             this.inventory = {};
+            this.robberyTarget = null;
             this.$bus.trigger('disableAttachments');
             axios.post("https://qb-inventory/CloseInventory", {});
         },

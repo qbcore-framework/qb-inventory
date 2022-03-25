@@ -183,14 +183,12 @@ export default {
          * 
          */
         itemChangeSlot: function (attachment) {
-            console.log(attachment, this.weapon);
             axios.post("https://qb-inventory/RemoveAttachment",{
                     AttachmentData: attachment,
                     WeaponData: this.item,
                 }, this.AXIOS_CONFIG)
                 .then((data) => {
                     data = data.data;
-                    console.log(data);
                     
                     if (data.AttachmentData !== null && data.AttachmentData !== undefined) {
                         this.attachments = data.AttachmentData;
