@@ -6,8 +6,8 @@
         <div :class="prefixClass + 'item-slot-img'">
             <img :src="item.image" :alt="item.name" v-if="item">
         </div>
-        <div :class="prefixClass + 'item-slot-label'" v-if="!item || !item.isWeapon">
-            <p>{{ !item ? "&nbsp;" : item.label }}</p>
+        <div :class="prefixClass + 'item-slot-label'" v-if="!item || !item.isWeapon" :title="item.label">
+            <p>{{ !item ? "&nbsp;" : item.shortLabel }}</p>
         </div>
         <div class="item-slot-quality" v-if="item && item.isWeapon">
             <div class="item-slot-quality-bar" v-if="item.weaponInfo.label == 'BROKEN'" :style="{width: '100%', backgroundColor: item.weaponInfo.color}">
@@ -42,5 +42,13 @@ export default {
             prefixClass: this.prefix ? this.prefix : ""
         }
     },
+    computed: {
+        shortLabel: function () {
+            if (this.item.label.length > 10) {
+                return this.item.label.substring(0, 8) + '...';
+            }
+            return this.item.label;
+        }
+    }
 }
 </script>
