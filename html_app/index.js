@@ -49,8 +49,6 @@ app.config.globalProperties.getWeaponInfo = function(item) {
             weaponInfo.color = "rgb(192, 57, 43)";
         else if (weaponInfo.quality >= 25 && weaponInfo.quality < 50)
             weaponInfo.color = "rgb(230, 126, 34)";
-        else if (weaponInfo.quality >= 50)
-            weaponInfo.color = "rgb(39, 174, 96)";
         
         // Set the weaponInfo Label to the Quality
         if (weaponInfo.quality !== undefined)

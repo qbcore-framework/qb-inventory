@@ -1,12 +1,12 @@
 <template>
-    <div class="item-slot" @mouseenter="$bus.trigger('setInfo', item)" @mouseleave="$bus.trigger('resetInfo')">
+    <div :class="prefixClass + 'item-slot'" @mouseenter="$bus.trigger('setInfo', item)" @mouseleave="$bus.trigger('resetInfo')">
         <div :class="prefixClass + 'item-slot-key'" v-if="(inventory == 'player' || inventory == 'hotbar') && (slot < 6 || slot == 41)">
             <p>{{ slot % 7 }}</p>
         </div>
         <div :class="prefixClass + 'item-slot-img'">
             <img :src="item.image" :alt="item.name" v-if="item">
         </div>
-        <div :class="prefixClass + 'item-slot-label'" v-if="!item || !item.isWeapon" :title="item.label">
+        <div class="item-slot-label" v-if="!item || !item.isWeapon" :title="(item ? item.label : '')">
             <p>{{ !item ? "&nbsp;" : shortLabel }}</p>
         </div>
         <div class="item-slot-quality" v-if="item && item.isWeapon">
@@ -17,8 +17,8 @@
                 <p>{{ item.weaponInfo.label }}</p>
             </div>
         </div>
-        <div class="item-slot-quality" v-if="item && item.weaponInfo">
-            <div class="item-slot-quality-bar" :style="{width: item.info.uses * 5 + '%', backgroundColor: item.weaponInfo.color}">
+        <div class="item-slot-quality" v-if="item && item.info">
+            <div class="item-slot-quality-bar" :style="{width: useWidth, backgroundColor: useColor}">
                 <p>{{ i18n.itemSlot.usages_remaining.replace('%{uses}', item.info.uses) }}</p>
             </div>
         </div>
@@ -44,10 +44,22 @@ export default {
     },
     computed: {
         shortLabel: function () {
-            if (this.item.label.length > 10) {
-                return this.item.label.substring(0, 8) + '...';
+            if (this.item.label.length > 13) {
+                return this.item.label.substring(0, 11) + '...';
             }
             return this.item.label;
+        },
+        useWidth: function () {
+            if (this.item.info.uses == 0)
+                return '100%';
+            return this.item.info.uses * 5 + '%'
+        },
+        useColor: function () {
+            if (this.item.info.uses == 0)
+                return "rgb(230, 126, 34)";
+            else if (this.item.info.uses == 1 || this.item.info.uses == 2)
+                return "rgb(192, 57, 43)";
+            return "rgb(39, 174, 96)";
         }
     }
 }

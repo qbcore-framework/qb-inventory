@@ -3,7 +3,7 @@
         <attachment-menu />
         <player-inventory v-if="!hide" :inventories="inventory" :robbery="robberyTarget" />
         <transition name="slide-fade">
-            <player-hotbar v-if="hotbar.open" :hotbar="hotbar"/>
+            <player-hotbar v-if="hotbar && hotbar.open" :hotbar="hotbar"/>
         </transition>
         <item-box ref="itemBox"/>
         <required-items v-if="reqItems" :reqItemsData="reqItems"/>
