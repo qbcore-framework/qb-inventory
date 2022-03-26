@@ -7,7 +7,7 @@
             <img :src="item.image" :alt="item.name" v-if="item">
         </div>
         <div :class="prefixClass + 'item-slot-label'" v-if="!item || !item.isWeapon" :title="item.label">
-            <p>{{ !item ? "&nbsp;" : item.shortLabel }}</p>
+            <p>{{ !item ? "&nbsp;" : shortLabel }}</p>
         </div>
         <div class="item-slot-quality" v-if="item && item.isWeapon">
             <div class="item-slot-quality-bar" v-if="item.weaponInfo.label == 'BROKEN'" :style="{width: '100%', backgroundColor: item.weaponInfo.color}">
