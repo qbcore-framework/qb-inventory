@@ -466,7 +466,7 @@ body {
 
 .itemboxes-container {
 	height: 130px;
-	min-width: 50px;
+	min-width: 5vw;
 	max-width: 70vw;
 	position: absolute;
 	display: flex;
@@ -477,7 +477,7 @@ body {
 	bottom: 20%;
 	overflow: hidden;
 	transform: translateX(-50%);
-	transition: width .8s ease-in-out;
+	transition: width .3s ease-in-out;
 	z-index: 1;
 }
 
@@ -488,16 +488,18 @@ body {
 .itembox-container {
 	display: block;
 	position: relative;
-	margin-right: 1vw;
-	width: 5vw;
+	margin-right: 0.25vw;
+	margin-left: 0.25vw;
+	width: 4.5vw;
 	transform: translateX(0);
 	height: 11vh;
 	border-bottom-left-radius: 5px;
 	border-bottom-right-radius: 5px;
 	background-color: rgba(0, 0, 0, 0.3);
 	border: 1px solid rgb(68, 68, 68, 40%);
+	box-sizing: border-box;
 	opacity: 1;
-	flex: 0 0 6vw;
+	flex: 0 0 5vw;
 }
 
 #itembox-action {

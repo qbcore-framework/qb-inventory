@@ -1,5 +1,5 @@
 <template>
-    <div class="itemboxes-container" :style="{width: (itemsShown.length + 1) * 6 + 'vw'}">
+    <div class="itemboxes-container" :style="{width: 'calc(' + itemsShown.length * 5 + 'vw + 10px * ' + itemsShown.length + ')'}">
         <transition-group name="fade">
             <div class="itembox-container" v-for="item in itemsShown.slice().reverse()" :key="item.id">
                 <div id="itembox-action">
