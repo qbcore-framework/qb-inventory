@@ -468,13 +468,16 @@ body {
 	height: 130px;
 	min-width: 50px;
 	max-width: 70vw;
-	width: fit-content;
 	position: absolute;
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: flex-start;
+	align-items: center;
 	left: 50%;
 	bottom: 20%;
 	overflow: hidden;
 	transform: translateX(-50%);
-	transition: width .8s;
+	transition: width .8s ease-in-out;
 	z-index: 1;
 }
 
@@ -483,17 +486,18 @@ body {
 }
 
 .itembox-container {
-	display: inline-block;
+	display: block;
 	position: relative;
-	margin: 0 auto;
-	margin-right: 1vh;
-	width: 9vh;
+	margin-right: 1vw;
+	width: 5vw;
+	transform: translateX(0);
 	height: 11vh;
 	border-bottom-left-radius: 5px;
 	border-bottom-right-radius: 5px;
 	background-color: rgba(0, 0, 0, 0.3);
-	border: 1px solid rgb(68 68 68 / 40%);
+	border: 1px solid rgb(68, 68, 68, 40%);
 	opacity: 1;
+	flex: 0 0 6vw;
 }
 
 #itembox-action {

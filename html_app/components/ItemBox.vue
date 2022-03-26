@@ -1,5 +1,5 @@
 <template>
-    <div class="itemboxes-container">
+    <div class="itemboxes-container" :style="{width: (itemsShown.length + 1) * 6 + 'vw'}">
         <transition-group name="fade">
             <div class="itembox-container" v-for="item in itemsShown.slice().reverse()" :key="item.id">
                 <div id="itembox-action">
@@ -22,21 +22,21 @@
 
 <style> 
     .fade-enter-active {
-        transition: all .8s ease-in-out;
+        transition: transform .8s ease-in-out, opacity .3s ease-in-out;
     }
     .fade-leave-active {
-        transition: all .8s ease-in-out;
+        transition: transform .8s ease-in-out, opacity .3s ease-in-out;
     }
     .fade-enter-from {
-        transform: translateX(-20px) !important;
+        transform: translateX(-100%) !important;
         opacity: 0 !important;
     }
     .fade-leave-to {
-        transform: translateX(20px);
-        opacity: 0;
+        transform: translateX(100%) !important;
+        opacity: 0 !important;
     }
     .fade-move {
-        transition: transform .8s;
+        transition: transform .5s ease-in-out;
     }
 </style>
 
