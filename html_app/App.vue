@@ -118,14 +118,16 @@ export default {
                 case "RobMoney":
                     this.robberyTarget = event.data.TargetId;
                     break;
+                default:
+                    console.error("Unknown type of message: " + event.data.action);
+                    break;
             }
         },
         open(data) {
             this.hide = false;
             this.inventory = data;
-            if (this.inventory.error) {
+            if (this.inventory.error)
                 axios.post("https://qb-inventory/PlayDropFail", {}, this.AXIOS_CONFIG);
-            }
         },
         close() {
             this.hide = true;

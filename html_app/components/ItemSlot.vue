@@ -29,7 +29,7 @@
             <p>{{ item.amount }} ({{ ((item.weight * item.amount) / 1000).toFixed(1) }})</p>
         </div>
         <div class="item-slot-amount" v-else-if="item && item.price && inventory == 'itemshop'">
-            <p>{{ i18n.itemSlot.item_shop_currency }}{{ item.price }} ({{ (item.weight / 1000).toFixed(1) }}kg)</p>
+            <p>{{ i18n.itemSlot.item_shop_currency }}{{ item.price }} ({{ (item.weight / 1000).toFixed(1) }} kg)</p>
         </div>
     </div>
 </template>
