@@ -32,7 +32,7 @@ body {
 	width: 100%;
 	height: 100%;
 	left: 0vw;
-	display: none;
+	display: block;
 }
 
 .inv-background {
@@ -48,6 +48,7 @@ body {
 	position: absolute;
 	width: 100%;
 	height: 100%;
+	z-index: 10;
 }
 
 .player-inventory {
@@ -117,13 +118,14 @@ body {
 	width: 9.5vh;
 	height: 11.5vh;
 	float: left;
-	background-color: rgba(0, 0, 0, 0.3);
+	background-color: rgba(0, 0, 0, 0.5);
 	border: 1px solid rgb(68 68 68 / 40%);
 	margin: 2px;
 	transition: opacity 0.2s;
 	opacity: 1.0;
 	border-bottom-left-radius: 5px;
 	border-bottom-right-radius: 5px;
+	box-sizing: border-box;
 }
 
 .item-slot-hoverClass {
@@ -136,6 +138,11 @@ body {
 
 .inv-option-item {
 	margin-top: 10%;
+    cursor: default;
+}
+
+#inv-close {
+    cursor: pointer;
 }
 
 .btn-inv {
@@ -322,8 +329,39 @@ body {
 	top: 22.2%;
 }
 
+.progressbar {
+    margin-left: 10%;
+    margin-top: 0.5%;
+    border-radius: 50px;
+    width: 80%;
+    background-color: rgba(24, 26, 30, 0.6);
+}
+
+.pro {
+	background: linear-gradient(to right, #389f46a9, #f35858b0 500px);
+	height: 10px;
+	border-radius: 50px;
+}
+.pro1 {
+	background: linear-gradient(to right, #389f46a9, #f35858b0 500px);
+	height: 10px;
+	border-radius: 50px;
+}
+
+.weight-img {
+	position: absolute;
+    float: left;
+    margin-top: 0;
+    margin-left: 3%;
+    height: 19px;
+    width: auto;
+	top: 15px;
+    left: 0px;
+}
+
+
 #player-inv-label {
-	position: relative;
+    position: absolute;
 	color: white;
 	font-size: 16px;
 	font-style: italic;
@@ -332,33 +370,36 @@ body {
 	letter-spacing: 0.2vh;
 	bottom: 0px;
 	float: left;
+	width: 16vh;
+    bottom: 3vh;
 	text-transform: uppercase;
 }
 
 #player-inv-weight {
-	color: white;
+	color: #ffffff00;
 	font-size: 12px;
 	font-weight: 900;
 	font-family: 'Poppins', sans-serif;
 	letter-spacing: 0.2vh;
+    width: 50vh;
 	float: left;
 }
 
 #other-inv-label {
-	position: relative;
+	position: absolute;
 	color: white;
 	font-size: 16px;
 	font-style: italic;
 	font-family: 'Poppins', sans-serif;
 	font-weight: bold;
 	letter-spacing: 0.2vh;
-	bottom: 0px;
+	bottom: 3vh;
 	float: left;
 	text-transform: uppercase;
 }
 
 #other-inv-weight {
-	color: white;
+	color: #ff000000;
 	font-size: 12px;
 	font-weight: 900;
 	font-family: 'Poppins', sans-serif;
@@ -380,13 +421,14 @@ body {
 
 .other-inv-info {
 	position: absolute;
-	left: 56%;
 	top: 22.2%;
+	left: 56.2%;
+    width: 28%;
 }
 
 .ply-iteminfo-container {
 	font-family: 'Poppins', sans-serif;
-	display: none;
+	display: block;
 	position: absolute;
 	bottom: 3%;
 	margin: 0 auto;
@@ -424,13 +466,19 @@ body {
 
 .itemboxes-container {
 	height: 130px;
-	min-width: 110px;
-	max-width: 550px;
-	width: fit-content;
+	min-width: 5vw;
+	max-width: 70vw;
 	position: absolute;
-	left: 47%;
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: flex-start;
+	align-items: center;
+	left: 50%;
 	bottom: 20%;
 	overflow: hidden;
+	transform: translateX(-50%);
+	transition: width .3s ease-in-out;
+	z-index: 1;
 }
 
 .template {
@@ -438,17 +486,20 @@ body {
 }
 
 .itembox-container {
-	display: none;
+	display: block;
 	position: relative;
-	float: left;
-	margin: 0 auto;
-	margin-right: 1vh;
-	width: 9vh;
+	margin-right: 0.25vw;
+	margin-left: 0.25vw;
+	width: 4.5vw;
+	transform: translateX(0);
 	height: 11vh;
 	border-bottom-left-radius: 5px;
 	border-bottom-right-radius: 5px;
 	background-color: rgba(0, 0, 0, 0.3);
-	border: 1px solid rgb(68 68 68 / 40%);
+	border: 1px solid rgb(68, 68, 68, 40%);
+	box-sizing: border-box;
+	opacity: 1;
+	flex: 0 0 5vw;
 }
 
 #itembox-action {
@@ -483,7 +534,7 @@ body {
 }
 
 .requiredItem-container {
-	display: none;
+	display: block;
 	position: absolute;
 	height: 100vh;
 	width: 100vw;
@@ -530,7 +581,7 @@ body {
 }
 
 .z-hotbar-inventory {
-	display: none;
+	display: block;
 	position: absolute;
 	bottom: 1%;
 	margin: 0 auto;
@@ -694,10 +745,11 @@ body {
 
 .weapon-attachments-container {
 	position: absolute;
-	left: -100vw;
+	left: 0;
 	width: 100%;
 	height: 100%;
 	background-color: rgba(0, 0, 0, 0.5);
+	z-index: 999;
 }
 
 .weapon-attachments-container-title {
@@ -775,13 +827,11 @@ body {
 	border: 1px solid rgb(75, 75, 75);
 	margin-right: 1vh;
 	float: left;
-	transition: .05s linear;
 }
 
 .weapon-attachment:hover {
 	background-color: rgba(0, 0, 0, 0.4);
 	border: 1px solid rgb(29, 29, 29);
-	transition: .05s linear;
 }
 
 .weapon-attachment-label {
@@ -832,6 +882,7 @@ body {
 	text-align: center;
 	color: white;
 	font-size: 2vh;
+    cursor: default;
 	transition: background-color .05s linear;
 }
 
@@ -901,6 +952,7 @@ body {
 	line-height: 6vh;
 	color: white;
 	font-family: 'Poppins', sans-serif;
+	cursor: pointer;
 	transition: .05s linear;
 }
 
