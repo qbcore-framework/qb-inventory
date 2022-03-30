@@ -1,5 +1,23 @@
 Config = {}
 
+Config.MaxSlots = {
+    player = 41,
+    drops = 0,
+    trunks = 0,
+    gloveboxes = 0,
+    stashes = 50,
+    shop = 0
+}
+
+Config.MaxWeights = {
+    player = 41,
+    drops = 0,
+    trunks = 0,
+    gloveboxes = 0,
+    stashes = 1000000,
+    shop = 0
+}
+
 Config.VendingObjects = {
     "prop_vend_soda_01",
     "prop_vend_soda_02",

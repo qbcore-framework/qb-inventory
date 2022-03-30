@@ -258,22 +258,18 @@ end)
 
 RegisterNetEvent('inventory:client:CheckOpenState', function(type, id, label)
     local name = QBCore.Shared.SplitStr(label, "-")[2]
-    if type == "stash" then
-        if name ~= CurrentStash or CurrentStash == nil then
-            TriggerServerEvent('inventory:server:SetIsOpenState', false, type, id)
-        end
-    elseif type == "trunk" then
-        if name ~= CurrentVehicle or CurrentVehicle == nil then
-            TriggerServerEvent('inventory:server:SetIsOpenState', false, type, id)
-        end
-    elseif type == "glovebox" then
-        if name ~= CurrentGlovebox or CurrentGlovebox == nil then
-            TriggerServerEvent('inventory:server:SetIsOpenState', false, type, id)
-        end
-    elseif type == "drop" then
-        if name ~= CurrentDrop or CurrentDrop == nil then
-            TriggerServerEvent('inventory:server:SetIsOpenState', false, type, id)
-        end
+    if not name then
+        return
+    end
+
+    if type == "stash" and name ~= CurrentStash then
+        TriggerServerEvent('inventory:server:SetIsOpenState', false, type, id)
+    elseif type == "trunk" and name ~= CurrentVehicle then
+        TriggerServerEvent('inventory:server:SetIsOpenState', false, type, id)
+    elseif type == "glovebox" and name ~= CurrentGlovebox then
+        TriggerServerEvent('inventory:server:SetIsOpenState', false, type, id)
+    elseif type == "drop" and name ~= CurrentDrop then
+        TriggerServerEvent('inventory:server:SetIsOpenState', false, type, id)
     end
 end)
 
