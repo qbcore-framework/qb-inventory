@@ -379,7 +379,7 @@ export default {
                 }
             } else if (this.amount < 0) {
                 /** @todo Add an error "can't set a negative amount" */
-                this.amount = setDefaultAmountValue();
+                this.amount = this.setDefaultAmountValue();
                 return;
             } else if (this.amount > oldItemSlot.amount) {
                 /** @todo Add an error "can't set a superior amount" */
