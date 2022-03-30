@@ -252,6 +252,10 @@ RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
     PlayerData = {}
 end)
 
+RegisterNetEvent('QBCore:Client:UpdateObject', function()
+	QBCore = exports['qb-core']:GetCoreObject()
+end)
+
 RegisterNetEvent('QBCore:Player:SetPlayerData', function(val)
     PlayerData = val
 end)
