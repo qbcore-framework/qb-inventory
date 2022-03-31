@@ -189,7 +189,7 @@ export default {
                     AttachmentData: attachment,
                     WeaponData: this.item,
             }).then(({data}) => {
-                if (data.AttachmentData !== null && data.AttachmentData !== undefined) {
+                if (!data.AttachmentData) {
                     this.attachments = data.AttachmentData;
                 } else {
                     this.attachments = {}

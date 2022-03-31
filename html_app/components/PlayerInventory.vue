@@ -206,7 +206,7 @@ export default {
             return this.INVENTORY_TYPE_DISABLE_DROP.includes(inventory);
         },
         getInventoryItemAtSlot: function(inventory, slot) {
-            const selectedItem = this.items.filter((item) => item.inventory == inventory && item.slot == slot);
+            const selectedItem = this.items.filter((item) => item.inventory === inventory && item.slot === slot);
 
             if (selectedItem.length != 1)
                 return false;
