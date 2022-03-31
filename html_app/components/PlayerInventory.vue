@@ -72,7 +72,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import {fetchNui} from "../utils";
 import ItemSlot from './ItemSlot.vue';
 import ItemInfo from './ItemInfo.vue';
 var _ = require('lodash');
@@ -223,7 +223,7 @@ export default {
 
         robPlayer: function () {
             if (this.robbery) {
-                axios.post("https://qb-inventory/RobMoney", {TargetId: this.robbery}, config.AXIOS_CONFIG)
+                fetchNui("RobMoney", {TargetId: this.robbery})
                 this.robbery = null;
             }
         },
@@ -350,10 +350,10 @@ export default {
             }
 
             if (inventory == "use") {
-                axios.post("https://qb-inventory/UseItem", {
+                fetchNui("UseItem", {
                     inventory: oldItemSlot.inventory,
                     item: this.convertItemToQB(oldItemSlot),
-                }, this.AXIOS_CONFIG)
+                })
                 this.$bus.trigger('close')
                 return;
             }
@@ -395,11 +395,11 @@ export default {
             amount = parseInt(amount.toFixed());
 
             if (inventory == "give") {
-                axios.post("https://qb-inventory/GiveItem", {
+                fetchNui("GiveItem", {
                     inventory: oldItemSlot.inventory,
                     item: this.convertItemToQB(oldItemSlot),
                     amount: parseInt(amount),
-                }, this.AXIOS_CONFIG)
+                })
                 return;
             }
 
@@ -427,9 +427,9 @@ export default {
                 this.items[newItemIndex].amount += amount;
             } else if (oldItemSlot && newItemSlot && !oldItemSlot.unique && !newItemSlot.unique
                 && newItemSlot.combinable != null && this.isCombinable(oldItemSlot.name, newItemSlot.combinable.accept)) {
-                axios.post("https://qb-inventory/getCombineItem", {
+                fetchNui("getCombineItem", {
                     item: newItemSlot.combinable.reward
-                }, this.AXIOS_CONFIG)
+                })
                     .then((reward) => {
                         this.combination = {};
                         this.combination.fromData = oldItemSlot;
@@ -467,14 +467,14 @@ export default {
                 return
             }
 
-            axios.post("https://qb-inventory/PlayDropSound", {}, this.AXIOS_CONFIG)
-            axios.post("https://qb-inventory/SetInventoryData", {
+            fetchNui("PlayDropSound", {})
+            fetchNui("SetInventoryData", {
                 fromInventory: (backupItem.inventory == this.TYPE_ITEM_PLAYER_INVENTORY ? this.playerInventory.name : this.openedInventory.name),
                 toInventory: inventoryName,
                 fromSlot: backupItem.slot,
                 toSlot: slot,
                 fromAmount: amount,
-            }, this.AXIOS_CONFIG)
+            })
         },
 
         isCombinable(base, ingredient) {
@@ -487,17 +487,17 @@ export default {
 
         combineItems() {
             if (this.combination.toData.combinable.anim != null) {
-                axios.post("https://qb-inventory/combineWithAnim", {
-                        combineData: this.combination.toData.combinable,
-                        usedItem: this.combination.toData.name,
-                        requiredItem: this.combination.fromData.name,
-                    }, this.AXIOS_CONFIG);
+                fetchNui("combineWithAnim", {
+                    combineData: this.combination.toData.combinable,
+                    usedItem: this.combination.toData.name,
+                    requiredItem: this.combination.fromData.name,
+                });
             } else {
-                axios.post("https://qb-inventory/combineItem", {
-                        reward: this.combination.toData.combinable.reward,
-                        toItem: this.combination.toData.name,
-                        fromItem: this.combination.fromData.name,
-                    }, this.AXIOS_CONFIG);
+                fetchNui("combineItem", {
+                    reward: this.combination.toData.combinable.reward,
+                    toItem: this.combination.toData.name,
+                    fromItem: this.combination.fromData.name,
+                });
             }
             this.$bus.trigger('close');
         },

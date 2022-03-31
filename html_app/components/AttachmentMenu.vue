@@ -41,10 +41,12 @@
 </template>
 
 <script>
-import axios from 'axios';
 /**
  * @todo EVERYTHING !
  */
+
+import {fetchNui} from "../utils";
+
 export default {
     data() {
         return {
@@ -95,10 +97,10 @@ export default {
         loadWeaponData: function(weapon, item) {
             var self = this;
 
-            axios.post("https://qb-inventory/GetWeaponData", {
+            fetchNui("GetWeaponData", {
                 weapon: weapon,
                 ItemData: item,
-            }, this.AXIOS_CONFIG)
+            })
             .then((data) => {
                 data = data.data
 
@@ -183,10 +185,10 @@ export default {
          * 
          */
         itemChangeSlot: function (attachment) {
-            axios.post("https://qb-inventory/RemoveAttachment",{
+            fetchNui("/RemoveAttachment",{
                     AttachmentData: attachment,
                     WeaponData: this.item,
-                }, this.AXIOS_CONFIG)
+                })
                 .then((data) => {
                     data = data.data;
                     

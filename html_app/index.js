@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import $bus from './events.js'
-import axios from 'axios'
+import {fetchNui} from "./utils";
 
 const app = createApp(App)
 
@@ -9,15 +9,13 @@ var i18n = {};
 
 app.config.globalProperties.$bus = $bus;
 
-axios.post("https://qb-inventory/RetrieveTranslations", {}, { headers: {'Content-Type': 'application/json'} })
-    .then((data) => {
-        app.config.globalProperties.i18n = data.data
-    })
+fetchNui("RetrieveTranslations", {}).then((data) => {
+    app.config.globalProperties.i18n = data.data
+})
 
 app.config.globalProperties.TYPE_ITEM_PLAYER_INVENTORY = "player";
 app.config.globalProperties.INVENTORY_TYPE_DISABLE_DROP = ['itemshop', 'crafting'];
 app.config.globalProperties.TYPE_ITEM_OPEN_INVENTORY = "other";
-app.config.globalProperties.AXIOS_CONFIG = { headers: {'Content-Type': 'application/json'} };
 
 app.config.globalProperties.IsWeaponBlocked = function(WeaponName) {
     var DurabilityBlockedWeapons = [
