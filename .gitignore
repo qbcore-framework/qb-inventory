@@ -1,3 +1,5 @@
 node_modules/
 html/
 .yarn.installed
+.idea
+yarn.lock
