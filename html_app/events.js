@@ -12,12 +12,12 @@ class Event {
 
     off(eventName, fn) {
         if (this.events[eventName]) {
-            for (var i = 0; i < this.events[eventName].length; i++) {
+            for (let i = 0; i < this.events[eventName].length; i++) {
                 if (this.events[eventName][i] === fn) {
                     this.events[eventName].splice(i, 1);
                     break;
                 }
-            };
+            }
         }
     }
 

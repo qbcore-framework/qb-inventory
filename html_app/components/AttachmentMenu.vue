@@ -95,7 +95,7 @@ export default {
     },
     methods: {
         loadWeaponData: function(weapon, item) {
-            var self = this;
+            const self = this;
 
             fetchNui("GetWeaponData", {
                 weapon: weapon,
@@ -185,19 +185,16 @@ export default {
          * 
          */
         itemChangeSlot: function (attachment) {
-            fetchNui("/RemoveAttachment",{
+            fetchNui("RemoveAttachment",{
                     AttachmentData: attachment,
                     WeaponData: this.item,
-                })
-                .then((data) => {
-                    data = data.data;
-                    
-                    if (data.AttachmentData !== null && data.AttachmentData !== undefined) {
-                        this.attachments = data.AttachmentData;
-                    } else {
-                        this.attachments = {}
-                    }
-                })
+            }).then(({data}) => {
+                if (data.AttachmentData !== null && data.AttachmentData !== undefined) {
+                    this.attachments = data.AttachmentData;
+                } else {
+                    this.attachments = {}
+              }
+            })
         }
     }
 }

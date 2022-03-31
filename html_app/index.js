@@ -5,8 +5,6 @@ import {fetchNui} from "./utils";
 
 const app = createApp(App)
 
-var i18n = {};
-
 app.config.globalProperties.$bus = $bus;
 
 fetchNui("RetrieveTranslations", {}).then((data) => {
@@ -18,27 +16,27 @@ app.config.globalProperties.INVENTORY_TYPE_DISABLE_DROP = ['itemshop', 'crafting
 app.config.globalProperties.TYPE_ITEM_OPEN_INVENTORY = "other";
 
 app.config.globalProperties.IsWeaponBlocked = function(WeaponName) {
-    var DurabilityBlockedWeapons = [
+    const DurabilityBlockedWeapons = [
         "weapon_unarmed",
     ];
 
-    var retval = false;
+    let retval = false;
     DurabilityBlockedWeapons.forEach(element => {
-        if (element == WeaponName)
+        if (element === WeaponName)
             retval = true;
     });
     return retval;
 }
 
 app.config.globalProperties.getWeaponInfo = function(item) {
-    var weaponInfo = null;
+    let weaponInfo;
 
-    if (!this.IsWeaponBlocked(item.name) && item.name.split("_")[0] == "weapon") {
+    if (!this.IsWeaponBlocked(item.name) && item.name.split("_")[0] === "weapon") {
         weaponInfo = {
             quality: item.info.quality,
         }
 
-        if (weaponInfo.quality == undefined)
+        if (!weaponInfo.quality)
             weaponInfo.quality = 100;
 
         // Set weapon status from the quality
@@ -49,23 +47,23 @@ app.config.globalProperties.getWeaponInfo = function(item) {
             weaponInfo.color = "rgb(230, 126, 34)";
         
         // Set the weaponInfo Label to the Quality
-        if (weaponInfo.quality !== undefined)
+        if (weaponInfo.quality)
             weaponInfo.label = weaponInfo.quality.toFixed();
         else
             weaponInfo.label = weaponInfo.quality;
 
-        if (weaponInfo.quality == 0) {
+        if (weaponInfo.quality === 0) {
             weaponInfo.label = "BROKEN"; /** @todo: need translation support */
         }
-    } else if (item.info.uses != undefined && item.info.uses != null) {
+    } else if (item.info.uses !== undefined && item.info.uses !== null) {
         weaponInfo = {
             quality: item.info.uses
         }
         // Set weapon status from the quality
         weaponInfo.color = "rgb(39, 174, 96)";
-        if (item.info.uses == 1)
+        if (item.info.uses === 1)
             weaponInfo.color = "rgb(192, 57, 43)";
-        else if (item.info.uses == 2)
+        else if (item.info.uses === 2)
             weaponInfo.color = "rgb(230, 126, 34)";
         else
             weaponInfo.color = "rgb(39, 174, 96)";
@@ -111,7 +109,7 @@ app.config.globalProperties.convertItemFromQB = function(id, item, inventory, in
         slot: item.slot,
         image: "images/" + item.image,
         price: item.price,
-        isWeapon: item.name.split("_")[0] == "weapon" && !this.IsWeaponBlocked(item.name),
+        isWeapon: item.name.split("_")[0] === "weapon" && !this.IsWeaponBlocked(item.name),
         weaponInfo: this.getWeaponInfo(item),
         description: item.description,
         useable: item.useable,
