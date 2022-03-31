@@ -75,7 +75,7 @@
 import {fetchNui} from "../utils";
 import ItemSlot from './ItemSlot.vue';
 import ItemInfo from './ItemInfo.vue';
-var _ = require('lodash');
+import cloneDeep from 'lodash.clonedeep'
 
 /**
  * Component to manage every inventory (or "tab") part
@@ -338,7 +338,7 @@ export default {
             var newItemSlot = this.getInventoryItemAtSlot(inventory, slot);
             var backupItem = {...oldItemSlot}
 
-            var backupItems = _.cloneDeep(this.items);
+            var backupItems = cloneDeep(this.items);
 
             var inventoryName = inventory;
             if (inventory != this.TYPE_ITEM_PLAYER_INVENTORY) {
