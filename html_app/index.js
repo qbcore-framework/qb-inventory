@@ -8,7 +8,7 @@ const app = createApp(App)
 app.config.globalProperties.$bus = $bus;
 
 fetchNui("RetrieveTranslations", {}).then((data) => {
-    app.config.globalProperties.i18n = data.data
+    app.config.globalProperties.i18n = data
 })
 
 app.config.globalProperties.TYPE_ITEM_PLAYER_INVENTORY = "player";
