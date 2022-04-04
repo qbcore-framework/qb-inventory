@@ -102,13 +102,11 @@ export default {
                 ItemData: item,
             })
             .then((data) => {
-                data = data.data
-
                 self.weapon = data.WeaponData;
                 self.item = item;
                 self.attachments = {}
 
-                if (data.AttachmentData !== null && data.AttachmentData !== undefined) {
+                if (!data.AttachmentData) {
                     self.attachments = data.AttachmentData;
                 }
             })

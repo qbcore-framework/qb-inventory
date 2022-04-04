@@ -435,7 +435,7 @@ export default {
                     this.combination.fromData = oldItemSlot;
                     this.combination.toData = newItemSlot;
                     this.combination.toAmount = amount;
-                    this.combination.reward = reward.data;
+                    this.combination.reward = reward;
                 });
                 return;
             } else {
