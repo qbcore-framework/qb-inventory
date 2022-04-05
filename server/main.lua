@@ -898,9 +898,13 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				if toItemData ~= nil then
 					--Player.PlayerData.items[fromSlot] = toItemData
 					local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
-					if toItemData.name ~= fromItemData.name then
-						Player.Functions.RemoveItem(toItemData.name, toAmount, toSlot)
-						Player.Functions.AddItem(toItemData.name, toAmount, fromSlot, toItemData.info)
+					if toItemData.amount >= toAmount then
+						if toItemData.name ~= fromItemData.name then
+							Player.Functions.RemoveItem(toItemData.name, toAmount, toSlot)
+							Player.Functions.AddItem(toItemData.name, toAmount, fromSlot, toItemData.info)
+						end
+					else
+						print("DUPE ENGELLENDI - 1")	
 					end
 				else
 					--Player.PlayerData.items[fromSlot] = nil
@@ -910,6 +914,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				local playerId = tonumber(QBCore.Shared.SplitStr(toInventory, "-")[2])
 				local OtherPlayer = QBCore.Functions.GetPlayer(playerId)
 				local toItemData = OtherPlayer.PlayerData.items[toSlot]
+				local itemDataTest = OtherPlayer.Functions.GetItemBySlot(toSlot)
 				Player.Functions.RemoveItem(fromItemData.name, fromAmount, fromSlot)
 				TriggerClientEvent("inventory:client:CheckWeapon", src, fromItemData.name)
 				--Player.PlayerData.items[toSlot] = fromItemData
@@ -917,10 +922,14 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 					--Player.PlayerData.items[fromSlot] = toItemData
 					local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
 					local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
-					if toItemData.name ~= fromItemData.name then
-						OtherPlayer.Functions.RemoveItem(itemInfo["name"], toAmount, fromSlot)
-						Player.Functions.AddItem(toItemData.name, toAmount, fromSlot, toItemData.info)
-						TriggerEvent("qb-log:server:CreateLog", "robbing", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | *"..src.."*) swapped item; name: **"..itemInfo["name"].."**, amount: **" .. toAmount .. "** with name: **" .. fromItemData.name .. "**, amount: **" .. fromAmount.. "** with player: **".. GetPlayerName(OtherPlayer.PlayerData.source) .. "** (citizenid: *"..OtherPlayer.PlayerData.citizenid.."* | id: *"..OtherPlayer.PlayerData.source.."*)")
+					if itemDataTest.amount >= toAmount then
+						if toItemData.name ~= fromItemData.name then
+							OtherPlayer.Functions.RemoveItem(itemInfo["name"], toAmount, fromSlot)
+							Player.Functions.AddItem(toItemData.name, toAmount, fromSlot, toItemData.info)
+							TriggerEvent("qb-log:server:CreateLog", "robbing", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | *"..src.."*) swapped item; name: **"..itemInfo["name"].."**, amount: **" .. toAmount .. "** with name: **" .. fromItemData.name .. "**, amount: **" .. fromAmount.. "** with player: **".. GetPlayerName(OtherPlayer.PlayerData.source) .. "** (citizenid: *"..OtherPlayer.PlayerData.citizenid.."* | id: *"..OtherPlayer.PlayerData.source.."*)")
+						end
+					else
+						print("DUPE ENGELLENDI - 2")	
 					end
 				else
 					local itemInfo = QBCore.Shared.Items[fromItemData.name:lower()]
@@ -938,10 +947,14 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 					--Player.PlayerData.items[fromSlot] = toItemData
 					local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
 					local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
-					if toItemData.name ~= fromItemData.name then
-						RemoveFromTrunk(plate, fromSlot, itemInfo["name"], toAmount)
-						Player.Functions.AddItem(toItemData.name, toAmount, fromSlot, toItemData.info)
-						TriggerEvent("qb-log:server:CreateLog", "trunk", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..itemInfo["name"].."**, amount: **" .. toAmount .. "** with name: **" .. fromItemData.name .. "**, amount: **" .. fromAmount .. "** - plate: *" .. plate .. "*")
+					if toItemData.amount >= toAmount then
+						if toItemData.name ~= fromItemData.name then
+							RemoveFromTrunk(plate, fromSlot, itemInfo["name"], toAmount)
+							Player.Functions.AddItem(toItemData.name, toAmount, fromSlot, toItemData.info)
+							TriggerEvent("qb-log:server:CreateLog", "trunk", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..itemInfo["name"].."**, amount: **" .. toAmount .. "** with name: **" .. fromItemData.name .. "**, amount: **" .. fromAmount .. "** - plate: *" .. plate .. "*")
+						end
+					else
+						print("DUPE ENGELLENDI - 3")
 					end
 				else
 					local itemInfo = QBCore.Shared.Items[fromItemData.name:lower()]
@@ -959,10 +972,14 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 					--Player.PlayerData.items[fromSlot] = toItemData
 					local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
 					local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
-					if toItemData.name ~= fromItemData.name then
-						RemoveFromGlovebox(plate, fromSlot, itemInfo["name"], toAmount)
-						Player.Functions.AddItem(toItemData.name, toAmount, fromSlot, toItemData.info)
-						TriggerEvent("qb-log:server:CreateLog", "glovebox", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..itemInfo["name"].."**, amount: **" .. toAmount .. "** with name: **" .. fromItemData.name .. "**, amount: **" .. fromAmount .. "** - plate: *" .. plate .. "*")
+					if toItemData.amount >= toAmount then
+						if toItemData.name ~= fromItemData.name then
+							RemoveFromGlovebox(plate, fromSlot, itemInfo["name"], toAmount)
+							Player.Functions.AddItem(toItemData.name, toAmount, fromSlot, toItemData.info)
+							TriggerEvent("qb-log:server:CreateLog", "glovebox", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..itemInfo["name"].."**, amount: **" .. toAmount .. "** with name: **" .. fromItemData.name .. "**, amount: **" .. fromAmount .. "** - plate: *" .. plate .. "*")
+						end
+					else
+						print("DUPE ENGELLENDI - 4")	
 					end
 				else
 					local itemInfo = QBCore.Shared.Items[fromItemData.name:lower()]
@@ -980,11 +997,15 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 					--Player.PlayerData.items[fromSlot] = toItemData
 					local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
 					local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
-					if toItemData.name ~= fromItemData.name then
-						--RemoveFromStash(stashId, fromSlot, itemInfo["name"], toAmount)
-						RemoveFromStash(stashId, toSlot, itemInfo["name"], toAmount)
-						Player.Functions.AddItem(toItemData.name, toAmount, fromSlot, toItemData.info)
-						TriggerEvent("qb-log:server:CreateLog", "stash", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..itemInfo["name"].."**, amount: **" .. toAmount .. "** with name: **" .. fromItemData.name .. "**, amount: **" .. fromAmount .. "** - stash: *" .. stashId .. "*")
+					if toItemData.amount >= toAmount then
+						if toItemData.name ~= fromItemData.name then
+							--RemoveFromStash(stashId, fromSlot, itemInfo["name"], toAmount)
+							RemoveFromStash(stashId, toSlot, itemInfo["name"], toAmount)
+							Player.Functions.AddItem(toItemData.name, toAmount, fromSlot, toItemData.info)
+							TriggerEvent("qb-log:server:CreateLog", "stash", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..itemInfo["name"].."**, amount: **" .. toAmount .. "** with name: **" .. fromItemData.name .. "**, amount: **" .. fromAmount .. "** - stash: *" .. stashId .. "*")
+						end
+					else 
+						print("DUPE ENGELLENDI - 5")	
 					end
 				else
 					local itemInfo = QBCore.Shared.Items[fromItemData.name:lower()]
@@ -1003,10 +1024,14 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 					if toItemData ~= nil then
 						local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
 						local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
-						if toItemData.name ~= fromItemData.name then
-							exports['qb-traphouse']:RemoveHouseItem(traphouseId, fromSlot, itemInfo["name"], toAmount)
-							Player.Functions.AddItem(toItemData.name, toAmount, fromSlot, toItemData.info)
-							TriggerEvent("qb-log:server:CreateLog", "traphouse", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..itemInfo["name"].."**, amount: **" .. toAmount .. "** with name: **" .. fromItemData.name .. "**, amount: **" .. fromAmount .. "** - traphouse: *" .. traphouseId .. "*")
+						if toItemData.amount >= toAmount then
+							if toItemData.name ~= fromItemData.name then
+								exports['qb-traphouse']:RemoveHouseItem(traphouseId, fromSlot, itemInfo["name"], toAmount)
+								Player.Functions.AddItem(toItemData.name, toAmount, fromSlot, toItemData.info)
+								TriggerEvent("qb-log:server:CreateLog", "traphouse", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..itemInfo["name"].."**, amount: **" .. toAmount .. "** with name: **" .. fromItemData.name .. "**, amount: **" .. fromAmount .. "** - traphouse: *" .. traphouseId .. "*")
+							end
+						else
+							print("DUPE ENGELLENDI - 6")		
 						end
 					else
 						local itemInfo = QBCore.Shared.Items[fromItemData.name:lower()]
@@ -1029,10 +1054,14 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 					if toItemData ~= nil then
 						local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
 						local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
-						if toItemData.name ~= fromItemData.name then
-							Player.Functions.AddItem(toItemData.name, toAmount, fromSlot, toItemData.info)
-							RemoveFromDrop(toInventory, fromSlot, itemInfo["name"], toAmount)
-							TriggerEvent("qb-log:server:CreateLog", "drop", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..itemInfo["name"].."**, amount: **" .. toAmount .. "** with name: **" .. fromItemData.name .. "**, amount: **" .. fromAmount .. "** - dropid: *" .. toInventory .. "*")
+						if toItemData.amount >= toAmount then
+							if toItemData.name ~= fromItemData.name then
+								Player.Functions.AddItem(toItemData.name, toAmount, fromSlot, toItemData.info)
+								RemoveFromDrop(toInventory, fromSlot, itemInfo["name"], toAmount)
+								TriggerEvent("qb-log:server:CreateLog", "drop", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..itemInfo["name"].."**, amount: **" .. toAmount .. "** with name: **" .. fromItemData.name .. "**, amount: **" .. fromAmount .. "** - dropid: *" .. toInventory .. "*")
+							end
+						else
+							print("DUPE ENGELLENDI - 7")
 						end
 					else
 						local itemInfo = QBCore.Shared.Items[fromItemData.name:lower()]
@@ -1062,10 +1091,14 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				if toItemData ~= nil then
 					local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
 					local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
-					if toItemData.name ~= fromItemData.name then
-						Player.Functions.RemoveItem(toItemData.name, toAmount, toSlot)
-						OtherPlayer.Functions.AddItem(itemInfo["name"], toAmount, fromSlot, toItemData.info)
-						TriggerEvent("qb-log:server:CreateLog", "robbing", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** with item; **"..itemInfo["name"].."**, amount: **" .. toAmount .. "** from player: **".. GetPlayerName(OtherPlayer.PlayerData.source) .. "** (citizenid: *"..OtherPlayer.PlayerData.citizenid.."* | *"..OtherPlayer.PlayerData.source.."*)")
+					if toItemData.amount >= toAmount then
+						if toItemData.name ~= fromItemData.name then
+							Player.Functions.RemoveItem(toItemData.name, toAmount, toSlot)
+							OtherPlayer.Functions.AddItem(itemInfo["name"], toAmount, fromSlot, toItemData.info)
+							TriggerEvent("qb-log:server:CreateLog", "robbing", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** with item; **"..itemInfo["name"].."**, amount: **" .. toAmount .. "** from player: **".. GetPlayerName(OtherPlayer.PlayerData.source) .. "** (citizenid: *"..OtherPlayer.PlayerData.citizenid.."* | *"..OtherPlayer.PlayerData.source.."*)")
+						end
+					else
+						print("DUPE ENGELLENDI - 8")		
 					end
 				else
 					TriggerEvent("qb-log:server:CreateLog", "robbing", "Retrieved Item", "green", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) took item; name: **"..fromItemData.name.."**, amount: **" .. fromAmount .. "** from player: **".. GetPlayerName(OtherPlayer.PlayerData.source) .. "** (citizenid: *"..OtherPlayer.PlayerData.citizenid.."* | *"..OtherPlayer.PlayerData.source.."*)")
@@ -1073,16 +1106,21 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				Player.Functions.AddItem(fromItemData.name, fromAmount, toSlot, fromItemData.info)
 			else
 				local toItemData = OtherPlayer.PlayerData.items[toSlot]
+				local itemDataTest = OtherPlayer.Functions.GetItemBySlot(toSlot)
 				OtherPlayer.Functions.RemoveItem(itemInfo["name"], fromAmount, fromSlot)
 				--Player.PlayerData.items[toSlot] = fromItemData
 				if toItemData ~= nil then
 					local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
 					--Player.PlayerData.items[fromSlot] = toItemData
 					local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
-					if toItemData.name ~= fromItemData.name then
-						local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
-						OtherPlayer.Functions.RemoveItem(itemInfo["name"], toAmount, toSlot)
-						OtherPlayer.Functions.AddItem(itemInfo["name"], toAmount, fromSlot, toItemData.info)
+					if itemDataTest.amount >= toAmount then
+						if toItemData.name ~= fromItemData.name then
+							local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
+							OtherPlayer.Functions.RemoveItem(itemInfo["name"], toAmount, toSlot)
+							OtherPlayer.Functions.AddItem(itemInfo["name"], toAmount, fromSlot, toItemData.info)
+						end
+					else
+						print("DUPE ENGELLENDI - 9")		
 					end
 				else
 					--Player.PlayerData.items[fromSlot] = nil
@@ -1105,12 +1143,16 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				if toItemData ~= nil then
 					local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
 					local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
-					if toItemData.name ~= fromItemData.name then
-						Player.Functions.RemoveItem(toItemData.name, toAmount, toSlot)
-						AddToTrunk(plate, fromSlot, toSlot, itemInfo["name"], toAmount, toItemData.info)
-						TriggerEvent("qb-log:server:CreateLog", "trunk", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** with item; name: **"..itemInfo["name"].."**, amount: **" .. toAmount .. "** plate: *" .. plate .. "*")
+					if toItemData.amount >= toAmount then
+						if toItemData.name ~= fromItemData.name then
+							Player.Functions.RemoveItem(toItemData.name, toAmount, toSlot)
+							AddToTrunk(plate, fromSlot, toSlot, itemInfo["name"], toAmount, toItemData.info)
+							TriggerEvent("qb-log:server:CreateLog", "trunk", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** with item; name: **"..itemInfo["name"].."**, amount: **" .. toAmount .. "** plate: *" .. plate .. "*")
+						else
+							TriggerEvent("qb-log:server:CreateLog", "trunk", "Stacked Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) stacked item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** from plate: *" .. plate .. "*")
+						end
 					else
-						TriggerEvent("qb-log:server:CreateLog", "trunk", "Stacked Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) stacked item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** from plate: *" .. plate .. "*")
+						print("DUPE ENGELLENDI - 10")		
 					end
 				else
 					TriggerEvent("qb-log:server:CreateLog", "trunk", "Received Item", "green", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) received item; name: **"..fromItemData.name.."**, amount: **" .. fromAmount.. "** plate: *" .. plate .. "*")
@@ -1124,10 +1166,14 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 					local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
 					--Player.PlayerData.items[fromSlot] = toItemData
 					local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
-					if toItemData.name ~= fromItemData.name then
-						local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
-						RemoveFromTrunk(plate, toSlot, itemInfo["name"], toAmount)
-						AddToTrunk(plate, fromSlot, toSlot, itemInfo["name"], toAmount, toItemData.info)
+					if toItemData.amount >= toAmount then
+						if toItemData.name ~= fromItemData.name then
+							local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
+							RemoveFromTrunk(plate, toSlot, itemInfo["name"], toAmount)
+							AddToTrunk(plate, fromSlot, toSlot, itemInfo["name"], toAmount, toItemData.info)
+						end
+					else
+						print("DUPE ENGELLENDI - 11")	
 					end
 				else
 					--Player.PlayerData.items[fromSlot] = nil
@@ -1150,12 +1196,16 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				if toItemData ~= nil then
 					local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
 					local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
-					if toItemData.name ~= fromItemData.name then
-						Player.Functions.RemoveItem(toItemData.name, toAmount, toSlot)
-						AddToGlovebox(plate, fromSlot, toSlot, itemInfo["name"], toAmount, toItemData.info)
-						TriggerEvent("qb-log:server:CreateLog", "glovebox", "Swapped", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src..")* swapped item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** with item; name: **"..itemInfo["name"].."**, amount: **" .. toAmount .. "** plate: *" .. plate .. "*")
+					if toItemData.amount >= toAmount then
+						if toItemData.name ~= fromItemData.name then
+							Player.Functions.RemoveItem(toItemData.name, toAmount, toSlot)
+							AddToGlovebox(plate, fromSlot, toSlot, itemInfo["name"], toAmount, toItemData.info)
+							TriggerEvent("qb-log:server:CreateLog", "glovebox", "Swapped", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src..")* swapped item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** with item; name: **"..itemInfo["name"].."**, amount: **" .. toAmount .. "** plate: *" .. plate .. "*")
+						else
+							TriggerEvent("qb-log:server:CreateLog", "glovebox", "Stacked Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) stacked item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** from plate: *" .. plate .. "*")
+						end
 					else
-						TriggerEvent("qb-log:server:CreateLog", "glovebox", "Stacked Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) stacked item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** from plate: *" .. plate .. "*")
+						print("DUPE ENGELLENDI - 12")		
 					end
 				else
 					TriggerEvent("qb-log:server:CreateLog", "glovebox", "Received Item", "green", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) received item; name: **"..fromItemData.name.."**, amount: **" .. fromAmount.. "** plate: *" .. plate .. "*")
@@ -1169,10 +1219,14 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 					local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
 					--Player.PlayerData.items[fromSlot] = toItemData
 					local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
-					if toItemData.name ~= fromItemData.name then
-						local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
-						RemoveFromGlovebox(plate, toSlot, itemInfo["name"], toAmount)
-						AddToGlovebox(plate, fromSlot, toSlot, itemInfo["name"], toAmount, toItemData.info)
+					if toItemData.amount >= toAmount then
+						if toItemData.name ~= fromItemData.name then
+							local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
+							RemoveFromGlovebox(plate, toSlot, itemInfo["name"], toAmount)
+							AddToGlovebox(plate, fromSlot, toSlot, itemInfo["name"], toAmount, toItemData.info)
+						end
+					else
+						print("DUPE ENGELLENDI - 13")		
 					end
 				else
 					--Player.PlayerData.items[fromSlot] = nil
@@ -1195,12 +1249,16 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				if toItemData ~= nil then
 					local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
 					local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
-					if toItemData.name ~= fromItemData.name then
-						Player.Functions.RemoveItem(toItemData.name, toAmount, toSlot)
-						AddToStash(stashId, fromSlot, toSlot, itemInfo["name"], toAmount, toItemData.info)
-						TriggerEvent("qb-log:server:CreateLog", "stash", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** with item; name: **"..fromItemData.name.."**, amount: **" .. fromAmount .. "** stash: *" .. stashId .. "*")
+					if toItemData.amount >= toAmount then
+						if toItemData.name ~= fromItemData.name then
+							Player.Functions.RemoveItem(toItemData.name, toAmount, toSlot)
+							AddToStash(stashId, fromSlot, toSlot, itemInfo["name"], toAmount, toItemData.info)
+							TriggerEvent("qb-log:server:CreateLog", "stash", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** with item; name: **"..fromItemData.name.."**, amount: **" .. fromAmount .. "** stash: *" .. stashId .. "*")
+						else
+							TriggerEvent("qb-log:server:CreateLog", "stash", "Stacked Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) stacked item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** from stash: *" .. stashId .. "*")
+						end
 					else
-						TriggerEvent("qb-log:server:CreateLog", "stash", "Stacked Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) stacked item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** from stash: *" .. stashId .. "*")
+						print("DUPE ENGELLENDI - 14")	
 					end
 				else
 					TriggerEvent("qb-log:server:CreateLog", "stash", "Received Item", "green", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) received item; name: **"..fromItemData.name.."**, amount: **" .. fromAmount.. "** stash: *" .. stashId .. "*")
@@ -1215,10 +1273,14 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 					local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
 					--Player.PlayerData.items[fromSlot] = toItemData
 					local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
-					if toItemData.name ~= fromItemData.name then
-						local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
-						RemoveFromStash(stashId, toSlot, itemInfo["name"], toAmount)
-						AddToStash(stashId, fromSlot, toSlot, itemInfo["name"], toAmount, toItemData.info)
+					if toItemData.amount >= toAmount then
+						if toItemData.name ~= fromItemData.name then
+							local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
+							RemoveFromStash(stashId, toSlot, itemInfo["name"], toAmount)
+							AddToStash(stashId, fromSlot, toSlot, itemInfo["name"], toAmount, toItemData.info)
+						end
+					else
+						print("DUPE ENGELLENDI - 15")		
 					end
 				else
 					--Player.PlayerData.items[fromSlot] = nil
@@ -1241,12 +1303,16 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				if toItemData ~= nil then
 					local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
 					local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
-					if toItemData.name ~= fromItemData.name then
-						Player.Functions.RemoveItem(toItemData.name, toAmount, toSlot)
-						exports['qb-traphouse']:AddHouseItem(traphouseId, fromSlot, itemInfo["name"], toAmount, toItemData.info, src)
-						TriggerEvent("qb-log:server:CreateLog", "stash", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** with item; name: **"..fromItemData.name.."**, amount: **" .. fromAmount .. "** stash: *" .. traphouseId .. "*")
+					if toItemData.amount >= toAmount then
+						if toItemData.name ~= fromItemData.name then
+							Player.Functions.RemoveItem(toItemData.name, toAmount, toSlot)
+							exports['qb-traphouse']:AddHouseItem(traphouseId, fromSlot, itemInfo["name"], toAmount, toItemData.info, src)
+							TriggerEvent("qb-log:server:CreateLog", "stash", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** with item; name: **"..fromItemData.name.."**, amount: **" .. fromAmount .. "** stash: *" .. traphouseId .. "*")
+						else
+							TriggerEvent("qb-log:server:CreateLog", "stash", "Stacked Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) stacked item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** from stash: *" .. traphouseId .. "*")
+						end
 					else
-						TriggerEvent("qb-log:server:CreateLog", "stash", "Stacked Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) stacked item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** from stash: *" .. traphouseId .. "*")
+						print("DUPE ENGELLENDI - 16")		
 					end
 				else
 					TriggerEvent("qb-log:server:CreateLog", "stash", "Received Item", "green", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) received item; name: **"..fromItemData.name.."**, amount: **" .. fromAmount.. "** stash: *" .. traphouseId .. "*")
@@ -1258,10 +1324,14 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				if toItemData ~= nil then
 					local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
 					local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
-					if toItemData.name ~= fromItemData.name then
-						local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
-						exports['qb-traphouse']:RemoveHouseItem(traphouseId, toSlot, itemInfo["name"], toAmount)
-						exports['qb-traphouse']:AddHouseItem(traphouseId, fromSlot, itemInfo["name"], toAmount, toItemData.info, src)
+					if toItemData.amount >= toAmount then
+						if toItemData.name ~= fromItemData.name then
+							local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
+							exports['qb-traphouse']:RemoveHouseItem(traphouseId, toSlot, itemInfo["name"], toAmount)
+							exports['qb-traphouse']:AddHouseItem(traphouseId, fromSlot, itemInfo["name"], toAmount, toItemData.info, src)
+						end
+					else
+						print("DUPE ENGELLENDI - 17")	
 					end
 				end
 				local itemInfo = QBCore.Shared.Items[fromItemData.name:lower()]
@@ -1362,15 +1432,19 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				RemoveFromDrop(fromInventory, fromSlot, itemInfo["name"], fromAmount)
 				if toItemData ~= nil then
 					local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
-					if toItemData.name ~= fromItemData.name then
-						Player.Functions.RemoveItem(toItemData.name, toAmount, toSlot)
-						AddToDrop(fromInventory, toSlot, itemInfo["name"], toAmount, toItemData.info)
-						if itemInfo["name"] == "radio" then
-							TriggerClientEvent('Radio.Set', src, false)
+					if toItemData.amount >= toAmount then
+						if toItemData.name ~= fromItemData.name then
+							Player.Functions.RemoveItem(toItemData.name, toAmount, toSlot)
+							AddToDrop(fromInventory, toSlot, itemInfo["name"], toAmount, toItemData.info)
+							if itemInfo["name"] == "radio" then
+								TriggerClientEvent('Radio.Set', src, false)
+							end
+							TriggerEvent("qb-log:server:CreateLog", "drop", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** with item; name: **"..fromItemData.name.."**, amount: **" .. fromAmount .. "** - dropid: *" .. fromInventory .. "*")
+						else
+							TriggerEvent("qb-log:server:CreateLog", "drop", "Stacked Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) stacked item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** - from dropid: *" .. fromInventory .. "*")
 						end
-						TriggerEvent("qb-log:server:CreateLog", "drop", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** with item; name: **"..fromItemData.name.."**, amount: **" .. fromAmount .. "** - dropid: *" .. fromInventory .. "*")
 					else
-						TriggerEvent("qb-log:server:CreateLog", "drop", "Stacked Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) stacked item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** - from dropid: *" .. fromInventory .. "*")
+						print("DUPE ENGELLENDI - 18")	
 					end
 				else
 					TriggerEvent("qb-log:server:CreateLog", "drop", "Received Item", "green", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) received item; name: **"..fromItemData.name.."**, amount: **" .. fromAmount.. "** -  dropid: *" .. fromInventory .. "*")
@@ -1385,13 +1459,17 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 					local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
 					--Player.PlayerData.items[fromSlot] = toItemData
 					local toAmount = tonumber(toAmount) ~= nil and tonumber(toAmount) or toItemData.amount
-					if toItemData.name ~= fromItemData.name then
-						local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
-						RemoveFromDrop(toInventory, toSlot, itemInfo["name"], toAmount)
-						AddToDrop(fromInventory, fromSlot, itemInfo["name"], toAmount, toItemData.info)
-						if itemInfo["name"] == "radio" then
-							TriggerClientEvent('Radio.Set', src, false)
+					if toItemData.amount >= toAmount then
+						if toItemData.name ~= fromItemData.name then
+							local itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
+							RemoveFromDrop(toInventory, toSlot, itemInfo["name"], toAmount)
+							AddToDrop(fromInventory, fromSlot, itemInfo["name"], toAmount, toItemData.info)
+							if itemInfo["name"] == "radio" then
+								TriggerClientEvent('Radio.Set', src, false)
+							end
 						end
+					else
+						print("DUPE ENGELLENDI - 19")		
 					end
 				else
 					--Player.PlayerData.items[fromSlot] = nil
