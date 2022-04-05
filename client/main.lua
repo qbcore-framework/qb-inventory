@@ -104,6 +104,7 @@ local function CloseTrunk()
 end
 
 local function closeInventory()
+    TriggerScreenblurFadeOut(1500)
     SendNUIMessage({
         action = "close",
     })
@@ -320,6 +321,9 @@ RegisterNetEvent('inventory:server:RobPlayer', function(TargetId)
 end)
 
 RegisterNetEvent('inventory:client:OpenInventory', function(PlayerAmmo, inventory, other)
+    local currentPlayer = QBCore.Functions.GetPlayerData()
+    local getName = currentPlayer.charinfo.firstname..' '..currentPlayer.charinfo.lastname
+    TriggerScreenblurFadeIn(2500)
     if not IsEntityDead(PlayerPedId()) then
         ToggleHotbar(false)
         SetNuiFocus(true, true)
@@ -334,6 +338,7 @@ RegisterNetEvent('inventory:client:OpenInventory', function(PlayerAmmo, inventor
             maxweight = QBCore.Config.Player.MaxWeight,
             Ammo = PlayerAmmo,
             maxammo = Config.MaximumAmmoValues,
+            playername = getName,
         })
         inInventory = true
     end
@@ -725,6 +730,7 @@ RegisterNUICallback('getCombineItem', function(data, cb)
 end)
 
 RegisterNUICallback("CloseInventory", function(_, cb)
+    TriggerScreenblurFadeOut(1500)
     if currentOtherInventory == "none-inv" then
         CurrentDrop = nil
         CurrentVehicle = nil

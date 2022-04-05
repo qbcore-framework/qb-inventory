@@ -1,12 +1,12 @@
 <template>
-    <div :class="prefixClass + 'item-slot'" @mouseenter="$bus.trigger('setInfo', item)" @mouseleave="$bus.trigger('resetInfo')">
+    <div :class="prefixClass + 'item-slot'" @mouseenter="$bus.trigger('setInfo', item)" @mouseleave="$bus.trigger('resetInfo')"> 
         <div :class="prefixClass + 'item-slot-key'" v-if="(inventory == 'player' || inventory == 'hotbar') && (slot < 6 || slot == 41)">
             <p>{{ slot % 7 }}</p>
         </div>
         <div :class="prefixClass + 'item-slot-img'">
             <img :src="item.image" :alt="item.name" v-if="item">
         </div>
-        <div class="item-slot-label" v-if="!item || !item.isWeapon" :title="(item ? item.label : '')">
+        <div :class="'item-slot-label ' + (item ? 'isItem ' : '') + (item.isWeapon ? ' isItem ' : '')" v-if="!item || !item.isWeapon" :title="(item ? item.label : '')">
             <p>{{ !item ? "&nbsp;" : shortLabel }}</p>
         </div>
         <div class="item-slot-quality" v-if="item && item.isWeapon">
@@ -22,7 +22,7 @@
                 <p>{{ i18n.itemSlot.usages_remaining.replace('%{uses}', item.info.uses) }}</p>
             </div>
         </div>
-        <div class="item-slot-label" v-if="item && item.isWeapon">
+        <div :class="'item-slot-label' + ( item ? ' isItem ' : '')" v-if="item && item.isWeapon">
             <p>{{ item.label }}</p>
         </div>
         <div :class="prefixClass + 'item-slot-amount'" v-if="item && !item.price">

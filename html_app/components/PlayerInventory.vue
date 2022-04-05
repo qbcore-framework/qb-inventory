@@ -3,19 +3,61 @@
         <div id="qbcore-inventory">
             <div class="inventory-info">
                 <div class="player-inv-info">
-                    <span id="player-inv-label">{{ i18n.playerInventory.player_inventory }}</span><br>
+                    <div class="player-inv-info-box">
+                        <div class="player-inv-info-box-left">
+                            <span class="material-icons">
+                            account_circle
+                            </span>
+                        </div>
+                         <div class="player-inv-info-box-rights">
+                            {{ playerInventory.playerName }}
+                        </div>
+                    </div>
+                    <div class="player-inv-info-weight">
+                        <div class="player-inv-info-weight-left">
+                            <span class="material-icons">
+                                scale
+                            </span>
+                        </div>
+                        <div class="player-inv-info-weight-right">
+                            <p>{{ (totalWeight / 1000).toFixed(2) }}</p>
+                            <p>/{{ (playerInventory.maxweight / 1000).toFixed(2)}}</p>
+                        </div>
+                    </div>
+                   <!-- <span id="player-inv-label">{{ playerInventory.playerName }}</span><br> 
                     <img class="weight-img" src="images/weight.png">
                     <div>
                         <div class="progressbar">
                             <div class="pro" :style="{width: (totalWeight/1000)/(playerInventory.maxweight/100000)+'%'}"></div>
                         </div>
                     </div>
-                    <span id="player-inv-weight">
+                   <span id="player-inv-weight">
                         ⚖️: {{ (totalWeight / 1000).toFixed(2) }} / {{ (playerInventory.maxweight / 1000).toFixed(2) }}
-                    </span>
+                    </span>-->
                 </div>
                 <div class="other-inv-info">
-                    <span id="other-inv-label">{{ openedInventory.label }}</span><br>
+                    <div class="other-inv-info-box">
+                        <div class="other-inv-info-box-left">
+                            <span class="material-icons">
+                            account_circle
+                            </span>
+                        </div>
+                         <div class="other-inv-info-box-rights">
+                            {{ openedInventory.label }}
+                        </div>
+                    </div>
+                    <div class="other-inv-info-weight">
+                        <div class="other-inv-info-weight-left">
+                            <span class="material-icons">
+                                scale
+                            </span>
+                        </div>
+                        <div class="other-inv-info-weight-right">
+                            <p>{{ (totalWeightOther / 1000).toFixed(2) }}</p>
+                            <p>/{{ (playerInventory.maxweight / 1000).toFixed(2)}}</p>
+                        </div>
+                    </div>
+                    <!--<span id="other-inv-label">{{ openedInventory.label }}</span><br>
                     <img class="weight-img" src="images/weight.png">
                     <div>
                         <div class="progressbar">
@@ -24,7 +66,7 @@
                     </div>
                     <span id="other-inv-weight" v-if="!isDisableDropInventory(openedInventory.type)">
                         ⚖️: {{ (totalWeightOther / 1000).toFixed(2) }} / {{ (openedInventory.maxweight / 1000).toFixed(2) }}
-                    </span>
+                    </span> -->
                 </div>
             </div>
 
@@ -67,9 +109,12 @@
             </div>
             <item-info />
             <div class="inv-background"></div>
+            
         </div>
     </div>
 </template>
+
+
 
 <script>
 import {fetchNui} from "../utils";
@@ -96,6 +141,7 @@ export default {
                 type: "player",
                 name: "player",
                 maxweight: 0,
+                playerName: "",
             },
             openedInventory: {
                 name: "",
@@ -169,7 +215,7 @@ export default {
         setInventoryData(data) {
             this.playerInventory.slots = data.slots;
             this.playerInventory.maxweight = data.maxweight;
-            
+            this.playerInventory.playerName = data.playername;
             if (data.other != null && data.other != "") {
                 this.openedInventory.name = data.other.name + "";
                 if (data.other.label.toLowerCase().split('-')[0] == "dropped") {
