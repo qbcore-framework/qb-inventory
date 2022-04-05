@@ -904,7 +904,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 							Player.Functions.AddItem(toItemData.name, toAmount, fromSlot, toItemData.info)
 						end
 					else
-						print("DUPE ENGELLENDI - 1")	
+						print("you can put here dupe log - 1")	
 					end
 				else
 					--Player.PlayerData.items[fromSlot] = nil
@@ -929,7 +929,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 							TriggerEvent("qb-log:server:CreateLog", "robbing", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | *"..src.."*) swapped item; name: **"..itemInfo["name"].."**, amount: **" .. toAmount .. "** with name: **" .. fromItemData.name .. "**, amount: **" .. fromAmount.. "** with player: **".. GetPlayerName(OtherPlayer.PlayerData.source) .. "** (citizenid: *"..OtherPlayer.PlayerData.citizenid.."* | id: *"..OtherPlayer.PlayerData.source.."*)")
 						end
 					else
-						print("DUPE ENGELLENDI - 2")	
+						print("you can put here dupe log - 2")	
 					end
 				else
 					local itemInfo = QBCore.Shared.Items[fromItemData.name:lower()]
@@ -954,7 +954,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 							TriggerEvent("qb-log:server:CreateLog", "trunk", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..itemInfo["name"].."**, amount: **" .. toAmount .. "** with name: **" .. fromItemData.name .. "**, amount: **" .. fromAmount .. "** - plate: *" .. plate .. "*")
 						end
 					else
-						print("DUPE ENGELLENDI - 3")
+						print("you can put here dupe log - 3")
 					end
 				else
 					local itemInfo = QBCore.Shared.Items[fromItemData.name:lower()]
@@ -1005,7 +1005,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 							TriggerEvent("qb-log:server:CreateLog", "stash", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..itemInfo["name"].."**, amount: **" .. toAmount .. "** with name: **" .. fromItemData.name .. "**, amount: **" .. fromAmount .. "** - stash: *" .. stashId .. "*")
 						end
 					else 
-						print("DUPE ENGELLENDI - 5")	
+						print("you can put here dupe log - 5")	
 					end
 				else
 					local itemInfo = QBCore.Shared.Items[fromItemData.name:lower()]
@@ -1031,7 +1031,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 								TriggerEvent("qb-log:server:CreateLog", "traphouse", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..itemInfo["name"].."**, amount: **" .. toAmount .. "** with name: **" .. fromItemData.name .. "**, amount: **" .. fromAmount .. "** - traphouse: *" .. traphouseId .. "*")
 							end
 						else
-							print("DUPE ENGELLENDI - 6")		
+							print("you can put here dupe log - 6")		
 						end
 					else
 						local itemInfo = QBCore.Shared.Items[fromItemData.name:lower()]
@@ -1061,7 +1061,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 								TriggerEvent("qb-log:server:CreateLog", "drop", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..itemInfo["name"].."**, amount: **" .. toAmount .. "** with name: **" .. fromItemData.name .. "**, amount: **" .. fromAmount .. "** - dropid: *" .. toInventory .. "*")
 							end
 						else
-							print("DUPE ENGELLENDI - 7")
+							print("you can put here dupe log - 7")
 						end
 					else
 						local itemInfo = QBCore.Shared.Items[fromItemData.name:lower()]
@@ -1098,7 +1098,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 							TriggerEvent("qb-log:server:CreateLog", "robbing", "Swapped Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) swapped item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** with item; **"..itemInfo["name"].."**, amount: **" .. toAmount .. "** from player: **".. GetPlayerName(OtherPlayer.PlayerData.source) .. "** (citizenid: *"..OtherPlayer.PlayerData.citizenid.."* | *"..OtherPlayer.PlayerData.source.."*)")
 						end
 					else
-						print("DUPE ENGELLENDI - 8")		
+						print("you can put here dupe log - 8")		
 					end
 				else
 					TriggerEvent("qb-log:server:CreateLog", "robbing", "Retrieved Item", "green", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) took item; name: **"..fromItemData.name.."**, amount: **" .. fromAmount .. "** from player: **".. GetPlayerName(OtherPlayer.PlayerData.source) .. "** (citizenid: *"..OtherPlayer.PlayerData.citizenid.."* | *"..OtherPlayer.PlayerData.source.."*)")
@@ -1120,7 +1120,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 							OtherPlayer.Functions.AddItem(itemInfo["name"], toAmount, fromSlot, toItemData.info)
 						end
 					else
-						print("DUPE ENGELLENDI - 9")		
+						print("you can put here dupe log - 9")		
 					end
 				else
 					--Player.PlayerData.items[fromSlot] = nil
@@ -1152,7 +1152,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 							TriggerEvent("qb-log:server:CreateLog", "trunk", "Stacked Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) stacked item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** from plate: *" .. plate .. "*")
 						end
 					else
-						print("DUPE ENGELLENDI - 10")		
+						print("you can put here dupe log - 10")		
 					end
 				else
 					TriggerEvent("qb-log:server:CreateLog", "trunk", "Received Item", "green", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) received item; name: **"..fromItemData.name.."**, amount: **" .. fromAmount.. "** plate: *" .. plate .. "*")
@@ -1173,7 +1173,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 							AddToTrunk(plate, fromSlot, toSlot, itemInfo["name"], toAmount, toItemData.info)
 						end
 					else
-						print("DUPE ENGELLENDI - 11")	
+						print("you can put here dupe log - 11")	
 					end
 				else
 					--Player.PlayerData.items[fromSlot] = nil
@@ -1205,7 +1205,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 							TriggerEvent("qb-log:server:CreateLog", "glovebox", "Stacked Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) stacked item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** from plate: *" .. plate .. "*")
 						end
 					else
-						print("DUPE ENGELLENDI - 12")		
+						print("you can put here dupe log - 12")		
 					end
 				else
 					TriggerEvent("qb-log:server:CreateLog", "glovebox", "Received Item", "green", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) received item; name: **"..fromItemData.name.."**, amount: **" .. fromAmount.. "** plate: *" .. plate .. "*")
@@ -1226,7 +1226,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 							AddToGlovebox(plate, fromSlot, toSlot, itemInfo["name"], toAmount, toItemData.info)
 						end
 					else
-						print("DUPE ENGELLENDI - 13")		
+						print("you can put here dupe log - 13")		
 					end
 				else
 					--Player.PlayerData.items[fromSlot] = nil
@@ -1258,7 +1258,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 							TriggerEvent("qb-log:server:CreateLog", "stash", "Stacked Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) stacked item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** from stash: *" .. stashId .. "*")
 						end
 					else
-						print("DUPE ENGELLENDI - 14")	
+						print("you can put here dupe log - 14")	
 					end
 				else
 					TriggerEvent("qb-log:server:CreateLog", "stash", "Received Item", "green", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) received item; name: **"..fromItemData.name.."**, amount: **" .. fromAmount.. "** stash: *" .. stashId .. "*")
@@ -1280,7 +1280,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 							AddToStash(stashId, fromSlot, toSlot, itemInfo["name"], toAmount, toItemData.info)
 						end
 					else
-						print("DUPE ENGELLENDI - 15")		
+						print("you can put here dupe log - 15")		
 					end
 				else
 					--Player.PlayerData.items[fromSlot] = nil
@@ -1312,7 +1312,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 							TriggerEvent("qb-log:server:CreateLog", "stash", "Stacked Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) stacked item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** from stash: *" .. traphouseId .. "*")
 						end
 					else
-						print("DUPE ENGELLENDI - 16")		
+						print("you can put here dupe log - 16")		
 					end
 				else
 					TriggerEvent("qb-log:server:CreateLog", "stash", "Received Item", "green", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) received item; name: **"..fromItemData.name.."**, amount: **" .. fromAmount.. "** stash: *" .. traphouseId .. "*")
@@ -1331,7 +1331,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 							exports['qb-traphouse']:AddHouseItem(traphouseId, fromSlot, itemInfo["name"], toAmount, toItemData.info, src)
 						end
 					else
-						print("DUPE ENGELLENDI - 17")	
+						print("you can put here dupe log - 17")	
 					end
 				end
 				local itemInfo = QBCore.Shared.Items[fromItemData.name:lower()]
@@ -1444,7 +1444,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 							TriggerEvent("qb-log:server:CreateLog", "drop", "Stacked Item", "orange", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) stacked item; name: **"..toItemData.name.."**, amount: **" .. toAmount .. "** - from dropid: *" .. fromInventory .. "*")
 						end
 					else
-						print("DUPE ENGELLENDI - 18")	
+						print("you can put here dupe log - 18")	
 					end
 				else
 					TriggerEvent("qb-log:server:CreateLog", "drop", "Received Item", "green", "**".. GetPlayerName(src) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..src.."*) received item; name: **"..fromItemData.name.."**, amount: **" .. fromAmount.. "** -  dropid: *" .. fromInventory .. "*")
@@ -1469,7 +1469,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 							end
 						end
 					else
-						print("DUPE ENGELLENDI - 19")		
+						print("you can put here dupe log - 19")		
 					end
 				else
 					--Player.PlayerData.items[fromSlot] = nil
