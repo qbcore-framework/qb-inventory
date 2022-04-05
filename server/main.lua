@@ -1524,6 +1524,36 @@ QBCore.Commands.Add("giveitem", "Give An Item (Admin Only)", {{name="id", help="
 					info.lab = exports["qb-methlab"]:GenerateRandomLab()
 				elseif itemData["name"] == "printerdocument" then
 					info.url = "https://cdn.discordapp.com/attachments/870094209783308299/870104331142189126/Logo_-_Display_Picture_-_Stylized_-_Red.png"
+				elseif itemData["name"] == "meth_batch" then
+					info.purity = math.random(1, 100)
+				elseif itemData["name"] == "meth_cured" then
+					info.purity = math.random(1, 100)
+				elseif itemData["name"] == "meth_baggy" then
+					info.purity = math.random(1, 100)
+				elseif itemData["name"] == "weed_batch" then
+					info.purity = math.random(1, 100)
+				elseif itemData["name"] == "weed_cured" then
+					info.purity = math.random(1, 100)
+				elseif itemData["name"] == "weed_baggy" then
+					info.purity = math.random(1, 100)
+				elseif itemData["name"] == "coke_batch" then
+					info.purity = math.random(1, 100)
+				elseif itemData["name"] == "coke_cured" then
+					info.purity = math.random(1, 100)
+				elseif itemData["name"] == "coke_baggy" then
+					info.purity = math.random(1, 100)
+				elseif itemData["name"] == "laptop_green" then
+					info.uses = 3
+				elseif itemData["name"] == "laptop_blue" then
+					info.uses = 3
+				elseif itemData["name"] == "laptop_red" then
+					info.uses = 3
+				elseif itemData["name"] == "laptop_gold" then
+					info.uses = 3
+				elseif itemData["name"] == "usb_grey" then
+					info.uses = 3
+				elseif itemData["name"] == "laptop_black" then
+					info.uses = 3
 				end
 
 				if Player.Functions.AddItem(itemData["name"], amount, false, info) then
