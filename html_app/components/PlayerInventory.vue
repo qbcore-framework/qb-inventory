@@ -419,7 +419,7 @@ export default {
                 }
                 amount = oldItemSlot.amount;
                 // Handle shift to split into two
-                if (this.splitItem && this.amount > 1) {
+                if (this.splitItem && amount > 1) {
                   amount /= 2;
                 }
             } else if (this.amount < 0) {
@@ -505,7 +505,7 @@ export default {
             }
 
             // Check weight
-            if (this.totalWeight > this.playerInventory.maxweight || this.totalWeightOther > this.openedInventory.maxweight) {
+            if (this.totalWeight > this.playerInventory.maxweight || (this.openedInventory.type != "itemshop" && this.totalWeightOther > this.openedInventory.maxweight)) {
                 /** @todo Send an error warning */
                 Object.assign(this.items, backupItems);
                 return
@@ -594,7 +594,7 @@ export default {
                 return;
             }
 
-            const amount = this.amount;
+            const amount = Math.floor(this.amount);
             if (this.amount > 1) {
                 this.amount = 1;
             }
