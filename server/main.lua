@@ -814,22 +814,21 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 			Wait(250)
 		end
 	else
-		if Drops[id] then
-			if Drops[id].isOpen then
-				local Target = QBCore.Functions.GetPlayer(Drops[id].isOpen)
-				if Target then
-					TriggerClientEvent('inventory:client:CheckOpenState', Drops[id].isOpen, name, id, Drops[id].label)
-				else
-					Drops[id].isOpen = false
-				end
+		if Drops[id] and Drops[id].isOpen then
+			local Target = QBCore.Functions.GetPlayer(Drops[id].isOpen)
+			if Target then
+				TriggerClientEvent('inventory:client:CheckOpenState', Drops[id].isOpen, name, id, Drops[id].label)
+			else
+				Drops[id].isOpen = false
 			end
 		end
+
 		if Drops[id] and not Drops[id].isOpen then
 			secondInv.name = id
 			secondInv.label = "Dropped-"..tostring(id)
-			secondInv.maxweight = 100000
+			secondInv.maxweight = Config.MaxSlots.drops or 30
 			secondInv.inventory = Drops[id].items
-			secondInv.slots = 30
+			secondInv.slots = Config.MaxWeights.drops or 100000
 			Drops[id].isOpen = src
 			Drops[id].label = secondInv.label
 		else
@@ -1522,38 +1521,50 @@ RegisterServerEvent("inventory:server:GiveItem", function(target, name, amount, 
     local Player = QBCore.Functions.GetPlayer(src)
     local OtherPlayer = QBCore.Functions.GetPlayer(tonumber(target))
     local dist = #(GetEntityCoords(GetPlayerPed(src))-GetEntityCoords(GetPlayerPed(target)))
-	if Player == OtherPlayer then return TriggerClientEvent('QBCore:Notify', src, "You can't give yourself an item?") end
-	if dist > 2 then return TriggerClientEvent('QBCore:Notify', src, "You are too far away to give items!") end
-	local item = Player.Functions.GetItemBySlot(slot)
-	if not item then TriggerClientEvent('QBCore:Notify', src, "Item you tried giving not found!"); return end
-	if item.name ~= name then TriggerClientEvent('QBCore:Notify', src, "Incorrect item found try again!"); return end
 
-	if amount <= item.amount then
-		if amount == 0 then
-			amount = item.amount
-		end
-		if Player.Functions.RemoveItem(item.name, amount, item.slot) then
-			if OtherPlayer.Functions.AddItem(item.name, amount, false, item.info) then
-				TriggerClientEvent('inventory:client:ItemBox',target, QBCore.Shared.Items[item.name], "add")
-				TriggerClientEvent('QBCore:Notify', target, "You Received "..amount..' '..item.label.." From "..Player.PlayerData.charinfo.firstname.." "..Player.PlayerData.charinfo.lastname)
-				TriggerClientEvent("inventory:client:UpdatePlayerInventory", target, true)
-				TriggerClientEvent('inventory:client:ItemBox',src, QBCore.Shared.Items[item.name], "remove")
-				TriggerClientEvent('QBCore:Notify', src, "You gave " .. OtherPlayer.PlayerData.charinfo.firstname.." "..OtherPlayer.PlayerData.charinfo.lastname.. " " .. amount .. " " .. item.label .."!")
-				TriggerClientEvent("inventory:client:UpdatePlayerInventory", src, true)
-				TriggerClientEvent('qb-inventory:client:giveAnim', src)
-				TriggerClientEvent('qb-inventory:client:giveAnim', target)
-			else
-				Player.Functions.AddItem(item.name, amount, item.slot, item.info)
-				TriggerClientEvent('QBCore:Notify', src,  "The other players inventory is full!", "error")
-				TriggerClientEvent('QBCore:Notify', target,  "Your inventory is full!", "error")
-				TriggerClientEvent("inventory:client:UpdatePlayerInventory", src, false)
-				TriggerClientEvent("inventory:client:UpdatePlayerInventory", target, false)
-			end
+	if Player == OtherPlayer then
+		TriggerClientEvent('QBCore:Notify', src, "You can't give yourself an item?")
+		return
+	end
+	if dist > 2 then
+		TriggerClientEvent('QBCore:Notify', src, "You are too far away to give items!")
+		return
+	end
+
+	local item = Player.Functions.GetItemBySlot(slot)
+	if not item or item.name ~= name then
+		TriggerClientEvent('QBCore:Notify', src, "Incorrect item found try again!")
+		return
+	end
+	
+	if amount == 0 then
+		amount = item.amount
+	end
+
+	if not isValidNumber(amount) or amount > item.amount then
+		TriggerClientEvent('QBCore:Notify', src,  "You do not have enough of the item", "error")
+		return
+	end
+
+	if Player.Functions.RemoveItem(item.name, amount, item.slot) then
+		if OtherPlayer.Functions.AddItem(item.name, amount, false, item.info) then
+			TriggerClientEvent('inventory:client:ItemBox',target, QBCore.Shared.Items[item.name], "add")
+			TriggerClientEvent('QBCore:Notify', target, "You Received "..amount..' '..item.label.." From "..Player.PlayerData.charinfo.firstname.." "..Player.PlayerData.charinfo.lastname)
+			TriggerClientEvent("inventory:client:UpdatePlayerInventory", target, true)
+			TriggerClientEvent('inventory:client:ItemBox',src, QBCore.Shared.Items[item.name], "remove")
+			TriggerClientEvent('QBCore:Notify', src, "You gave " .. OtherPlayer.PlayerData.charinfo.firstname.." "..OtherPlayer.PlayerData.charinfo.lastname.. " " .. amount .. " " .. item.label .."!")
+			TriggerClientEvent("inventory:client:UpdatePlayerInventory", src, true)
+			TriggerClientEvent('qb-inventory:client:giveAnim', src)
+			TriggerClientEvent('qb-inventory:client:giveAnim', target)
 		else
-			TriggerClientEvent('QBCore:Notify', src,  "You do not have enough of the item", "error")
+			Player.Functions.AddItem(item.name, amount, item.slot, item.info)
+			TriggerClientEvent('QBCore:Notify', src,  "The other players inventory is full!", "error")
+			TriggerClientEvent('QBCore:Notify', target,  "Your inventory is full!", "error")
+			TriggerClientEvent("inventory:client:UpdatePlayerInventory", src, false)
+			TriggerClientEvent("inventory:client:UpdatePlayerInventory", target, false)
 		end
 	else
-		TriggerClientEvent('QBCore:Notify', src, "You do not have enough items to transfer")
+		TriggerClientEvent('QBCore:Notify', src,  "You do not have enough of the item", "error")
 	end
 end)
 
