@@ -54,7 +54,7 @@
                         </div>
                         <div class="other-inv-info-weight-right">
                             <p>{{ (totalWeightOther / 1000).toFixed(2) }}</p>
-                            <p>/{{ (playerInventory.maxweight / 1000).toFixed(2)}}</p>
+                            <p>/{{ (openedInventory.maxweight / 1000).toFixed(2)}}</p>
                         </div>
                     </div>
                     <!--<span id="other-inv-label">{{ openedInventory.label }}</span><br>
