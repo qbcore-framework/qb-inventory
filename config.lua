@@ -31,6 +31,11 @@ Config.InventoriesType = {
     "otherplayer",
 }
 
+Config.DisableInventoryDrop = {
+    "itemshop",
+    "crafting"
+}
+
 Config.VendingObjects = {
     "prop_vend_soda_01",
     "prop_vend_soda_02",

@@ -6,6 +6,13 @@ for _, v in ipairs(Config.InventoriesType) do
 	Inventories[v] = {}
 end
 
+-- Is the given number an unsigned integer?
+-- @param {number} nb	The number to check
+-- @return {boolean}	True if the number is an unsigned integer
+local function isValidNumber(nb)
+	return math.floor(nb) == nb and nb >= 0
+end
+
 -- Is the inventory is opened
 -- @param {array} inventory 	the array type (from Inventory variable)
 -- @param {string} name 		the inventory name
@@ -71,6 +78,30 @@ local function GetSlotsForInventory(name, other, player)
 	return Config.MaxSlots[name]
 end
 
+-- Save inventories in the specified table of the database
+-- @param {string} name			the inventory name
+-- @param {int} id				the inventory id
+-- @param {array} inventory		the opened inventory array
+-- @param {string} columnName	the column name in the database
+-- @return {bool}				true if the inventory is saved
+local function SaveDatabaseInventories(name, id, inventory, columnName)
+	if not inventory.items then
+		return false
+	end
+
+	-- Remove the description line in items
+	for _, item in pairs(inventory.items) do
+		item.description = nil
+	end
+
+	MySQL.Async.insert('INSERT INTO '..name..'items ('.. columnName ..', items) VALUES (:id, :items) ON DUPLICATE KEY UPDATE items = :items', {
+		['id'] = id,
+		['items'] = json.encode(inventory.items)
+	})
+	inventory.isOpen = false
+	return true
+end
+
 -- Fetch items from the database
 -- @param {string} table			the database table name
 -- @param {string} itemsColumn		the database table column name for items
@@ -118,8 +149,10 @@ end
 -- @param {int} id			the inventory id
 -- @param {array} other 	the opened inventory array
 -- @return {array}
-local function GetItemsForInventory(name, id, other)
-	if name == "drop" then
+local function GetItemsForInventory(name, id, other, Player)
+	if name == "player" then
+		return Player.PlayerData.items
+	elseif name == "drop" then
 		if Inventories.drop[id] then
 			return Inventories.drop[id].items
 		end
@@ -234,8 +267,17 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 end)
 
 -- @deprecated
--- RegisterNetEvent('inventory:server:addTrunkItems', function(plate, items)
--- end)
+RegisterNetEvent('inventory:server:addTrunkItems', function(plate, items)
+	print("[QBCore] inventory:server:addTrunkItems is deprecated, use inventory:server:addItem instead")
+end)
+
+-- Add item to the inventory
+-- @param {string} name		the inventory name
+-- @param {int} id			the inventory id
+-- @param {array} item		the item name
+AddEventHandler('inventory:server:addItem', function(name, id, item)
+
+end)
 
 -- RegisterNetEvent('inventory:server:combineItem', function(item, fromItem, toItem)
 -- end)
@@ -253,30 +295,16 @@ end)
 -- @return {void}
 RegisterNetEvent('inventory:server:SetIsOpenState', function(IsOpen, name, id)
 	if not IsOpen then
-		print(IsOpen, name, id, json.encode(Inventories), json.encode(Inventories[name][id]))
 		if Inventories[name] and Inventories[name][id] then
 			Inventories[name][id].isOpen = false
 		end
 	end
 end)
 
-local function SaveDatabaseInventories(name, id, inventory, columnName)
-	if not inventory.items then
-		return false
-	end
-
-	-- Remove the description line in items
-	for _, item in pairs(inventory.items) do
-		item.description = nil
-	end
-
-	MySQL.Async.insert('INSERT INTO '..name..'items ('.. columnName ..', items) VALUES (:id, :items) ON DUPLICATE KEY UPDATE items = :items', {
-		['id'] = id,
-		['items'] = json.encode(inventory.items)
-	})
-	inventory.isOpen = false
-end
-
+-- A server event to save the inventory items
+-- @param {string} name		The inventory name (in the config)
+-- @param {int} id			The inventory id
+-- @return {void}
 RegisterNetEvent('inventory:server:SaveInventory', function(name, id)
 	if not IsValidInventoryType(name) then
 		-- @todo Anticheat notification
@@ -329,14 +357,166 @@ RegisterNetEvent('inventory:server:UseItemSlot', function(slot)
 	end
 end)
 
--- RegisterNetEvent('inventory:server:UseItem', function(inventory, item)
--- end)
+-- Use the item specified
+-- @param {string} name		The inventory name
+-- @param {string} item		The item name
+RegisterNetEvent('inventory:server:UseItem', function(name, item)
+	local src = source
+	local Player = QBCore.Functions.GetPlayer(src)
 
--- RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, toInventory, fromSlot, toSlot, amount)
--- end)
+	if name == "player" or name == "hotbar" then
+		local itemData = Player.Functions.GetItemBySlot(item.slot)
+		if itemData then
+			TriggerClientEvent("QBCore:Client:UseItem", src, itemData)
+		end
+	end
+end)
 
--- RegisterNetEvent('qb-inventory:server:SaveStashItems', function(stashId, items)
--- end)
+-- Is the inventory allow items to be dropped in?
+-- @param {string} name		The inventory name (Config.InventoriesType)
+-- @return {bool}
+local function IsInventoryDropAllowed(name)
+	for _, v in pairs(Config.DisableInventoryDrop) do
+		if v == name then
+			return false
+		end
+	end
+	return true
+end
+
+-- Is the specified inventory a player type
+-- @param {string} name		The inventory name
+-- @return {bool}
+local function IsPlayerInventory(name)
+	return name == "player" or name == "hotbar"
+end
+
+local function IsInventoryPlayerType(name)
+	return IsPlayerInventory(name) or name == "otherplayer"
+end
+
+-- Add an item to the inventory
+-- @param {string} name			The inventory type to add the item to
+-- @param {array} inventory		The inventory array to add the item to
+-- @param {int} slot			The slot to add the item to
+-- @param {string} itemName		The item name
+-- @param {int} amount			The amount of the item to add
+-- @param {array} info			The item specific infos
+-- @return {bool|item}			False if can't be added, True if added, the item if swapped
+local function AddItemToInventory(name, inventory, slot, itemName, amount, info, itemData)
+	amount = tonumber(amount)
+	local ItemData = QBCore.Shared.Items[itemName]
+
+	if not ItemData then
+		return false
+	end
+
+	local itemInfo = QBCore.Shared.Items[itemName:lower()]
+
+	-- @todo Need to check the slot max
+
+	if not inventory.items[slot] and inventory.items[slot].name == itemName and not ItemData.unique then
+		if IsInventoryPlayerType(name) then
+			Player.Functions.AddItem(itemData.name, amount, slot)
+		else
+			inventory.items[slot].amount = inventory.items[slot].amount + amount
+		end
+	else
+		local toReturn = json.encode(inventory.items[slot])
+		if IsInventoryPlayerType(name) then
+			Player.Functions.AddItem(itemData.name, amount, slot)
+		else
+			inventory.items[slot] = {
+				name = itemInfo["name"],
+				amount = amount,
+				info = info or "",
+				label = itemInfo["label"],
+				description = itemInfo["description"] or "",
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
+				image = itemInfo["image"],
+				slot = slot,
+			}
+		end
+		return toReturn
+	end
+
+	return true
+end
+
+local function RemoveItemFromInventory(fromInventoryType, fromInventoryId, fromSlot, amount, Player)
+
+end
+
+RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, toInventory, fromSlot, toSlot, amount)
+	local src = source
+	local Player = QBCore.Functions.GetPlayer(src)
+	fromSlot = tonumber(fromSlot)
+	toSlot = tonumber(toSlot)
+
+	-- Inventory getters for types and ids
+	local fromInventoryType = QBCore.Shared.SplitStr(fromInventory, "-")[1]
+	local fromInventoryId = fromInventory:sub((fromInventoryType .. "-"):len() + 1, fromInventory:len())
+	local toInventoryType = QBCore.Shared.SplitStr(toInventory, "-")[1]
+	local toInventoryId = toInventory:sub((toInventoryType .. "-"):len() + 1, toInventory:len())
+
+	-- Is the inventory opened by the user
+	-- @todo
+
+	if not IsInventoryDropAllowed(toInventoryType) then
+		return
+	end
+
+	if not isValidNumber(amount) then
+		-- @todo Anticheat notification "Invalid amount format"
+		return
+	end
+
+	local fromItemData = Player.Functions.GetItemBySlot(fromSlot)
+	if not fromItemData then
+		TriggerClientEvent("QBCore:Notify", src, "You don't have this item!", "error")
+		return
+	end
+	amount = tonumber(amount) ~= nil and tonumber(amount) or fromItemData.amount
+	if amount > fromItemData.amount then
+		return
+	end
+
+	-- To Inventory Type checker, if nil: set to drop
+	if not IsValidInventoryType(toInventoryType) then
+		print("[QBCore] [Inventory Debug] Invalid inventory type to "..json.encode(toInventoryType))
+		toInventoryType = "drop"
+	end
+
+	-- From Inventory Type checker, if nil: throw an error
+	if not IsValidInventoryType(fromInventoryType) then
+		print("[QBCore] [Inventory Debug] Invalid inventory type from "..json.encode(fromInventoryType))
+		return
+	end
+
+
+	local fromInventoryItems = GetItemsForInventory(fromInventoryType, fromInventoryId, nil, Player)
+	local toInventoryItems = GetItemsForInventory(toInventoryType, toInventoryId, nil, Player)
+
+	RemoveItemFromInventory(fromInventoryType, fromInventoryId, fromSlot, amount, Player)
+	AddItemToInventory(toInventoryType, toInventoryId, toSlot, amount, Player)
+
+	-- Check weight
+end)
+
+-- Save the specified item in the stash
+-- @deprecated
+RegisterNetEvent('qb-inventory:server:SaveStashItems', function(id, items)
+	print("[QBCore] [WARNING] qb-inventory:server:SaveStashItems is deprecated, use inventory:server:SaveInventory instead")
+	Inventories.stash[id].items = items
+	SaveDatabaseInventories("stash", id, Inventories.stash[id], "stash")
+end)
+
+QBCore.Functions.CreateCallback('qb-inventory:server:GetStashItems', function(_, cb, id)
+	cb(FetchItemsFromDatabase('stashitems', 'items', 'stash', id))
+end)
 
 -- RegisterServerEvent("inventory:server:GiveItem", function(target, name, amount, slot)
 -- end)
