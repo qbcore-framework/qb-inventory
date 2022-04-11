@@ -4,7 +4,7 @@ Config.MaxSlots = {
     player = 41,
     drop = 30,
     trunk = 0,
-    glovebox = 0,
+    glovebox = 5,
     stash = 50,
     shop = 0
 }
@@ -13,7 +13,7 @@ Config.MaxWeights = {
     player = 41,
     drop = 100000,
     trunk = 0,
-    glovebox = 0,
+    glovebox = 10000,
     stash = 1000000,
     shop = 0
 }

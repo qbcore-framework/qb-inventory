@@ -6,44 +6,6 @@ for _, v in ipairs(Config.InventoriesType) do
 	Inventories[v] = {}
 end
 
-local function GetStashItems(id)
-	local items = {}
-
-	-- Get items from Database
-	local result = MySQL.Sync.fetchScalar('SELECT items FROM stashitems WHERE stash = ?', {id})
-	if not result then
-		return items -- Return empty table
-	end
-
-	-- Parsing item results
-	local stashItems = json.decode(result)
-	if not stashItems then
-		return items -- Return empty table
-	end
-
-	-- Add items into stash array
-	for _, item in pairs(stashItems) do
-		local itemInfo = QBCore.Shared.Items[item.name:lower()]
-		if itemInfo then
-			items[item.slot] = {
-				name = itemInfo["name"],
-				amount = math.floor(tonumber(item.amount)), -- Assure the player there is no digit amounts
-				info = item.info or "",
-				label = itemInfo["label"],
-				description = itemInfo["description"] or "",
-				weight = itemInfo["weight"],
-				type = itemInfo["type"],
-				unique = itemInfo["unique"],
-				useable = itemInfo["useable"],
-				image = itemInfo["image"],
-				slot = item.slot,
-			}
-		end
-	end
-
-	return items
-end
-
 -- Is the inventory is opened
 -- @param {array} inventory 	the array type (from Inventory variable)
 -- @param {string} name 		the inventory name
@@ -154,11 +116,13 @@ end
 -- Get the inventory items from name and ID
 -- @param {string} name		the inventory name
 -- @param {int} id			the inventory id
+-- @param {array} other 	the opened inventory array
 -- @return {array}
-local function GetItemsForInventory(name, id)
-	if name == "player" then
-
-	elseif name == "drop" then
+local function GetItemsForInventory(name, id, other)
+	if name == "drop" then
+		if Inventories.drop[id] then
+			return Inventories.drop[id].items
+		end
 	elseif name == "glovebox" then
 		return FetchItemsFromDatabase('gloveboxitems', 'items', 'plate', id)
 	elseif name == "stash" then
@@ -166,9 +130,29 @@ local function GetItemsForInventory(name, id)
 	elseif name == "trunk" then
 		return FetchItemsFromDatabase('trunkitems', 'items', 'plate', id)
 	elseif name == "shop" then
-	elseif name == "traphouse" then
-	elseif name == "crafting" then
-	elseif name == "attachment_crafting" then
+		local items = {}
+		if other.items and next(other.items) then
+			for _, item in pairs(other.items) do
+				local itemInfo = QBCore.Shared.Items[item.name:lower()]
+				if itemInfo then
+					items[item.slot] = {
+						name = itemInfo["name"],
+						amount = tonumber(item.amount),
+						info = item.info or "",
+						label = itemInfo["label"],
+						description = itemInfo["description"] or "",
+						weight = itemInfo["weight"],
+						type = itemInfo["type"],
+						unique = itemInfo["unique"],
+						useable = itemInfo["useable"],
+						price = item.price,
+						image = itemInfo["image"],
+						slot = item.slot,
+					}
+				end
+			end
+		end
+		return items
 	elseif name == "otherplayer" then
 		local OtherPlayer = QBCore.Functions.GetPlayer(tonumber(id))
 		if OtherPlayer then
@@ -176,17 +160,29 @@ local function GetItemsForInventory(name, id)
 			return OtherPlayer.PlayerData.items
 		end
 	end
+
+	if other then
+		return other.items
+	end
 	return {}
+end
+
+-- Is the vehicle plate is owned by someone
+-- @param {string} plate		the vehicle plate
+-- @return {bool}
+local function IsVehicleOwned(plate)
+    return not not MySQL.Sync.fetchScalar('SELECT 1 from player_vehicles WHERE plate = ?', {plate})
 end
 
 RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 	local src = source
-	local Player = QBCore.Functions.GetPlayer(src)
 
 	if Player(src).state.inv_busy then
 		TriggerClientEvent('QBCore:Notify', src, 'Not Accessible', 'error')
 		return
 	end
+
+	local Player = QBCore.Functions.GetPlayer(src)
 
 	if not (name and id) then
 		TriggerClientEvent("inventory:client:OpenInventory", src, Player.PlayerData.items)
@@ -249,11 +245,59 @@ end)
 -- RegisterNetEvent('inventory:server:CraftAttachment', function(itemName, itemCosts, amount, toSlot, points)
 -- end)
 
--- RegisterNetEvent('inventory:server:SetIsOpenState', function(IsOpen, type, id)
--- end)
+-- A server event handler to let the client set an inventory closed state
+-- @param {bool} isOpen		Is the new inventory state open?
+-- @param {string} name		The inventory name
+-- @param {int} id			The inventory id
+-- @return {void}
+RegisterNetEvent('inventory:server:SetIsOpenState', function(IsOpen, name, id)
+	if not IsOpen then
+		print(IsOpen, name, id, json.encode(Inventories), json.encode(Inventories[name][id]))
+		if Inventories[name] and Inventories[name][id] then
+			Inventories[name][id].isOpen = false
+		end
+	end
+end)
 
--- RegisterNetEvent('inventory:server:SaveInventory', function(type, id)
--- end)
+local function SaveDatabaseInventories(name, id, inventory, columnName)
+	if not inventory.items then
+		return false
+	end
+
+	-- Remove the description line in items
+	for _, item in pairs(inventory.items) do
+		item.description = nil
+	end
+
+	MySQL.Async.insert('INSERT INTO '..name..'items ('.. columnName ..', items) VALUES (:id, :items) ON DUPLICATE KEY UPDATE items = :items', {
+		['id'] = id,
+		['items'] = json.encode(inventory.items)
+	})
+	inventory.isOpen = false
+end
+
+RegisterNetEvent('inventory:server:SaveInventory', function(name, id)
+	if not IsValidInventoryType(name) then
+		-- @todo Anticheat notification
+		return
+	end
+
+	if name == "trunk" or name == "glovebox" then
+		if IsVehicleOwned(id) then
+			SaveDatabaseInventories(name, id, Inventories[name][id], "plate")
+		end
+	elseif name == "stash" then
+		SaveDatabaseInventories(name, id, Inventories[name][id], "stash")
+	elseif name == "drop" then
+		if Inventories[name][id] then
+			Inventories[name][id].isOpen = false
+			if Inventories[name][id].items == nil or next(Inventories[name][id].items) == nil then
+				Inventories[name][id] = nil
+				TriggerClientEvent("inventory:client:RemoveDropItem", -1, id)
+			end
+		end
+	end
+end)
 
 -- RegisterNetEvent('inventory:server:UseItemSlot', function(slot)
 -- end)
