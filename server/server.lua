@@ -233,6 +233,7 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 	TriggerClientEvent("inventory:client:OpenInventory", src, Player.PlayerData.items, targetInventory)
 end)
 
+-- @deprecated
 -- RegisterNetEvent('inventory:server:addTrunkItems', function(plate, items)
 -- end)
 
@@ -299,8 +300,34 @@ RegisterNetEvent('inventory:server:SaveInventory', function(name, id)
 	end
 end)
 
--- RegisterNetEvent('inventory:server:UseItemSlot', function(slot)
--- end)
+-- Use the item on the given slot
+-- @param {number} slot		The slot to use the item
+-- @return {void}
+RegisterNetEvent('inventory:server:UseItemSlot', function(slot)
+	local src = source
+	if Player(src).state.inv_busy then
+		TriggerClientEvent('QBCore:Notify', src, 'Not Accessible', 'error')
+		return
+	end
+
+	local Player = QBCore.Functions.GetPlayer(src)
+	local itemData = Player.Functions.GetItemBySlot(slot)
+
+	-- is the item a usable item?
+	if itemData and (itemData.type == "weapon" or itemData.useable) then
+		if itemData.type == "weapon" then
+			if itemData.info.quality then
+				TriggerClientEvent("inventory:client:UseWeapon", src, itemData, itemData.info.quality > 0)
+			else
+				TriggerClientEvent("inventory:client:UseWeapon", src, itemData, true)
+			end
+		elseif itemData.useable then
+			TriggerClientEvent("QBCore:Client:UseItem", src, itemData)
+		end
+
+		TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[itemData.name], "use")
+	end
+end)
 
 -- RegisterNetEvent('inventory:server:UseItem', function(inventory, item)
 -- end)
