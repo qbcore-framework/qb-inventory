@@ -2,29 +2,33 @@ Config = {}
 
 Config.MaxSlots = {
     player = 41,
-    drops = 30,
-    trunks = 0,
-    gloveboxes = 0,
+    drop = 30,
+    trunk = 0,
+    glovebox = 0,
     stash = 50,
     shop = 0
 }
 
 Config.MaxWeights = {
     player = 41,
-    drops = 100000,
-    trunks = 0,
-    gloveboxes = 0,
+    drop = 100000,
+    trunk = 0,
+    glovebox = 0,
     stash = 1000000,
     shop = 0
 }
 
 Config.InventoriesType = {
     "player",
-    "drops",
-    "trunks",
-    "gloveboxes",
+    "drop",
+    "trunk",
+    "glovebox",
     "stash",
-    "shop"
+    "shop",
+    "traphouse",
+    "crafting",
+    "attachment_crafting",
+    "otherplayer",
 }
 
 Config.VendingObjects = {

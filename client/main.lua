@@ -311,7 +311,7 @@ RegisterNetEvent('inventory:server:RobPlayer', function(TargetId)
     })
 end)
 
-RegisterNetEvent('inventory:client:OpenInventory', function(PlayerAmmo, inventory, other)
+RegisterNetEvent('inventory:client:OpenInventory', function(inventory, other)
     if not IsEntityDead(PlayerPedId()) then
         ToggleHotbar(false)
         SetNuiFocus(true, true)
@@ -324,7 +324,7 @@ RegisterNetEvent('inventory:client:OpenInventory', function(PlayerAmmo, inventor
             slots = MaxInventorySlots,
             other = other,
             maxweight = QBCore.Config.Player.MaxWeight,
-            Ammo = PlayerAmmo,
+            Ammo = {},
             maxammo = Config.MaximumAmmoValues,
         })
         inInventory = true

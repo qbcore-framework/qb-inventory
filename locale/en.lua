@@ -53,3 +53,19 @@ InventoryHUD = {
         required = "Required",
     }
 }
+
+local Translations = {
+    InventoryType = {    
+        player = "Player",
+        drops = "Drops",
+        trunks = "Trunks",
+        gloveboxes = "Gloveboxes",
+        stash = "Stash",
+        shop = "Shop"
+    }
+}
+
+Lang = Locale:new({
+    phrases = Translations,
+    warnOnMissing = true
+})
