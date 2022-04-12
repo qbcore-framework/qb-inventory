@@ -172,8 +172,8 @@ export default {
             
             if (data.other != null && data.other != "") {
                 this.openedInventory.name = data.other.name + "";
-                if (data.other.label.toLowerCase().split('-')[0] == "dropped") {
-                    this.openedInventory.type = data.other.label.split('-')[1];
+                if (data.other.name.toLowerCase().split('-')[0] == "dropped") {
+                    this.openedInventory.type = data.other.name.split('-')[1];
                 } else {
                     this.openedInventory.type = data.other.name;
                 }
@@ -214,7 +214,7 @@ export default {
             return selectedItem[0];
         },
         setDefaultAmountValue: function() {
-            if (this.openedInventory.type == "itemshop") {
+            if (this.openedInventory.type == "shop") {
                 this.amount = 1;
                 return
             }
@@ -366,7 +366,7 @@ export default {
             this.amount = parseInt(this.amount);
 
             if (this.amount == 0) {
-                if (this.openedInventory.type == "itemshop" || this.openedInventory.type == "crafting") {
+                if (this.openedInventory.type == "shop" || this.openedInventory.type == "crafting") {
                     /** @todo Add an error */
                     this.amount = 1;
                     return;
@@ -517,7 +517,7 @@ export default {
         },
 
         CanQuickMove() {
-            if (this.openedInventory.label.toLowerCase().split("-")[0] == "player") {
+            if (this.openedInventory.name.toLowerCase().split("-")[0] == "player") {
                 return false;
             }
             return true;

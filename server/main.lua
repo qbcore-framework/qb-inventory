@@ -652,6 +652,8 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 		return
 	end
 
+	print(json.encode(name), json.encode(id), json.encode(other))
+
 	if not (name and id) then
 		TriggerClientEvent("inventory:client:OpenInventory", src, {}, Player.PlayerData.items)
 		return

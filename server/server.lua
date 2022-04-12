@@ -16,11 +16,14 @@ end
 -- Is the inventory is opened
 -- @param {array} inventory 	the array type (from Inventory variable)
 -- @param {string} name 		the inventory name
--- @param {int} the id 			id of the inventory
--- @return {bool}
-local function IsInventoryUsed(inventory, name, id)
+-- @param {int} id 				id of the inventory
+-- @param {int} source 			the player source id
+-- @return {bool}				True if the inventory is opened by another player
+local function IsInventoryUsed(inventory, name, id, source)
     if inventory[id] and inventory[id].isOpen then
-		if QBCore.Functions.GetPlayer(inventory[id].isOpen) then
+		if inventory[id].isOpen == source then
+			return false
+		elseif QBCore.Functions.GetPlayer(inventory[id].isOpen) then
 			TriggerClientEvent('inventory:client:CheckOpenState', inventory[id].isOpen, name, id, inventory[id].label)
 			return true
 		else
@@ -215,6 +218,8 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 		return
 	end
 
+	print(json.encode(name), json.encode(id), json.encode(other))
+
 	local Player = QBCore.Functions.GetPlayer(src)
 
 	if not (name and id) then
@@ -232,7 +237,7 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 	local inventory = Inventories[name]
 
 	-- Is the inventory is opened?
-	if IsInventoryUsed(inventory, name, id) or IsInventoryIsInaccessible(name, Player) then
+	if IsInventoryUsed(inventory, name, id, src) or IsInventoryIsInaccessible(name, Player) then
 		TriggerClientEvent('QBCore:Notify', src, 'Already in use!', 'error')
 		return
 	end
@@ -249,7 +254,7 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 	inventory[id].label = Lang:t(name).."-"..id
 
 	-- Populate the Inventory[type] variable from Database
-	local loadedItems = GetItemsForInventory(name, id)
+	local loadedItems = GetItemsForInventory(name, id, other)
 	if loadedItems and next(loadedItems) then
 		inventory[id].items = loadedItems
 	else
@@ -515,6 +520,59 @@ local function GetInventoryMethod(name, id, src)
 	return nil
 end
 
+local function ChargePlayer(src, id, itemName, amount)
+	local Player = QBCore.Functions.GetPlayer(src)
+	local bankBalance = Player.PlayerData.money["bank"]
+	local itemData = QBCore.Shared.Items[itemName:lower()]
+
+	local ShopType = QBCore.Shared.SplitStr(id, "_")[1]:lower()
+	local ShopName = QBCore.Shared.SplitStr(id, "_")[2]
+	local ItemType = QBCore.Shared.SplitStr(itemData.name, "_")[1]
+
+	print("CHARGE PLAYER", json.encode(ShopType), json.encode(ShopName), json.encode(ItemType))
+
+	if ItemType == "weapon" then
+		itemData.info.serie = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
+	end
+
+	local price
+	if itemData.unique then
+		amount = 1
+		price = tonumber(itemData.price)
+	else
+		price = tonumber((itemData.price * amount))
+	end
+
+	local ShopTypeEventFunctions = {
+		dealer = function() TriggerClientEvent('qb-drugs:client:updateDealerItems', src, itemData, amount) end,
+		itemshop = function() TriggerClientEvent('qb-shops:client:UpdateShop', src, ShopName, itemData, amount) end,
+	}
+
+	local AllowBankAccount = true
+	if ShopType == "dealer" then
+		AllowBankAccount = false
+	end
+
+	-- Remove money from the player
+	local PaymentType
+	if Player.Functions.RemoveMoney("cash", price, ShopType.."-bought-item") then
+		PaymentType = "cash"
+	elseif AllowBankAccount and bankBalance >= price then
+		PaymentType = "bank"
+		Player.Functions.RemoveMoney("bank", price, ShopType.."-bought-item")
+	else
+		TriggerClientEvent('QBCore:Notify', src, "You don't have enough cash..", "error") --[[ Add translation ]]
+		return false
+	end
+
+	if ShopTypeEventFunctions[ShopType] then
+		ShopTypeEventFunctions[ShopType]()
+	end
+	TriggerClientEvent('QBCore:Notify', src, itemData.label .. " bought with "..PaymentType.."!", "success")
+	TriggerEvent("qb-log:server:CreateLog", "shops", ShopType .. " item bought", "green", "**"..GetPlayerName(src) .. "** bought a " .. itemData.label .. " for $"..price" with "..PaymentType)
+	return true
+end
+
 -- Move an item from one inventory to another
 -- @param {string} fromInventory		The inventory to move the item from (Config.InventoriesType)
 -- @param {string} toInventory			The inventory to move the item to (Config.InventoriesType)
@@ -542,9 +600,6 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 		toInventoryId = src
 	end
 
-	-- Is the inventory opened by the user
-	-- @todo
-
 	if not IsInventoryDropAllowed(toInventoryType) then
 		return
 	end
@@ -565,6 +620,13 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 		return
 	end
 
+	-- Is the inventories opened by another user
+	if IsInventoryUsed(Inventories[fromInventoryType], fromInventoryType, fromInventoryId, src)
+	or IsInventoryUsed(Inventories[toInventoryType], toInventoryType, toInventoryId, src) then
+		TriggerClientEvent('QBCore:Notify', src, 'Not Accessible', 'error')
+		return
+	end
+
 	-- Get the inventory methods
 	local fromInventoryMethod = GetInventoryMethod(fromInventoryType, fromInventoryId, src)
 	local toInventoryMethod = GetInventoryMethod(toInventoryType, toInventoryId, src)
@@ -579,7 +641,10 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 		TriggerClientEvent("QBCore:Notify", src, "Item doesn't exist!", "error")
 		return
 	end
-	amount = tonumber(amount) ~= nil and tonumber(amount) or fromItemData.amount
+	if fromItemData.unique then
+		amount = 1
+	end
+	amount = tonumber(amount) or fromItemData.amount
 	if amount > fromItemData.amount then
 		return
 	end
@@ -622,7 +687,12 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 
 	-- @todo Check weight and restore item if it is too heavy
 
-	-- If it's the radio, just shut id down
+	-- @todo Charge the player or restore
+	if fromInventoryType == "shop" then
+		ChargePlayer(src, fromItemData.price * amount)
+	end
+
+	-- the player's radio is shut down
 	if fromItemData.name:lower() == "radio" then
 		TriggerClientEvent('Radio.Set', src, false)
 	end
@@ -646,19 +716,17 @@ RegisterServerEvent("inventory:server:GiveItem", function(target, name, amount, 
 	local OtherPlayer = QBCore.Functions.GetPlayer(tonumber(target))
 	local dist = #(GetEntityCoords(GetPlayerPed(src))-GetEntityCoords(GetPlayerPed(target)))
 
+	-- Exclusion cases
 	if Player == OtherPlayer then
-		TriggerClientEvent('QBCore:Notify', src, "You can't give yourself an item?")
-		return
-	end
-	if dist > 2 then
-		TriggerClientEvent('QBCore:Notify', src, "You are too far away to give items!")
-		return
+		return TriggerClientEvent('QBCore:Notify', src, "You can't give yourself an item?")
+	elseif dist > 2 then
+		return TriggerClientEvent('QBCore:Notify', src, "You are too far away to give items!")
 	end
 
+	-- Get item from player inventory slot
 	local item = Player.Functions.GetItemBySlot(slot)
 	if not item or item.name ~= name then
-		TriggerClientEvent('QBCore:Notify', src, "Incorrect item found try again!")
-		return
+		return TriggerClientEvent('QBCore:Notify', src, "Incorrect item found try again!")
 	end
 
 	if amount == 0 then
