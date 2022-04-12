@@ -1,3 +1,6 @@
+-- @author @restray
+-- @description Server-side code for the qb-inventory mod, containing events, utils functions, etc...
+
 local QBCore = exports['qb-core']:GetCoreObject()
 local Inventories = {}
 
@@ -523,11 +526,6 @@ local function ChargePlayer(src, id, itemData, amount)
 
 	local ShopType = QBCore.Shared.SplitStr(id, "_")[1]:lower()
 	local ShopName = QBCore.Shared.SplitStr(id, "_")[2]
-	local ItemType = QBCore.Shared.SplitStr(itemData.name, "_")[1]
-
-	if ItemType == "weapon" then
-		itemData.info.serie = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
-	end
 
 	local price
 	if itemData.unique then
@@ -612,6 +610,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 	-- From Inventory Type checker, if nil: throw an error
 	if not IsValidInventoryType(fromInventoryType) then
 		print("[QBCore] [Inventory Debug] Invalid inventory type from "..json.encode(fromInventoryType))
+		TriggerClientEvent("inventory:client:closeInventory", src)
 		return
 	end
 
@@ -619,6 +618,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 	if IsInventoryUsed(Inventories[fromInventoryType], fromInventoryType, fromInventoryId, src)
 	or IsInventoryUsed(Inventories[toInventoryType], toInventoryType, toInventoryId, src) then
 		TriggerClientEvent('QBCore:Notify', src, 'Not Accessible', 'error')
+		TriggerClientEvent("inventory:client:closeInventory", src)
 		return
 	end
 
@@ -630,17 +630,30 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 		return
 	end
 
+	-- @todo Backup items to restore them in the future if needed
 	local fromItemData = fromInventoryMethod.Get(fromSlot)
 	local toItemData = toInventoryMethod.Get(toSlot)
+
+	-- Check if the incoming item is valid
 	if not fromItemData then
 		TriggerClientEvent("QBCore:Notify", src, "Item doesn't exist!", "error")
+		TriggerClientEvent("inventory:client:closeInventory", src)
 		return
 	end
+
+	local ItemType = QBCore.Shared.SplitStr(fromItemData.name, "_")[1]
+
+	if ItemType == "weapon" and not fromItemData.info.serie then
+		fromItemData.info.serie = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
+	end
+
+	-- Manage amount of items
 	if fromItemData.unique then
 		amount = 1
 	end
 	amount = tonumber(amount) or fromItemData.amount
 	if amount > fromItemData.amount then
+		TriggerClientEvent("inventory:client:closeInventory", src)
 		return
 	end
 
@@ -651,6 +664,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 		if toItemData.unique or fromItemData.unique then
 			if not isMovingAllItem then
 				TriggerClientEvent("QBCore:Notify", src, "Item is unique!", "error")
+				TriggerClientEvent("inventory:client:closeInventory", src)
 				return
 			end
 
@@ -663,6 +677,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 		elseif toItemData.name ~= fromItemData.name then
 			if not isMovingAllItem then
 				TriggerClientEvent("QBCore:Notify", src, "You can't move item in this slot!", "error")
+				TriggerClientEvent("inventory:client:closeInventory", src)
 				return
 			end
 
