@@ -153,8 +153,8 @@ local function GetItemsForInventory(name, id, other, Player)
 	if name == "player" then
 		return Player.PlayerData.items
 	elseif name == "drop" then
-		if Inventories.drop[id] then
-			return Inventories.drop[id].items
+		if Inventories[name][id] then
+			return Inventories[name][id].items
 		end
 	elseif name == "glovebox" then
 		return FetchItemsFromDatabase('gloveboxitems', 'items', 'plate', id)
@@ -241,26 +241,29 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 	local maxweight = GetMaxWeightsForInventory(name, other, Player)
 	local slots = GetSlotsForInventory(name, other, Player)
 
-	-- Load inventories datas function
-	inventory[id] = {
-		items = {},
-		isOpen = src,
-		label = Lang:t(name).."-"..id,
-	}
+	-- Load inventories datas function and assure to not overwrite the inventory
+	if not inventory[id] then
+		inventory[id] = {}
+	end
+	inventory[id].isOpen = src
+	inventory[id].label = Lang:t(name).."-"..id
 
 	-- Populate the Inventory[type] variable from Database
 	local loadedItems = GetItemsForInventory(name, id)
-	if next(loadedItems) then
+	print(json.encode(loadedItems))
+	if loadedItems and next(loadedItems) then
 		inventory[id].items = loadedItems
+	else
+		inventory[id].items = {}
 	end
-	
+
 	-- Set the target inventory: name, label, maxweight, slots, items
 	local targetInventory = {
 		name = name.."-"..id,
 		label = inventory[id].label,
 		maxweight = maxweight,
 		slots = slots,
-		items = inventory[id].items
+		inventory = inventory[id].items
 	}
 
 	TriggerClientEvent("inventory:client:OpenInventory", src, Player.PlayerData.items, targetInventory)
@@ -423,23 +426,19 @@ local function AddItemToInventory(name, inventory, slot, itemName, amount, info,
 		end
 	else
 		local toReturn = json.encode(inventory.items[slot])
-		if IsInventoryPlayerType(name) then
-			Player.Functions.AddItem(itemData.name, amount, slot)
-		else
-			inventory.items[slot] = {
-				name = itemInfo["name"],
-				amount = amount,
-				info = info or "",
-				label = itemInfo["label"],
-				description = itemInfo["description"] or "",
-				weight = itemInfo["weight"],
-				type = itemInfo["type"],
-				unique = itemInfo["unique"],
-				useable = itemInfo["useable"],
-				image = itemInfo["image"],
-				slot = slot,
-			}
-		end
+		inventory.items[slot] = {
+			name = itemInfo["name"],
+			amount = amount,
+			info = info or "",
+			label = itemInfo["label"],
+			description = itemInfo["description"] or "",
+			weight = itemInfo["weight"],
+			type = itemInfo["type"],
+			unique = itemInfo["unique"],
+			useable = itemInfo["useable"],
+			image = itemInfo["image"],
+			slot = slot,
+		}
 		return toReturn
 	end
 
@@ -450,9 +449,100 @@ local function RemoveItemFromInventory(fromInventoryType, fromInventoryId, fromS
 
 end
 
+-- Get the adaptated methods for the inventory type
+-- @param {string} name		The inventory type
+-- @param {number} id		The inventory id
+-- @param {number} src		The source player (optional)
+-- @return {array|nil}		The methods (Get, Add, Delete) or nil if not found
+local function GetInventoryMethod(name, id, src)
+	if IsInventoryPlayerType(name) then
+		local Player = QBCore.Functions.GetPlayer(id)
+		if Player then
+			return {
+				Get = function(slot)
+					return Player.Functions.GetItemBySlot(slot)
+				end,
+				Add = function(itemName, amount, slot, info)
+					return Player.Functions.AddItem(itemName, amount, slot, info)
+				end,
+				Delete = function(itemName, amount, slot)
+					TriggerClientEvent("inventory:client:CheckWeapon", Player.PlayerData.source, itemName)
+					return Player.Functions.RemoveItem(itemName, amount, slot)
+				end,
+			}
+		end
+	elseif name == "drop" then
+		if not Inventories[name][id] then
+			id = math.random(10000, 99999) .. ""
+			while Inventories[name][id] ~= nil do
+				id = math.random(10000, 99999) .. ""
+			end
+
+			Inventories[name][id] = {
+				items = {}
+			}
+		end
+		
+		return {
+			Get = function(slot)
+				return Inventories[name][id].items[slot]
+			end,
+			Add = function(itemName, amount, slot, info)
+				TriggerClientEvent("inventory:client:DropItemAnim", src)
+				TriggerClientEvent("inventory:client:AddDropItem", -1, id, src, GetEntityCoords(GetPlayerPed(src)))
+				
+				if Inventories[name][id].items[slot] and Inventories[name][id].items[slot].name == itemName then
+					Inventories[name][id].items[slot].amount = Inventories[name][id].items[slot].amount + amount
+				else
+					local itemInfo = QBCore.Shared.Items[itemName:lower()]
+					Inventories[name][id].items[slot] = {
+						name = itemInfo["name"],
+						amount = amount,
+						info = info or "",
+						label = itemInfo["label"],
+						description = itemInfo["description"] or "",
+						weight = itemInfo["weight"],
+						type = itemInfo["type"],
+						unique = itemInfo["unique"],
+						useable = itemInfo["useable"],
+						image = itemInfo["image"],
+						slot = slot,
+					}
+					return true
+				end
+				return false
+				-- return AddItemToInventory(name, Inventories[name][id], slot, itemName, amount, info)
+			end,
+			Delete = function(itemName, amount, slot)
+				-- @todo
+				return RemoveFromDrop(toInventory, fromSlot, itemInfo["name"], toAmount)
+			end,
+		}
+	else
+		if Inventories[name] and Inventories[name][id] then
+			return {
+				Get = function(slot)
+					return Inventories[name][id].items[slot]
+				end,
+				Add = function(itemName, amount, slot, info)
+					-- @todo
+					-- return AddItemToInventory(name, Inventories[name][id], slot, itemName, amount, info)
+				end,
+				Delete = function(itemName, amount, slot)
+					-- @todo
+					-- return RemoveItemFromInventory(name, id, slot)
+				end,
+			}
+		end
+	end
+
+	return nil
+end
+
 RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, toInventory, fromSlot, toSlot, amount)
 	local src = source
-	local Player = QBCore.Functions.GetPlayer(src)
+
+	-- Force type number on slots
 	fromSlot = tonumber(fromSlot)
 	toSlot = tonumber(toSlot)
 
@@ -461,6 +551,13 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 	local fromInventoryId = fromInventory:sub((fromInventoryType .. "-"):len() + 1, fromInventory:len())
 	local toInventoryType = QBCore.Shared.SplitStr(toInventory, "-")[1]
 	local toInventoryId = toInventory:sub((toInventoryType .. "-"):len() + 1, toInventory:len())
+
+	if IsPlayerInventory(fromInventoryType) then
+		fromInventoryId = src
+	end
+	if IsPlayerInventory(toInventoryType) then
+		toInventoryId = src
+	end
 
 	-- Is the inventory opened by the user
 	-- @todo
@@ -474,19 +571,8 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 		return
 	end
 
-	local fromItemData = Player.Functions.GetItemBySlot(fromSlot)
-	if not fromItemData then
-		TriggerClientEvent("QBCore:Notify", src, "You don't have this item!", "error")
-		return
-	end
-	amount = tonumber(amount) ~= nil and tonumber(amount) or fromItemData.amount
-	if amount > fromItemData.amount then
-		return
-	end
-
 	-- To Inventory Type checker, if nil: set to drop
 	if not IsValidInventoryType(toInventoryType) then
-		print("[QBCore] [Inventory Debug] Invalid inventory type to "..json.encode(toInventoryType))
 		toInventoryType = "drop"
 	end
 
@@ -496,14 +582,67 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 		return
 	end
 
+	-- Get the inventory methods
+	local fromInventoryMethod = GetInventoryMethod(fromInventoryType, fromInventoryId, src)
+	local toInventoryMethod = GetInventoryMethod(toInventoryType, toInventoryId, src)
+	if not toInventoryMethod or not fromInventoryMethod then
+		-- @todo Anticheat notification "Invalid inventory"
+		return
+	end
 
-	local fromInventoryItems = GetItemsForInventory(fromInventoryType, fromInventoryId, nil, Player)
-	local toInventoryItems = GetItemsForInventory(toInventoryType, toInventoryId, nil, Player)
+	local fromItemData = fromInventoryMethod.Get(fromSlot)
+	local toItemData = toInventoryMethod.Get(toSlot)
+	if not fromItemData then
+		TriggerClientEvent("QBCore:Notify", src, "Item doesn't exist!", "error")
+		return
+	end
+	amount = tonumber(amount) ~= nil and tonumber(amount) or fromItemData.amount
+	if amount > fromItemData.amount then
+		return
+	end
 
-	RemoveItemFromInventory(fromInventoryType, fromInventoryId, fromSlot, amount, Player)
-	AddItemToInventory(toInventoryType, toInventoryId, toSlot, amount, Player)
+	local isMovingAllItem = amount == fromItemData.amount
 
-	-- Check weight
+	-- Target slot is used by an item
+	if toItemData then
+		if toItemData.unique or fromItemData.unique then
+			if not isMovingAllItem then
+				TriggerClientEvent("QBCore:Notify", src, "Item is unique!", "error")
+				return
+			end
+
+			fromInventoryMethod.Delete(fromItemData.name, fromItemData.amount, fromSlot)
+			toInventoryMethod.Delete(toItemData.name, toItemData.amount, toSlot)
+
+			fromInventoryMethod.Add(toItemData.name, toItemData.amount, fromSlot, toItemData.info)
+			toInventoryMethod.Add(fromItemData.name, fromItemData.amount, toSlot, fromItemData.info)
+
+		elseif toItemData.name ~= fromItemData.name then
+			if not isMovingAllItem then
+				TriggerClientEvent("QBCore:Notify", src, "You can't move item in this slot!", "error")
+				return
+			end
+
+			fromInventoryMethod.Delete(fromItemData.name, fromItemData.amount, fromSlot)
+			toInventoryMethod.Delete(toItemData.name, toItemData.amount, toSlot)
+
+			fromInventoryMethod.Add(toItemData.name, toItemData.amount, fromSlot, toItemData.info)
+			toInventoryMethod.Add(fromItemData.name, fromItemData.amount, toSlot, fromItemData.info)
+		elseif toItemData.name == fromItemData.name then
+			fromInventoryMethod.Delete(fromItemData.name, amount, fromSlot)
+			toInventoryMethod.Add(fromItemData.name, amount, toSlot)
+		end
+	else
+		fromInventoryMethod.Delete(fromItemData.name, amount, fromSlot)
+		toInventoryMethod.Add(fromItemData.name, amount, toSlot, fromItemData.info)
+	end
+
+	-- Check weight and restore item if it is too heavy
+
+	-- If it's the radio, just shut id down
+	if fromItemData.name:lower() == "radio" then
+		TriggerClientEvent('Radio.Set', src, false)
+	end
 end)
 
 -- Save the specified item in the stash
@@ -520,3 +659,53 @@ end)
 
 -- RegisterServerEvent("inventory:server:GiveItem", function(target, name, amount, slot)
 -- end)
+
+QBCore.Commands.Add("giveitem", "Give An Item (Admin Only)", {{name="id", help="Player ID"},{name="item", help="Name of the item (not a label)"}, {name="amount", help="Amount of items"}}, true, function(source, args)
+	local Player = QBCore.Functions.GetPlayer(tonumber(args[1]))
+	local amount = tonumber(args[3])
+	local itemData = QBCore.Shared.Items[tostring(args[2]):lower()]
+	if Player then
+		if amount > 0 then
+			if itemData then
+				-- check iteminfo
+				local info = {}
+				if itemData["name"] == "id_card" then
+					info.citizenid = Player.PlayerData.citizenid
+					info.firstname = Player.PlayerData.charinfo.firstname
+					info.lastname = Player.PlayerData.charinfo.lastname
+					info.birthdate = Player.PlayerData.charinfo.birthdate
+					info.gender = Player.PlayerData.charinfo.gender
+					info.nationality = Player.PlayerData.charinfo.nationality
+				elseif itemData["name"] == "driver_license" then
+					info.firstname = Player.PlayerData.charinfo.firstname
+					info.lastname = Player.PlayerData.charinfo.lastname
+					info.birthdate = Player.PlayerData.charinfo.birthdate
+					info.type = "Class C Driver License"
+				elseif itemData["type"] == "weapon" then
+					amount = 1
+					info.serie = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
+				elseif itemData["name"] == "harness" then
+					info.uses = 20
+				elseif itemData["name"] == "markedbills" then
+					info.worth = math.random(5000, 10000)
+				elseif itemData["name"] == "labkey" then
+					info.lab = exports["qb-methlab"]:GenerateRandomLab()
+				elseif itemData["name"] == "printerdocument" then
+					info.url = "https://cdn.discordapp.com/attachments/870094209783308299/870104331142189126/Logo_-_Display_Picture_-_Stylized_-_Red.png"
+				end
+
+				if Player.Functions.AddItem(itemData["name"], amount, false, info) then
+					TriggerClientEvent('QBCore:Notify', source, "You Have Given " ..GetPlayerName(tonumber(args[1])).." "..amount.." "..itemData["name"].. "", "success")
+				else
+					TriggerClientEvent('QBCore:Notify', source,  "Can't give item!", "error")
+				end
+			else
+				TriggerClientEvent('QBCore:Notify', source,  "Item Does Not Exist", "error")
+			end
+		else
+			TriggerClientEvent('QBCore:Notify', source,  "Invalid Amount", "error")
+		end
+	else
+		TriggerClientEvent('QBCore:Notify', source,  "Player Is Not Online", "error")
+	end
+end, "admin")
