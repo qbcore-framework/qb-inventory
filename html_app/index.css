@@ -15,11 +15,10 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 ::-webkit-scrollbar {
-	width: 2px;
+	width: 5px;
 }
 
 ::-webkit-scrollbar-thumb {
-	border-radius: 50px;
 	background: #dc143c;
 }
 
@@ -53,10 +52,10 @@ body {
 
 .player-inventory {
 	position: absolute;
-	top: 26%;
+	top: 29%;
 	left: 14.2%;
-	width: 28%;
-	height: 47.16%;
+	width: 29%;
+	height: 41.4%;
 	float: left;
 	overflow-x: hidden;
 	overflow-y: scroll;
@@ -65,10 +64,10 @@ body {
 
 .other-inventory {
 	position: absolute;
-	top: 26%;
+	top: 29%;
 	right: 16%;
-	width: 28%;
-	height: 47.16%;
+	width: 29%;
+	height: 41.4%;
 	float: left;
 	overflow-x: hidden;
 	overflow-y: scroll;
@@ -99,8 +98,8 @@ body {
 	margin: 0 auto;
 	right: 0;
 	width: 9%;
-	top: 28%;
 	left: 1vh;
+    top: 41% !important;
 }
 
 .combine-option-container {
@@ -219,9 +218,6 @@ body {
 	transition: background-color .1s linear;
 }
 
-.inv-option-item:hover {
-	background-color: rgb(0 0 0 / 20%);
-}
 
 .btn-combine {
 	position: relative;
@@ -262,14 +258,6 @@ body {
 	font-size: 0.8vh;
 }
 
-.item-slot-label {
-	position: absolute;
-	bottom: 0;
-	width: 100%;
-	border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
-	background-color: rgba(var(--main-label-color), 0.7);
-}
 
 .item-slot-label>p {
 	text-transform: uppercase;
@@ -326,7 +314,7 @@ body {
 .player-inv-info {
 	position: absolute;
 	left: 14.5%;
-	top: 22.2%;
+	top: 23%;
 }
 
 .progressbar {
@@ -421,7 +409,7 @@ body {
 
 .other-inv-info {
 	position: absolute;
-	top: 22.2%;
+	top: 23%;
 	left: 56.2%;
     width: 28%;
 }
@@ -486,20 +474,18 @@ body {
 }
 
 .itembox-container {
-	display: block;
-	position: relative;
-	margin-right: 0.25vw;
-	margin-left: 0.25vw;
-	width: 4.5vw;
-	transform: translateX(0);
-	height: 11vh;
-	border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
-	background-color: rgba(0, 0, 0, 0.3);
-	border: 1px solid rgb(68, 68, 68, 40%);
-	box-sizing: border-box;
-	opacity: 1;
-	flex: 0 0 5vw;
+    display: block;
+    position: relative;
+    margin-right: 0.25vw;
+    margin-left: 0.25vw;
+    width: 12vh;
+    transform: translateX(0);
+    height: 12vh;
+    opacity: 1;
+    /* flex: 0 0 5vw; */
+    border-radius: 11px;
+    background-color: rgba(49, 50, 56, 0.53) !important;
+    border: 1px solid rgb(112,112,112);
 }
 
 #itembox-action {
@@ -517,12 +503,15 @@ body {
 }
 
 #itembox-label {
-	position: absolute;
-	bottom: 0;
-	width: 100%;
-	background-color: rgba(var(--main-label-color), 0.35);
-	min-height: 2.2vh;
-	height: fit-content;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: rgba(49, 50, 56, 0.53) !important;
+    border: 1px solid rgb(112,112,112);
+    min-height: 2.2vh;
+    height: fit-content;
+    font-family: 'Poppins';
+	border-width: 1px 0 0 0;
 }
 
 #itembox-label>p {
@@ -606,18 +595,16 @@ body {
 
 .z-hotbar-item-slot {
 	position: relative;
-	width: 8.5vh;
-	height: 10.5vh;
-	float: left;
-	margin-left: 2px;
-	margin-bottom: 2px;
-	border: 1px solid rgb(68 68 68 / 40%);
-	margin: 3px;
-	transition: opacity 0.2s;
-	opacity: 1.0;
-	background-color: rgba(0, 0, 0, 0.3);
-	border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
+    width: 10vh;
+    border-radius: 11px;
+    height: 10vh;
+    float: left;
+    background-color: rgba(49, 50, 56, 0.53) !important;
+    border: 1px solid rgb(112,112,112);
+    margin: 2px;
+    transition: opacity 0.2s;
+    opacity: 1.0;
+    font-family: 'Poppins';
 }
 
 .z-hotbar-item-slot-amount {
@@ -633,12 +620,14 @@ body {
 }
 
 .z-hotbar-item-slot-label {
-	position: absolute;
-	bottom: 0;
-	width: 100%;
-	background-color: rgba(var(--main-label-color), 0.35);
-	min-height: 2.2vh;
-	height: fit-content;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: white;
+    font-size: 1.1vh;
+    padding: 3px;
+    text-align: center;
+    letter-spacing: 1px;
+    font-family: 'Poppins', sans-serif;
 }
 
 .z-hotbar-item-slot-label>p {
@@ -657,12 +646,12 @@ body {
 }
 
 .z-hotbar-item-slot-img img {
-	margin-top: 21%;
-	display: block;
-	width: 60px;
-	height: 60px;
-	max-width: 100%;
-	max-height: 100%;
+    margin-top: -9%;
+    display: block;
+    width: 60px;
+    height: 60px;
+    max-width: 100%;
+    max-height: 100%;
 }
 
 .ammo-container {
@@ -959,3 +948,328 @@ body {
 .weapon-attachments-back:hover {
 	background-color: rgb(18, 18, 18);
 }
+
+/*
+Colors
+*/
+/* Item Slots */
+#qbcore-inventory {
+	background-color: rgba(0, 0, 0, 0.66);
+  }
+  
+  .item-slot:hover {
+	border: 1px solid #DC143C;
+  }
+  
+  .item-slot:hover .isItem {
+	background: #DC143C;
+	border-radius: 0 0 7px 7px;
+  }
+  
+  .item-slot {
+	position: relative;
+	width: 10vh;
+	border-radius: 11px;
+	height: 10vh;
+	float: left;
+	background-color: rgba(49, 50, 56, 0.53) !important;
+	border: 1px solid #707070;
+	margin: 2px;
+	-webkit-transition: opacity 0.2s;
+	transition: opacity 0.2s;
+	opacity: 1.0;
+	font-family: 'Poppins';
+  }
+  
+  .isItem {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	border-top: 1px solid #707070;
+	background: #313238;
+	border-radius: 0 0px 14px 14px;
+	overflow: hidden;
+  }
+  
+  .item-slot-label > p {
+	text-transform: uppercase;
+	font-weight: 600;
+	color: white;
+	font-size: 1.1vh;
+	padding: 3px;
+	text-align: center;
+	letter-spacing: 1px;
+	font-family: 'Poppins', sans-serif;
+  }
+  
+  .item-slot-img img {
+	display: block;
+	position: relative;
+	margin: 0 auto;
+	margin-top: 8%;
+	width: 60px;
+	height: 60px;
+	max-width: 100%;
+	max-height: 100%;
+  }
+  
+  .inv-option-item > p {
+	color: white;
+	text-align: center;
+	line-height: 43px;
+	text-transform: uppercase;
+	font-size: 1.4vh;
+	font-weight: 700;
+	background-color: crimson;
+	font-family: 'Poppins', sans-serif;
+	border: 1px solid #DC143C;
+	border-radius: 5px;
+	-webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.39);
+			box-shadow: 0 3px 6px rgba(0, 0, 0, 0.39);
+  }
+  
+  .player-inv-info-box {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-align: center;
+		-ms-flex-align: center;
+			align-items: center;
+  }
+  
+  .player-inv-info-box-left {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-align: center;
+		-ms-flex-align: center;
+			align-items: center;
+	background-color: #DC143C;
+	color: white;
+	border-radius: 100%;
+	padding: 3px;
+	position: relative;
+  }
+  
+  .player-inv-info-box-left span {
+	font-size: 4.6vh;
+  }
+  
+  .player-inv-info-box-rights {
+	color: white;
+	font-family: 'Poppins';
+	min-width: 120px;
+	padding: 4px 25px;
+	text-align: center;
+	background: #DC143C;
+	border-radius: 0 10px 10px 0;
+	margin-left: -14px;
+	font-weight: 800;
+	font-style: italic;
+	text-transform: uppercase;
+  }
+  
+  #item-amount {
+	border-radius: 5px;
+	border: 1px solid white;
+	background: rgba(49, 50, 56, 0.53);
+	height: 45px;
+  }
+  
+  .inv-options {
+	top: 32%;
+	width: 11%;
+	left: 2.6vh;
+  }
+  
+  .player-inv-info {
+	width: 28%;
+  }
+  
+  .player-inv-info-weight {
+	position: absolute;
+	right: 3px;
+	top: 0;
+  }
+  
+  #qbcore-inventory {
+	font-family: 'Poppins' !important;
+	top: 0;
+  }
+  
+  .player-inv-info-weight-right p:first-child {
+	font-size: 2.2vh;
+	color: white;
+	font-weight: 800;
+	font-family: 'POPPINS';
+	font-style: italic;
+  }
+  
+  .player-inv-info-weight-right p:last-child {
+	color: #747474;
+	margin-top: -7px !important;
+	margin-left: -8px !important;
+	font-weight: 700;
+  }
+  
+  .player-inv-info-weight {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-align: center;
+		-ms-flex-align: center;
+			align-items: center;
+	gap: 14px;
+  }
+  
+  .player-inv-info-weight .player-inv-info-weight-left {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+  }
+  
+  .player-inv-info-weight .player-inv-info-weight-left span {
+	font-size: 4.8vh;
+	color: white;
+  }
+  
+  .item-slot-quality {
+	bottom: 2vh;
+  }
+  
+  .other-inventory {
+	width: 29% !important;
+  }
+  
+  .ply-inv-container {
+	width: 29% !important;
+  }
+  
+  .other-inv-info-weight-right p:first-child {
+	font-size: 2.2vh;
+	color: white;
+	font-weight: 800;
+	font-family: 'POPPINS';
+	font-style: italic;
+  }
+  
+  .other-inv-info-weight-right p:last-child {
+	color: #747474;
+	margin-top: -7px !important;
+	margin-left: -8px !important;
+	font-weight: 700;
+  }
+  
+  .other-inv-info-weight {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-align: center;
+		-ms-flex-align: center;
+			align-items: center;
+	gap: 14px;
+  }
+  
+  .other-inv-info-weight .other-inv-info-weight-left {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+  }
+  
+  .other-inv-info-weight .other-inv-info-weight-left span {
+	font-size: 4.8vh;
+	color: white;
+  }
+  
+  .other-inv-info {
+	width: 27%;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-pack: end;
+		-ms-flex-pack: end;
+			justify-content: flex-end;
+  }
+  
+  .other-inv-info-box {
+	-webkit-box-orient: horizontal;
+	-webkit-box-direction: reverse;
+		-ms-flex-direction: row-reverse;
+			flex-direction: row-reverse;
+  }
+  
+  .other-inv-info-weight {
+	position: absolute;
+	left: -21px;
+	top: 0;
+  }
+  
+  .inv-option-item {
+	background: transparent;
+	border: 0;
+  }
+  
+  .other-inv-info-box {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-align: center;
+		-ms-flex-align: center;
+			align-items: center;
+  }
+  
+  .other-inv-info-box-left {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-align: center;
+		-ms-flex-align: center;
+			align-items: center;
+	background-color: #DC143C;
+	color: white;
+	border-radius: 100%;
+	padding: 3px;
+	position: relative;
+  }
+  
+  .other-inv-info-box-left span {
+	font-size: 4.6vh;
+  }
+  
+  .other-inv-info-box-rights {
+	color: white;
+	font-family: 'Poppins';
+	min-width: 120px;
+	padding: 4px 25px;
+	text-align: center;
+	background: #DC143C;
+	border-radius: 10px 0 0 10px;
+	margin-right: -14px;
+	font-weight: 800;
+	font-style: italic;
+	text-transform: uppercase;
+  }
+  
+  .oth-inv-container {
+	width: 29% !important;
+  }
+  
+  .item-slot-key {
+	position: absolute;
+	font-size: 1.2vh;
+	left: 4px;
+	top: 2px;
+	color: white;
+  }
+  
+  .inv-option-item {
+	margin: 0;
+  }
+  
+  .inv-option-item:nth-child(2) {
+	padding-top: 5px;
+  }
+  
+  #item-amount {
+	width: 72%;
+  }

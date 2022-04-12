@@ -53,7 +53,7 @@ export default {
     },
     methods: {
         AddItemBox: function(data) {
-            var type = this.i18n.itemBox.used;
+            let type = this.i18n.itemBox.used;
             if (data.type == "add") {
                 type = this.i18n.itemBox.received;
             } else if (data.type == "remove") {

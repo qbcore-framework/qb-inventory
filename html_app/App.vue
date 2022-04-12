@@ -28,8 +28,7 @@ import PlayerHotbar from './components/PlayerHotbar.vue';
 import ItemBox from './components/ItemBox.vue';
 import AttachmentMenu from './components/AttachmentMenu.vue';
 import RequiredItems from './components/RequiredItems.vue';
-
-const axios = require('axios').default;
+import {fetchNui} from "./utils";
 
 // Import images to be used in build
 function importAll(r) {
@@ -100,7 +99,7 @@ export default {
                 case "update":
                     this.$bus.trigger('updateInventory', event.data);
                     if (event.data.error)
-                        axios.post("https://qb-inventory/PlayDropFail", {}, this.AXIOS_CONFIG);
+                      fetchNui("PlayDropFail", {});
                     break;
                 case "itemBox":
                     this.$refs.itemBox.AddItemBox(event.data);
@@ -127,7 +126,7 @@ export default {
             this.hide = false;
             this.inventory = data;
             if (this.inventory.error)
-                axios.post("https://qb-inventory/PlayDropFail", {}, this.AXIOS_CONFIG);
+              fetchNui("PlayDropFail", {});
         },
         close() {
             this.hide = true;
@@ -135,7 +134,7 @@ export default {
             this.inventory = {};
             this.robberyTarget = null;
             this.$bus.trigger('disableAttachments');
-            axios.post("https://qb-inventory/CloseInventory", {});
+            fetchNui("CloseInventory", {})
         },
     },
 }
