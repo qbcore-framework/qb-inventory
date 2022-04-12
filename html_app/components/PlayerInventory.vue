@@ -505,7 +505,7 @@ export default {
             }
 
             // Check weight
-            if (this.totalWeight > this.playerInventory.maxweight || (this.openedInventory.type != "itemshop" && this.totalWeightOther > this.openedInventory.maxweight)) {
+            if (this.totalWeight > this.playerInventory.maxweight || (this.openedInventory.type != "shop" && this.totalWeightOther > this.openedInventory.maxweight)) {
                 /** @todo Send an error warning */
                 Object.assign(this.items, backupItems);
                 return

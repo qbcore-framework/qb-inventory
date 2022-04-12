@@ -110,6 +110,10 @@ local function closeInventory()
     })
 end
 
+RegisterNetEvent('inventory:client:closeInventory', function()
+    closeInventory()
+end)
+
 local function ToggleHotbar(toggle)
     local HotbarItems = {
         [1] = PlayerData.items[1],

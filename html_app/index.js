@@ -12,7 +12,7 @@ fetchNui("RetrieveTranslations", {}).then((data) => {
 })
 
 app.config.globalProperties.TYPE_ITEM_PLAYER_INVENTORY = "player";
-app.config.globalProperties.INVENTORY_TYPE_DISABLE_DROP = ['itemshop', 'crafting'];
+app.config.globalProperties.INVENTORY_TYPE_DISABLE_DROP = ['shop', 'crafting'];
 app.config.globalProperties.TYPE_ITEM_OPEN_INVENTORY = "other";
 
 app.config.globalProperties.IsWeaponBlocked = function(WeaponName) {

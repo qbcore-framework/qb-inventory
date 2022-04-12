@@ -218,12 +218,10 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 		return
 	end
 
-	print(json.encode(name), json.encode(id), json.encode(other))
-
 	local Player = QBCore.Functions.GetPlayer(src)
 
 	if not (name and id) then
-		TriggerClientEvent("inventory:client:OpenInventory", src, Player.PlayerData.items)
+		TriggerClientEvent("inventory:client:OpenInventory", src, {}, Player.PlayerData.items)
 		return
 	end
 
@@ -270,7 +268,7 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 		inventory = inventory[id].items
 	}
 
-	TriggerClientEvent("inventory:client:OpenInventory", src, Player.PlayerData.items, targetInventory)
+	TriggerClientEvent("inventory:client:OpenInventory", src, {}, Player.PlayerData.items, targetInventory)
 end)
 
 -- @deprecated
@@ -520,16 +518,12 @@ local function GetInventoryMethod(name, id, src)
 	return nil
 end
 
-local function ChargePlayer(src, id, itemName, amount)
+local function ChargePlayer(src, id, itemData, amount)
 	local Player = QBCore.Functions.GetPlayer(src)
-	local bankBalance = Player.PlayerData.money["bank"]
-	local itemData = QBCore.Shared.Items[itemName:lower()]
 
 	local ShopType = QBCore.Shared.SplitStr(id, "_")[1]:lower()
 	local ShopName = QBCore.Shared.SplitStr(id, "_")[2]
 	local ItemType = QBCore.Shared.SplitStr(itemData.name, "_")[1]
-
-	print("CHARGE PLAYER", json.encode(ShopType), json.encode(ShopName), json.encode(ItemType))
 
 	if ItemType == "weapon" then
 		itemData.info.serie = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
@@ -549,6 +543,7 @@ local function ChargePlayer(src, id, itemName, amount)
 	}
 
 	local AllowBankAccount = true
+	local bankBalance = Player.PlayerData.money["bank"]
 	if ShopType == "dealer" then
 		AllowBankAccount = false
 	end
@@ -569,7 +564,7 @@ local function ChargePlayer(src, id, itemName, amount)
 		ShopTypeEventFunctions[ShopType]()
 	end
 	TriggerClientEvent('QBCore:Notify', src, itemData.label .. " bought with "..PaymentType.."!", "success")
-	TriggerEvent("qb-log:server:CreateLog", "shops", ShopType .. " item bought", "green", "**"..GetPlayerName(src) .. "** bought a " .. itemData.label .. " for $"..price" with "..PaymentType)
+	TriggerEvent("qb-log:server:CreateLog", "shops", ShopType .. " item bought", "green", "**"..GetPlayerName(src) .. "** bought a " .. itemData.label .. " for $"..price.." with "..PaymentType)
 	return true
 end
 
@@ -689,7 +684,12 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 
 	-- @todo Charge the player or restore
 	if fromInventoryType == "shop" then
-		ChargePlayer(src, fromItemData.price * amount)
+		if not ChargePlayer(src, fromInventoryId, fromItemData, amount) then
+			fromInventoryMethod.Add(fromItemData.name, amount, fromSlot, fromItemData.info)
+			toInventoryMethod.Delete(fromItemData.name, amount, toSlot)
+			TriggerClientEvent("inventory:client:closeInventory", src)
+			return
+		end
 	end
 
 	-- the player's radio is shut down
