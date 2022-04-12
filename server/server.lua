@@ -250,7 +250,6 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 
 	-- Populate the Inventory[type] variable from Database
 	local loadedItems = GetItemsForInventory(name, id)
-	print(json.encode(loadedItems))
 	if loadedItems and next(loadedItems) then
 		inventory[id].items = loadedItems
 	else
@@ -323,7 +322,7 @@ RegisterNetEvent('inventory:server:SaveInventory', function(name, id)
 	elseif name == "drop" then
 		if Inventories[name][id] then
 			Inventories[name][id].isOpen = false
-			if Inventories[name][id].items == nil or next(Inventories[name][id].items) == nil then
+			if not Inventories[name][id].items or not next(Inventories[name][id].items) then
 				Inventories[name][id] = nil
 				TriggerClientEvent("inventory:client:RemoveDropItem", -1, id)
 			end
@@ -408,45 +407,54 @@ end
 -- @return {bool|item}			False if can't be added, True if added, the item if swapped
 local function AddItemToInventory(name, inventory, slot, itemName, amount, info, itemData)
 	amount = tonumber(amount)
-	local ItemData = QBCore.Shared.Items[itemName]
+	local ItemData = QBCore.Shared.Items[itemName:lower()]
 
 	if not ItemData then
 		return false
 	end
 
-	local itemInfo = QBCore.Shared.Items[itemName:lower()]
-
-	-- @todo Need to check the slot max
-
-	if not inventory.items[slot] and inventory.items[slot].name == itemName and not ItemData.unique then
+	if inventory.items[slot] and inventory.items[slot].name == itemName and not ItemData.unique then
 		if IsInventoryPlayerType(name) then
 			Player.Functions.AddItem(itemData.name, amount, slot)
 		else
 			inventory.items[slot].amount = inventory.items[slot].amount + amount
 		end
 	else
-		local toReturn = json.encode(inventory.items[slot])
 		inventory.items[slot] = {
-			name = itemInfo["name"],
+			name = ItemData["name"],
 			amount = amount,
 			info = info or "",
-			label = itemInfo["label"],
-			description = itemInfo["description"] or "",
-			weight = itemInfo["weight"],
-			type = itemInfo["type"],
-			unique = itemInfo["unique"],
-			useable = itemInfo["useable"],
-			image = itemInfo["image"],
+			label = ItemData["label"],
+			description = ItemData["description"] or "",
+			weight = ItemData["weight"],
+			type = ItemData["type"],
+			unique = ItemData["unique"],
+			useable = ItemData["useable"],
+			image = ItemData["image"],
 			slot = slot,
 		}
-		return toReturn
 	end
 
 	return true
 end
 
-local function RemoveItemFromInventory(fromInventoryType, fromInventoryId, fromSlot, amount, Player)
+local function RemoveItemFromInventory(inventory, slot, itemName, amount)
+	if not inventory or not inventory.items[slot] then
+		return false
+	end
 
+	if inventory.items[slot].name == itemName then
+		if inventory.items[slot].amount > amount then
+			inventory.items[slot].amount = inventory.items[slot].amount - amount
+		else
+			inventory.items[slot] = nil
+			if not next(inventory.items) then
+				inventory.items = {}
+			end
+		end
+	end
+
+	return true
 end
 
 -- Get the adaptated methods for the inventory type
@@ -455,6 +463,18 @@ end
 -- @param {number} src		The source player (optional)
 -- @return {array|nil}		The methods (Get, Add, Delete) or nil if not found
 local function GetInventoryMethod(name, id, src)
+	-- Ensure the drop inventory exists or create it
+	if name == "drop" and not Inventories[name][id] then
+		id = math.random(10000, 99999) .. ""
+		while Inventories[name][id] ~= nil do
+			id = math.random(10000, 99999) .. ""
+		end
+
+		Inventories[name][id] = {
+			items = {}
+		}
+	end
+
 	if IsInventoryPlayerType(name) then
 		local Player = QBCore.Functions.GetPlayer(id)
 		if Player then
@@ -471,53 +491,6 @@ local function GetInventoryMethod(name, id, src)
 				end,
 			}
 		end
-	elseif name == "drop" then
-		if not Inventories[name][id] then
-			id = math.random(10000, 99999) .. ""
-			while Inventories[name][id] ~= nil do
-				id = math.random(10000, 99999) .. ""
-			end
-
-			Inventories[name][id] = {
-				items = {}
-			}
-		end
-		
-		return {
-			Get = function(slot)
-				return Inventories[name][id].items[slot]
-			end,
-			Add = function(itemName, amount, slot, info)
-				TriggerClientEvent("inventory:client:DropItemAnim", src)
-				TriggerClientEvent("inventory:client:AddDropItem", -1, id, src, GetEntityCoords(GetPlayerPed(src)))
-				
-				if Inventories[name][id].items[slot] and Inventories[name][id].items[slot].name == itemName then
-					Inventories[name][id].items[slot].amount = Inventories[name][id].items[slot].amount + amount
-				else
-					local itemInfo = QBCore.Shared.Items[itemName:lower()]
-					Inventories[name][id].items[slot] = {
-						name = itemInfo["name"],
-						amount = amount,
-						info = info or "",
-						label = itemInfo["label"],
-						description = itemInfo["description"] or "",
-						weight = itemInfo["weight"],
-						type = itemInfo["type"],
-						unique = itemInfo["unique"],
-						useable = itemInfo["useable"],
-						image = itemInfo["image"],
-						slot = slot,
-					}
-					return true
-				end
-				return false
-				-- return AddItemToInventory(name, Inventories[name][id], slot, itemName, amount, info)
-			end,
-			Delete = function(itemName, amount, slot)
-				-- @todo
-				return RemoveFromDrop(toInventory, fromSlot, itemInfo["name"], toAmount)
-			end,
-		}
 	else
 		if Inventories[name] and Inventories[name][id] then
 			return {
@@ -525,12 +498,14 @@ local function GetInventoryMethod(name, id, src)
 					return Inventories[name][id].items[slot]
 				end,
 				Add = function(itemName, amount, slot, info)
-					-- @todo
-					-- return AddItemToInventory(name, Inventories[name][id], slot, itemName, amount, info)
+					if name == "drop" then
+						TriggerClientEvent("inventory:client:DropItemAnim", src)
+						TriggerClientEvent("inventory:client:AddDropItem", -1, id, src, GetEntityCoords(GetPlayerPed(src)))
+					end
+					return AddItemToInventory(name, Inventories[name][id], slot, itemName, amount, info)
 				end,
 				Delete = function(itemName, amount, slot)
-					-- @todo
-					-- return RemoveItemFromInventory(name, id, slot)
+					return RemoveItemFromInventory(Inventories[name][id], slot, itemName, amount)
 				end,
 			}
 		end
