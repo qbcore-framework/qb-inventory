@@ -269,7 +269,7 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 end)
 
 -- @deprecated
-RegisterNetEvent('inventory:server:addTrunkItems', function(plate, items)
+RegisterNetEvent('inventory:server:addTrunkItems', function(_, _)
 	print("[QBCore] inventory:server:addTrunkItems is deprecated, use inventory:server:addItem instead")
 end)
 
@@ -277,6 +277,7 @@ end)
 -- @param {string} name		the inventory name
 -- @param {int} id			the inventory id
 -- @param {array} item		the item name
+-- @todo
 AddEventHandler('inventory:server:addItem', function(name, id, item)
 
 end)
@@ -514,6 +515,13 @@ local function GetInventoryMethod(name, id, src)
 	return nil
 end
 
+-- Move an item from one inventory to another
+-- @param {string} fromInventory		The inventory to move the item from (Config.InventoriesType)
+-- @param {string} toInventory			The inventory to move the item to (Config.InventoriesType)
+-- @param {int} fromSlot				The slot to move the item from
+-- @param {int} toSlot					The slot to move the item to
+-- @param {number} amount				The amount of the item to move
+-- @return {void}
 RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, toInventory, fromSlot, toSlot, amount)
 	local src = source
 
@@ -612,7 +620,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 		toInventoryMethod.Add(fromItemData.name, amount, toSlot, fromItemData.info)
 	end
 
-	-- Check weight and restore item if it is too heavy
+	-- @todo Check weight and restore item if it is too heavy
 
 	-- If it's the radio, just shut id down
 	if fromItemData.name:lower() == "radio" then
@@ -632,8 +640,57 @@ QBCore.Functions.CreateCallback('qb-inventory:server:GetStashItems', function(_,
 	cb(FetchItemsFromDatabase('stashitems', 'items', 'stash', id))
 end)
 
--- RegisterServerEvent("inventory:server:GiveItem", function(target, name, amount, slot)
--- end)
+RegisterServerEvent("inventory:server:GiveItem", function(target, name, amount, slot)
+	local src = source
+	local Player = QBCore.Functions.GetPlayer(src)
+	local OtherPlayer = QBCore.Functions.GetPlayer(tonumber(target))
+	local dist = #(GetEntityCoords(GetPlayerPed(src))-GetEntityCoords(GetPlayerPed(target)))
+
+	if Player == OtherPlayer then
+		TriggerClientEvent('QBCore:Notify', src, "You can't give yourself an item?")
+		return
+	end
+	if dist > 2 then
+		TriggerClientEvent('QBCore:Notify', src, "You are too far away to give items!")
+		return
+	end
+
+	local item = Player.Functions.GetItemBySlot(slot)
+	if not item or item.name ~= name then
+		TriggerClientEvent('QBCore:Notify', src, "Incorrect item found try again!")
+		return
+	end
+
+	if amount == 0 then
+		amount = item.amount
+	end
+
+	if not isValidNumber(amount) or amount > item.amount then
+		TriggerClientEvent('QBCore:Notify', src,  "You do not have enough of the item", "error")
+		return
+	end
+
+	if Player.Functions.RemoveItem(item.name, amount, item.slot) then
+		if OtherPlayer.Functions.AddItem(item.name, amount, false, item.info) then
+			TriggerClientEvent('inventory:client:ItemBox',target, QBCore.Shared.Items[item.name], "add")
+			TriggerClientEvent('QBCore:Notify', target, "You Received "..amount..' '..item.label.." From "..Player.PlayerData.charinfo.firstname.." "..Player.PlayerData.charinfo.lastname)
+			TriggerClientEvent("inventory:client:UpdatePlayerInventory", target, true)
+			TriggerClientEvent('inventory:client:ItemBox',src, QBCore.Shared.Items[item.name], "remove")
+			TriggerClientEvent('QBCore:Notify', src, "You gave " .. OtherPlayer.PlayerData.charinfo.firstname.." "..OtherPlayer.PlayerData.charinfo.lastname.. " " .. amount .. " " .. item.label .."!")
+			TriggerClientEvent("inventory:client:UpdatePlayerInventory", src, true)
+			TriggerClientEvent('qb-inventory:client:giveAnim', src)
+			TriggerClientEvent('qb-inventory:client:giveAnim', target)
+		else
+			Player.Functions.AddItem(item.name, amount, item.slot, item.info)
+			TriggerClientEvent('QBCore:Notify', src,  "The other players inventory is full!", "error")
+			TriggerClientEvent('QBCore:Notify', target,  "Your inventory is full!", "error")
+			TriggerClientEvent("inventory:client:UpdatePlayerInventory", src, false)
+			TriggerClientEvent("inventory:client:UpdatePlayerInventory", target, false)
+		end
+	else
+		TriggerClientEvent('QBCore:Notify', src,  "You do not have enough of the item", "error")
+	end
+end)
 
 QBCore.Commands.Add("giveitem", "Give An Item (Admin Only)", {{name="id", help="Player ID"},{name="item", help="Name of the item (not a label)"}, {name="amount", help="Amount of items"}}, true, function(source, args)
 	local Player = QBCore.Functions.GetPlayer(tonumber(args[1]))
