@@ -54,7 +54,7 @@
                         </div>
                         <div class="other-inv-info-weight-right">
                             <p>{{ (totalWeightOther / 1000).toFixed(2) }}</p>
-                            <p>/{{ (playerInventory.maxweight / 1000).toFixed(2)}}</p>
+                            <p>/{{ (openedInventory.maxweight / 1000).toFixed(2)}}</p>
                         </div>
                     </div>
                     <!--<span id="other-inv-label">{{ openedInventory.label }}</span><br>
@@ -124,8 +124,6 @@ import cloneDeep from 'lodash.clonedeep'
 
 /**
  * Component to manage every inventory (or "tab") part
- * 
- * @todo Add Language support on HTML side
 */
 export default {
   components: { ItemSlot, ItemInfo },
@@ -410,7 +408,8 @@ export default {
             }
 
             this.amount = parseInt(this.amount);
-            let changeAmount
+
+            let amount = 0;
 
             if (this.amount == 0) {
                 if (this.openedInventory.type == "shop" || this.openedInventory.type == "crafting") {
@@ -418,11 +417,10 @@ export default {
                     this.amount = 1;
                     return;
                 }
-
-                changeAmount = oldItemSlot.amount;
+                amount = oldItemSlot.amount;
                 // Handle shift to split into two
                 if (this.splitItem && amount > 1) {
-                  changeAmount /= 2;
+                  amount /= 2;
                 }
             } else if (this.amount < 0) {
                 /** @todo Add an error "can't set a negative amount" */
@@ -436,16 +434,16 @@ export default {
                 this.amount = 1;
                 return;
             } else {
-              changeAmount = this.amount;
+                amount = this.amount;
             }
 
-            changeAmount = parseInt(amount.toFixed());
+            amount = parseInt(amount.toFixed());
 
             if (inventory == "give") {
                 fetchNui("GiveItem", {
                     inventory: oldItemSlot.inventory,
                     item: this.convertItemToQB(oldItemSlot),
-                    amount: parseInt(changeAmount),
+                    amount: parseInt(amount),
                 })
                 return;
             }
@@ -507,7 +505,7 @@ export default {
             }
 
             // Check weight
-            if (this.totalWeight > this.playerInventory.maxweight || this.totalWeightOther > this.openedInventory.maxweight) {
+            if (this.totalWeight > this.playerInventory.maxweight || (this.openedInventory.type != "itemshop" && this.totalWeightOther > this.openedInventory.maxweight)) {
                 /** @todo Send an error warning */
                 Object.assign(this.items, backupItems);
                 return
@@ -596,7 +594,7 @@ export default {
                 return;
             }
 
-            const amount = this.amount;
+            const amount = Math.floor(this.amount);
             if (this.amount > 1) {
                 this.amount = 1;
             }
