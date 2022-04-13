@@ -1,9 +1,18 @@
--- @author @restray
--- @description Server-side code for the qb-inventory mod, containing events, utils functions, etc...
+------------
+-- QB Inventory Project
+-- Server-side code for the qb-inventory mod, containing events, utils functions, etc...
+-- @author restray
 -- @todo Need to translate the whole script
 -- @todo Complete documentation.
 
+--- Load QBCore object
+-- @usage Player = QBCore.Functions.GetPlayer(source)
 local QBCore = exports['qb-core']:GetCoreObject()
+
+--- All the inventories table
+-- @table Inventories
+-- @field type Table that contains all inventories types (see Config.InventoriesType)
+-- @field type.id Table that contains all inventories
 local Inventories = {}
 
 -- Populate the inventories
@@ -11,19 +20,19 @@ for _, v in ipairs(Config.InventoriesType) do
 	Inventories[v] = {}
 end
 
--- Is the given number an unsigned integer?
--- @param {number} nb	The number to check
--- @return {boolean}	True if the number is an unsigned integer
+--- Is the given number an unsigned integer?
+-- @tparam number nb	The number to check
+-- @treturn bool		True if the number is an unsigned integer
 local function isValidNumber(nb)
 	return math.floor(nb) == nb and nb >= 0
 end
 
--- Is the inventory is opened
--- @param {array} inventory 	the array type (from Inventory variable)
--- @param {string} name 		the inventory name
--- @param {int} id 				id of the inventory
--- @param {int} source 			the player source id
--- @return {bool}				True if the inventory is opened by another player
+--- Is the inventory opened
+-- @tparam Inventories[][] inventory 		the array type (from Inventory variable)
+-- @tparam string name 					the inventory name
+-- @tparam number id 					id of the inventory
+-- @tparam number source 				the player source id
+-- @treturn bool						True if the inventory is opened by another player
 local function IsInventoryUsed(inventory, name, id, source)
     if inventory[id] and inventory[id].isOpen then
 		if inventory[id].isOpen == source then
@@ -38,11 +47,11 @@ local function IsInventoryUsed(inventory, name, id, source)
     return false
 end
 
--- Every condition related to a forbiden access to an inventory
--- @param {string} name 		the inventory name
--- @param {int} id 				id of the inventory
--- @param {Player} Player 		the player QBCore Player Object from source
--- @return {bool}				True if the player can't access the inventory
+--- Every condition related to a forbiden access to an inventory
+-- @tparam string name 			The inventory name
+-- @tparam number id 			Id of the inventory
+-- @tparam Player Player 		The player QBCore Player Object from source
+-- @treturn bool				True if the player can't access the inventory
 local function IsInventoryIsInaccessible(name, id, Player)
 	-- Don't let non police to access police vehicles inventory
 	if name == "trunk" and QBCore.Shared.SplitStr(id, "LSPD")[2] and Player.PlayerData.job and Player.PlayerData.job.name ~= "police" then
@@ -51,9 +60,9 @@ local function IsInventoryIsInaccessible(name, id, Player)
 	return false
 end
 
--- Is the given name is specified in the config
--- @param {string} name		the inventory name
--- @return {bool}
+--- Is the given name is specified in the config
+-- @tparam string name		The inventory name
+-- @treturn bool
 local function IsValidInventoryType(name)
 	for _, v in ipairs(Config.InventoriesType) do
 		if v == name then
@@ -63,10 +72,10 @@ local function IsValidInventoryType(name)
 	return false
 end
 
--- Get the inventory max weight for specified player
--- @param {string} name		the inventory name
--- @param {array} inventory	the opened inventory array
--- @return {int}
+--- Get the inventory max weight for specified player
+-- @tparam string name						The inventory name
+-- @tparam[opt] Inventories[][] other		The opened inventory array
+-- @treturn number							The inventory max weight
 local function GetMaxWeightsForInventory(name, other)
 	if other then
 		return other.maxweight or Config.MaxWeights[name]
@@ -75,10 +84,10 @@ local function GetMaxWeightsForInventory(name, other)
 end
 
 -- Get the inventory slots number for specified player
--- @param {string} name		the inventory name
--- @param {array} inventory	the opened inventory array
--- @param {Player} player	the player who opened the inventory
--- @return {int}
+-- @tparam string name					The inventory name
+-- @tparam Inventories[][] inventory	The opened inventory array
+-- @tparam Player player				The player who opened the inventory
+-- @treturn number						The max number of slots
 local function GetSlotsForInventory(name, other, player)
 	if name == "otherplayer" then
 		if player.PlayerData.job.name == "police" and player.PlayerData.job.onduty then
@@ -94,12 +103,12 @@ local function GetSlotsForInventory(name, other, player)
 	return Config.MaxSlots[name]
 end
 
--- Save inventories in the specified table of the database
--- @param {string} name			the inventory name
--- @param {int} id				the inventory id
--- @param {array} inventory		the opened inventory array
--- @param {string} columnName	the column name in the database
--- @return {bool}				true if the inventory is saved
+--- Save inventories in the specified table of the database
+-- @tparam string name					The inventory name
+-- @tparam number id					The inventory id
+-- @tparam Inventories[][] inventory	The opened inventory array
+-- @tparam string columnName			The column name in the database
+-- @treturn bool						True if the inventory is saved
 local function SaveDatabaseInventories(name, id, inventory, columnName)
 	if not inventory.items then
 		return false
@@ -118,11 +127,13 @@ local function SaveDatabaseInventories(name, id, inventory, columnName)
 	return true
 end
 
--- Fetch items from the database
--- @param {string} table			the database table name
--- @param {string} itemsColumn		the database table column name for items
--- @param {string} columnCondition	the database table column name for condition
--- @param {any} conditionValue		the condition value
+--- Fetch items from the database
+-- @tparam string table				The database table name
+-- @tparam string itemsColumn		The database table column name for items
+-- @tparam string columnCondition	The database table column name for condition
+-- @tparam string conditionValue	The condition value
+-- @treturn[1] table				The fetched items
+-- @treturn[2] bool					False if the database returns nothing
 local function FetchItemsFromDatabase(table, itemsColumn, columnCondition, conditionValue)
 	local items = {}
 	local result = MySQL.Sync.fetchScalar('SELECT '.. itemsColumn ..' FROM '.. table ..' WHERE '.. columnCondition ..' = ?', {conditionValue})
@@ -160,11 +171,13 @@ local function FetchItemsFromDatabase(table, itemsColumn, columnCondition, condi
 	return items
 end
 
--- Get the inventory items from name and ID
--- @param {string} name		the inventory name
--- @param {int} id			the inventory id
--- @param {array} other 	the opened inventory array
--- @return {array}
+--- Get the inventory items from name and ID
+-- @tparam string name						The inventory name
+-- @tparam number id						The inventory id
+-- @tparam[opt] Inventories[][] other 		The opened inventory array
+-- @tparam[optchain] Player Player		 	The opened inventory array
+-- @treturn[1] Inventories[][].items		The inventory items
+-- @treturn[2] table						Empty table, meaning no items were find in the inventory
 local function GetItemsForInventory(name, id, other, Player)
 	if name == "player" then
 		return Player.PlayerData.items
@@ -223,182 +236,6 @@ local function IsVehicleOwned(plate)
     return not not MySQL.Sync.fetchScalar('SELECT 1 from player_vehicles WHERE plate = ?', {plate})
 end
 
--- Server event when a player is trying to open an inventory
--- @param {string} name		the inventory type (Config.InventoriesType)
--- @param {int} id			the inventory id
--- @param {array} other		the opened inventory array (optionnal)
--- @return {void}
-RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
-	local src = source
-
-	if Player(src).state.inv_busy then
-		TriggerClientEvent('QBCore:Notify', src, 'Not Accessible', 'error')
-		return
-	end
-
-	local Player = QBCore.Functions.GetPlayer(src)
-
-	if not (name and id) then
-		return TriggerClientEvent("inventory:client:OpenInventory", src, {}, Player.PlayerData.items)
-	end
-
-    -- Is the given inventory name and ID are safe and valid?
-	if not IsValidInventoryType(name) or not id then
-		TriggerClientEvent("inventory:client:closeInventory", src)
-		return TriggerClientEvent('QBCore:Notify', src, 'Invalid Inventory', 'error')
-	end
-
-	-- Get the inventory type array
-	local inventory = Inventories[name]
-
-	-- Is the inventory is opened?
-	if IsInventoryUsed(inventory, name, id, src) then
-		TriggerClientEvent("inventory:client:closeInventory", src)
-		return TriggerClientEvent('QBCore:Notify', src, 'Already in use!', 'error')
-	end
-	if IsInventoryIsInaccessible(name, id, Player) then
-		TriggerClientEvent("inventory:client:closeInventory", src)
-		return TriggerClientEvent('QBCore:Notify', src, "It seems like you don't have the keys", 'error')
-	end
-	
-	-- Get the maxweight and slots of the inventory type
-	local maxweight = GetMaxWeightsForInventory(name, other)
-	local slots = GetSlotsForInventory(name, other, Player)
-
-	-- Load inventories datas function and assure to not overwrite the inventory
-	if not inventory[id] then
-		inventory[id] = {}
-	end
-	inventory[id].isOpen = src
-	inventory[id].label = Lang:t(name).."-"..id
-
-	-- Populate the Inventory[type] variable from Database
-	local loadedItems = GetItemsForInventory(name, id, other)
-	if loadedItems and next(loadedItems) then
-		inventory[id].items = loadedItems
-	else
-		inventory[id].items = {}
-	end
-
-	-- Set the target inventory: name, label, maxweight, slots, items
-	local targetInventory = {
-		name = name.."-"..id,
-		label = inventory[id].label,
-		maxweight = maxweight,
-		slots = slots,
-		inventory = inventory[id].items
-	}
-
-	TriggerClientEvent("inventory:client:OpenInventory", src, {}, Player.PlayerData.items, targetInventory)
-end)
-
--- @deprecated
-RegisterNetEvent('inventory:server:addTrunkItems', function(_, _)
-	print("[QBCore] inventory:server:addTrunkItems is deprecated, use inventory:server:addItem instead")
-end)
-
--- Add item to the inventory
--- @param {string} name		the inventory name
--- @param {int} id			the inventory id
--- @param {array} item		the item name
--- @todo
-AddEventHandler('inventory:server:addItem', function(name, id, item)
-
-end)
-
--- RegisterNetEvent('inventory:server:combineItem', function(item, fromItem, toItem)
--- end)
-
--- RegisterNetEvent('inventory:server:CraftItems', function(itemName, itemCosts, amount, toSlot, points)
--- end)
-
--- RegisterNetEvent('inventory:server:CraftAttachment', function(itemName, itemCosts, amount, toSlot, points)
--- end)
-
--- A server event handler to let the client set an inventory closed state
--- @param {bool} isOpen		Is the new inventory state open?
--- @param {string} name		The inventory name
--- @param {int} id			The inventory id
--- @return {void}
-RegisterNetEvent('inventory:server:SetIsOpenState', function(IsOpen, name, id)
-	if not IsOpen then
-		if Inventories[name] and Inventories[name][id] then
-			Inventories[name][id].isOpen = false
-		end
-	end
-end)
-
--- A server event to save the inventory items
--- @param {string} name		The inventory name (in the config)
--- @param {int} id			The inventory id
--- @return {void}
-RegisterNetEvent('inventory:server:SaveInventory', function(name, id)
-	if not IsValidInventoryType(name) then
-		-- @todo Anticheat notification
-		return
-	end
-
-	if name == "trunk" or name == "glovebox" then
-		if IsVehicleOwned(id) then
-			SaveDatabaseInventories(name, id, Inventories[name][id], "plate")
-		end
-	elseif name == "stash" then
-		SaveDatabaseInventories(name, id, Inventories[name][id], "stash")
-	elseif name == "drop" then
-		if Inventories[name][id] then
-			Inventories[name][id].isOpen = false
-			if not Inventories[name][id].items or not next(Inventories[name][id].items) then
-				Inventories[name][id] = nil
-				TriggerClientEvent("inventory:client:RemoveDropItem", -1, id)
-			end
-		end
-	end
-end)
-
--- Use the item on the given slot
--- @param {number} slot		The slot to use the item
--- @return {void}
-RegisterNetEvent('inventory:server:UseItemSlot', function(slot)
-	local src = source
-	if Player(src).state.inv_busy then
-		TriggerClientEvent('QBCore:Notify', src, 'Not Accessible', 'error')
-		return
-	end
-
-	local Player = QBCore.Functions.GetPlayer(src)
-	local itemData = Player.Functions.GetItemBySlot(slot)
-
-	-- is the item a usable item?
-	if itemData and (itemData.type == "weapon" or itemData.useable) then
-		if itemData.type == "weapon" then
-			if itemData.info.quality then
-				TriggerClientEvent("inventory:client:UseWeapon", src, itemData, itemData.info.quality > 0)
-			else
-				TriggerClientEvent("inventory:client:UseWeapon", src, itemData, true)
-			end
-		elseif itemData.useable then
-			TriggerClientEvent("QBCore:Client:UseItem", src, itemData)
-		end
-
-		TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[itemData.name], "use")
-	end
-end)
-
--- Use the item specified
--- @param {string} name		The inventory name
--- @param {string} item		The item name
-RegisterNetEvent('inventory:server:UseItem', function(name, item)
-	local src = source
-	local Player = QBCore.Functions.GetPlayer(src)
-
-	if name == "player" or name == "hotbar" then
-		local itemData = Player.Functions.GetItemBySlot(item.slot)
-		if itemData then
-			TriggerClientEvent("QBCore:Client:UseItem", src, itemData)
-		end
-	end
-end)
-
 -- Is the inventory allow items to be dropped in?
 -- @param {string} name		The inventory name (Config.InventoriesType)
 -- @return {bool}
@@ -411,25 +248,29 @@ local function IsInventoryDropAllowed(name)
 	return true
 end
 
--- Is the specified inventory a player type
--- @param {string} name		The inventory name
--- @return {bool}
+--- Is the specified inventory a source player type?
+-- @tparam string name		The inventory name
+-- @treturn bool				Is the inventory a source player type?
 local function IsPlayerInventory(name)
 	return name == "player" or name == "hotbar"
 end
 
+--- Is the specified inventory a any player type?
+-- @see IsPlayerInventory
+-- @tparam string name			The inventory name
+-- @treturn bool				Is the inventory a player type?
 local function IsInventoryPlayerType(name)
 	return IsPlayerInventory(name) or name == "otherplayer"
 end
 
 -- Add an item to the inventory
--- @param {string} name			The inventory type to add the item to
--- @param {array} inventory		The inventory array to add the item to
--- @param {int} slot			The slot to add the item to
--- @param {string} itemName		The item name
--- @param {int} amount			The amount of the item to add
--- @param {array} info			The item specific infos
--- @return {bool|item}			False if can't be added, True if added, the item if swapped
+-- @tparam {string} name			The inventory type to add the item to
+-- @tparam {array} inventory		The inventory array to add the item to
+-- @tparam {int} slot			The slot to add the item to
+-- @tparam {string} itemName		The item name
+-- @tparam {int} amount			The amount of the item to add
+-- @tparam {array} info			The item specific infos
+-- @treturn {bool}				True if the item was added, false if not
 local function AddItemToInventory(name, inventory, slot, itemName, amount, info, itemData)
 	amount = tonumber(amount)
 	local ItemData = QBCore.Shared.Items[itemName:lower()]
@@ -601,6 +442,184 @@ local function ChargePlayer(src, id, itemData, amount)
 	TriggerEvent("qb-log:server:CreateLog", "shops", ShopType .. " item bought", "green", "**"..GetPlayerName(src) .. "** bought a " .. itemData.label .. " for $"..price.." with "..PaymentType)
 	return true
 end
+
+--- Server event when a player wants to open an inventory
+-- @event inventory:server:OpenInventory
+-- @tparam string name					the inventory type (Config.InventoriesType)
+-- @tparam number id					the inventory id
+-- @tparam[opt] Inventories[][] other	the opened inventory array (optionnal)
+RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
+	local src = source
+
+	if Player(src).state.inv_busy then
+		TriggerClientEvent('QBCore:Notify', src, 'Not Accessible', 'error')
+		return
+	end
+
+	local Player = QBCore.Functions.GetPlayer(src)
+
+	if not (name and id) then
+		return TriggerClientEvent("inventory:client:OpenInventory", src, {}, Player.PlayerData.items)
+	end
+
+    -- Is the given inventory name and ID are safe and valid?
+	if not IsValidInventoryType(name) or not id then
+		TriggerClientEvent("inventory:client:closeInventory", src)
+		return TriggerClientEvent('QBCore:Notify', src, 'Invalid Inventory', 'error')
+	end
+
+	-- Get the inventory type array
+	local inventory = Inventories[name]
+
+	-- Is the inventory is opened?
+	if IsInventoryUsed(inventory, name, id, src) then
+		TriggerClientEvent("inventory:client:closeInventory", src)
+		return TriggerClientEvent('QBCore:Notify', src, 'Already in use!', 'error')
+	end
+	if IsInventoryIsInaccessible(name, id, Player) then
+		TriggerClientEvent("inventory:client:closeInventory", src)
+		return TriggerClientEvent('QBCore:Notify', src, "It seems like you don't have the keys", 'error')
+	end
+	
+	-- Get the maxweight and slots of the inventory type
+	local maxweight = GetMaxWeightsForInventory(name, other)
+	local slots = GetSlotsForInventory(name, other, Player)
+
+	-- Load inventories datas function and assure to not overwrite the inventory
+	if not inventory[id] then
+		inventory[id] = {}
+	end
+	inventory[id].isOpen = src
+	inventory[id].label = Lang:t(name).."-"..id
+
+	-- Populate the Inventory[type] variable from Database
+	local loadedItems = GetItemsForInventory(name, id, other)
+	if loadedItems and next(loadedItems) then
+		inventory[id].items = loadedItems
+	else
+		inventory[id].items = {}
+	end
+
+	-- Set the target inventory: name, label, maxweight, slots, items
+	local targetInventory = {
+		name = name.."-"..id,
+		label = inventory[id].label,
+		maxweight = maxweight,
+		slots = slots,
+		inventory = inventory[id].items
+	}
+
+	TriggerClientEvent("inventory:client:OpenInventory", src, {}, Player.PlayerData.items, targetInventory)
+end)
+
+--- Used to be the event to set the items in a trunk.
+-- @event inventory:server:addTrunkItems
+-- @deprecated
+RegisterNetEvent('inventory:server:addTrunkItems', function(_, _)
+	print("[QBCore] inventory:server:addTrunkItems is deprecated, use inventory:server:addItem instead")
+end)
+
+-- Add item to the inventory
+-- @param {string} name		the inventory name
+-- @param {int} id			the inventory id
+-- @param {array} item		the item name
+-- @todo
+AddEventHandler('inventory:server:addItem', function(name, id, item)
+
+end)
+
+-- RegisterNetEvent('inventory:server:combineItem', function(item, fromItem, toItem)
+-- end)
+
+-- RegisterNetEvent('inventory:server:CraftItems', function(itemName, itemCosts, amount, toSlot, points)
+-- end)
+
+-- RegisterNetEvent('inventory:server:CraftAttachment', function(itemName, itemCosts, amount, toSlot, points)
+-- end)
+
+--- A server event handler to let the client set an inventory closed state
+-- @event inventory:server:SetIsOpenState
+-- @tparam bool isOpen		Is the new inventory state open?
+-- @tparam string name		The inventory name
+-- @tparam number id		The inventory id
+RegisterNetEvent('inventory:server:SetIsOpenState', function(IsOpen, name, id)
+	if not IsOpen then
+		if Inventories[name] and Inventories[name][id] then
+			Inventories[name][id].isOpen = false
+		end
+	end
+end)
+
+--- A server event to save the specified inventory name
+-- @event inventory:server:SaveInventory
+-- @tparam string name			The inventory name (in the config)
+-- @tparam number id			The inventory id
+RegisterNetEvent('inventory:server:SaveInventory', function(name, id)
+	if not IsValidInventoryType(name) then
+		-- @todo Anticheat notification
+		return
+	end
+
+	if name == "trunk" or name == "glovebox" then
+		if IsVehicleOwned(id) then
+			SaveDatabaseInventories(name, id, Inventories[name][id], "plate")
+		end
+	elseif name == "stash" then
+		SaveDatabaseInventories(name, id, Inventories[name][id], "stash")
+	elseif name == "drop" then
+		if Inventories[name][id] then
+			Inventories[name][id].isOpen = false
+			if not Inventories[name][id].items or not next(Inventories[name][id].items) then
+				Inventories[name][id] = nil
+				TriggerClientEvent("inventory:client:RemoveDropItem", -1, id)
+			end
+		end
+	end
+end)
+
+-- Use the item on the given slot
+-- @param {number} slot		The slot to use the item
+-- @return {void}
+RegisterNetEvent('inventory:server:UseItemSlot', function(slot)
+	local src = source
+	if Player(src).state.inv_busy then
+		TriggerClientEvent('QBCore:Notify', src, 'Not Accessible', 'error')
+		return
+	end
+
+	local Player = QBCore.Functions.GetPlayer(src)
+	local itemData = Player.Functions.GetItemBySlot(slot)
+
+	-- is the item a usable item?
+	if itemData and (itemData.type == "weapon" or itemData.useable) then
+		if itemData.type == "weapon" then
+			if itemData.info.quality then
+				TriggerClientEvent("inventory:client:UseWeapon", src, itemData, itemData.info.quality > 0)
+			else
+				TriggerClientEvent("inventory:client:UseWeapon", src, itemData, true)
+			end
+		elseif itemData.useable then
+			TriggerClientEvent("QBCore:Client:UseItem", src, itemData)
+		end
+
+		TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[itemData.name], "use")
+	end
+end)
+
+-- Use the item specified
+-- @param {string} name		The inventory name
+-- @param {string} item		The item name
+RegisterNetEvent('inventory:server:UseItem', function(name, item)
+	local src = source
+	local Player = QBCore.Functions.GetPlayer(src)
+
+	if name == "player" or name == "hotbar" then
+		local itemData = Player.Functions.GetItemBySlot(item.slot)
+		if itemData then
+			TriggerClientEvent("QBCore:Client:UseItem", src, itemData)
+		end
+	end
+end)
 
 -- Move an item from one inventory to another
 -- @param {string} fromInventory		The inventory to move the item from (Config.InventoriesType)

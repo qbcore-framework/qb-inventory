@@ -1,0 +1,666 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>ldoc</h1>
+
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Server_Events">Server Events</a></li>
+<li><a href="#Tables">Tables</a></li>
+<li><a href="#Fields">Fields</a></li>
+<li><a href="#Local_Functions">Local Functions</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><strong>server</strong></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>server</code></h1>
+<p>QB Inventory Project
+ Server-side code for the qb-inventory mod, containing events, utils functions, etc...</p>
+<p></p>
+    <h3>Info:</h3>
+    <ul>
+        <li><strong>Author</strong>: restray</li>
+    </ul>
+
+
+<h2><a href="#Server_Events">Server Events</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#inventory:server:OpenInventory">inventory:server:OpenInventory</a></td>
+	<td class="summary">Server event when a player wants to open an inventory</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#inventory:server:SaveInventory">inventory:server:SaveInventory</a></td>
+	<td class="summary">A server event to save the specified inventory name</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#inventory:server:SetIsOpenState">inventory:server:SetIsOpenState</a></td>
+	<td class="summary">A server event handler to let the client set an inventory closed state</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#inventory:server:addTrunkItems">inventory:server:addTrunkItems<br><b>⚠️ DEPRECATED! Do not use it.</b></a></td>
+	<td class="summary">Used to be the event to set the items in a trunk.</td>
+	</tr>
+</table>
+<h2><a href="#Tables">Tables</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Inventories">Inventories</a></td>
+	<td class="summary">All the inventories table</td>
+	</tr>
+</table>
+<h2><a href="#Fields">Fields</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#QBCore">QBCore</a></td>
+	<td class="summary">Load QBCore object</td>
+	</tr>
+</table>
+<h2><a href="#Local_Functions">Local Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#FetchItemsFromDatabase">FetchItemsFromDatabase (table, itemsColumn, columnCondition, conditionValue)</a></td>
+	<td class="summary">Fetch items from the database</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#GetItemsForInventory">GetItemsForInventory (name, id[, other[, Player]])</a></td>
+	<td class="summary">Get the inventory items from name and ID</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#GetMaxWeightsForInventory">GetMaxWeightsForInventory (name[, other])</a></td>
+	<td class="summary">Get the inventory max weight for specified player</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#IsInventoryIsInaccessible">IsInventoryIsInaccessible (name, id, Player)</a></td>
+	<td class="summary">Every condition related to a forbiden access to an inventory</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#IsInventoryPlayerType">IsInventoryPlayerType (name)</a></td>
+	<td class="summary">Is the specified inventory a any player type?</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#IsInventoryUsed">IsInventoryUsed (inventory, name, id, source)</a></td>
+	<td class="summary">Is the inventory opened</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#IsPlayerInventory">IsPlayerInventory (name)</a></td>
+	<td class="summary">Is the specified inventory a source player type?</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#IsValidInventoryType">IsValidInventoryType (name)</a></td>
+	<td class="summary">Is the given name is specified in the config</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#SaveDatabaseInventories">SaveDatabaseInventories (name, id, inventory, columnName)</a></td>
+	<td class="summary">Save inventories in the specified table of the database</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#isValidNumber">isValidNumber (nb)</a></td>
+	<td class="summary">Is the given number an unsigned integer?</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Server_Events"></a>Server Events</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "inventory:server:OpenInventory"></a>
+    <strong>inventory:server:OpenInventory</strong>
+    </dt>
+    <dd>
+    Server event when a player wants to open an inventory
+
+    </ul>
+
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        					the inventory type (Config.InventoriesType)
+        </li>
+        <li><span class="parameter">id</span>
+            <span class="types"><span class="type">number</span></span>
+        					the inventory id
+        </li>
+        <li><span class="parameter">other</span>
+            <span class="types"><a class="type" href="index.html#Inventories">Inventories[][]</a></span>
+        	the opened inventory array (optionnal)
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "inventory:server:SaveInventory"></a>
+    <strong>inventory:server:SaveInventory</strong>
+    </dt>
+    <dd>
+    A server event to save the specified inventory name
+
+    </ul>
+
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        			The inventory name (in the config)
+        </li>
+        <li><span class="parameter">id</span>
+            <span class="types"><span class="type">number</span></span>
+        			The inventory id
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "inventory:server:SetIsOpenState"></a>
+    <strong>inventory:server:SetIsOpenState</strong>
+    </dt>
+    <dd>
+    A server event handler to let the client set an inventory closed state
+
+    </ul>
+
+    <ul>
+        <li><span class="parameter">isOpen</span>
+            <span class="types"><span class="type">bool</span></span>
+        		Is the new inventory state open?
+        </li>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        		The inventory name
+        </li>
+        <li><span class="parameter">id</span>
+            <span class="types"><span class="type">number</span></span>
+        		The inventory id
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "inventory:server:addTrunkItems"></a>
+    <strong>inventory:server:addTrunkItems<br><b>⚠️ DEPRECATED! Do not use it.</b></strong>
+    </dt>
+    <dd>
+    Used to be the event to set the items in a trunk.
+
+    </ul>
+
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Tables"></a>Tables</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "Inventories"></a>
+    <strong>Inventories</strong>
+    </dt>
+    <dd>
+    All the inventories table
+
+    </ul>
+
+    <h3>Fields:</h3>
+    <ul>
+        <li><span class="parameter">type</span> Table that contains all inventories types (see Config.InventoriesType)
+        <ul>
+        <li><span class="parameter">id</span>
+         Table that contains all inventories
+        </li>
+        </li></ul>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Fields"></a>Fields</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "QBCore"></a>
+    <strong>QBCore</strong>
+    </dt>
+    <dd>
+    Load QBCore object
+
+    </ul>
+
+
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">Player = QBCore.Functions.GetPlayer(source)</pre>
+    </ul>
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Local_Functions"></a>Local Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "FetchItemsFromDatabase"></a>
+    <strong>FetchItemsFromDatabase (table, itemsColumn, columnCondition, conditionValue)</strong>
+    </dt>
+    <dd>
+    Fetch items from the database
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">table</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        				The database table name
+        </li>
+        <li><span class="parameter">itemsColumn</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        		The database table column name for items
+        </li>
+        <li><span class="parameter">columnCondition</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        	The database table column name for condition
+        </li>
+        <li><span class="parameter">conditionValue</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        	The condition value
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+        The fetched items
+    </ol>
+     <h3>Or</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        False if the database returns nothing
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "GetItemsForInventory"></a>
+    <strong>GetItemsForInventory (name, id[, other[, Player]])</strong>
+    </dt>
+    <dd>
+    Get the inventory items from name and ID
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        						The inventory name
+        </li>
+        <li><span class="parameter">id</span>
+            <span class="types"><span class="type">number</span></span>
+        						The inventory id
+        </li>
+        <li><span class="parameter">other</span>
+            <span class="types"><a class="type" href="index.html#Inventories">Inventories[][]</a></span>
+         		The opened inventory array
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">Player</span>
+            <span class="types"><span class="type">Player</span></span>
+        		 	The opened inventory array
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="index.html#Inventories">Inventories[][].items</a></span>
+        The inventory items
+    </ol>
+     <h3>Or</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+        Empty table, meaning no items were find in the inventory
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "GetMaxWeightsForInventory"></a>
+    <strong>GetMaxWeightsForInventory (name[, other])</strong>
+    </dt>
+    <dd>
+    Get the inventory max weight for specified player
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        						The inventory name
+        </li>
+        <li><span class="parameter">other</span>
+            <span class="types"><a class="type" href="index.html#Inventories">Inventories[][]</a></span>
+        		The opened inventory array
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        The inventory max weight
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "IsInventoryIsInaccessible"></a>
+    <strong>IsInventoryIsInaccessible (name, id, Player)</strong>
+    </dt>
+    <dd>
+    Every condition related to a forbiden access to an inventory
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         			The inventory name
+        </li>
+        <li><span class="parameter">id</span>
+            <span class="types"><span class="type">number</span></span>
+         			Id of the inventory
+        </li>
+        <li><span class="parameter">Player</span>
+            <span class="types"><span class="type">Player</span></span>
+         		The player QBCore Player Object from source
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        True if the player can't access the inventory
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "IsInventoryPlayerType"></a>
+    <strong>IsInventoryPlayerType (name)</strong>
+    </dt>
+    <dd>
+    Is the specified inventory a any player type?
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        			The inventory name
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        Is the inventory a player type?
+    </ol>
+
+
+    <h3>See also:</h3>
+    <ul>
+         <a href="index.html#IsPlayerInventory">IsPlayerInventory</a>
+    </ul>
+
+
+</dd>
+    <dt>
+    <a name = "IsInventoryUsed"></a>
+    <strong>IsInventoryUsed (inventory, name, id, source)</strong>
+    </dt>
+    <dd>
+    Is the inventory opened
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">inventory</span>
+            <span class="types"><a class="type" href="index.html#Inventories">Inventories[][]</a></span>
+         		the array type (from Inventory variable)
+        </li>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         					the inventory name
+        </li>
+        <li><span class="parameter">id</span>
+            <span class="types"><span class="type">number</span></span>
+         					id of the inventory
+        </li>
+        <li><span class="parameter">source</span>
+            <span class="types"><span class="type">number</span></span>
+         				the player source id
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        True if the inventory is opened by another player
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "IsPlayerInventory"></a>
+    <strong>IsPlayerInventory (name)</strong>
+    </dt>
+    <dd>
+    Is the specified inventory a source player type?
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        		The inventory name
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        Is the inventory a source player type?
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "IsValidInventoryType"></a>
+    <strong>IsValidInventoryType (name)</strong>
+    </dt>
+    <dd>
+    Is the given name is specified in the config
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        		The inventory name
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "SaveDatabaseInventories"></a>
+    <strong>SaveDatabaseInventories (name, id, inventory, columnName)</strong>
+    </dt>
+    <dd>
+    Save inventories in the specified table of the database
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        					The inventory name
+        </li>
+        <li><span class="parameter">id</span>
+            <span class="types"><span class="type">number</span></span>
+        					The inventory id
+        </li>
+        <li><span class="parameter">inventory</span>
+            <span class="types"><a class="type" href="index.html#Inventories">Inventories[][]</a></span>
+        	The opened inventory array
+        </li>
+        <li><span class="parameter">columnName</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        			The column name in the database
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        True if the inventory is saved
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "isValidNumber"></a>
+    <strong>isValidNumber (nb)</strong>
+    </dt>
+    <dd>
+    Is the given number an unsigned integer?
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">nb</span>
+            <span class="types"><span class="type">number</span></span>
+        	The number to check
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        True if the number is an unsigned integer
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2022-04-13 17:09:29 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

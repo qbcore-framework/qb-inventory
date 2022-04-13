@@ -1,5 +1,7 @@
 node_modules/
 html/
+doc/
 .yarn.installed
 .idea
 yarn.lock
+config.ld
