@@ -1,5 +1,7 @@
 Config = {}
 
+Config.UseTarget = GetConvar('UseTarget', false)
+
 Config.VendingObjects = {
     "prop_vend_soda_01",
     "prop_vend_soda_02",
