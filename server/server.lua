@@ -3,7 +3,7 @@
 -- Server-side code for the qb-inventory mod, containing events, utils functions, etc...
 -- @author restray
 -- @todo Need to translate the whole script
--- @todo Complete documentation.
+-- @todo Make the crafting system
 
 --- Load QBCore object
 -- @usage Player = QBCore.Functions.GetPlayer(source)
@@ -12,7 +12,7 @@ local QBCore = exports['qb-core']:GetCoreObject()
 --- All the inventories table
 -- @table Inventories
 -- @field type Table that contains all inventories types (see Config.InventoriesType)
--- @field type.id Table that contains all inventories
+-- @tfield number type.id Table that contains all inventories
 local Inventories = {}
 
 -- Populate the inventories
@@ -29,7 +29,7 @@ end
 
 --- Is the inventory opened
 -- @tparam Inventories[][] inventory 		the array type (from Inventory variable)
--- @tparam string name 					the inventory name
+-- @tparam string name 					the inventory type
 -- @tparam number id 					id of the inventory
 -- @tparam number source 				the player source id
 -- @treturn bool						True if the inventory is opened by another player
@@ -48,7 +48,7 @@ local function IsInventoryUsed(inventory, name, id, source)
 end
 
 --- Every condition related to a forbiden access to an inventory
--- @tparam string name 			The inventory name
+-- @tparam string name 			The inventory type
 -- @tparam number id 			Id of the inventory
 -- @tparam Player Player 		The player QBCore Player Object from source
 -- @treturn bool				True if the player can't access the inventory
@@ -61,7 +61,7 @@ local function IsInventoryIsInaccessible(name, id, Player)
 end
 
 --- Is the given name is specified in the config
--- @tparam string name		The inventory name
+-- @tparam string name		The inventory type
 -- @treturn bool
 local function IsValidInventoryType(name)
 	for _, v in ipairs(Config.InventoriesType) do
@@ -73,7 +73,7 @@ local function IsValidInventoryType(name)
 end
 
 --- Get the inventory max weight for specified player
--- @tparam string name						The inventory name
+-- @tparam string name						The inventory type
 -- @tparam[opt] Inventories[][] other		The opened inventory array
 -- @treturn number							The inventory max weight
 local function GetMaxWeightsForInventory(name, other)
@@ -83,9 +83,9 @@ local function GetMaxWeightsForInventory(name, other)
 	return Config.MaxWeights[name]
 end
 
--- Get the inventory slots number for specified player
--- @tparam string name					The inventory name
--- @tparam Inventories[][] inventory	The opened inventory array
+--- Get the inventory slots number for specified player
+-- @tparam string name					The inventory type
+-- @tparam Inventories[][] other		The opened inventory array
 -- @tparam Player player				The player who opened the inventory
 -- @treturn number						The max number of slots
 local function GetSlotsForInventory(name, other, player)
@@ -104,7 +104,7 @@ local function GetSlotsForInventory(name, other, player)
 end
 
 --- Save inventories in the specified table of the database
--- @tparam string name					The inventory name
+-- @tparam string name					The inventory type
 -- @tparam number id					The inventory id
 -- @tparam Inventories[][] inventory	The opened inventory array
 -- @tparam string columnName			The column name in the database
@@ -172,7 +172,7 @@ local function FetchItemsFromDatabase(table, itemsColumn, columnCondition, condi
 end
 
 --- Get the inventory items from name and ID
--- @tparam string name						The inventory name
+-- @tparam string name						The inventory type
 -- @tparam number id						The inventory id
 -- @tparam[opt] Inventories[][] other 		The opened inventory array
 -- @tparam[optchain] Player Player		 	The opened inventory array
@@ -229,16 +229,16 @@ local function GetItemsForInventory(name, id, other, Player)
 	return {}
 end
 
--- Is the vehicle plate is owned by someone
--- @param {string} plate		the vehicle plate
--- @return {bool}
+--- Is the vehicle plate is owned by someone
+-- @tparam string plate		The vehicle plate
+-- @treturn bool
 local function IsVehicleOwned(plate)
     return not not MySQL.Sync.fetchScalar('SELECT 1 from player_vehicles WHERE plate = ?', {plate})
 end
 
--- Is the inventory allow items to be dropped in?
--- @param {string} name		The inventory name (Config.InventoriesType)
--- @return {bool}
+--- Is the inventory allow items to be dropped in?
+-- @tparam string name		The inventory type (Config.InventoriesType)
+-- @treturn bool
 local function IsInventoryDropAllowed(name)
 	for _, v in pairs(Config.DisableInventoryDrop) do
 		if v == name then
@@ -249,7 +249,7 @@ local function IsInventoryDropAllowed(name)
 end
 
 --- Is the specified inventory a source player type?
--- @tparam string name		The inventory name
+-- @tparam string name		The inventory type
 -- @treturn bool				Is the inventory a source player type?
 local function IsPlayerInventory(name)
 	return name == "player" or name == "hotbar"
@@ -257,21 +257,21 @@ end
 
 --- Is the specified inventory a any player type?
 -- @see IsPlayerInventory
--- @tparam string name			The inventory name
+-- @tparam string name			The inventory type
 -- @treturn bool				Is the inventory a player type?
 local function IsInventoryPlayerType(name)
 	return IsPlayerInventory(name) or name == "otherplayer"
 end
 
--- Add an item to the inventory
--- @tparam {string} name			The inventory type to add the item to
--- @tparam {array} inventory		The inventory array to add the item to
--- @tparam {int} slot			The slot to add the item to
--- @tparam {string} itemName		The item name
--- @tparam {int} amount			The amount of the item to add
--- @tparam {array} info			The item specific infos
--- @treturn {bool}				True if the item was added, false if not
-local function AddItemToInventory(name, inventory, slot, itemName, amount, info, itemData)
+--- Add an item to the inventory
+-- @tparam string name			The inventory type to add the item to
+-- @tparam Inventories[][] inventory		The inventory array to add the item to
+-- @tparam int slot			The slot to add the item to
+-- @tparam string itemName		The item name
+-- @tparam int amount			The amount of the item to add
+-- @tparam[opt] Item.info info	The item specific infos
+-- @treturn bool				True if the item was added, false if not
+local function AddItemToInventory(name, inventory, slot, itemName, amount, info)
 	amount = tonumber(amount)
 	local ItemData = QBCore.Shared.Items[itemName:lower()]
 
@@ -281,7 +281,7 @@ local function AddItemToInventory(name, inventory, slot, itemName, amount, info,
 
 	if inventory.items[slot] and inventory.items[slot].name == itemName and not ItemData.unique then
 		if IsInventoryPlayerType(name) then
-			Player.Functions.AddItem(itemData.name, amount, slot)
+			Player.Functions.AddItem(itemName, amount, slot)
 		else
 			inventory.items[slot].amount = inventory.items[slot].amount + amount
 		end
@@ -304,6 +304,12 @@ local function AddItemToInventory(name, inventory, slot, itemName, amount, info,
 	return true
 end
 
+--- Remove an item from the inventory
+-- @tparam Inventories[][] inventory		The inventory array to remove the item from
+-- @tparam number slot						The slot to remove the item from
+-- @tparam string itemName					The item name
+-- @tparam number amount					The amount of the item to remove
+-- @treturn bool							True if the item was removed, false if not
 local function RemoveItemFromInventory(inventory, slot, itemName, amount)
 	if not inventory or not inventory.items[slot] then
 		return false
@@ -318,16 +324,64 @@ local function RemoveItemFromInventory(inventory, slot, itemName, amount)
 				inventory.items = {}
 			end
 		end
+	else
+		return false
 	end
 
 	return true
 end
 
--- Get the adaptated methods for the inventory type
--- @param {string} name		The inventory type
--- @param {number} id		The inventory id
--- @param {number} src		The source player (optional)
--- @return {array|nil}		The methods (Get, Add, Delete) or nil if not found
+--- Table of inventory methods
+-- Use to standardize the inventories methods
+-- @see GetInventoryMethod
+-- @within InventoryMethods
+-- @tfield GetAll GetAll 	Retrieve all inventory items
+-- @tfield Get Get			Retrieve an inventory item at slot
+-- @tfield Set Set			Set inventory items
+-- @tfield Add Add 			Add an inventory item at slot
+-- @tfield Delete Delete 	Remove an inventory item at slot
+-- @table -InventoryMethods
+
+--- Get All items in inventories function
+-- @within InventoryMethods
+-- @treturn Item[]		All items in inventories
+-- @function GetAll
+
+--- Get items in inventories function
+-- @within InventoryMethods
+-- @tparam number slot	The slot to get the item from
+-- @treturn table		All items in inventories
+-- @function Get
+
+--- Set inventories items
+-- @within InventoryMethods
+-- @tparam Item[]		items
+-- @treturn table		All items in inventories
+-- @function Set
+
+--- Get All items in inventories function
+-- @within InventoryMethods
+-- @tparam string itemName		The item name
+-- @tparam number amount		The amount of the item to add
+-- @tparam number slot			The slot to add the item to
+-- @tparam[opt] Item.info info	The item specific infos
+-- @treturn table 				All items in inventories
+-- @function Add
+
+--- Get All items in inventories function
+-- @within InventoryMethods
+-- @tparam string itemName		The item name
+-- @tparam number amount		The amount of the item to add
+-- @tparam number slot			The slot to add the item to
+-- @treturn table		All items in inventories
+-- @function Delete
+
+--- Get the adaptated methods for the inventory type
+-- @tparam string name				The inventory type
+-- @tparam number id				The inventory id
+-- @tparam[opt] number src			The source player
+-- @treturn[1] InventoryMethods		The methods (Get, Add, Delete)
+-- @treturn[2] nil					If the inventory type is not found
 local function GetInventoryMethod(name, id, src)
 	-- Ensure the drop inventory exists or create it
 	if name == "drop" and not Inventories[name][id] then
@@ -398,6 +452,12 @@ local function GetInventoryMethod(name, id, src)
 	return nil
 end
 
+--- Make a user pay an item (like shop, dealers...)
+-- @tparam number src		The source player
+-- @tparam string id		The inventory full id
+-- @tparam string itemName	The item name
+-- @tparam number amount	The amount of the item to pay
+-- @treturn boolean			True if the player has enough money
 local function ChargePlayer(src, id, itemData, amount)
 	local Player = QBCore.Functions.GetPlayer(src)
 
@@ -519,13 +579,15 @@ RegisterNetEvent('inventory:server:addTrunkItems', function(_, _)
 	print("[QBCore] inventory:server:addTrunkItems is deprecated, use inventory:server:addItem instead")
 end)
 
--- Add item to the inventory
--- @param {string} name		the inventory name
--- @param {int} id			the inventory id
--- @param {array} item		the item name
+--- Add item to the inventory
+-- @event inventory:server:addItem
+-- @tparam string name		the inventory type
+-- @tparam number id		the inventory id
+-- @tparam name item		the item name
+-- @tparam number amount	the item amount
 -- @todo
-AddEventHandler('inventory:server:addItem', function(name, id, item)
-
+AddEventHandler('inventory:server:addItem', function(name, id, item, amount)
+	print("WIP: Should give item"..name.."-"..id.."-"..item.."-"..amount)
 end)
 
 -- RegisterNetEvent('inventory:server:combineItem', function(item, fromItem, toItem)
@@ -540,7 +602,7 @@ end)
 --- A server event handler to let the client set an inventory closed state
 -- @event inventory:server:SetIsOpenState
 -- @tparam bool isOpen		Is the new inventory state open?
--- @tparam string name		The inventory name
+-- @tparam string name		The inventory type
 -- @tparam number id		The inventory id
 RegisterNetEvent('inventory:server:SetIsOpenState', function(IsOpen, name, id)
 	if not IsOpen then
@@ -552,7 +614,7 @@ end)
 
 --- A server event to save the specified inventory name
 -- @event inventory:server:SaveInventory
--- @tparam string name			The inventory name (in the config)
+-- @tparam string name			The inventory type (in the config)
 -- @tparam number id			The inventory id
 RegisterNetEvent('inventory:server:SaveInventory', function(name, id)
 	if not IsValidInventoryType(name) then
@@ -577,9 +639,9 @@ RegisterNetEvent('inventory:server:SaveInventory', function(name, id)
 	end
 end)
 
--- Use the item on the given slot
--- @param {number} slot		The slot to use the item
--- @return {void}
+--- Use the item on the given slot
+-- @event inventory:server:UseItemSlot
+-- @tparam number slot		The slot to use the item
 RegisterNetEvent('inventory:server:UseItemSlot', function(slot)
 	local src = source
 	if Player(src).state.inv_busy then
@@ -606,9 +668,10 @@ RegisterNetEvent('inventory:server:UseItemSlot', function(slot)
 	end
 end)
 
--- Use the item specified
--- @param {string} name		The inventory name
--- @param {string} item		The item name
+--- Use the item specified
+-- @event inventory:server:UseItem
+-- @tparam string name		The inventory type
+-- @tparam string item		The item name
 RegisterNetEvent('inventory:server:UseItem', function(name, item)
 	local src = source
 	local Player = QBCore.Functions.GetPlayer(src)
@@ -621,13 +684,13 @@ RegisterNetEvent('inventory:server:UseItem', function(name, item)
 	end
 end)
 
--- Move an item from one inventory to another
--- @param {string} fromInventory		The inventory to move the item from (Config.InventoriesType)
--- @param {string} toInventory			The inventory to move the item to (Config.InventoriesType)
--- @param {int} fromSlot				The slot to move the item from
--- @param {int} toSlot					The slot to move the item to
--- @param {number} amount				The amount of the item to move
--- @return {void}
+--- Move an item from one inventory to another
+-- @event inventory:server:SetInventoryData
+-- @tparam string fromInventory			The inventory to move the item from (Config.InventoriesType)
+-- @tparam string toInventory			The inventory to move the item to (Config.InventoriesType)
+-- @tparam number fromSlot				The slot to move the item from
+-- @tparam number toSlot				The slot to move the item to
+-- @tparam[opt] number amount			The amount of the item to move (if not specified, move all)
 RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, toInventory, fromSlot, toSlot, amount)
 	local src = source
 
@@ -717,8 +780,15 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 
 	local isMovingAllItem = amount == fromItemData.amount
 
-	-- Target slot is used by an item
+	-- Retrieving error message
 	local sendingError = false
+	local function IsError(cond)
+		if not cond then
+			sendingError = true
+		end
+	end
+
+	-- Target slot is used by an item
 	if toItemData then
 		-- Swap unique items
 		if toItemData.unique or fromItemData.unique then
@@ -733,11 +803,11 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				return
 			end
 
-			fromInventoryMethod.Delete(fromItemData.name, fromItemData.amount, fromSlot)
-			toInventoryMethod.Delete(toItemData.name, toItemData.amount, toSlot)
+			IsError(fromInventoryMethod.Delete(fromItemData.name, fromItemData.amount, fromSlot))
+			IsError(toInventoryMethod.Delete(toItemData.name, toItemData.amount, toSlot))
 
-			sendingError = sendingError or fromInventoryMethod.Add(toItemData.name, toItemData.amount, fromSlot, toItemData.info) == false
-			sendingError = sendingError or toInventoryMethod.Add(fromItemData.name, fromItemData.amount, toSlot, fromItemData.info) == false
+			IsError(fromInventoryMethod.Add(toItemData.name, toItemData.amount, fromSlot, toItemData.info))
+			IsError(toInventoryMethod.Add(fromItemData.name, fromItemData.amount, toSlot, fromItemData.info))
 
 		-- Swap items
 		elseif toItemData.name ~= fromItemData.name then
@@ -752,20 +822,20 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				return
 			end
 
-			fromInventoryMethod.Delete(fromItemData.name, fromItemData.amount, fromSlot)
-			toInventoryMethod.Delete(toItemData.name, toItemData.amount, toSlot)
+			IsError(fromInventoryMethod.Delete(fromItemData.name, fromItemData.amount, fromSlot))
+			IsError(toInventoryMethod.Delete(toItemData.name, toItemData.amount, toSlot))
 
-			sendingError = sendingError or fromInventoryMethod.Add(toItemData.name, toItemData.amount, fromSlot, toItemData.info) == false
-			sendingError = sendingError or toInventoryMethod.Add(fromItemData.name, fromItemData.amount, toSlot, fromItemData.info) == false
+			IsError(fromInventoryMethod.Add(toItemData.name, toItemData.amount, fromSlot, toItemData.info))
+			IsError(toInventoryMethod.Add(fromItemData.name, fromItemData.amount, toSlot, fromItemData.info))
 		-- Add items
 		elseif toItemData.name == fromItemData.name then
-			sendingError = sendingError or fromInventoryMethod.Delete(fromItemData.name, amount, fromSlot) == false
-			sendingError = sendingError or toInventoryMethod.Add(fromItemData.name, amount, toSlot) == false
+			IsError(fromInventoryMethod.Delete(fromItemData.name, amount, fromSlot))
+			IsError(toInventoryMethod.Add(fromItemData.name, amount, toSlot))
 		end
 	-- 
 	else
-		sendingError = sendingError or fromInventoryMethod.Delete(fromItemData.name, amount, fromSlot) == false
-		sendingError = sendingError or toInventoryMethod.Add(fromItemData.name, amount, toSlot, fromItemData.info) == false
+		IsError(fromInventoryMethod.Delete(fromItemData.name, amount, fromSlot))
+		IsError(toInventoryMethod.Add(fromItemData.name, amount, toSlot, fromItemData.info))
 	end
 
 	-- If there is an error in adding the item
@@ -807,7 +877,8 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 	end
 end)
 
--- Save the specified item in the stash
+--- Save the specified item in the stash
+-- @event qb-inventory:server:SaveStashItems
 -- @deprecated
 RegisterNetEvent('qb-inventory:server:SaveStashItems', function(id, items)
 	print("[QBCore] [WARNING] qb-inventory:server:SaveStashItems is deprecated, use inventory:server:SaveInventory instead")
@@ -819,6 +890,13 @@ QBCore.Functions.CreateCallback('qb-inventory:server:GetStashItems', function(_,
 	cb(FetchItemsFromDatabase('stashitems', 'items', 'stash', id))
 end)
 
+--- Save the specified item in the stash
+-- @event inventory:server:GiveItem
+-- @tparam number target 	Target Player ID
+-- @tparam string name 		Item name
+-- @tparam number amount 	Given amount
+-- @tparam number slot 		Slot where the item come from
+-- @todo Adapt the event to the new system
 RegisterServerEvent("inventory:server:GiveItem", function(target, name, amount, slot)
 	local src = source
 	local Player = QBCore.Functions.GetPlayer(src)

@@ -33,6 +33,7 @@
 <li><a href="#Tables">Tables</a></li>
 <li><a href="#Fields">Fields</a></li>
 <li><a href="#Local_Functions">Local Functions</a></li>
+<li><a href="#InventoryMethods">InventoryMethods</a></li>
 </ul>
 
 
@@ -58,6 +59,10 @@
 <h2><a href="#Server_Events">Server Events</a></h2>
 <table class="function_list">
 	<tr>
+	<td class="name" nowrap><a href="#inventory:server:GiveItem">inventory:server:GiveItem</a></td>
+	<td class="summary">Save the specified item in the stash</td>
+	</tr>
+	<tr>
 	<td class="name" nowrap><a href="#inventory:server:OpenInventory">inventory:server:OpenInventory</a></td>
 	<td class="summary">Server event when a player wants to open an inventory</td>
 	</tr>
@@ -66,12 +71,32 @@
 	<td class="summary">A server event to save the specified inventory name</td>
 	</tr>
 	<tr>
+	<td class="name" nowrap><a href="#inventory:server:SetInventoryData">inventory:server:SetInventoryData</a></td>
+	<td class="summary">Move an item from one inventory to another</td>
+	</tr>
+	<tr>
 	<td class="name" nowrap><a href="#inventory:server:SetIsOpenState">inventory:server:SetIsOpenState</a></td>
 	<td class="summary">A server event handler to let the client set an inventory closed state</td>
 	</tr>
 	<tr>
+	<td class="name" nowrap><a href="#inventory:server:UseItem">inventory:server:UseItem</a></td>
+	<td class="summary">Use the item specified</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#inventory:server:UseItemSlot">inventory:server:UseItemSlot</a></td>
+	<td class="summary">Use the item on the given slot</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#inventory:server:addItem">inventory:server:addItem</a></td>
+	<td class="summary">Add item to the inventory</td>
+	</tr>
+	<tr>
 	<td class="name" nowrap><a href="#inventory:server:addTrunkItems">inventory:server:addTrunkItems<br><b>⚠️ DEPRECATED! Do not use it.</b></a></td>
 	<td class="summary">Used to be the event to set the items in a trunk.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#qb-inventory:server:SaveStashItems">qb-inventory:server:SaveStashItems<br><b>⚠️ DEPRECATED! Do not use it.</b></a></td>
+	<td class="summary">Save the specified item in the stash</td>
 	</tr>
 </table>
 <h2><a href="#Tables">Tables</a></h2>
@@ -91,8 +116,16 @@
 <h2><a href="#Local_Functions">Local Functions</a></h2>
 <table class="function_list">
 	<tr>
+	<td class="name" nowrap><a href="#AddItemToInventory">AddItemToInventory (name, inventory, slot, itemName, amount[, info])</a></td>
+	<td class="summary">Add an item to the inventory</td>
+	</tr>
+	<tr>
 	<td class="name" nowrap><a href="#FetchItemsFromDatabase">FetchItemsFromDatabase (table, itemsColumn, columnCondition, conditionValue)</a></td>
 	<td class="summary">Fetch items from the database</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#GetInventoryMethod">GetInventoryMethod (name, id[, src])</a></td>
+	<td class="summary">Get the adaptated methods for the inventory type</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#GetItemsForInventory">GetItemsForInventory (name, id[, other[, Player]])</a></td>
@@ -101,6 +134,14 @@
 	<tr>
 	<td class="name" nowrap><a href="#GetMaxWeightsForInventory">GetMaxWeightsForInventory (name[, other])</a></td>
 	<td class="summary">Get the inventory max weight for specified player</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#GetSlotsForInventory">GetSlotsForInventory (name, other, player)</a></td>
+	<td class="summary">Get the inventory slots number for specified player</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#IsInventoryDropAllowed">IsInventoryDropAllowed (name)</a></td>
+	<td class="summary">Is the inventory allow items to be dropped in?</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#IsInventoryIsInaccessible">IsInventoryIsInaccessible (name, id, Player)</a></td>
@@ -123,12 +164,48 @@
 	<td class="summary">Is the given name is specified in the config</td>
 	</tr>
 	<tr>
+	<td class="name" nowrap><a href="#IsVehicleOwned">IsVehicleOwned (plate)</a></td>
+	<td class="summary">Is the vehicle plate is owned by someone</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#RemoveItemFromInventory">RemoveItemFromInventory (inventory, slot, itemName, amount)</a></td>
+	<td class="summary">Remove an item from the inventory</td>
+	</tr>
+	<tr>
 	<td class="name" nowrap><a href="#SaveDatabaseInventories">SaveDatabaseInventories (name, id, inventory, columnName)</a></td>
 	<td class="summary">Save inventories in the specified table of the database</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#isValidNumber">isValidNumber (nb)</a></td>
 	<td class="summary">Is the given number an unsigned integer?</td>
+	</tr>
+</table>
+<h2><a href="#InventoryMethods">InventoryMethods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#-InventoryMethods">-InventoryMethods</a></td>
+	<td class="summary">Table of inventory methods
+ Use to standardize the inventories methods</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Add">Add (itemName, amount, slot[, info])</a></td>
+	<td class="summary">Get All items in inventories function</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Delete">Delete (itemName, amount, slot)</a></td>
+	<td class="summary">Get All items in inventories function</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Get">Get (slot)</a></td>
+	<td class="summary">Get items in inventories function</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#GetAll">GetAll ()</a></td>
+	<td class="summary">Get All items in inventories function</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Set">Set (items)</a></td>
+	<td class="summary">Set inventories items</td>
 	</tr>
 </table>
 
@@ -139,6 +216,39 @@
     <h2 class="section-header "><a name="Server_Events"></a>Server Events</h2>
 
     <dl class="function">
+    <dt>
+    <a name = "inventory:server:GiveItem"></a>
+    <strong>inventory:server:GiveItem</strong>
+    </dt>
+    <dd>
+    Save the specified item in the stash
+
+    </ul>
+
+    <ul>
+        <li><span class="parameter">target</span>
+            <span class="types"><span class="type">number</span></span>
+         	Target Player ID
+        </li>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         		Item name
+        </li>
+        <li><span class="parameter">amount</span>
+            <span class="types"><span class="type">number</span></span>
+         	Given amount
+        </li>
+        <li><span class="parameter">slot</span>
+            <span class="types"><span class="type">number</span></span>
+         		Slot where the item come from
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
     <dt>
     <a name = "inventory:server:OpenInventory"></a>
     <strong>inventory:server:OpenInventory</strong>
@@ -181,11 +291,49 @@
     <ul>
         <li><span class="parameter">name</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        			The inventory name (in the config)
+        			The inventory type (in the config)
         </li>
         <li><span class="parameter">id</span>
             <span class="types"><span class="type">number</span></span>
         			The inventory id
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "inventory:server:SetInventoryData"></a>
+    <strong>inventory:server:SetInventoryData</strong>
+    </dt>
+    <dd>
+    Move an item from one inventory to another
+
+    </ul>
+
+    <ul>
+        <li><span class="parameter">fromInventory</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        			The inventory to move the item from (Config.InventoriesType)
+        </li>
+        <li><span class="parameter">toInventory</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        			The inventory to move the item to (Config.InventoriesType)
+        </li>
+        <li><span class="parameter">fromSlot</span>
+            <span class="types"><span class="type">number</span></span>
+        				The slot to move the item from
+        </li>
+        <li><span class="parameter">toSlot</span>
+            <span class="types"><span class="type">number</span></span>
+        				The slot to move the item to
+        </li>
+        <li><span class="parameter">amount</span>
+            <span class="types"><span class="type">number</span></span>
+        			The amount of the item to move (if not specified, move all)
+         (<em>optional</em>)
         </li>
     </ul>
 
@@ -210,11 +358,90 @@
         </li>
         <li><span class="parameter">name</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        		The inventory name
+        		The inventory type
         </li>
         <li><span class="parameter">id</span>
             <span class="types"><span class="type">number</span></span>
         		The inventory id
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "inventory:server:UseItem"></a>
+    <strong>inventory:server:UseItem</strong>
+    </dt>
+    <dd>
+    Use the item specified
+
+    </ul>
+
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        		The inventory type
+        </li>
+        <li><span class="parameter">item</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        		The item name
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "inventory:server:UseItemSlot"></a>
+    <strong>inventory:server:UseItemSlot</strong>
+    </dt>
+    <dd>
+    Use the item on the given slot
+
+    </ul>
+
+    <ul>
+        <li><span class="parameter">slot</span>
+            <span class="types"><span class="type">number</span></span>
+        		The slot to use the item
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "inventory:server:addItem"></a>
+    <strong>inventory:server:addItem</strong>
+    </dt>
+    <dd>
+    Add item to the inventory
+
+    </ul>
+
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        		the inventory type
+        </li>
+        <li><span class="parameter">id</span>
+            <span class="types"><span class="type">number</span></span>
+        		the inventory id
+        </li>
+        <li><span class="parameter">item</span>
+            <span class="types"><span class="type">name</span></span>
+        		the item name
+        </li>
+        <li><span class="parameter">amount</span>
+            <span class="types"><span class="type">number</span></span>
+        	the item amount
         </li>
     </ul>
 
@@ -229,6 +456,21 @@
     </dt>
     <dd>
     Used to be the event to set the items in a trunk.
+
+    </ul>
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "qb-inventory:server:SaveStashItems"></a>
+    <strong>qb-inventory:server:SaveStashItems<br><b>⚠️ DEPRECATED! Do not use it.</b></strong>
+    </dt>
+    <dd>
+    Save the specified item in the stash
 
     </ul>
 
@@ -256,6 +498,7 @@
         <li><span class="parameter">type</span> Table that contains all inventories types (see Config.InventoriesType)
         <ul>
         <li><span class="parameter">id</span>
+            <span class="types"><span class="type">number</span></span>
          Table that contains all inventories
         </li>
         </li></ul>
@@ -293,6 +536,55 @@
     <h2 class="section-header "><a name="Local_Functions"></a>Local Functions</h2>
 
     <dl class="function">
+    <dt>
+    <a name = "AddItemToInventory"></a>
+    <strong>AddItemToInventory (name, inventory, slot, itemName, amount[, info])</strong>
+    </dt>
+    <dd>
+    Add an item to the inventory
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        			The inventory type to add the item to
+        </li>
+        <li><span class="parameter">inventory</span>
+            <span class="types"><a class="type" href="index.html#Inventories">Inventories[][]</a></span>
+        		The inventory array to add the item to
+        </li>
+        <li><span class="parameter">slot</span>
+            <span class="types"><span class="type">int</span></span>
+        			The slot to add the item to
+        </li>
+        <li><span class="parameter">itemName</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        		The item name
+        </li>
+        <li><span class="parameter">amount</span>
+            <span class="types"><span class="type">int</span></span>
+        			The amount of the item to add
+        </li>
+        <li><span class="parameter">info</span>
+            <span class="types"><span class="type">Item.info</span></span>
+        	The item specific infos
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        True if the item was added, false if not
+    </ol>
+
+
+
+
+</dd>
     <dt>
     <a name = "FetchItemsFromDatabase"></a>
     <strong>FetchItemsFromDatabase (table, itemsColumn, columnCondition, conditionValue)</strong>
@@ -340,6 +632,49 @@
 
 </dd>
     <dt>
+    <a name = "GetInventoryMethod"></a>
+    <strong>GetInventoryMethod (name, id[, src])</strong>
+    </dt>
+    <dd>
+    Get the adaptated methods for the inventory type
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        				The inventory type
+        </li>
+        <li><span class="parameter">id</span>
+            <span class="types"><span class="type">number</span></span>
+        				The inventory id
+        </li>
+        <li><span class="parameter">src</span>
+            <span class="types"><span class="type">number</span></span>
+        			The source player
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">InventoryMethods</span></span>
+        The methods (Get, Add, Delete)
+    </ol>
+     <h3>Or</h3>
+    <ol>
+
+           <span class="types"><span class="type">nil</span></span>
+        If the inventory type is not found
+    </ol>
+
+
+
+
+</dd>
+    <dt>
     <a name = "GetItemsForInventory"></a>
     <strong>GetItemsForInventory (name, id[, other[, Player]])</strong>
     </dt>
@@ -352,7 +687,7 @@
     <ul>
         <li><span class="parameter">name</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        						The inventory name
+        						The inventory type
         </li>
         <li><span class="parameter">id</span>
             <span class="types"><span class="type">number</span></span>
@@ -400,7 +735,7 @@
     <ul>
         <li><span class="parameter">name</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        						The inventory name
+        						The inventory type
         </li>
         <li><span class="parameter">other</span>
             <span class="types"><a class="type" href="index.html#Inventories">Inventories[][]</a></span>
@@ -421,6 +756,70 @@
 
 </dd>
     <dt>
+    <a name = "GetSlotsForInventory"></a>
+    <strong>GetSlotsForInventory (name, other, player)</strong>
+    </dt>
+    <dd>
+    Get the inventory slots number for specified player
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        					The inventory type
+        </li>
+        <li><span class="parameter">other</span>
+            <span class="types"><a class="type" href="index.html#Inventories">Inventories[][]</a></span>
+        		The opened inventory array
+        </li>
+        <li><span class="parameter">player</span>
+            <span class="types"><span class="type">Player</span></span>
+        				The player who opened the inventory
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        The max number of slots
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "IsInventoryDropAllowed"></a>
+    <strong>IsInventoryDropAllowed (name)</strong>
+    </dt>
+    <dd>
+    Is the inventory allow items to be dropped in?
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        		The inventory type (Config.InventoriesType)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
     <a name = "IsInventoryIsInaccessible"></a>
     <strong>IsInventoryIsInaccessible (name, id, Player)</strong>
     </dt>
@@ -433,7 +832,7 @@
     <ul>
         <li><span class="parameter">name</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-         			The inventory name
+         			The inventory type
         </li>
         <li><span class="parameter">id</span>
             <span class="types"><span class="type">number</span></span>
@@ -469,7 +868,7 @@
     <ul>
         <li><span class="parameter">name</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        			The inventory name
+        			The inventory type
         </li>
     </ul>
 
@@ -505,7 +904,7 @@
         </li>
         <li><span class="parameter">name</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-         					the inventory name
+         					the inventory type
         </li>
         <li><span class="parameter">id</span>
             <span class="types"><span class="type">number</span></span>
@@ -541,7 +940,7 @@
     <ul>
         <li><span class="parameter">name</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        		The inventory name
+        		The inventory type
         </li>
     </ul>
 
@@ -569,7 +968,7 @@
     <ul>
         <li><span class="parameter">name</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        		The inventory name
+        		The inventory type
         </li>
     </ul>
 
@@ -578,6 +977,74 @@
 
            <span class="types"><span class="type">bool</span></span>
 
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "IsVehicleOwned"></a>
+    <strong>IsVehicleOwned (plate)</strong>
+    </dt>
+    <dd>
+    Is the vehicle plate is owned by someone
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">plate</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        		The vehicle plate
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "RemoveItemFromInventory"></a>
+    <strong>RemoveItemFromInventory (inventory, slot, itemName, amount)</strong>
+    </dt>
+    <dd>
+    Remove an item from the inventory
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">inventory</span>
+            <span class="types"><a class="type" href="index.html#Inventories">Inventories[][]</a></span>
+        		The inventory array to remove the item from
+        </li>
+        <li><span class="parameter">slot</span>
+            <span class="types"><span class="type">number</span></span>
+        						The slot to remove the item from
+        </li>
+        <li><span class="parameter">itemName</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        					The item name
+        </li>
+        <li><span class="parameter">amount</span>
+            <span class="types"><span class="type">number</span></span>
+        					The amount of the item to remove
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        True if the item was removed, false if not
     </ol>
 
 
@@ -597,7 +1064,7 @@
     <ul>
         <li><span class="parameter">name</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        					The inventory name
+        					The inventory type
         </li>
         <li><span class="parameter">id</span>
             <span class="types"><span class="type">number</span></span>
@@ -653,13 +1120,214 @@
 
 </dd>
 </dl>
+    <h2 class="section-header "><a name="InventoryMethods"></a>InventoryMethods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "-InventoryMethods"></a>
+    <strong>-InventoryMethods</strong>
+    </dt>
+    <dd>
+    Table of inventory methods
+ Use to standardize the inventories methods
+
+    </ul>
+
+    <h3>Fields:</h3>
+    <ul>
+        <li><span class="parameter">GetAll</span>
+            <span class="types"><a class="type" href="index.html#GetAll">GetAll</a></span>
+         	Retrieve all inventory items
+        </li>
+        <li><span class="parameter">Get</span>
+            <span class="types"><a class="type" href="index.html#Get">Get</a></span>
+        			Retrieve an inventory item at slot
+        </li>
+        <li><span class="parameter">Set</span>
+            <span class="types"><a class="type" href="index.html#Set">Set</a></span>
+        			Set inventory items
+        </li>
+        <li><span class="parameter">Add</span>
+            <span class="types"><a class="type" href="index.html#Add">Add</a></span>
+         			Add an inventory item at slot
+        </li>
+        <li><span class="parameter">Delete</span>
+            <span class="types"><a class="type" href="index.html#Delete">Delete</a></span>
+         	Remove an inventory item at slot
+        </li>
+    </ul>
+
+
+
+    <h3>See also:</h3>
+    <ul>
+         <a href="index.html#GetInventoryMethod">GetInventoryMethod</a>
+    </ul>
+
+
+</dd>
+    <dt>
+    <a name = "Add"></a>
+    <strong>Add (itemName, amount, slot[, info])</strong>
+    </dt>
+    <dd>
+    Get All items in inventories function
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">itemName</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        		The item name
+        </li>
+        <li><span class="parameter">amount</span>
+            <span class="types"><span class="type">number</span></span>
+        		The amount of the item to add
+        </li>
+        <li><span class="parameter">slot</span>
+            <span class="types"><span class="type">number</span></span>
+        			The slot to add the item to
+        </li>
+        <li><span class="parameter">info</span>
+            <span class="types"><span class="type">Item.info</span></span>
+        	The item specific infos
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+        All items in inventories
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Delete"></a>
+    <strong>Delete (itemName, amount, slot)</strong>
+    </dt>
+    <dd>
+    Get All items in inventories function
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">itemName</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        		The item name
+        </li>
+        <li><span class="parameter">amount</span>
+            <span class="types"><span class="type">number</span></span>
+        		The amount of the item to add
+        </li>
+        <li><span class="parameter">slot</span>
+            <span class="types"><span class="type">number</span></span>
+        			The slot to add the item to
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+        All items in inventories
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Get"></a>
+    <strong>Get (slot)</strong>
+    </dt>
+    <dd>
+    Get items in inventories function
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">slot</span>
+            <span class="types"><span class="type">number</span></span>
+        	The slot to get the item from
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+        All items in inventories
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "GetAll"></a>
+    <strong>GetAll ()</strong>
+    </dt>
+    <dd>
+    Get All items in inventories function
+
+    </ul>
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">Item[]</span></span>
+        All items in inventories
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Set"></a>
+    <strong>Set (items)</strong>
+    </dt>
+    <dd>
+    Set inventories items
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">items</span>
+            <span class="types"><span class="type">Item[]</span></span>
+
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+        All items in inventories
+    </ol>
+
+
+
+
+</dd>
+</dl>
 
 
 </div> <!-- id="content" -->
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
-<i style="float:right;">Last updated 2022-04-13 17:09:29 </i>
+<i style="float:right;">Last updated 2022-04-13 18:25:47 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>
