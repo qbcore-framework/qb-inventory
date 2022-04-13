@@ -1,0 +1,35 @@
+--- Use to standardize the inventories methods
+-- @classmod InventoryMethods
+-- @usage local methods = GetInventoryMethod(name, id, src)
+-- @see server.GetInventoryMethod
+
+--- Get All items in inventories
+-- @function GetAll
+-- @treturn Item[]		All items in inventories
+
+--- Get items at slot in inventories
+-- @function Get
+-- @tparam number slot	The slot to get the item from
+-- @treturn Item		All items in inventories
+
+--- Set inventories items
+-- @function Set
+-- @tparam Item[]		items
+
+--- Add an item in inventory slot
+-- @function Add
+-- @tparam string itemName		The item name
+-- @tparam number amount		The amount of the item to add
+-- @tparam number slot			The slot to add the item to
+-- @tparam[opt] Item.info info	The item specific infos
+-- @treturn bool 				All items in inventories
+
+--- Get All items in inventories function
+-- @function Delete
+-- @tparam string itemName		The item name
+-- @tparam number amount		The amount of the item to add
+-- @tparam number slot			The slot to add the item to
+-- @treturn bool				All items in inventories
+
+---
+-- @section end

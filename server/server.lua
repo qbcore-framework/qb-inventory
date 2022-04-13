@@ -1,18 +1,16 @@
-------------
--- QB Inventory Project
+--- QB Inventory Project
 -- Server-side code for the qb-inventory mod, containing events, utils functions, etc...
+-- @module server
 -- @author restray
 -- @todo Need to translate the whole script
 -- @todo Make the crafting system
 
---- Load QBCore object
--- @usage Player = QBCore.Functions.GetPlayer(source)
 local QBCore = exports['qb-core']:GetCoreObject()
 
 --- All the inventories table
 -- @table Inventories
--- @field type Table that contains all inventories types (see Config.InventoriesType)
--- @tfield number type.id Table that contains all inventories
+-- @tfield string type		Table that contains all inventories types (see Config.InventoriesType)
+-- @tfield number type.id	Table that contains all inventories
 local Inventories = {}
 
 -- Populate the inventories
@@ -331,57 +329,13 @@ local function RemoveItemFromInventory(inventory, slot, itemName, amount)
 	return true
 end
 
---- Table of inventory methods
--- Use to standardize the inventories methods
--- @see GetInventoryMethod
--- @within InventoryMethods
--- @tfield GetAll GetAll 	Retrieve all inventory items
--- @tfield Get Get			Retrieve an inventory item at slot
--- @tfield Set Set			Set inventory items
--- @tfield Add Add 			Add an inventory item at slot
--- @tfield Delete Delete 	Remove an inventory item at slot
--- @table -InventoryMethods
-
---- Get All items in inventories function
--- @within InventoryMethods
--- @treturn Item[]		All items in inventories
--- @function GetAll
-
---- Get items in inventories function
--- @within InventoryMethods
--- @tparam number slot	The slot to get the item from
--- @treturn table		All items in inventories
--- @function Get
-
---- Set inventories items
--- @within InventoryMethods
--- @tparam Item[]		items
--- @treturn table		All items in inventories
--- @function Set
-
---- Get All items in inventories function
--- @within InventoryMethods
--- @tparam string itemName		The item name
--- @tparam number amount		The amount of the item to add
--- @tparam number slot			The slot to add the item to
--- @tparam[opt] Item.info info	The item specific infos
--- @treturn table 				All items in inventories
--- @function Add
-
---- Get All items in inventories function
--- @within InventoryMethods
--- @tparam string itemName		The item name
--- @tparam number amount		The amount of the item to add
--- @tparam number slot			The slot to add the item to
--- @treturn table		All items in inventories
--- @function Delete
-
 --- Get the adaptated methods for the inventory type
 -- @tparam string name				The inventory type
 -- @tparam number id				The inventory id
 -- @tparam[opt] number src			The source player
--- @treturn[1] InventoryMethods		The methods (Get, Add, Delete)
+-- @treturn[1] InventoryMethods		The methods
 -- @treturn[2] nil					If the inventory type is not found
+-- @export
 local function GetInventoryMethod(name, id, src)
 	-- Ensure the drop inventory exists or create it
 	if name == "drop" and not Inventories[name][id] then
@@ -455,7 +409,7 @@ end
 --- Make a user pay an item (like shop, dealers...)
 -- @tparam number src		The source player
 -- @tparam string id		The inventory full id
--- @tparam string itemName	The item name
+-- @tparam Item itemData	The item data
 -- @tparam number amount	The amount of the item to pay
 -- @treturn boolean			True if the player has enough money
 local function ChargePlayer(src, id, itemData, amount)
@@ -676,7 +630,7 @@ RegisterNetEvent('inventory:server:UseItem', function(name, item)
 	local src = source
 	local Player = QBCore.Functions.GetPlayer(src)
 
-	if name == "player" or name == "hotbar" then
+	if IsPlayerInventory(name) then
 		local itemData = Player.Functions.GetItemBySlot(item.slot)
 		if itemData then
 			TriggerClientEvent("QBCore:Client:UseItem", src, itemData)

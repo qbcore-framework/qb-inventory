@@ -1,0 +1,265 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>ldoc</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Fields">Fields</a></li>
+<li><a href="#Local_Functions">Local Functions</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><strong>main</strong></li>
+  <li><a href="../modules/server.html">server</a></li>
+</ul>
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><a href="../classes/InventoryMethods.html">InventoryMethods</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>main</code></h1>
+<p>Is the inventory type a valid one ?</p>
+<p> (Config.InventoriesType)</p>
+
+
+<h2><a href="#Fields">Fields</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#fromInventory">fromInventory</a></td>
+	<td class="summary">Event to switch an item slot</td>
+	</tr>
+</table>
+<h2><a href="#Local_Functions">Local Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#AddToInventory">AddToInventory (type, stashId, slot, itemName, amount, info)</a></td>
+	<td class="summary">Add an item to an inventory</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#checkInventoryIsUsed">checkInventoryIsUsed (type, name, id)</a></td>
+	<td class="summary">check if the inventory is used and the user still connected</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#isDisableInventoryDrop">isDisableInventoryDrop (inventoryType)</a></td>
+	<td class="summary">Is the inventory can not be used to drop items</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#isPlayerInventoryType">isPlayerInventoryType (inventoryType)</a></td>
+	<td class="summary">Is the inventory a player one</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Fields"></a>Fields</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "fromInventory"></a>
+    <strong>fromInventory</strong>
+    </dt>
+    <dd>
+    Event to switch an item slot
+
+    </ul>
+
+    <ul>
+        <li><span class="parameter">fromInventory</span>
+        	The inventory's name the item is coming from
+        </li>
+        <li><span class="parameter">toInventory</span>
+        	The inventory's name the item is going to
+        </li>
+        <li><span class="parameter">fromSlot</span>
+        		The slot the item is coming from
+        </li>
+        <li><span class="parameter">toSlot</span>
+        		The slot the item is going to
+        </li>
+        <li><span class="parameter">amount</span>
+        		The amount of the item from
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Local_Functions"></a>Local Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "AddToInventory"></a>
+    <strong>AddToInventory (type, stashId, slot, itemName, amount, info)</strong>
+    </dt>
+    <dd>
+    Add an item to an inventory
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">type</span>
+        		The inventory type
+        </li>
+        <li><span class="parameter">stashId</span>
+        	The stash id
+        </li>
+        <li><span class="parameter">slot</span>
+        		The slot of the item
+        </li>
+        <li><span class="parameter">itemName</span>
+        	The name of the item
+        </li>
+        <li><span class="parameter">amount</span>
+        	The amount of the item
+        </li>
+        <li><span class="parameter">info</span>
+        		The info array of the original item (to be saved in the stash)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        boolean  True if the item was added, false if not
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "checkInventoryIsUsed"></a>
+    <strong>checkInventoryIsUsed (type, name, id)</strong>
+    </dt>
+    <dd>
+    check if the inventory is used and the user still connected
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">type</span>
+        	the type of inventory
+        </li>
+        <li><span class="parameter">name</span>
+        	the name of the inventory
+        </li>
+        <li><span class="parameter">id</span>
+        	the id of the inventory
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        void
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "isDisableInventoryDrop"></a>
+    <strong>isDisableInventoryDrop (inventoryType)</strong>
+    </dt>
+    <dd>
+    Is the inventory can not be used to drop items
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">inventoryType</span>
+         The inventory type
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true if the inventory can not be used to drop items
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "isPlayerInventoryType"></a>
+    <strong>isPlayerInventoryType (inventoryType)</strong>
+    </dt>
+    <dd>
+    Is the inventory a player one
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">inventoryType</span>
+         The inventory type
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true if the inventory can not be used to drop items
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2022-04-13 19:38:14 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

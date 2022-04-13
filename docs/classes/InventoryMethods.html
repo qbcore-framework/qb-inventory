@@ -1,0 +1,257 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>ldoc</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Methods">Methods</a></li>
+</ul>
+
+
+<h2>Classes</h2>
+<ul class="nowrap">
+  <li><strong>InventoryMethods</strong></li>
+</ul>
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/main.html">main</a></li>
+  <li><a href="../modules/server.html">server</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Class <code>InventoryMethods</code></h1>
+<p>Use to standardize the inventories methods</p>
+<p></p>
+    <h3>See also:</h3>
+    <ul>
+         <a href="../modules/server.html#GetInventoryMethod">server.GetInventoryMethod</a>
+    </ul>
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">local methods = GetInventoryMethod(name, id, src)
+</pre>
+    </ul>
+
+
+<h2><a href="#Methods">Methods</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#InventoryMethods:Add">InventoryMethods:Add (itemName, amount, slot[, info])</a></td>
+	<td class="summary">Add an item in inventory slot</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#InventoryMethods:Delete">InventoryMethods:Delete (itemName, amount, slot)</a></td>
+	<td class="summary">Get All items in inventories function</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#InventoryMethods:Get">InventoryMethods:Get (slot)</a></td>
+	<td class="summary">Get items at slot in inventories</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#InventoryMethods:GetAll">InventoryMethods:GetAll ()</a></td>
+	<td class="summary">Get All items in inventories</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#InventoryMethods:Set">InventoryMethods:Set (items)</a></td>
+	<td class="summary">Set inventories items</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Methods"></a>Methods</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "InventoryMethods:Add"></a>
+    <strong>InventoryMethods:Add (itemName, amount, slot[, info])</strong>
+    </dt>
+    <dd>
+    Add an item in inventory slot
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">itemName</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        		The item name
+        </li>
+        <li><span class="parameter">amount</span>
+            <span class="types"><span class="type">number</span></span>
+        		The amount of the item to add
+        </li>
+        <li><span class="parameter">slot</span>
+            <span class="types"><span class="type">number</span></span>
+        			The slot to add the item to
+        </li>
+        <li><span class="parameter">info</span>
+            <span class="types"><span class="type">Item.info</span></span>
+        	The item specific infos
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        All items in inventories
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "InventoryMethods:Delete"></a>
+    <strong>InventoryMethods:Delete (itemName, amount, slot)</strong>
+    </dt>
+    <dd>
+    Get All items in inventories function
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">itemName</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        		The item name
+        </li>
+        <li><span class="parameter">amount</span>
+            <span class="types"><span class="type">number</span></span>
+        		The amount of the item to add
+        </li>
+        <li><span class="parameter">slot</span>
+            <span class="types"><span class="type">number</span></span>
+        			The slot to add the item to
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        All items in inventories
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "InventoryMethods:Get"></a>
+    <strong>InventoryMethods:Get (slot)</strong>
+    </dt>
+    <dd>
+    Get items at slot in inventories
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">slot</span>
+            <span class="types"><span class="type">number</span></span>
+        	The slot to get the item from
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">Item</span></span>
+        All items in inventories
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "InventoryMethods:GetAll"></a>
+    <strong>InventoryMethods:GetAll ()</strong>
+    </dt>
+    <dd>
+    Get All items in inventories
+
+    </ul>
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">Item[]</span></span>
+        All items in inventories
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "InventoryMethods:Set"></a>
+    <strong>InventoryMethods:Set (items)</strong>
+    </dt>
+    <dd>
+    Set inventories items
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">items</span>
+            <span class="types"><span class="type">Item[]</span></span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2022-04-13 19:38:14 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>
