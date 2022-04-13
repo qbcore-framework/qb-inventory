@@ -1,5 +1,7 @@
 -- @author @restray
 -- @description Server-side code for the qb-inventory mod, containing events, utils functions, etc...
+-- @todo Need to translate the whole script
+-- @todo Complete documentation.
 
 local QBCore = exports['qb-core']:GetCoreObject()
 local Inventories = {}
@@ -36,6 +38,19 @@ local function IsInventoryUsed(inventory, name, id, source)
     return false
 end
 
+-- Every condition related to a forbiden access to an inventory
+-- @param {string} name 		the inventory name
+-- @param {int} id 				id of the inventory
+-- @param {Player} Player 		the player QBCore Player Object from source
+-- @return {bool}				True if the player can't access the inventory
+local function IsInventoryIsInaccessible(name, id, Player)
+	-- Don't let non police to access police vehicles inventory
+	if name == "trunk" and QBCore.Shared.SplitStr(id, "LSPD")[2] and Player.PlayerData.job and Player.PlayerData.job.name ~= "police" then
+		return true
+	end
+	return false
+end
+
 -- Is the given name is specified in the config
 -- @param {string} name		the inventory name
 -- @return {bool}
@@ -51,17 +66,12 @@ end
 -- Get the inventory max weight for specified player
 -- @param {string} name		the inventory name
 -- @param {array} inventory	the opened inventory array
--- @param {Player} player	the player who opened the inventory
 -- @return {int}
-local function GetMaxWeightsForInventory(name, other, player)
+local function GetMaxWeightsForInventory(name, other)
 	if other then
 		return other.maxweight or Config.MaxWeights[name]
 	end
 	return Config.MaxWeights[name]
-end
-
-local function IsInventoryIsInaccessible(name, Player)
-	return false
 end
 
 -- Get the inventory slots number for specified player
@@ -213,6 +223,11 @@ local function IsVehicleOwned(plate)
     return not not MySQL.Sync.fetchScalar('SELECT 1 from player_vehicles WHERE plate = ?', {plate})
 end
 
+-- Server event when a player is trying to open an inventory
+-- @param {string} name		the inventory type (Config.InventoriesType)
+-- @param {int} id			the inventory id
+-- @param {array} other		the opened inventory array (optionnal)
+-- @return {void}
 RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 	local src = source
 
@@ -224,27 +239,30 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 	local Player = QBCore.Functions.GetPlayer(src)
 
 	if not (name and id) then
-		TriggerClientEvent("inventory:client:OpenInventory", src, {}, Player.PlayerData.items)
-		return
+		return TriggerClientEvent("inventory:client:OpenInventory", src, {}, Player.PlayerData.items)
 	end
 
     -- Is the given inventory name and ID are safe and valid?
 	if not IsValidInventoryType(name) or not id then
-		TriggerClientEvent('QBCore:Notify', src, 'Invalid Inventory', 'error')
-		return
+		TriggerClientEvent("inventory:client:closeInventory", src)
+		return TriggerClientEvent('QBCore:Notify', src, 'Invalid Inventory', 'error')
 	end
 
 	-- Get the inventory type array
 	local inventory = Inventories[name]
 
 	-- Is the inventory is opened?
-	if IsInventoryUsed(inventory, name, id, src) or IsInventoryIsInaccessible(name, Player) then
-		TriggerClientEvent('QBCore:Notify', src, 'Already in use!', 'error')
-		return
+	if IsInventoryUsed(inventory, name, id, src) then
+		TriggerClientEvent("inventory:client:closeInventory", src)
+		return TriggerClientEvent('QBCore:Notify', src, 'Already in use!', 'error')
+	end
+	if IsInventoryIsInaccessible(name, id, Player) then
+		TriggerClientEvent("inventory:client:closeInventory", src)
+		return TriggerClientEvent('QBCore:Notify', src, "It seems like you don't have the keys", 'error')
 	end
 	
 	-- Get the maxweight and slots of the inventory type
-	local maxweight = GetMaxWeightsForInventory(name, other, Player)
+	local maxweight = GetMaxWeightsForInventory(name, other)
 	local slots = GetSlotsForInventory(name, other, Player)
 
 	-- Load inventories datas function and assure to not overwrite the inventory
@@ -483,16 +501,27 @@ local function GetInventoryMethod(name, id, src)
 	end
 
 	if IsInventoryPlayerType(name) then
-		local Player = QBCore.Functions.GetPlayer(id)
-		if Player then
+		if QBCore.Functions.GetPlayer(id) then
 			return {
+				GetAll = function()
+					-- Refresh player inventory
+					local Player = QBCore.Functions.GetPlayer(id)
+					return Player.PlayerData.items
+				end,
 				Get = function(slot)
+					local Player = QBCore.Functions.GetPlayer(id)
 					return Player.Functions.GetItemBySlot(slot)
 				end,
+				Set = function (items)
+					local Player = QBCore.Functions.GetPlayer(id)
+					return Player.Functions.SetInventory(items, true)
+				end,
 				Add = function(itemName, amount, slot, info)
+					local Player = QBCore.Functions.GetPlayer(id)
 					return Player.Functions.AddItem(itemName, amount, slot, info)
 				end,
 				Delete = function(itemName, amount, slot)
+					local Player = QBCore.Functions.GetPlayer(id)
 					TriggerClientEvent("inventory:client:CheckWeapon", Player.PlayerData.source, itemName)
 					return Player.Functions.RemoveItem(itemName, amount, slot)
 				end,
@@ -501,8 +530,15 @@ local function GetInventoryMethod(name, id, src)
 	else
 		if Inventories[name] and Inventories[name][id] then
 			return {
+				GetAll = function()
+					return Inventories[name][id].items
+				end,
 				Get = function(slot)
 					return Inventories[name][id].items[slot]
+				end,
+				Set = function(items)
+					Inventories[name][id].items = items
+					return true
 				end,
 				Add = function(itemName, amount, slot, info)
 					if name == "drop" then
@@ -593,24 +629,23 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 		toInventoryId = src
 	end
 
-	if not IsInventoryDropAllowed(toInventoryType) then
-		return
-	end
-
 	if not isValidNumber(amount) then
 		-- @todo Anticheat notification "Invalid amount format"
 		return
 	end
 
-	-- To Inventory Type checker, if nil: set to drop
+	-- To Inventory Type checker, if unknown set to drop
 	if not IsValidInventoryType(toInventoryType) then
 		toInventoryType = "drop"
 	end
-
 	-- From Inventory Type checker, if nil: throw an error
 	if not IsValidInventoryType(fromInventoryType) then
 		print("[QBCore] [Inventory Debug] Invalid inventory type from "..json.encode(fromInventoryType))
 		TriggerClientEvent("inventory:client:closeInventory", src)
+		return
+	end
+
+	if not IsInventoryDropAllowed(toInventoryType) then
 		return
 	end
 
@@ -630,9 +665,13 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 		return
 	end
 
-	-- @todo Backup items to restore them in the future if needed
+	-- Get items at slots
 	local fromItemData = fromInventoryMethod.Get(fromSlot)
 	local toItemData = toInventoryMethod.Get(toSlot)
+
+	-- Backup inventory items to restore them if an error occures
+	local backupFromItemData = json.decode(json.encode(fromInventoryMethod.GetAll()))
+	local backupToItemData = json.decode(json.encode(toInventoryMethod.GetAll()))
 
 	-- Check if the incoming item is valid
 	if not fromItemData then
@@ -641,8 +680,8 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 		return
 	end
 
+	-- Set item infos to generate
 	local ItemType = QBCore.Shared.SplitStr(fromItemData.name, "_")[1]
-
 	if ItemType == "weapon" and not fromItemData.info.serie then
 		fromItemData.info.serie = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
 	end
@@ -660,8 +699,15 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 	local isMovingAllItem = amount == fromItemData.amount
 
 	-- Target slot is used by an item
+	local sendingError = false
 	if toItemData then
+		-- Swap unique items
 		if toItemData.unique or fromItemData.unique then
+			if not IsInventoryDropAllowed(fromInventoryType) then
+				TriggerClientEvent('QBCore:Notify', src, "You can't swap items with this inventory.", 'error')
+				TriggerClientEvent("inventory:client:closeInventory", src)
+				return
+			end
 			if not isMovingAllItem then
 				TriggerClientEvent("QBCore:Notify", src, "Item is unique!", "error")
 				TriggerClientEvent("inventory:client:closeInventory", src)
@@ -671,10 +717,16 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 			fromInventoryMethod.Delete(fromItemData.name, fromItemData.amount, fromSlot)
 			toInventoryMethod.Delete(toItemData.name, toItemData.amount, toSlot)
 
-			fromInventoryMethod.Add(toItemData.name, toItemData.amount, fromSlot, toItemData.info)
-			toInventoryMethod.Add(fromItemData.name, fromItemData.amount, toSlot, fromItemData.info)
+			sendingError = sendingError or fromInventoryMethod.Add(toItemData.name, toItemData.amount, fromSlot, toItemData.info) == false
+			sendingError = sendingError or toInventoryMethod.Add(fromItemData.name, fromItemData.amount, toSlot, fromItemData.info) == false
 
+		-- Swap items
 		elseif toItemData.name ~= fromItemData.name then
+			if not IsInventoryDropAllowed(fromInventoryType) then
+				TriggerClientEvent('QBCore:Notify', src, "You can't swap items with this inventory.", 'error')
+				TriggerClientEvent("inventory:client:closeInventory", src)
+				return
+			end
 			if not isMovingAllItem then
 				TriggerClientEvent("QBCore:Notify", src, "You can't move item in this slot!", "error")
 				TriggerClientEvent("inventory:client:closeInventory", src)
@@ -684,24 +736,47 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 			fromInventoryMethod.Delete(fromItemData.name, fromItemData.amount, fromSlot)
 			toInventoryMethod.Delete(toItemData.name, toItemData.amount, toSlot)
 
-			fromInventoryMethod.Add(toItemData.name, toItemData.amount, fromSlot, toItemData.info)
-			toInventoryMethod.Add(fromItemData.name, fromItemData.amount, toSlot, fromItemData.info)
+			sendingError = sendingError or fromInventoryMethod.Add(toItemData.name, toItemData.amount, fromSlot, toItemData.info) == false
+			sendingError = sendingError or toInventoryMethod.Add(fromItemData.name, fromItemData.amount, toSlot, fromItemData.info) == false
+		-- Add items
 		elseif toItemData.name == fromItemData.name then
-			fromInventoryMethod.Delete(fromItemData.name, amount, fromSlot)
-			toInventoryMethod.Add(fromItemData.name, amount, toSlot)
+			sendingError = sendingError or fromInventoryMethod.Delete(fromItemData.name, amount, fromSlot) == false
+			sendingError = sendingError or toInventoryMethod.Add(fromItemData.name, amount, toSlot) == false
 		end
+	-- 
 	else
-		fromInventoryMethod.Delete(fromItemData.name, amount, fromSlot)
-		toInventoryMethod.Add(fromItemData.name, amount, toSlot, fromItemData.info)
+		sendingError = sendingError or fromInventoryMethod.Delete(fromItemData.name, amount, fromSlot) == false
+		sendingError = sendingError or toInventoryMethod.Add(fromItemData.name, amount, toSlot, fromItemData.info) == false
 	end
 
-	-- @todo Check weight and restore item if it is too heavy
+	-- If there is an error in adding the item
+	-- or the total weight is too heavy for the target inventory type
+	-- or the total weight is too heavy for the source inventory type (when the drop is enabled in it)
+	if sendingError
+	or QBCore.Player.GetTotalWeight(toInventoryMethod.GetAll()) > GetMaxWeightsForInventory(toInventoryType, Inventories[toInventoryType][toInventoryId])
+	or (IsInventoryDropAllowed(fromInventoryType)
+		and QBCore.Player.GetTotalWeight(fromInventoryMethod.GetAll()) > GetMaxWeightsForInventory(fromInventoryType, Inventories[fromInventoryType][fromInventoryId])
+	) then
+		-- Reset items informations
+		fromInventoryMethod.Set(backupFromItemData)
+		toInventoryMethod.Set(backupToItemData)
 
-	-- @todo Charge the player or restore
+		-- Assume the error messages are handled by the inventory methods
+		if not sendingError then
+			TriggerClientEvent("QBCore:Notify", src, "The inventory is too full", "error")
+		end
+
+		-- Force close the inventory
+		TriggerClientEvent("inventory:client:closeInventory", src)
+		return
+	end
+
+	-- Charge the player when he moves an item in a shop
 	if fromInventoryType == "shop" then
 		if not ChargePlayer(src, fromInventoryId, fromItemData, amount) then
-			fromInventoryMethod.Add(fromItemData.name, amount, fromSlot, fromItemData.info)
-			toInventoryMethod.Delete(fromItemData.name, amount, toSlot)
+			fromInventoryMethod.Set(backupFromItemData)
+			toInventoryMethod.Set(backupToItemData)
+	
 			TriggerClientEvent("inventory:client:closeInventory", src)
 			return
 		end

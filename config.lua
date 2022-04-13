@@ -9,8 +9,11 @@ Config.MaxSlots = {
     shop = 0
 }
 
+-- Set the max weight for inventory type
+-- @warning: This will be ignored if you have a custom weight function
+-- @warning: Trunks and shops are not affected by this 
 Config.MaxWeights = {
-    player = 41,
+    player = 120000,
     drop = 100000,
     trunk = 0,
     glovebox = 10000,
