@@ -861,21 +861,17 @@ CreateThread(function()
 end)
 
 CreateThread(function()
-    if Config.UseTarget == 'true' then
-        if type(Config.CraftingObject ~= 'table') then
-            exports['qb-target']:AddTargetModel(Config.CraftingObject, {
-                options = {
-                    {
-                        event = "inventory:client:craftTarget",
-                        icon = "fas fa-tools",
-                        label = "Craft",
-                    },
+    if Config.UseTarget then
+        exports['qb-target']:AddTargetModel(Config.CraftingObject, {
+            options = {
+                {
+                    event = "inventory:client:craftTarget",
+                    icon = "fas fa-tools",
+                    label = "Craft",
                 },
-                distance = 2.5,
-            })
-        else
-
-        end
+            },
+            distance = 2.5,
+        })
     else
         while true do
             local sleep = 1000
