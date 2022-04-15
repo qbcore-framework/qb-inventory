@@ -33,6 +33,14 @@ local function GetClosestVending()
     return object
 end
 
+local function OpenVending()
+    local ShopItems = {}
+    ShopItems.label = "Vending Machine"
+    ShopItems.items = Config.VendingItem
+    ShopItems.slots = #Config.VendingItem
+    TriggerServerEvent("inventory:server:OpenInventory", "shop", "Vendingshop_"..math.random(1, 99), ShopItems)
+end
+
 local function DrawText3Ds(x, y, z, text)
 	SetTextScale(0.35, 0.35)
     SetTextFont(4)
@@ -527,7 +535,7 @@ RegisterCommand('inventory', function()
         if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() then
             local ped = PlayerPedId()
             local curVeh = nil
-            local VendingMachine = GetClosestVending()
+            if not Config.UseTarget then VendingMachine = GetClosestVending() end
 
             if IsPedInAnyVehicle(ped) then -- Is Player In Vehicle
                 local vehicle = GetVehiclePedIsIn(ped, false)
@@ -857,6 +865,23 @@ CreateThread(function()
             DropsNear = {}
         end
         Wait(500)
+    end
+end)
+
+CreateThread(function()
+    if Config.UseTarget then
+        exports['qb-target']:AddTargetModel(Config.VendingObjects, {
+            options = {
+                {
+                    icon = "fa-solid fa-cash-register",
+                    label = "Vending Machine",
+                    action = function()
+                        OpenVending()
+                    end
+                },
+            },
+            distance = 2.5
+        })
     end
 end)
 
