@@ -40,8 +40,9 @@
 
 <h2>Modules</h2>
 <ul class="nowrap">
-  <li><a href="../modules/main.html">main</a></li>
+  <li><a href="../modules/commands.html">commands</a></li>
   <li><strong>server</strong></li>
+  <li><a href="../modules/utils.html">utils</a></li>
 </ul>
 <h2>Classes</h2>
 <ul class="nowrap">
@@ -64,6 +65,14 @@
 
 <h2><a href="#Server_Events">Server Events</a></h2>
 <table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#inventory:server:CraftAttachment">inventory:server:CraftAttachment</a></td>
+	<td class="summary">Craft a weapon attachment from a crafting table</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#inventory:server:CraftItems">inventory:server:CraftItems</a></td>
+	<td class="summary">Craft item event from a crafting table</td>
+	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#inventory:server:GiveItem">inventory:server:GiveItem</a></td>
 	<td class="summary">Save the specified item in the stash</td>
@@ -99,6 +108,10 @@
 	<tr>
 	<td class="name" nowrap><a href="#inventory:server:addTrunkItems">inventory:server:addTrunkItems<br><b>⚠️ DEPRECATED! Do not use it.</b></a></td>
 	<td class="summary">Used to be the event to set the items in a trunk.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#inventory:server:combineItem">inventory:server:combineItem</a></td>
+	<td class="summary">Combine two items in the player inventory</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#qb-inventory:server:SaveStashItems">qb-inventory:server:SaveStashItems<br><b>⚠️ DEPRECATED! Do not use it.</b></a></td>
@@ -141,6 +154,10 @@
 	<tr>
 	<td class="name" nowrap><a href="#GetSlotsForInventory">GetSlotsForInventory (name, other, player)</a></td>
 	<td class="summary">Get the inventory slots number for specified player</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#HandleCraftEvent">HandleCraftEvent (craftType, itemName, itemCosts, amount, toSlot, points)</a></td>
+	<td class="summary">Server event when a player wants to craft an item from a crafting table</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#IsInventoryDropAllowed">IsInventoryDropAllowed (name)</a></td>
@@ -191,6 +208,44 @@
     <h2 class="section-header "><a name="Server_Events"></a>Server Events</h2>
 
     <dl class="function">
+    <dt>
+    <a name = "inventory:server:CraftAttachment"></a>
+    <strong>inventory:server:CraftAttachment</strong>
+    </dt>
+    <dd>
+    Craft a weapon attachment from a crafting table
+
+    </ul>
+
+
+
+
+    <h3>See also:</h3>
+    <ul>
+         <a href="../modules/server.html#HandleCraftEvent">HandleCraftEvent</a>
+    </ul>
+
+
+</dd>
+    <dt>
+    <a name = "inventory:server:CraftItems"></a>
+    <strong>inventory:server:CraftItems</strong>
+    </dt>
+    <dd>
+    Craft item event from a crafting table
+
+    </ul>
+
+
+
+
+    <h3>See also:</h3>
+    <ul>
+         <a href="../modules/server.html#HandleCraftEvent">HandleCraftEvent</a>
+    </ul>
+
+
+</dd>
     <dt>
     <a name = "inventory:server:GiveItem"></a>
     <strong>inventory:server:GiveItem</strong>
@@ -434,6 +489,35 @@
 
     </ul>
 
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "inventory:server:combineItem"></a>
+    <strong>inventory:server:combineItem</strong>
+    </dt>
+    <dd>
+    Combine two items in the player inventory
+
+    </ul>
+
+    <ul>
+        <li><span class="parameter">item</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        		The reward item name
+        </li>
+        <li><span class="parameter">fromItem</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        	The item that is used to be combine
+        </li>
+        <li><span class="parameter">toItem</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        	The item that is the result of the combine
+        </li>
+    </ul>
 
 
 
@@ -784,6 +868,54 @@
 
 </dd>
     <dt>
+    <a name = "HandleCraftEvent"></a>
+    <strong>HandleCraftEvent (craftType, itemName, itemCosts, amount, toSlot, points)</strong>
+    </dt>
+    <dd>
+    Server event when a player wants to craft an item from a crafting table
+
+    </ul>
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">craftType</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        		The crafting table type ("crafting" or "attachmentcrafting")
+        </li>
+        <li><span class="parameter">itemName</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        		The item name being crafted
+        </li>
+        <li><span class="parameter">itemCosts</span>
+            <span class="types"><span class="type">Items[]</span></span>
+        	The items needed to craft the item
+        </li>
+        <li><span class="parameter">amount</span>
+            <span class="types"><span class="type">number</span></span>
+        		The amount of items crafted
+        </li>
+        <li><span class="parameter">toSlot</span>
+            <span class="types"><span class="type">number</span></span>
+        		The slot where the crafted item is put
+        </li>
+        <li><span class="parameter">points</span>
+            <span class="types"><span class="type">number</span></span>
+        		The points earned by crafting the item
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">void</span></span>
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
     <a name = "IsInventoryDropAllowed"></a>
     <strong>IsInventoryDropAllowed (name)</strong>
     </dt>
@@ -1118,7 +1250,7 @@
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
-<i style="float:right;">Last updated 2022-04-13 19:38:14 </i>
+<i style="float:right;">Last updated 2022-04-15 20:11:28 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>
