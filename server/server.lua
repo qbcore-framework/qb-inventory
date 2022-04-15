@@ -3,9 +3,8 @@
 -- @module server
 -- @author restray
 -- @todo Need to translate the whole script
--- @todo Make the crafting system
 
-local QBCore = exports['qb-core']:GetCoreObject()
+QBCore = exports['qb-core']:GetCoreObject()
 
 --- All the inventories table
 -- @table Inventories
@@ -526,13 +525,6 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 	TriggerClientEvent("inventory:client:OpenInventory", src, {}, Player.PlayerData.items, targetInventory)
 end)
 
---- Used to be the event to set the items in a trunk.
--- @event inventory:server:addTrunkItems
--- @deprecated
-RegisterNetEvent('inventory:server:addTrunkItems', function(_, _)
-	print("[QBCore] inventory:server:addTrunkItems is deprecated, use inventory:server:addItem instead")
-end)
-
 --- Add item to the inventory
 -- @event inventory:server:addItem
 -- @tparam string name		the inventory type
@@ -544,20 +536,99 @@ AddEventHandler('inventory:server:addItem', function(name, id, item, amount)
 	print("WIP: Should give item"..name.."-"..id.."-"..item.."-"..amount)
 end)
 
--- RegisterNetEvent('inventory:server:combineItem', function(item, fromItem, toItem)
--- end)
+--- Combine two items in the player inventory
+-- @event inventory:server:combineItem
+-- @tparam string item		The reward item name
+-- @tparam string fromItem	The item that is used to be combine
+-- @tparam string toItem	The item that is the result of the combine
+RegisterNetEvent('inventory:server:combineItem', function(item, fromItem, toItem)
+	local src = source
+	local Player = QBCore.Functions.GetPlayer(src)
 
--- RegisterNetEvent('inventory:server:CraftItems', function(itemName, itemCosts, amount, toSlot, points)
--- end)
+	-- Check that inputs are not nil
+	-- Most commonly when abusing this exploit, this values are left as
+	if not fromItem or not toItem then
+		return
+	end
 
--- RegisterNetEvent('inventory:server:CraftAttachment', function(itemName, itemCosts, amount, toSlot, points)
--- end)
+	-- Check that they have the items
+	fromItem = Player.Functions.GetItemByName(fromItem)
+	toItem = Player.Functions.GetItemByName(toItem)
+	if not fromItem or not toItem then
+		return
+	end
+
+	-- Check the recipe is valid
+	local recipe = QBCore.Shared.Items[toItem.name].combinable
+	if not recipe or recipe.reward ~= item or not recipeContains(recipe, fromItem) then
+		return
+	end
+
+	TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item], 'add')
+
+	Player.Functions.AddItem(item, 1)
+	Player.Functions.RemoveItem(fromItem.name, 1)
+	Player.Functions.RemoveItem(toItem.name, 1)
+end)
+
+--- Server event when a player wants to craft an item from a crafting table
+-- @tparam string craftType		The crafting table type ("crafting" or "attachmentcrafting")
+-- @tparam string itemName		The item name being crafted
+-- @tparam Items[] itemCosts	The items needed to craft the item
+-- @tparam number amount		The amount of items crafted
+-- @tparam number toSlot		The slot where the crafted item is put
+-- @tparam number points		The points earned by crafting the item
+-- @treturn void
+local function HandleCraftEvent(craftType, itemName, itemCosts, amount, toSlot, points)
+	local src = source
+	local Player = QBCore.Functions.GetPlayer(src)
+
+	amount = tonumber(amount)
+	if not (isValidNumber(amount) and amount > 0) then
+		return
+	end
+
+	if not itemName or not itemCosts then
+		return
+	end
+
+	for k, v in pairs(itemCosts) do
+		Player.Functions.RemoveItem(k, v * amount)
+	end
+
+	-- Check if the player already has an item set in the targetted slot
+	local slot = Player.Functions.GetItemBySlot(toSlot)
+	if slot and slot.name:lower() == itemName:lower() then
+		Player.Functions.AddItem(itemName, amount, toSlot)
+	else
+		Player.Functions.AddItem(itemName, amount)
+	end
+	
+	Player.Functions.SetMetaData(craftType.."grep", Player.PlayerData.metadata[craftType.."grep"] + (points * amount))
+	TriggerClientEvent("inventory:client:UpdatePlayerInventory", src, false)
+end
+
+--- Craft item event from a crafting table
+-- @event inventory:server:CraftItems
+-- @see HandleCraftEvent
+RegisterNetEvent('inventory:server:CraftItems', function(itemName, itemCosts, amount, toSlot, points)
+	HandleCraftEvent("crafting", itemName, itemCosts, amount, toSlot, points)
+end)
+
+--- Craft a weapon attachment from a crafting table
+-- @event inventory:server:CraftAttachment
+-- @see HandleCraftEvent
+RegisterNetEvent('inventory:server:CraftAttachment', function(itemName, itemCosts, amount, toSlot, points)
+	HandleCraftEvent("attachmentcrafting", itemName, itemCosts, amount, toSlot, points)
+end)
 
 --- A server event handler to let the client set an inventory closed state
 -- @event inventory:server:SetIsOpenState
 -- @tparam bool isOpen		Is the new inventory state open?
 -- @tparam string name		The inventory type
 -- @tparam number id		The inventory id
+-- @todo Check that the inventory type is valid
+-- @todo Check if the inventory is opened by the player
 RegisterNetEvent('inventory:server:SetIsOpenState', function(IsOpen, name, id)
 	if not IsOpen then
 		if Inventories[name] and Inventories[name][id] then
@@ -797,7 +868,8 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 	-- or the total weight is too heavy for the source inventory type (when the drop is enabled in it)
 	if sendingError
 	or QBCore.Player.GetTotalWeight(toInventoryMethod.GetAll()) > GetMaxWeightsForInventory(toInventoryType, Inventories[toInventoryType][toInventoryId])
-	or (IsInventoryDropAllowed(fromInventoryType)
+	or (
+		IsInventoryDropAllowed(fromInventoryType)
 		and QBCore.Player.GetTotalWeight(fromInventoryMethod.GetAll()) > GetMaxWeightsForInventory(fromInventoryType, Inventories[fromInventoryType][fromInventoryId])
 	) then
 		-- Reset items informations
@@ -839,7 +911,6 @@ RegisterNetEvent('qb-inventory:server:SaveStashItems', function(id, items)
 	Inventories.stash[id].items = items
 	SaveDatabaseInventories("stash", id, Inventories.stash[id], "stash")
 end)
-
 QBCore.Functions.CreateCallback('qb-inventory:server:GetStashItems', function(_, cb, id)
 	cb(FetchItemsFromDatabase('stashitems', 'items', 'stash', id))
 end)
@@ -901,52 +972,9 @@ RegisterServerEvent("inventory:server:GiveItem", function(target, name, amount, 
 	end
 end)
 
-QBCore.Commands.Add("giveitem", "Give An Item (Admin Only)", {{name="id", help="Player ID"},{name="item", help="Name of the item (not a label)"}, {name="amount", help="Amount of items"}}, true, function(source, args)
-	local Player = QBCore.Functions.GetPlayer(tonumber(args[1]))
-	local amount = tonumber(args[3])
-	local itemData = QBCore.Shared.Items[tostring(args[2]):lower()]
-	if Player then
-		if amount > 0 then
-			if itemData then
-				-- check iteminfo
-				local info = {}
-				if itemData["name"] == "id_card" then
-					info.citizenid = Player.PlayerData.citizenid
-					info.firstname = Player.PlayerData.charinfo.firstname
-					info.lastname = Player.PlayerData.charinfo.lastname
-					info.birthdate = Player.PlayerData.charinfo.birthdate
-					info.gender = Player.PlayerData.charinfo.gender
-					info.nationality = Player.PlayerData.charinfo.nationality
-				elseif itemData["name"] == "driver_license" then
-					info.firstname = Player.PlayerData.charinfo.firstname
-					info.lastname = Player.PlayerData.charinfo.lastname
-					info.birthdate = Player.PlayerData.charinfo.birthdate
-					info.type = "Class C Driver License"
-				elseif itemData["type"] == "weapon" then
-					amount = 1
-					info.serie = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
-				elseif itemData["name"] == "harness" then
-					info.uses = 20
-				elseif itemData["name"] == "markedbills" then
-					info.worth = math.random(5000, 10000)
-				elseif itemData["name"] == "labkey" then
-					info.lab = exports["qb-methlab"]:GenerateRandomLab()
-				elseif itemData["name"] == "printerdocument" then
-					info.url = "https://cdn.discordapp.com/attachments/870094209783308299/870104331142189126/Logo_-_Display_Picture_-_Stylized_-_Red.png"
-				end
-
-				if Player.Functions.AddItem(itemData["name"], amount, false, info) then
-					TriggerClientEvent('QBCore:Notify', source, "You Have Given " ..GetPlayerName(tonumber(args[1])).." "..amount.." "..itemData["name"].. "", "success")
-				else
-					TriggerClientEvent('QBCore:Notify', source,  "Can't give item!", "error")
-				end
-			else
-				TriggerClientEvent('QBCore:Notify', source,  "Item Does Not Exist", "error")
-			end
-		else
-			TriggerClientEvent('QBCore:Notify', source,  "Invalid Amount", "error")
-		end
-	else
-		TriggerClientEvent('QBCore:Notify', source,  "Player Is Not Online", "error")
-	end
-end, "admin")
+--- Used to be the event to set the items in a trunk.
+-- @event inventory:server:addTrunkItems
+-- @deprecated
+RegisterNetEvent('inventory:server:addTrunkItems', function(_, _)
+	print("[QBCore] inventory:server:addTrunkItems is deprecated, use inventory:server:addItem instead")
+end)
