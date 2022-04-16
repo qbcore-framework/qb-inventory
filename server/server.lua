@@ -17,157 +17,6 @@ for _, v in ipairs(Config.InventoriesType) do
 	Inventories[v] = {}
 end
 
---- Is the given number an unsigned integer?
--- @tparam number nb	The number to check
--- @treturn bool		True if the number is an unsigned integer
-local function isValidNumber(nb)
-	return math.floor(nb) == nb and nb >= 0
-end
-
---- Is the inventory opened
--- @tparam Inventories[][] inventory 		the array type (from Inventory variable)
--- @tparam string name 					the inventory type
--- @tparam number id 					id of the inventory
--- @tparam number source 				the player source id
--- @treturn bool						True if the inventory is opened by another player
-local function IsInventoryUsed(inventory, name, id, source)
-    if inventory[id] and inventory[id].isOpen then
-		if inventory[id].isOpen == source then
-			return false
-		elseif QBCore.Functions.GetPlayer(inventory[id].isOpen) then
-			TriggerClientEvent('inventory:client:CheckOpenState', inventory[id].isOpen, name, id, inventory[id].label)
-			return true
-		else
-			inventory[id].isOpen = false
-		end
-    end
-    return false
-end
-
---- Every condition related to a forbiden access to an inventory
--- @tparam string name 			The inventory type
--- @tparam number id 			Id of the inventory
--- @tparam Player Player 		The player QBCore Player Object from source
--- @treturn bool				True if the player can't access the inventory
-local function IsInventoryIsInaccessible(name, id, Player)
-	-- Don't let non police to access police vehicles inventory
-	if name == "trunk" and QBCore.Shared.SplitStr(id, "LSPD")[2] and Player.PlayerData.job and Player.PlayerData.job.name ~= "police" then
-		return true
-	end
-	return false
-end
-
---- Is the given name is specified in the config
--- @tparam string name		The inventory type
--- @treturn bool
-local function IsValidInventoryType(name)
-	for _, v in ipairs(Config.InventoriesType) do
-		if v == name then
-			return true
-		end
-	end
-	return false
-end
-
---- Get the inventory max weight for specified player
--- @tparam string name						The inventory type
--- @tparam[opt] Inventories[][] other		The opened inventory array
--- @treturn number							The inventory max weight
-local function GetMaxWeightsForInventory(name, other)
-	if other then
-		return other.maxweight or Config.MaxWeights[name]
-	end
-	return Config.MaxWeights[name]
-end
-
---- Get the inventory slots number for specified player
--- @tparam string name					The inventory type
--- @tparam Inventories[][] other		The opened inventory array
--- @tparam Player player				The player who opened the inventory
--- @treturn number						The max number of slots
-local function GetSlotsForInventory(name, other, player)
-	if name == "otherplayer" then
-		if player.PlayerData.job.name == "police" and player.PlayerData.job.onduty then
-			return Config.MaxSlots[name]
-		else
-			return Config.MaxSlots[name] - 1
-		end
-	end
-
-	if other then
-		return other.slots or Config.MaxSlots[name]
-	end
-	return Config.MaxSlots[name]
-end
-
---- Save inventories in the specified table of the database
--- @tparam string name					The inventory type
--- @tparam number id					The inventory id
--- @tparam Inventories[][] inventory	The opened inventory array
--- @tparam string columnName			The column name in the database
--- @treturn bool						True if the inventory is saved
-local function SaveDatabaseInventories(name, id, inventory, columnName)
-	if not inventory.items then
-		return false
-	end
-
-	-- Remove the description line in items
-	for _, item in pairs(inventory.items) do
-		item.description = nil
-	end
-
-	MySQL.Async.insert('INSERT INTO '..name..'items ('.. columnName ..', items) VALUES (:id, :items) ON DUPLICATE KEY UPDATE items = :items', {
-		['id'] = id,
-		['items'] = json.encode(inventory.items)
-	})
-	inventory.isOpen = false
-	return true
-end
-
---- Fetch items from the database
--- @tparam string table				The database table name
--- @tparam string itemsColumn		The database table column name for items
--- @tparam string columnCondition	The database table column name for condition
--- @tparam string conditionValue	The condition value
--- @treturn[1] table				The fetched items
--- @treturn[2] bool					False if the database returns nothing
-local function FetchItemsFromDatabase(table, itemsColumn, columnCondition, conditionValue)
-	local items = {}
-	local result = MySQL.Sync.fetchScalar('SELECT '.. itemsColumn ..' FROM '.. table ..' WHERE '.. columnCondition ..' = ?', {conditionValue})
-	
-	if not result then
-		return items -- Return empty table
-	end
-
-	-- Parsing item results
-	local fetchedItems = json.decode(result)
-	if not fetchedItems or not next(fetchedItems) then
-		return items -- Return empty table
-	end
-
-	-- Add items into array
-	for _, item in pairs(fetchedItems) do
-		local itemInfo = QBCore.Shared.Items[item.name:lower()]
-		if itemInfo then
-			items[item.slot] = {
-				name = itemInfo["name"],
-				amount = math.floor(tonumber(item.amount)), -- Assure the player there is no digit amounts
-				info = item.info or "",
-				label = itemInfo["label"],
-				description = itemInfo["description"] or "",
-				weight = itemInfo["weight"],
-				type = itemInfo["type"],
-				unique = itemInfo["unique"],
-				useable = itemInfo["useable"],
-				image = itemInfo["image"],
-				slot = item.slot,
-			}
-		end
-	end
-
-	return items
-end
-
 --- Get the inventory items from name and ID
 -- @tparam string name						The inventory type
 -- @tparam number id						The inventory id
@@ -224,108 +73,6 @@ local function GetItemsForInventory(name, id, other, Player)
 		return other.items
 	end
 	return {}
-end
-
---- Is the vehicle plate is owned by someone
--- @tparam string plate		The vehicle plate
--- @treturn bool
-local function IsVehicleOwned(plate)
-    return not not MySQL.Sync.fetchScalar('SELECT 1 from player_vehicles WHERE plate = ?', {plate})
-end
-
---- Is the inventory allow items to be dropped in?
--- @tparam string name		The inventory type (Config.InventoriesType)
--- @treturn bool
-local function IsInventoryDropAllowed(name)
-	for _, v in pairs(Config.DisableInventoryDrop) do
-		if v == name then
-			return false
-		end
-	end
-	return true
-end
-
---- Is the specified inventory a source player type?
--- @tparam string name		The inventory type
--- @treturn bool				Is the inventory a source player type?
-local function IsPlayerInventory(name)
-	return name == "player" or name == "hotbar"
-end
-
---- Is the specified inventory a any player type?
--- @see IsPlayerInventory
--- @tparam string name			The inventory type
--- @treturn bool				Is the inventory a player type?
-local function IsInventoryPlayerType(name)
-	return IsPlayerInventory(name) or name == "otherplayer"
-end
-
---- Add an item to the inventory
--- @tparam string name			The inventory type to add the item to
--- @tparam Inventories[][] inventory		The inventory array to add the item to
--- @tparam int slot			The slot to add the item to
--- @tparam string itemName		The item name
--- @tparam int amount			The amount of the item to add
--- @tparam[opt] Item.info info	The item specific infos
--- @treturn bool				True if the item was added, false if not
-local function AddItemToInventory(name, inventory, slot, itemName, amount, info)
-	amount = tonumber(amount)
-	local ItemData = QBCore.Shared.Items[itemName:lower()]
-
-	if not ItemData then
-		return false
-	end
-
-	if inventory.items[slot] and inventory.items[slot].name == itemName and not ItemData.unique then
-		if IsInventoryPlayerType(name) then
-			Player.Functions.AddItem(itemName, amount, slot)
-		else
-			inventory.items[slot].amount = inventory.items[slot].amount + amount
-		end
-	else
-		inventory.items[slot] = {
-			name = ItemData["name"],
-			amount = amount,
-			info = info or "",
-			label = ItemData["label"],
-			description = ItemData["description"] or "",
-			weight = ItemData["weight"],
-			type = ItemData["type"],
-			unique = ItemData["unique"],
-			useable = ItemData["useable"],
-			image = ItemData["image"],
-			slot = slot,
-		}
-	end
-
-	return true
-end
-
---- Remove an item from the inventory
--- @tparam Inventories[][] inventory		The inventory array to remove the item from
--- @tparam number slot						The slot to remove the item from
--- @tparam string itemName					The item name
--- @tparam number amount					The amount of the item to remove
--- @treturn bool							True if the item was removed, false if not
-local function RemoveItemFromInventory(inventory, slot, itemName, amount)
-	if not inventory or not inventory.items[slot] then
-		return false
-	end
-
-	if inventory.items[slot].name == itemName then
-		if inventory.items[slot].amount > amount then
-			inventory.items[slot].amount = inventory.items[slot].amount - amount
-		else
-			inventory.items[slot] = nil
-			if not next(inventory.items) then
-				inventory.items = {}
-			end
-		end
-	else
-		return false
-	end
-
-	return true
 end
 
 --- Get the adaptated methods for the inventory type
@@ -526,14 +273,56 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 end)
 
 --- Add item to the inventory
+-- Only for server side, be carefull on the usage of this event, can cause major security issues
 -- @event inventory:server:addItem
 -- @tparam string name		the inventory type
 -- @tparam number id		the inventory id
 -- @tparam name item		the item name
 -- @tparam number amount	the item amount
--- @todo
-AddEventHandler('inventory:server:addItem', function(name, id, item, amount)
-	print("WIP: Should give item"..name.."-"..id.."-"..item.."-"..amount)
+-- @tparam table info		the item infos
+AddEventHandler('inventory:server:addItem', function(name, id, item, amount, info)
+	amount = tonumber(amount)
+	if not IsValidNumber(amount) or amount < 1 then
+		return
+	end
+
+	if not IsValidInventoryType(name) or not id then
+		print("[inventory:server:addItem] Invalid inventory type or no ID provided")
+		return
+	end
+
+	if IsInventoryUsed(Inventories[name], name, id, 0) then
+		print("[inventory:server:addItem] Inventory is already in used")
+		return
+	end
+
+	if not Inventories[name][id] then
+		Inventories[name][id] = {}
+	end
+	Inventories[name][id].isOpen = false
+	Inventories[name][id].label = Lang:t(name).."-"..id
+
+	-- Populate the Inventory[type] variable from Database
+	local loadedItems = GetItemsForInventory(name, id)
+	if loadedItems and next(loadedItems) then
+		Inventories[name][id].items = loadedItems
+	else
+		Inventories[name][id].items = {}
+	end
+	
+	item = QBCore.Shared.Items[item.name]
+	if not item then
+		print("[inventory:server:addItem] Invalid item name")
+		return
+	end
+
+	local slot = GetFirstAvailableSlot(name, Inventories[name][id].items, item)
+	if slot < 0 then
+		print("[inventory:server:addItem] No available slot")
+		return
+	end
+
+	AddItemToInventory(name, Inventories[name][id], slot, item, amount, info)
 end)
 
 --- Combine two items in the player inventory
@@ -584,7 +373,7 @@ local function HandleCraftEvent(craftType, itemName, itemCosts, amount, toSlot, 
 	local Player = QBCore.Functions.GetPlayer(src)
 
 	amount = tonumber(amount)
-	if not (isValidNumber(amount) and amount > 0) then
+	if not (IsValidNumber(amount) and amount > 0) then
 		return
 	end
 
@@ -736,7 +525,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 		toInventoryId = src
 	end
 
-	if not isValidNumber(amount) then
+	if not IsValidNumber(amount) then
 		-- @todo Anticheat notification "Invalid amount format"
 		return
 	end
@@ -904,18 +693,6 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 end)
 
 --- Save the specified item in the stash
--- @event qb-inventory:server:SaveStashItems
--- @deprecated
-RegisterNetEvent('qb-inventory:server:SaveStashItems', function(id, items)
-	print("[QBCore] [WARNING] qb-inventory:server:SaveStashItems is deprecated, use inventory:server:SaveInventory instead")
-	Inventories.stash[id].items = items
-	SaveDatabaseInventories("stash", id, Inventories.stash[id], "stash")
-end)
-QBCore.Functions.CreateCallback('qb-inventory:server:GetStashItems', function(_, cb, id)
-	cb(FetchItemsFromDatabase('stashitems', 'items', 'stash', id))
-end)
-
---- Save the specified item in the stash
 -- @event inventory:server:GiveItem
 -- @tparam number target 	Target Player ID
 -- @tparam string name 		Item name
@@ -945,7 +722,7 @@ RegisterServerEvent("inventory:server:GiveItem", function(target, name, amount, 
 		amount = item.amount
 	end
 
-	if not isValidNumber(amount) or amount > item.amount then
+	if not IsValidNumber(amount) or amount > item.amount then
 		TriggerClientEvent('QBCore:Notify', src,  "You do not have enough of the item", "error")
 		return
 	end
@@ -975,6 +752,19 @@ end)
 --- Used to be the event to set the items in a trunk.
 -- @event inventory:server:addTrunkItems
 -- @deprecated
+-- @see inventory:server:addItem
 RegisterNetEvent('inventory:server:addTrunkItems', function(_, _)
 	print("[QBCore] inventory:server:addTrunkItems is deprecated, use inventory:server:addItem instead")
+end)
+
+--- Save the specified item in the stash
+-- @event qb-inventory:server:SaveStashItems
+-- @deprecated
+RegisterNetEvent('qb-inventory:server:SaveStashItems', function(id, items)
+	print("[QBCore] [WARNING] qb-inventory:server:SaveStashItems is deprecated, use inventory:server:SaveInventory instead")
+	Inventories.stash[id].items = items
+	SaveDatabaseInventories("stash", id, Inventories.stash[id], "stash")
+end)
+QBCore.Functions.CreateCallback('qb-inventory:server:GetStashItems', function(_, cb, id)
+	cb(FetchItemsFromDatabase('stashitems', 'items', 'stash', id))
 end)
