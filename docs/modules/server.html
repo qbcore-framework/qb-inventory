@@ -103,7 +103,8 @@
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#inventory:server:addItem">inventory:server:addItem</a></td>
-	<td class="summary">Add item to the inventory</td>
+	<td class="summary">Add item to the inventory
+ Only for server side, be carefull on the usage of this event, can cause major security issues</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#inventory:server:addTrunkItems">inventory:server:addTrunkItems<br><b>⚠️ DEPRECATED! Do not use it.</b></a></td>
@@ -128,16 +129,8 @@
 <h2><a href="#Local_Functions">Local Functions</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#AddItemToInventory">AddItemToInventory (name, inventory, slot, itemName, amount[, info])</a></td>
-	<td class="summary">Add an item to the inventory</td>
-	</tr>
-	<tr>
 	<td class="name" nowrap><a href="#ChargePlayer">ChargePlayer (src, id, itemData, amount)</a></td>
 	<td class="summary">Make a user pay an item (like shop, dealers...)</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#FetchItemsFromDatabase">FetchItemsFromDatabase (table, itemsColumn, columnCondition, conditionValue)</a></td>
-	<td class="summary">Fetch items from the database</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#GetInventoryMethod">GetInventoryMethod (name, id[, src])</a></td>
@@ -148,56 +141,8 @@
 	<td class="summary">Get the inventory items from name and ID</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#GetMaxWeightsForInventory">GetMaxWeightsForInventory (name[, other])</a></td>
-	<td class="summary">Get the inventory max weight for specified player</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#GetSlotsForInventory">GetSlotsForInventory (name, other, player)</a></td>
-	<td class="summary">Get the inventory slots number for specified player</td>
-	</tr>
-	<tr>
 	<td class="name" nowrap><a href="#HandleCraftEvent">HandleCraftEvent (craftType, itemName, itemCosts, amount, toSlot, points)</a></td>
 	<td class="summary">Server event when a player wants to craft an item from a crafting table</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#IsInventoryDropAllowed">IsInventoryDropAllowed (name)</a></td>
-	<td class="summary">Is the inventory allow items to be dropped in?</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#IsInventoryIsInaccessible">IsInventoryIsInaccessible (name, id, Player)</a></td>
-	<td class="summary">Every condition related to a forbiden access to an inventory</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#IsInventoryPlayerType">IsInventoryPlayerType (name)</a></td>
-	<td class="summary">Is the specified inventory a any player type?</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#IsInventoryUsed">IsInventoryUsed (inventory, name, id, source)</a></td>
-	<td class="summary">Is the inventory opened</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#IsPlayerInventory">IsPlayerInventory (name)</a></td>
-	<td class="summary">Is the specified inventory a source player type?</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#IsValidInventoryType">IsValidInventoryType (name)</a></td>
-	<td class="summary">Is the given name is specified in the config</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#IsVehicleOwned">IsVehicleOwned (plate)</a></td>
-	<td class="summary">Is the vehicle plate is owned by someone</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#RemoveItemFromInventory">RemoveItemFromInventory (inventory, slot, itemName, amount)</a></td>
-	<td class="summary">Remove an item from the inventory</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#SaveDatabaseInventories">SaveDatabaseInventories (name, id, inventory, columnName)</a></td>
-	<td class="summary">Save inventories in the specified table of the database</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#isValidNumber">isValidNumber (nb)</a></td>
-	<td class="summary">Is the given number an unsigned integer?</td>
 	</tr>
 </table>
 
@@ -453,6 +398,7 @@
     </dt>
     <dd>
     Add item to the inventory
+ Only for server side, be carefull on the usage of this event, can cause major security issues
 
     </ul>
 
@@ -473,6 +419,10 @@
             <span class="types"><span class="type">number</span></span>
         	the item amount
         </li>
+        <li><span class="parameter">info</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
+        		the item infos
+        </li>
     </ul>
 
 
@@ -492,6 +442,10 @@
 
 
 
+    <h3>See also:</h3>
+    <ul>
+         <a href="../modules/server.html#inventory:server:addItem">inventory:server:addItem</a>
+    </ul>
 
 
 </dd>
@@ -573,55 +527,6 @@
 
     <dl class="function">
     <dt>
-    <a name = "AddItemToInventory"></a>
-    <strong>AddItemToInventory (name, inventory, slot, itemName, amount[, info])</strong>
-    </dt>
-    <dd>
-    Add an item to the inventory
-
-    </ul>
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">name</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        			The inventory type to add the item to
-        </li>
-        <li><span class="parameter">inventory</span>
-            <span class="types"><a class="type" href="../modules/server.html#Inventories">Inventories[][]</a></span>
-        		The inventory array to add the item to
-        </li>
-        <li><span class="parameter">slot</span>
-            <span class="types"><span class="type">int</span></span>
-        			The slot to add the item to
-        </li>
-        <li><span class="parameter">itemName</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        		The item name
-        </li>
-        <li><span class="parameter">amount</span>
-            <span class="types"><span class="type">int</span></span>
-        			The amount of the item to add
-        </li>
-        <li><span class="parameter">info</span>
-            <span class="types"><span class="type">Item.info</span></span>
-        	The item specific infos
-         (<em>optional</em>)
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><span class="type">bool</span></span>
-        True if the item was added, false if not
-    </ol>
-
-
-
-
-</dd>
-    <dt>
     <a name = "ChargePlayer"></a>
     <strong>ChargePlayer (src, id, itemData, amount)</strong>
     </dt>
@@ -655,52 +560,6 @@
 
            <span class="types"><span class="type">boolean</span></span>
         True if the player has enough money
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "FetchItemsFromDatabase"></a>
-    <strong>FetchItemsFromDatabase (table, itemsColumn, columnCondition, conditionValue)</strong>
-    </dt>
-    <dd>
-    Fetch items from the database
-
-    </ul>
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">table</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        				The database table name
-        </li>
-        <li><span class="parameter">itemsColumn</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        		The database table column name for items
-        </li>
-        <li><span class="parameter">columnCondition</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        	The database table column name for condition
-        </li>
-        <li><span class="parameter">conditionValue</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        	The condition value
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span>
-        The fetched items
-    </ol>
-     <h3>Or</h3>
-    <ol>
-
-           <span class="types"><span class="type">bool</span></span>
-        False if the database returns nothing
     </ol>
 
 
@@ -799,75 +658,6 @@
 
 </dd>
     <dt>
-    <a name = "GetMaxWeightsForInventory"></a>
-    <strong>GetMaxWeightsForInventory (name[, other])</strong>
-    </dt>
-    <dd>
-    Get the inventory max weight for specified player
-
-    </ul>
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">name</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        						The inventory type
-        </li>
-        <li><span class="parameter">other</span>
-            <span class="types"><a class="type" href="../modules/server.html#Inventories">Inventories[][]</a></span>
-        		The opened inventory array
-         (<em>optional</em>)
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><span class="type">number</span></span>
-        The inventory max weight
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "GetSlotsForInventory"></a>
-    <strong>GetSlotsForInventory (name, other, player)</strong>
-    </dt>
-    <dd>
-    Get the inventory slots number for specified player
-
-    </ul>
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">name</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        					The inventory type
-        </li>
-        <li><span class="parameter">other</span>
-            <span class="types"><a class="type" href="../modules/server.html#Inventories">Inventories[][]</a></span>
-        		The opened inventory array
-        </li>
-        <li><span class="parameter">player</span>
-            <span class="types"><span class="type">Player</span></span>
-        				The player who opened the inventory
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><span class="type">number</span></span>
-        The max number of slots
-    </ol>
-
-
-
-
-</dd>
-    <dt>
     <a name = "HandleCraftEvent"></a>
     <strong>HandleCraftEvent (craftType, itemName, itemCosts, amount, toSlot, points)</strong>
     </dt>
@@ -915,334 +705,6 @@
 
 
 </dd>
-    <dt>
-    <a name = "IsInventoryDropAllowed"></a>
-    <strong>IsInventoryDropAllowed (name)</strong>
-    </dt>
-    <dd>
-    Is the inventory allow items to be dropped in?
-
-    </ul>
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">name</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        		The inventory type (Config.InventoriesType)
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><span class="type">bool</span></span>
-
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "IsInventoryIsInaccessible"></a>
-    <strong>IsInventoryIsInaccessible (name, id, Player)</strong>
-    </dt>
-    <dd>
-    Every condition related to a forbiden access to an inventory
-
-    </ul>
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">name</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-         			The inventory type
-        </li>
-        <li><span class="parameter">id</span>
-            <span class="types"><span class="type">number</span></span>
-         			Id of the inventory
-        </li>
-        <li><span class="parameter">Player</span>
-            <span class="types"><span class="type">Player</span></span>
-         		The player QBCore Player Object from source
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><span class="type">bool</span></span>
-        True if the player can't access the inventory
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "IsInventoryPlayerType"></a>
-    <strong>IsInventoryPlayerType (name)</strong>
-    </dt>
-    <dd>
-    Is the specified inventory a any player type?
-
-    </ul>
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">name</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        			The inventory type
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><span class="type">bool</span></span>
-        Is the inventory a player type?
-    </ol>
-
-
-    <h3>See also:</h3>
-    <ul>
-         <a href="../modules/server.html#IsPlayerInventory">IsPlayerInventory</a>
-    </ul>
-
-
-</dd>
-    <dt>
-    <a name = "IsInventoryUsed"></a>
-    <strong>IsInventoryUsed (inventory, name, id, source)</strong>
-    </dt>
-    <dd>
-    Is the inventory opened
-
-    </ul>
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">inventory</span>
-            <span class="types"><a class="type" href="../modules/server.html#Inventories">Inventories[][]</a></span>
-         		the array type (from Inventory variable)
-        </li>
-        <li><span class="parameter">name</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-         					the inventory type
-        </li>
-        <li><span class="parameter">id</span>
-            <span class="types"><span class="type">number</span></span>
-         					id of the inventory
-        </li>
-        <li><span class="parameter">source</span>
-            <span class="types"><span class="type">number</span></span>
-         				the player source id
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><span class="type">bool</span></span>
-        True if the inventory is opened by another player
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "IsPlayerInventory"></a>
-    <strong>IsPlayerInventory (name)</strong>
-    </dt>
-    <dd>
-    Is the specified inventory a source player type?
-
-    </ul>
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">name</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        		The inventory type
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><span class="type">bool</span></span>
-        Is the inventory a source player type?
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "IsValidInventoryType"></a>
-    <strong>IsValidInventoryType (name)</strong>
-    </dt>
-    <dd>
-    Is the given name is specified in the config
-
-    </ul>
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">name</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        		The inventory type
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><span class="type">bool</span></span>
-
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "IsVehicleOwned"></a>
-    <strong>IsVehicleOwned (plate)</strong>
-    </dt>
-    <dd>
-    Is the vehicle plate is owned by someone
-
-    </ul>
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">plate</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        		The vehicle plate
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><span class="type">bool</span></span>
-
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "RemoveItemFromInventory"></a>
-    <strong>RemoveItemFromInventory (inventory, slot, itemName, amount)</strong>
-    </dt>
-    <dd>
-    Remove an item from the inventory
-
-    </ul>
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">inventory</span>
-            <span class="types"><a class="type" href="../modules/server.html#Inventories">Inventories[][]</a></span>
-        		The inventory array to remove the item from
-        </li>
-        <li><span class="parameter">slot</span>
-            <span class="types"><span class="type">number</span></span>
-        						The slot to remove the item from
-        </li>
-        <li><span class="parameter">itemName</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        					The item name
-        </li>
-        <li><span class="parameter">amount</span>
-            <span class="types"><span class="type">number</span></span>
-        					The amount of the item to remove
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><span class="type">bool</span></span>
-        True if the item was removed, false if not
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "SaveDatabaseInventories"></a>
-    <strong>SaveDatabaseInventories (name, id, inventory, columnName)</strong>
-    </dt>
-    <dd>
-    Save inventories in the specified table of the database
-
-    </ul>
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">name</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        					The inventory type
-        </li>
-        <li><span class="parameter">id</span>
-            <span class="types"><span class="type">number</span></span>
-        					The inventory id
-        </li>
-        <li><span class="parameter">inventory</span>
-            <span class="types"><a class="type" href="../modules/server.html#Inventories">Inventories[][]</a></span>
-        	The opened inventory array
-        </li>
-        <li><span class="parameter">columnName</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        			The column name in the database
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><span class="type">bool</span></span>
-        True if the inventory is saved
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "isValidNumber"></a>
-    <strong>isValidNumber (nb)</strong>
-    </dt>
-    <dd>
-    Is the given number an unsigned integer?
-
-    </ul>
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">nb</span>
-            <span class="types"><span class="type">number</span></span>
-        	The number to check
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><span class="type">bool</span></span>
-        True if the number is an unsigned integer
-    </ol>
-
-
-
-
-</dd>
 </dl>
 
 
@@ -1250,7 +712,7 @@
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
-<i style="float:right;">Last updated 2022-04-15 20:11:28 </i>
+<i style="float:right;">Last updated 2022-04-16 12:39:38 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>
