@@ -397,6 +397,16 @@ body {
 	height: 23vh;
 }
 
+.iteminfo-content {
+    width: fit-content;
+    float: right;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgb(68 68 68 / 40%);
+    border-radius: 15px;
+    padding-block: 5px;
+    padding-inline: 10px;
+}
+
 .item-info-title {
 	text-transform: uppercase;
 	font-weight: 900;
