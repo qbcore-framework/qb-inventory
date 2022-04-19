@@ -33,14 +33,16 @@ $(document).on("dblclick", ".item-slot", function(e) {
     var ItemData = $(this).data("item");
     var ItemInventory = $(this).parent().attr("data-inventory");
     if (ItemData) {
-        Inventory.Close();
-        $.post(
-            "https://qb-inventory/UseItem",
-            JSON.stringify({
-                inventory: ItemInventory,
-                item: ItemData,
-            })
-        );
+	if (ItemData.useable) {
+        	Inventory.Close();
+        	$.post(
+            	"https://qb-inventory/UseItem",
+            	JSON.stringify({
+                	inventory: ItemInventory,
+                	item: ItemData,
+            		})
+        	);
+	}
     }
 });
 
