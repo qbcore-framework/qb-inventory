@@ -56,18 +56,28 @@ local function GetClosestVending()
     local pos = GetEntityCoords(ped)
     local object = nil
     local type = nil
+    local label = nil
         for vending, _ in pairs(Config.VendingMachines) do
             if object == nil then
                 object = FindObjectFromRayCast(5.0)
                 model = GetEntityModel(object)
                 if model == GetHashKey(Config.VendingMachines[vending]['model']) then
                     type = Config.VendingMachines[vending]['type']
+                    label = Config.VendingMachines[vending]['label']
                 else
                     object = nil
                 end
             end
         end
-    return object, type
+    return object, type, label
+end
+
+local function OpenVending(type, label)
+    local ShopItems = {}
+    ShopItems.label = label
+    ShopItems.items = Config.VendingItems[type]
+    ShopItems.slots = #Config.VendingItems[type]
+    TriggerServerEvent("inventory:server:OpenInventory", "shop", "Vendingmachine_"..math.random(1, 99), ShopItems)
 end
 
 local function DrawText3Ds(x, y, z, text)
@@ -287,6 +297,10 @@ end)
 RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
     LocalPlayer.state:set("inv_busy", true, true)
     PlayerData = {}
+end)
+
+RegisterNetEvent('QBCore:Client:UpdateObject', function()
+	QBCore = exports['qb-core']:GetCoreObject()
 end)
 
 RegisterNetEvent('QBCore:Player:SetPlayerData', function(val)
@@ -557,133 +571,115 @@ end, false)
 
 RegisterCommand('inventory', function()
     if not isCrafting and not inInventory then
-	QBCore.Functions.GetPlayerData(function(PlayerData)
-		if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() then
-		    local ped = PlayerPedId()
-		    local curVeh = nil
-		    local VendingMachine, VendingType = GetClosestVending()
+        if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() then
+            local ped = PlayerPedId()
+            local curVeh = nil
+            if not Config.UseTarget then VendingMachine, VendingType, VendingLabel = GetClosestVending() end
 
-		    if IsPedInAnyVehicle(ped) then -- Is Player In Vehicle
-			local vehicle = GetVehiclePedIsIn(ped, false)
-			CurrentGlovebox = QBCore.Functions.GetPlate(vehicle)
-			curVeh = vehicle
-			CurrentVehicle = nil
-		    else
-			local vehicle = QBCore.Functions.GetClosestVehicle()
-			if vehicle ~= 0 and vehicle ~= nil then
-			    local pos = GetEntityCoords(ped)
-			    local trunkpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, -2.5, 0)
-			    if (IsBackEngine(GetEntityModel(vehicle))) then
-				trunkpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, 2.5, 0)
-			    end
-			    if #(pos - trunkpos) < 2.0 and not IsPedInAnyVehicle(ped) then
-				if GetVehicleDoorLockStatus(vehicle) < 2 then
-				    CurrentVehicle = QBCore.Functions.GetPlate(vehicle)
-				    curVeh = vehicle
-				    CurrentGlovebox = nil
-				else
-				    QBCore.Functions.Notify("Vehicle Locked", "error")
-				    return
-				end
-			    else
-				CurrentVehicle = nil
-			    end
-			else
-			    CurrentVehicle = nil
-			end
-		    end
-		    if CurrentVehicle then -- Trunk
-			local vehicleClass = GetVehicleClass(curVeh)
-			local maxweight = 0
-			local slots = 0
-			if vehicleClass == 0 then
-			    maxweight = 38000
-			    slots = 30
-			elseif vehicleClass == 1 then
-			    maxweight = 50000
-			    slots = 40
-			elseif vehicleClass == 2 then
-			    maxweight = 75000
-			    slots = 50
-			elseif vehicleClass == 3 then
-			    maxweight = 42000
-			    slots = 35
-			elseif vehicleClass == 4 then
-			    maxweight = 38000
-			    slots = 30
-			elseif vehicleClass == 5 then
-			    maxweight = 30000
-			    slots = 25
-			elseif vehicleClass == 6 then
-			    maxweight = 30000
-			    slots = 25
-			elseif vehicleClass == 7 then
-			    maxweight = 30000
-			    slots = 25
-			elseif vehicleClass == 8 then
-			    maxweight = 15000
-			    slots = 15
-			elseif vehicleClass == 9 then
-			    maxweight = 60000
-			    slots = 35
-			elseif vehicleClass == 12 then
-			    maxweight = 120000
-			    slots = 35
-			elseif vehicleClass == 13 then
-			    maxweight = 0
-			    slots = 0
-			elseif vehicleClass == 14 then
-			    maxweight = 120000
-			    slots = 50
-			elseif vehicleClass == 15 then
-			    maxweight = 120000
-			    slots = 50
-			elseif vehicleClass == 16 then
-			    maxweight = 120000
-			    slots = 50
-			else
-			    maxweight = 60000
-			    slots = 35
-			end
-			local other = {
-			    maxweight = maxweight,
-			    slots = slots,
-			}
-			TriggerServerEvent("inventory:server:OpenInventory", "trunk", CurrentVehicle, other)
-			OpenTrunk()
-		    elseif CurrentGlovebox then
-			TriggerServerEvent("inventory:server:OpenInventory", "glovebox", CurrentGlovebox)
-		    elseif CurrentDrop then
-			TriggerServerEvent("inventory:server:OpenInventory", "drop", CurrentDrop)
-		    elseif VendingMachine ~= nil then
-			    local ShopItems = {}
-			    if VendingType == "coffee" then
-				ShopItems.label = "Coffee Machine"
-				ShopItems.items = Config.CoffeeItem
-				ShopItems.slots = #Config.CoffeeItem
-				TriggerServerEvent("inventory:server:OpenInventory", "shop", "Coffeemachine_"..math.random(1, 99), ShopItems)
-			    elseif VendingType == "water" then
-				ShopItems.label = "Water Dispenser"
-				ShopItems.items = Config.WaterItem
-				ShopItems.slots = #Config.WaterItem
-				TriggerServerEvent("inventory:server:OpenInventory", "shop", "Waterdispenser_"..math.random(1, 99), ShopItems)
-			    elseif VendingType == "snack" then
-				ShopItems.label = "Snack Machine"
-				ShopItems.items = Config.SnackItem
-				ShopItems.slots = #Config.SnackItem
-				TriggerServerEvent("inventory:server:OpenInventory", "shop", "Snackmachine_"..math.random(1, 99), ShopItems)
-			    elseif VendingType == "soda" then
-				ShopItems.label = "Soda Machine"
-				ShopItems.items = Config.SodaItem
-				ShopItems.slots = #Config.SodaItem
-				TriggerServerEvent("inventory:server:OpenInventory", "shop", "Sodamachine_"..math.random(1, 99), ShopItems)
-					end
-		    else
-			openAnim()
-			TriggerServerEvent("inventory:server:OpenInventory")
-		    end
-		end
-	end)
+            if IsPedInAnyVehicle(ped) then -- Is Player In Vehicle
+                local vehicle = GetVehiclePedIsIn(ped, false)
+                CurrentGlovebox = QBCore.Functions.GetPlate(vehicle)
+                curVeh = vehicle
+                CurrentVehicle = nil
+            else
+                local vehicle = QBCore.Functions.GetClosestVehicle()
+                if vehicle ~= 0 and vehicle ~= nil then
+                    local pos = GetEntityCoords(ped)
+                    local trunkpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, -2.5, 0)
+                    if (IsBackEngine(GetEntityModel(vehicle))) then
+                        trunkpos = GetOffsetFromEntityInWorldCoords(vehicle, 0, 2.5, 0)
+                    end
+                    if #(pos - trunkpos) < 2.0 and not IsPedInAnyVehicle(ped) then
+                        if GetVehicleDoorLockStatus(vehicle) < 2 then
+                            CurrentVehicle = QBCore.Functions.GetPlate(vehicle)
+                            curVeh = vehicle
+                            CurrentGlovebox = nil
+                        else
+                            QBCore.Functions.Notify("Vehicle Locked", "error")
+                            return
+                        end
+                    else
+                        CurrentVehicle = nil
+                    end
+                else
+                    CurrentVehicle = nil
+                end
+            end
+
+            if CurrentVehicle then -- Trunk
+                local vehicleClass = GetVehicleClass(curVeh)
+                local maxweight = 0
+                local slots = 0
+                if vehicleClass == 0 then
+                    maxweight = 38000
+                    slots = 30
+                elseif vehicleClass == 1 then
+                    maxweight = 50000
+                    slots = 40
+                elseif vehicleClass == 2 then
+                    maxweight = 75000
+                    slots = 50
+                elseif vehicleClass == 3 then
+                    maxweight = 42000
+                    slots = 35
+                elseif vehicleClass == 4 then
+                    maxweight = 38000
+                    slots = 30
+                elseif vehicleClass == 5 then
+                    maxweight = 30000
+                    slots = 25
+                elseif vehicleClass == 6 then
+                    maxweight = 30000
+                    slots = 25
+                elseif vehicleClass == 7 then
+                    maxweight = 30000
+                    slots = 25
+                elseif vehicleClass == 8 then
+                    maxweight = 15000
+                    slots = 15
+                elseif vehicleClass == 9 then
+                    maxweight = 60000
+                    slots = 35
+                elseif vehicleClass == 12 then
+                    maxweight = 120000
+                    slots = 35
+                elseif vehicleClass == 13 then
+                    maxweight = 0
+                    slots = 0
+                elseif vehicleClass == 14 then
+                    maxweight = 120000
+                    slots = 50
+                elseif vehicleClass == 15 then
+                    maxweight = 120000
+                    slots = 50
+                elseif vehicleClass == 16 then
+                    maxweight = 120000
+                    slots = 50
+                else
+                    maxweight = 60000
+                    slots = 35
+                end
+                local other = {
+                    maxweight = maxweight,
+                    slots = slots,
+                }
+                TriggerServerEvent("inventory:server:OpenInventory", "trunk", CurrentVehicle, other)
+                OpenTrunk()
+            elseif CurrentGlovebox then
+                TriggerServerEvent("inventory:server:OpenInventory", "glovebox", CurrentGlovebox)
+            elseif CurrentDrop then
+                TriggerServerEvent("inventory:server:OpenInventory", "drop", CurrentDrop)
+            elseif VendingMachine then
+                local ShopItems = {}
+                ShopItems.label = VendingLabel
+                ShopItems.items = Config.VendingItems[VendingType]
+                ShopItems.slots = #Config.VendingItems[VendingType]
+                TriggerServerEvent("inventory:server:OpenInventory", "shop", "Vendingmachine_"..math.random(1, 99), ShopItems)
+            else
+                openAnim()
+                TriggerServerEvent("inventory:server:OpenInventory")
+            end
+        end
     end
 end)
 
@@ -713,6 +709,13 @@ end
 RegisterNetEvent('qb-inventory:client:giveAnim', function()
     LoadAnimDict('mp_common')
 	TaskPlayAnim(PlayerPedId(), 'mp_common', 'givetake1_b', 8.0, 1.0, -1, 16, 0, 0, 0, 0)
+end)
+
+RegisterNetEvent('inventory:client:craftTarget',function(data)
+    local crafting = {}
+    crafting.label = "Crafting"
+    crafting.items = GetThresholdItems()
+    TriggerServerEvent("inventory:server:OpenInventory", "crafting", math.random(1, 99), crafting)
 end)
 
 -- NUI
@@ -905,27 +908,60 @@ CreateThread(function()
 end)
 
 CreateThread(function()
-    while true do
-        local sleep = 1000
-        if LocalPlayer.state['isLoggedIn'] then
-            local pos = GetEntityCoords(PlayerPedId())
-            local craftObject = GetClosestObjectOfType(pos, 2.0, Config.CraftingObject, false, false, false)
-            if craftObject ~= 0 then
-                local objectPos = GetEntityCoords(craftObject)
-                if #(pos - objectPos) < 1.5 then
-                    sleep = 0
-                    DrawText3Ds(objectPos.x, objectPos.y, objectPos.z + 1.0, "~g~E~w~ - Craft")
-                    if IsControlJustReleased(0, 38) then
-                        local crafting = {}
-                        crafting.label = "Crafting"
-                        crafting.items = GetThresholdItems()
-                        TriggerServerEvent("inventory:server:OpenInventory", "crafting", math.random(1, 99), crafting)
-                        sleep = 100
+    if Config.UseTarget then
+        for vending, _ in pairs(Config.VendingMachines) do
+            exports['qb-target']:AddTargetModel(Config.VendingMachines[vending], {
+            options = {
+                {
+                    icon = "fa-solid fa-cash-register",
+                    label = Config.VendingMachines[vending]['label'],
+                    action = function()
+                        OpenVending(Config.VendingMachines[vending]['type'], label)
+                    end
+                },
+            },
+            distance = 2.5
+        })
+        end
+        
+    end
+end)
+
+CreateThread(function()
+    if Config.UseTarget then
+        exports['qb-target']:AddTargetModel(Config.CraftingObject, {
+            options = {
+                {
+                    event = "inventory:client:craftTarget",
+                    icon = "fas fa-tools",
+                    label = "Craft",
+                },
+            },
+            distance = 2.5,
+        })
+    else
+        while true do
+            local sleep = 1000
+            if LocalPlayer.state['isLoggedIn'] then
+                local pos = GetEntityCoords(PlayerPedId())
+                local craftObject = GetClosestObjectOfType(pos, 2.0, Config.CraftingObject, false, false, false)
+                if craftObject ~= 0 then
+                    local objectPos = GetEntityCoords(craftObject)
+                    if #(pos - objectPos) < 1.5 then
+                        sleep = 0
+                        DrawText3Ds(objectPos.x, objectPos.y, objectPos.z + 1.0, "~g~E~w~ - Craft")
+                        if IsControlJustReleased(0, 38) then
+                            local crafting = {}
+                            crafting.label = "Crafting"
+                            crafting.items = GetThresholdItems()
+                            TriggerServerEvent("inventory:server:OpenInventory", "crafting", math.random(1, 99), crafting)
+                            sleep = 100
+                        end
                     end
                 end
             end
+            Wait(sleep)
         end
-        Wait(sleep)
     end
 end)
 
@@ -938,7 +974,7 @@ CreateThread(function()
             if distance < 10 then
                 if distance < 1.5 then
                     sleep = 0
-                    DrawText3Ds(Config.AttachmentCraftingLocation, "~g~E~w~ - Craft")
+                    DrawText3Ds(Config.AttachmentCraftingLocation.x, Config.AttachmentCraftingLocation.y, Config.AttachmentCraftingLocation.z, "~g~E~w~ - Craft")
                     if IsControlJustPressed(0, 38) then
                         local crafting = {}
                         crafting.label = "Attachment Crafting"
