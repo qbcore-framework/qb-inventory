@@ -916,7 +916,7 @@ CreateThread(function()
                     icon = "fa-solid fa-cash-register",
                     label = Config.VendingMachines[vending]['label'],
                     action = function()
-                        OpenVending(Config.VendingMachines[vending]['type'], label)
+                        OpenVending(Config.VendingMachines[vending]['type'], Config.VendingMachines[vending]['label'])
                     end
                 },
             },
