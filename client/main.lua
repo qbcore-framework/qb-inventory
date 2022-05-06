@@ -175,7 +175,7 @@ local function ItemsToItemInfo()
 
 		-- enhanced
 		item.info = craftingInfo(item)
-		items[item.slot] = Inv.item.format(item.name, item.slot, item.amount, item.info, nil, nil, item.costs, item.threshold, item.points)
+		items[item.slot] = Inventory.Functions.formatItem(item.name, item.slot, item.amount, item.info, nil, nil, item.costs, item.threshold, item.points)
 
 	end
 
@@ -192,7 +192,7 @@ local function SetupAttachmentItemsInfo()
 
 		-- enhanced
 		item.info = craftingInfo(item)
-		items[item.slot] = Inv.item.format(item.name, item.slot, item.amount, item.info, nil, nil, item.costs, item.threshold, item.points)
+		items[item.slot] = Inventory.Functions.formatItem(item.name, item.slot, item.amount, item.info, nil, nil, item.costs, item.threshold, item.points)
 
 	end
 
