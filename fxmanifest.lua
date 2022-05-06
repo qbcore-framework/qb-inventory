@@ -5,8 +5,10 @@ description 'QB-Inventory'
 version '1.0.0'
 
 shared_scripts {
-	'config.lua',
-	'@qb-weapons/config.lua'
+	'shared/config.lua',
+	'@qb-weapons/config.lua',
+	'@qb-core/shared/items.lua',
+	'shared/main.lua'
 }
 
 server_scripts {
