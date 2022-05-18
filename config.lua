@@ -72,7 +72,7 @@ Config.VendingItems = {
           info = {},
           type = "item",
           slot = 1,
-      } 
+      }
     },
     ['water'] = {
       [1] = {
