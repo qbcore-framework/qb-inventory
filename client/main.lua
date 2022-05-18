@@ -46,18 +46,18 @@ local function FindObjectFromRayCast(distance)
 		y = cameraCoord.y + direction.y * distance,
 		z = cameraCoord.z + direction.z * distance
 	}
-	local a, b, c, d, e = GetShapeTestResult(StartShapeTestRay(cameraCoord.x, cameraCoord.y, cameraCoord.z, destination.x, destination.y, destination.z, -1, PlayerPedId(), 0))
+	local _, _, _, _, e = GetShapeTestResult(StartShapeTestRay(cameraCoord.x, cameraCoord.y, cameraCoord.z, destination.x, destination.y, destination.z, -1, PlayerPedId(), 0))
     if IsEntityAnObject(e) then
-    	return e
+	return e
     end
 end
 
 local function GetClosestVending()
     local ped = PlayerPedId()
-    local pos = GetEntityCoords(ped)
     local object = nil
     local type = nil
     local label = nil
+    local model = nil
         for vending, _ in pairs(Config.VendingMachines) do
             if object == nil then
                 object = FindObjectFromRayCast(5.0)
