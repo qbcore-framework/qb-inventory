@@ -53,11 +53,10 @@ local function FindObjectFromRayCast(distance)
 end
 
 local function GetClosestVending()
-    local ped = PlayerPedId()
     local object = nil
     local type = nil
     local label = nil
-    local model = nil
+    local model
         for vending, _ in pairs(Config.VendingMachines) do
             if object == nil then
                 object = FindObjectFromRayCast(5.0)
