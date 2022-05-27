@@ -461,10 +461,13 @@ RegisterNetEvent('inventory:client:UseWeapon', function(weaponData, shootbool)
         currentWeapon = weaponName
     else
         TriggerEvent('weapons:client:SetCurrentWeapon', weaponData, shootbool)
-        QBCore.Functions.TriggerCallback("weapon:server:GetWeaponAmmo", function(result)
+        QBCore.Functions.TriggerCallback("weapon:server:GetWeaponAmmo", function(result, name)
             local ammo = tonumber(result)
             if weaponName == "weapon_petrolcan" or weaponName == "weapon_fireextinguisher" then
                 ammo = 4000
+            end
+	    if name ~= weaponName then
+                ammo = 0
             end
             GiveWeaponToPed(ped, GetHashKey(weaponName), 0, false, false)
             SetPedAmmo(ped, GetHashKey(weaponName), ammo)
