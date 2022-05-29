@@ -39,7 +39,7 @@ local function hasCraftItems(source, CostItems, amount)
 end
 
 local function IsVehicleOwned(plate)
-    local result = MySQL.Sync.fetchScalar('SELECT 1 from player_vehicles WHERE plate = ?', {plate})
+    local result = MySQL.scalar.await('SELECT 1 from player_vehicles WHERE plate = ?', {plate})
     if result then return true else return false end
 end
 
@@ -73,7 +73,7 @@ end
 -- Stash Items
 local function GetStashItems(stashId)
 	local items = {}
-	local result = MySQL.Sync.fetchScalar('SELECT items FROM stashitems WHERE stash = ?', {stashId})
+	local result = MySQL.scalar.await('SELECT items FROM stashitems WHERE stash = ?', {stashId})
 	if result then
 		local stashItems = json.decode(result)
 		if stashItems then
@@ -106,7 +106,7 @@ local function SaveStashItems(stashId, items)
 			for _, item in pairs(items) do
 				item.description = nil
 			end
-			MySQL.Async.insert('INSERT INTO stashitems (stash, items) VALUES (:stash, :items) ON DUPLICATE KEY UPDATE items = :items', {
+			MySQL.insert('INSERT INTO stashitems (stash, items) VALUES (:stash, :items) ON DUPLICATE KEY UPDATE items = :items', {
 				['stash'] = stashId,
 				['items'] = json.encode(items)
 			})
@@ -194,7 +194,7 @@ end
 -- Trunk items
 local function GetOwnedVehicleItems(plate)
 	local items = {}
-	local result = MySQL.Sync.fetchScalar('SELECT items FROM trunkitems WHERE plate = ?', {plate})
+	local result = MySQL.scalar.await('SELECT items FROM trunkitems WHERE plate = ?', {plate})
 	if result then
 		local trunkItems = json.decode(result)
 		if trunkItems then
@@ -227,7 +227,7 @@ local function SaveOwnedVehicleItems(plate, items)
 			for _, item in pairs(items) do
 				item.description = nil
 			end
-			MySQL.Async.insert('INSERT INTO trunkitems (plate, items) VALUES (:plate, :items) ON DUPLICATE KEY UPDATE items = :items', {
+			MySQL.insert('INSERT INTO trunkitems (plate, items) VALUES (:plate, :items) ON DUPLICATE KEY UPDATE items = :items', {
 				['plate'] = plate,
 				['items'] = json.encode(items)
 			})
@@ -315,7 +315,7 @@ end
 -- Glovebox items
 local function GetOwnedVehicleGloveboxItems(plate)
 	local items = {}
-	local result = MySQL.Sync.fetchScalar('SELECT items FROM gloveboxitems WHERE plate = ?', {plate})
+	local result = MySQL.scalar.await('SELECT items FROM gloveboxitems WHERE plate = ?', {plate})
 	if result then
 		local gloveboxItems = json.decode(result)
 		if gloveboxItems then
@@ -348,7 +348,7 @@ local function SaveOwnedGloveboxItems(plate, items)
 			for _, item in pairs(items) do
 				item.description = nil
 			end
-			MySQL.Async.insert('INSERT INTO gloveboxitems (plate, items) VALUES (:plate, :items) ON DUPLICATE KEY UPDATE items = :items', {
+			MySQL.insert('INSERT INTO gloveboxitems (plate, items) VALUES (:plate, :items) ON DUPLICATE KEY UPDATE items = :items', {
 				['plate'] = plate,
 				['items'] = json.encode(items)
 			})
@@ -1391,7 +1391,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 end)
 
 RegisterNetEvent('qb-inventory:server:SaveStashItems', function(stashId, items)
-    MySQL.Async.insert('INSERT INTO stashitems (stash, items) VALUES (:stash, :items) ON DUPLICATE KEY UPDATE items = :items', {
+    MySQL.insert('INSERT INTO stashitems (stash, items) VALUES (:stash, :items) ON DUPLICATE KEY UPDATE items = :items', {
         ['stash'] = stashId,
         ['items'] = json.encode(items)
     })
