@@ -15,6 +15,7 @@ local CurrentStash = nil
 local isCrafting = false
 local isHotbar = false
 local itemInfos = {}
+local WeaponAttachments = {}
 
 -- Functions
 
@@ -60,11 +61,11 @@ local function FormatWeaponAttachments(itemdata)
     local attachments = {}
     itemdata.name = itemdata.name:upper()
     if itemdata.info.attachments ~= nil and next(itemdata.info.attachments) ~= nil then
-        for k, v in pairs(itemdata.info.attachments) do
+        for _, v in pairs(itemdata.info.attachments) do
             if WeaponAttachments[itemdata.name] ~= nil then
                 for key, value in pairs(WeaponAttachments[itemdata.name]) do
                     if value.component == v.component then
-                        item = value.item
+                        local item = value.item
                         attachments[#attachments+1] = {
                             attachment = key,
                             label = QBCore.Shared.Items[item].label
@@ -170,7 +171,7 @@ local function ItemsToItemInfo()
 	}
 
 	local items = {}
-	for k, item in pairs(Config.CraftingItems) do
+	for _, item in pairs(Config.CraftingItems) do
 		local itemInfo = QBCore.Shared.Items[item.name:lower()]
 		items[item.slot] = {
 			name = itemInfo["name"],
@@ -205,7 +206,7 @@ local function SetupAttachmentItemsInfo()
 	}
 
 	local items = {}
-	for k, item in pairs(Config.AttachmentCrafting["items"]) do
+	for _, item in pairs(Config.AttachmentCrafting["items"]) do
 		local itemInfo = QBCore.Shared.Items[item.name:lower()]
 		items[item.slot] = {
 			name = itemInfo["name"],
@@ -229,7 +230,7 @@ end
 local function GetThresholdItems()
 	ItemsToItemInfo()
 	local items = {}
-	for k, item in pairs(Config.CraftingItems) do
+	for k, _ in pairs(Config.CraftingItems) do
 		if PlayerData.metadata["craftingrep"] >= Config.CraftingItems[k].threshold then
 			items[k] = Config.CraftingItems[k]
 		end
@@ -240,7 +241,7 @@ end
 local function GetAttachmentThresholdItems()
 	SetupAttachmentItemsInfo()
 	local items = {}
-	for k, item in pairs(Config.AttachmentCrafting["items"]) do
+	for k, _ in pairs(Config.AttachmentCrafting["items"]) do
 		if PlayerData.metadata["attachmentcraftingrep"] >= Config.AttachmentCrafting["items"][k].threshold then
 			items[k] = Config.AttachmentCrafting["items"][k]
 		end
@@ -289,7 +290,7 @@ RegisterNetEvent('inventory:client:CheckOpenState', function(type, id, label)
     end
 end)
 
-RegisterNetEvent('weapons:client:SetCurrentWeapon', function(data, bool)
+RegisterNetEvent('weapons:client:SetCurrentWeapon', function(data, _)
     CurrentWeaponData = data or {}
 end)
 
@@ -304,7 +305,7 @@ end)
 RegisterNetEvent('inventory:client:requiredItems', function(items, bool)
     local itemTable = {}
     if bool then
-        for k, v in pairs(items) do
+        for k, _ in pairs(items) do
             itemTable[#itemTable+1] = {
                 item = items[k].name,
                 label = QBCore.Shared.Items[items[k].name]["label"],
@@ -460,10 +461,13 @@ RegisterNetEvent('inventory:client:UseWeapon', function(weaponData, shootbool)
         currentWeapon = weaponName
     else
         TriggerEvent('weapons:client:SetCurrentWeapon', weaponData, shootbool)
-        QBCore.Functions.TriggerCallback("weapon:server:GetWeaponAmmo", function(result)
+        QBCore.Functions.TriggerCallback("weapon:server:GetWeaponAmmo", function(result, name)
             local ammo = tonumber(result)
             if weaponName == "weapon_petrolcan" or weaponName == "weapon_fireextinguisher" then
                 ammo = 4000
+            end
+	    if name ~= weaponName then
+                ammo = 0
             end
             GiveWeaponToPed(ped, GetHashKey(weaponName), 0, false, false)
             SetPedAmmo(ped, GetHashKey(weaponName), ammo)
@@ -535,6 +539,7 @@ RegisterCommand('inventory', function()
         if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() then
             local ped = PlayerPedId()
             local curVeh = nil
+            local VendingMachine = nil
             if not Config.UseTarget then VendingMachine = GetClosestVending() end
 
             if IsPedInAnyVehicle(ped) then -- Is Player In Vehicle
@@ -569,8 +574,8 @@ RegisterCommand('inventory', function()
 
             if CurrentVehicle then -- Trunk
                 local vehicleClass = GetVehicleClass(curVeh)
-                local maxweight = 0
-                local slots = 0
+                local maxweight
+                local slots
                 if vehicleClass == 0 then
                     maxweight = 38000
                     slots = 30
@@ -672,7 +677,7 @@ RegisterNetEvent('qb-inventory:client:giveAnim', function()
 	TaskPlayAnim(PlayerPedId(), 'mp_common', 'givetake1_b', 8.0, 1.0, -1, 16, 0, 0, 0, 0)
 end)
 
-RegisterNetEvent('inventory:client:craftTarget',function(data)
+RegisterNetEvent('inventory:client:craftTarget',function()
     local crafting = {}
     crafting.label = "Crafting"
     crafting.items = GetThresholdItems()
@@ -681,18 +686,20 @@ end)
 
 -- NUI
 
-RegisterNUICallback('RobMoney', function(data)
+RegisterNUICallback('RobMoney', function(data, cb)
     TriggerServerEvent("police:server:RobPlayer", data.TargetId)
+    cb('ok')
 end)
 
-RegisterNUICallback('Notify', function(data)
+RegisterNUICallback('Notify', function(data, cb)
     QBCore.Functions.Notify(data.message, data.type)
+    cb('ok')
 end)
 
-RegisterNUICallback('GetWeaponData', function(data, cb)
+RegisterNUICallback('GetWeaponData', function(cData, cb)
     local data = {
-        WeaponData = QBCore.Shared.Items[data.weapon],
-        AttachmentData = FormatWeaponAttachments(data.ItemData)
+        WeaponData = QBCore.Shared.Items[cData.weapon],
+        AttachmentData = FormatWeaponAttachments(cData.ItemData)
     }
     cb(data)
 end)
@@ -700,17 +707,15 @@ end)
 RegisterNUICallback('RemoveAttachment', function(data, cb)
     local ped = PlayerPedId()
     local WeaponData = QBCore.Shared.Items[data.WeaponData.name]
-    local label = QBCore.Shared.Items
     local Attachment = WeaponAttachments[WeaponData.name:upper()][data.AttachmentData.attachment]
-
     QBCore.Functions.TriggerCallback('weapons:server:RemoveAttachment', function(NewAttachments)
         if NewAttachments ~= false then
             local Attachies = {}
             RemoveWeaponComponentFromPed(ped, GetHashKey(data.WeaponData.name), GetHashKey(Attachment.component))
-            for k, v in pairs(NewAttachments) do
-                for wep, pew in pairs(WeaponAttachments[WeaponData.name:upper()]) do
+            for _, v in pairs(NewAttachments) do
+                for _, pew in pairs(WeaponAttachments[WeaponData.name:upper()]) do
                     if v.component == pew.component then
-                        item = pew.item
+                        local item = pew.item
                         Attachies[#Attachies+1] = {
                             attachment = pew.item,
                             label = QBCore.Shared.Items[item].label,
@@ -734,7 +739,7 @@ RegisterNUICallback('getCombineItem', function(data, cb)
     cb(QBCore.Shared.Items[data.item])
 end)
 
-RegisterNUICallback("CloseInventory", function()
+RegisterNUICallback("CloseInventory", function(_, cb)
     if currentOtherInventory == "none-inv" then
         CurrentDrop = nil
         CurrentVehicle = nil
@@ -761,25 +766,27 @@ RegisterNUICallback("CloseInventory", function()
     end
     SetNuiFocus(false, false)
     inInventory = false
+    cb('ok')
 end)
 
-RegisterNUICallback("UseItem", function(data)
+RegisterNUICallback("UseItem", function(data, cb)
     TriggerServerEvent("inventory:server:UseItem", data.inventory, data.item)
+    cb('ok')
 end)
 
-RegisterNUICallback("combineItem", function(data)
+RegisterNUICallback("combineItem", function(data, cb)
     Wait(150)
     TriggerServerEvent('inventory:server:combineItem', data.reward, data.fromItem, data.toItem)
+    cb('ok')
 end)
 
-RegisterNUICallback('combineWithAnim', function(data)
+RegisterNUICallback('combineWithAnim', function(data, cb)
     local ped = PlayerPedId()
     local combineData = data.combineData
     local aDict = combineData.anim.dict
     local aLib = combineData.anim.lib
     local animText = combineData.anim.text
     local animTimeout = combineData.anim.timeOut
-
     QBCore.Functions.Progressbar("combine_anim", animText, animTimeout, false, true, {
         disableMovement = false,
         disableCarMovement = true,
@@ -796,21 +803,25 @@ RegisterNUICallback('combineWithAnim', function(data)
         StopAnimTask(ped, aDict, aLib, 1.0)
         QBCore.Functions.Notify("Failed!", "error")
     end)
+    cb('ok')
 end)
 
-RegisterNUICallback("SetInventoryData", function(data)
+RegisterNUICallback("SetInventoryData", function(data, cb)
     TriggerServerEvent("inventory:server:SetInventoryData", data.fromInventory, data.toInventory, data.fromSlot, data.toSlot, data.fromAmount, data.toAmount)
+    cb('ok')
 end)
 
-RegisterNUICallback("PlayDropSound", function()
+RegisterNUICallback("PlayDropSound", function(_, cb)
     PlaySound(-1, "CLICK_BACK", "WEB_NAVIGATION_SOUNDS_PHONE", 0, 0, 1)
+    cb('ok')
 end)
 
-RegisterNUICallback("PlayDropFail", function()
+RegisterNUICallback("PlayDropFail", function(_, cb)
     PlaySound(-1, "Place_Prop_Fail", "DLC_Dmod_Prop_Editor_Sounds", 0, 0, 1)
+    cb('ok')
 end)
 
-RegisterNUICallback("GiveItem", function(data)
+RegisterNUICallback("GiveItem", function(data, cb)
     local player, distance = QBCore.Functions.GetClosestPlayer(GetEntityCoords(PlayerPedId()))
     if player ~= -1 and distance < 3 then
         if (data.inventory == 'player') then
@@ -823,6 +834,7 @@ RegisterNUICallback("GiveItem", function(data)
     else
         QBCore.Functions.Notify("No one nearby!", "error")
     end
+    cb('ok')
 end)
 
 -- Threads
