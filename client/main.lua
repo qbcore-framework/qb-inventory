@@ -499,10 +499,13 @@ RegisterNetEvent('inventory:client:UseWeapon', function(weaponData, shootbool)
         currentWeapon = weaponName
     else
         TriggerEvent('weapons:client:SetCurrentWeapon', weaponData, shootbool)
-        QBCore.Functions.TriggerCallback("weapon:server:GetWeaponAmmo", function(result)
+        QBCore.Functions.TriggerCallback("weapon:server:GetWeaponAmmo", function(result, name)
             local ammo = tonumber(result)
             if weaponName == "weapon_petrolcan" or weaponName == "weapon_fireextinguisher" then
                 ammo = 4000
+            end
+	    if name ~= weaponName then
+                ammo = 0
             end
             GiveWeaponToPed(ped, GetHashKey(weaponName), 0, false, false)
             SetPedAmmo(ped, GetHashKey(weaponName), ammo)
@@ -722,12 +725,14 @@ end)
 
 -- NUI
 
-RegisterNUICallback('RobMoney', function(data)
+RegisterNUICallback('RobMoney', function(data, cb)
     TriggerServerEvent("police:server:RobPlayer", data.TargetId)
+    cb('ok')
 end)
 
-RegisterNUICallback('Notify', function(data)
+RegisterNUICallback('Notify', function(data, cb)
     QBCore.Functions.Notify(data.message, data.type)
+    cb('ok')
 end)
 
 RegisterNUICallback('GetWeaponData', function(cData, cb)
@@ -742,7 +747,6 @@ RegisterNUICallback('RemoveAttachment', function(data, cb)
     local ped = PlayerPedId()
     local WeaponData = QBCore.Shared.Items[data.WeaponData.name]
     local Attachment = WeaponAttachments[WeaponData.name:upper()][data.AttachmentData.attachment]
-
     QBCore.Functions.TriggerCallback('weapons:server:RemoveAttachment', function(NewAttachments)
         if NewAttachments ~= false then
             local Attachies = {}
@@ -774,7 +778,7 @@ RegisterNUICallback('getCombineItem', function(data, cb)
     cb(QBCore.Shared.Items[data.item])
 end)
 
-RegisterNUICallback("CloseInventory", function()
+RegisterNUICallback("CloseInventory", function(_, cb)
     if currentOtherInventory == "none-inv" then
         CurrentDrop = nil
         CurrentVehicle = nil
@@ -801,25 +805,27 @@ RegisterNUICallback("CloseInventory", function()
     end
     SetNuiFocus(false, false)
     inInventory = false
+    cb('ok')
 end)
 
-RegisterNUICallback("UseItem", function(data)
+RegisterNUICallback("UseItem", function(data, cb)
     TriggerServerEvent("inventory:server:UseItem", data.inventory, data.item)
+    cb('ok')
 end)
 
-RegisterNUICallback("combineItem", function(data)
+RegisterNUICallback("combineItem", function(data, cb)
     Wait(150)
     TriggerServerEvent('inventory:server:combineItem', data.reward, data.fromItem, data.toItem)
+    cb('ok')
 end)
 
-RegisterNUICallback('combineWithAnim', function(data)
+RegisterNUICallback('combineWithAnim', function(data, cb)
     local ped = PlayerPedId()
     local combineData = data.combineData
     local aDict = combineData.anim.dict
     local aLib = combineData.anim.lib
     local animText = combineData.anim.text
     local animTimeout = combineData.anim.timeOut
-
     QBCore.Functions.Progressbar("combine_anim", animText, animTimeout, false, true, {
         disableMovement = false,
         disableCarMovement = true,
@@ -836,21 +842,25 @@ RegisterNUICallback('combineWithAnim', function(data)
         StopAnimTask(ped, aDict, aLib, 1.0)
         QBCore.Functions.Notify("Failed!", "error")
     end)
+    cb('ok')
 end)
 
-RegisterNUICallback("SetInventoryData", function(data)
+RegisterNUICallback("SetInventoryData", function(data, cb)
     TriggerServerEvent("inventory:server:SetInventoryData", data.fromInventory, data.toInventory, data.fromSlot, data.toSlot, data.fromAmount, data.toAmount)
+    cb('ok')
 end)
 
-RegisterNUICallback("PlayDropSound", function()
+RegisterNUICallback("PlayDropSound", function(_, cb)
     PlaySound(-1, "CLICK_BACK", "WEB_NAVIGATION_SOUNDS_PHONE", 0, 0, 1)
+    cb('ok')
 end)
 
-RegisterNUICallback("PlayDropFail", function()
+RegisterNUICallback("PlayDropFail", function(_, cb)
     PlaySound(-1, "Place_Prop_Fail", "DLC_Dmod_Prop_Editor_Sounds", 0, 0, 1)
+    cb('ok')
 end)
 
-RegisterNUICallback("GiveItem", function(data)
+RegisterNUICallback("GiveItem", function(data, cb)
     local player, distance = QBCore.Functions.GetClosestPlayer(GetEntityCoords(PlayerPedId()))
     if player ~= -1 and distance < 3 then
         if (data.inventory == 'player') then
@@ -863,6 +873,7 @@ RegisterNUICallback("GiveItem", function(data)
     else
         QBCore.Functions.Notify("No one nearby!", "error")
     end
+    cb('ok')
 end)
 
 -- Threads
