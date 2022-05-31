@@ -611,8 +611,8 @@ RegisterCommand('inventory', function()
                     maxweight = QBCore.Shared.Vehicles[vehname]['maxweight']
                     slots = QBCore.Shared.Vehicles[vehname]['slots']
                 else
-                    maxweight = 10000
-                    slots = 15
+                    maxweight = Config.maxweight
+                    slots = Config.slots
                 end
                 local other = {
                     maxweight = maxweight,

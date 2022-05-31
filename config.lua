@@ -331,6 +331,8 @@ Config.AttachmentCrafting = {
 }
 
 MaxInventorySlots = 41
+Config.maxweight = 10000 -- Maximum Capacity of an un-configured trunk by default: 10 kg
+Config.slots = 15 -- How many slots in those trunks by default: 15 slots
 
 BackEngineVehicles = {
     [`ninef`] = true,
