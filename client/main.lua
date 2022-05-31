@@ -607,7 +607,7 @@ RegisterCommand('inventory', function()
 		local vehname = GetDisplayNameFromVehicleModel(GetEntityModel(curVeh)):lower()
                 local maxweight
                 local slots
-                if QBCore.Shared.Vehicles[vehname] ~= nil then
+                if QBCore.Shared.Vehicles[vehname] then
                     maxweight = QBCore.Shared.Vehicles[vehname]['maxweight']
                     slots = QBCore.Shared.Vehicles[vehname]['slots']
                 else
