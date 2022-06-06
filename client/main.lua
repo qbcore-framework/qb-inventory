@@ -599,10 +599,11 @@ RegisterCommand('inventory', function()
 		local hash = GetEntityModel(curVeh)
                 local maxweight = Config.maxweight
                 local slots = Config.slots
+                local VehicleHashes = QBCore.Shared.VehicleHashes[hash]
 
-                if QBCore.Shared.VehicleHashes[hash] then
-                   maxweight = QBCore.Shared.VehicleHashes[hash].maxweight
-                  slots = QBCore.Shared.VehicleHashes[hash].slots
+                if VehicleHashes and VehicleHashes.maxweight and VehicleHashes.slots then
+                    maxweight = VehicleHashes.maxweight
+                    slots = VehicleHashes.slots
                 end
                 local other = {
                     maxweight = maxweight,
