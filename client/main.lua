@@ -80,7 +80,7 @@ local function FormatWeaponAttachments(itemdata)
 end
 
 local function IsBackEngine(vehModel)
-    if BackEngineVehicles[QBCore.Shared.VehicleHashes[vehModel].model] then return true end
+    if BackEngineVehicles[vehModel] then return true end
     return false
 end
 
