@@ -80,7 +80,7 @@ local function FormatWeaponAttachments(itemdata)
 end
 
 local function IsBackEngine(vehModel)
-    if BackEngineVehicles[vehModel] then return true end
+    if BackEngineVehicles[QBCore.Shared.VehicleHashes[vehModel].model] then return true end
     return false
 end
 
@@ -604,15 +604,13 @@ RegisterCommand('inventory', function()
             end
 
             if CurrentVehicle then -- Trunk
-		local vehname = GetDisplayNameFromVehicleModel(GetEntityModel(curVeh)):lower()
-                local maxweight
-                local slots
-                if QBCore.Shared.Vehicles[vehname] then
-                    maxweight = QBCore.Shared.Vehicles[vehname]['maxweight']
-                    slots = QBCore.Shared.Vehicles[vehname]['slots']
-                else
-                    maxweight = Config.maxweight
-                    slots = Config.slots
+		local hash = GetEntityModel(curVeh)
+                local maxweight = Config.maxweight
+                local slots = Config.slots
+
+                if QBCore.Shared.VehicleHashes[hash] then
+                   maxweight = QBCore.Shared.VehicleHashes[hash].maxweight
+                  slots = QBCore.Shared.VehicleHashes[hash].slots
                 end
                 local other = {
                     maxweight = maxweight,
