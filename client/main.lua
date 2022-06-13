@@ -551,7 +551,7 @@ RegisterCommand('inventory', function()
                 local vehicle = QBCore.Functions.GetClosestVehicle()
                 if vehicle ~= 0 and vehicle ~= nil then
                     local pos = GetEntityCoords(ped)
-                    local minimum, maximum = GetModelDimensions(GetEntityModel(vehicle))
+                    local dimensionMin, dimensionMax = GetModelDimensions(GetEntityModel(vehicle))
 		    local trunkpos = GetOffsetFromEntityInWorldCoords(vehicle, 0.0, (dimensionMin.y), 0.0)
                     if (IsBackEngine(GetEntityModel(vehicle))) then
                         trunkpos = GetOffsetFromEntityInWorldCoords(vehicle, 0.0, (dimensionMax.y) + 0.2, 0.0)
