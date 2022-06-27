@@ -254,8 +254,8 @@ end
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
     LocalPlayer.state:set("inv_busy", false, true)
     PlayerData = QBCore.Functions.GetPlayerData()
-    QBCore.Functions.TriggerCallback("inventory:server:GetCurrentDrops", function(_Drops)
-		Drops = _Drops
+    QBCore.Functions.TriggerCallback("inventory:server:GetCurrentDrops", function(theDrops)
+		Drops = theDrops
 	end)
 end)
 
@@ -1012,7 +1012,6 @@ end)
 AddEventHandler('onResourceStop', function(name)
     if name == GetCurrentResourceName() then
         if Config.UseItemDrop then RemoveAllNearbyDrops() end
-        if showBlur then TriggerScreenblurFadeOut(1000) end
     end
 end)
 
@@ -1029,7 +1028,7 @@ function CreateItemDrop(index)
 			{
 				icon = 'fas fa-backpack',
 				label = 'Open Bag',
-				action = function(entity)
+				action = function()
 					TriggerServerEvent("inventory:server:OpenInventory", "drop", index)
 				end,
 			}
