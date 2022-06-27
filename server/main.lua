@@ -12,6 +12,18 @@ RegisterNetEvent('QBCore:Server:UpdateObject', function()
 	QBCore = exports['qb-core']:GetCoreObject()
 end)
 
+CreateThread(function()
+	while true do
+		for k,v in pairs(Drops) do
+			if v.createdTime + Config.CleanupDropTime < os.time() and not Drops[k].isOpen then
+				Drops[k] = nil
+				TriggerClientEvent("inventory:client:RemoveDropItem", -1, k)
+			end
+		end
+		Wait(60*1000)
+	end
+end)
+
 -- Functions
 
 local function recipeContains(recipe, fromItem)
@@ -436,6 +448,7 @@ end
 -- Drop items
 local function AddToDrop(dropId, slot, itemName, amount, info)
 	amount = tonumber(amount)
+	Drops[dropId].createdTime = os.time()
 	if Drops[dropId].items[slot] ~= nil and Drops[dropId].items[slot].name == itemName then
 		Drops[dropId].items[slot].amount = Drops[dropId].items[slot].amount + amount
 	else
@@ -458,6 +471,7 @@ local function AddToDrop(dropId, slot, itemName, amount, info)
 end
 
 local function RemoveFromDrop(dropId, slot, itemName, amount)
+	Drops[dropId].createdTime = os.time()
 	if Drops[dropId].items[slot] ~= nil and Drops[dropId].items[slot].name == itemName then
 		if Drops[dropId].items[slot].amount > amount then
 			Drops[dropId].items[slot].amount = Drops[dropId].items[slot].amount - amount
@@ -500,6 +514,9 @@ local function CreateNewDrop(source, fromSlot, toSlot, itemAmount)
 		local itemInfo = QBCore.Shared.Items[itemData.name:lower()]
 		local dropId = CreateDropId()
 		Drops[dropId] = {}
+		Drops[dropId].coords = coords
+		Drops[dropId].createdTime = os.time()
+
 		Drops[dropId].items = {}
 
 		Drops[dropId].items[toSlot] = {
@@ -791,6 +808,7 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 					end
 				end
 				if Drops[id] and not Drops[id].isOpen then
+					secondInv.coords = Drops[id].coords
 					secondInv.name = id
 					secondInv.label = "Dropped-"..tostring(id)
 					secondInv.maxweight = 100000
@@ -798,6 +816,7 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 					secondInv.slots = 30
 					Drops[id].isOpen = src
 					Drops[id].label = secondInv.label
+					Drops[id].createdTime = os.time()
 				else
 					secondInv.name = "none-inv"
 					secondInv.label = "Dropped-None"
@@ -1441,6 +1460,10 @@ end)
 
 QBCore.Functions.CreateCallback('qb-inventory:server:GetStashItems', function(_, cb, stashId)
 	cb(GetStashItems(stashId))
+end)
+
+QBCore.Functions.CreateCallback('inventory:server:GetCurrentDrops', function(_, cb)
+	cb(Drops)
 end)
 
 -- command

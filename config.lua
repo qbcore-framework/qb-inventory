@@ -2,6 +2,11 @@ Config = {}
 
 Config.UseTarget = GetConvar('UseTarget', 'false') == 'true' -- Use qb-target interactions (don't change this, go to your server.cfg and add `setr UseTarget true` to use this and just that from true to false or the other way around)
 
+Config.CleanupDropTime = 15 * 60 -- How many seconds it takes for drops to be untouched before being deleted
+Config.MaxDropViewDistance = 12.5
+Config.UseItemDrop = false
+Config.ItemDropObject = `prop_nigel_bag_pickup`
+
 Config.VendingObjects = {
     "prop_vend_soda_01",
     "prop_vend_soda_02",
