@@ -19,27 +19,65 @@ local WeaponAttachments = {}
 
 -- Functions
 
-local function GetClosestVending()
-    local ped = PlayerPedId()
-    local pos = GetEntityCoords(ped)
-    local object = nil
-    for _, machine in pairs(Config.VendingObjects) do
-        local ClosestObject = GetClosestObjectOfType(pos.x, pos.y, pos.z, 0.75, GetHashKey(machine), 0, 0, 0)
-        if ClosestObject ~= 0 then
-            if object == nil then
-                object = ClosestObject
-            end
-        end
-    end
-    return object
+local function RotationToDirection(rotation)
+	local adjustedRotation =
+	{
+		x = (math.pi / 180) * rotation.x,
+		y = (math.pi / 180) * rotation.y,
+		z = (math.pi / 180) * rotation.z
+	}
+	local direction =
+	{
+		x = -math.sin(adjustedRotation.z) * math.abs(math.cos(adjustedRotation.x)),
+		y = math.cos(adjustedRotation.z) * math.abs(math.cos(adjustedRotation.x)),
+		z = math.sin(adjustedRotation.x)
+	}
+	return direction
 end
 
-local function OpenVending()
+
+local function FindObjectFromRayCast(distance)
+    local cameraRotation = GetGameplayCamRot()
+	local cameraCoord = GetGameplayCamCoord()
+	local direction = RotationToDirection(cameraRotation)
+	local destination =
+	{
+		x = cameraCoord.x + direction.x * distance,
+		y = cameraCoord.y + direction.y * distance,
+		z = cameraCoord.z + direction.z * distance
+	}
+	local _, _, _, _, e = GetShapeTestResult(StartShapeTestRay(cameraCoord.x, cameraCoord.y, cameraCoord.z, destination.x, destination.y, destination.z, -1, PlayerPedId(), 0))
+    if IsEntityAnObject(e) then
+	return e
+    end
+end
+
+local function GetClosestVending()
+    local object = nil
+    local type = nil
+    local label = nil
+    local model
+        for vending, _ in pairs(Config.VendingMachines) do
+            if object == nil then
+                object = FindObjectFromRayCast(5.0)
+                model = GetEntityModel(object)
+                if model == GetHashKey(Config.VendingMachines[vending]['model']) then
+                    type = Config.VendingMachines[vending]['type']
+                    label = Config.VendingMachines[vending]['label']
+                else
+                    object = nil
+                end
+            end
+        end
+    return object, type, label
+end
+
+local function OpenVending(type, label)
     local ShopItems = {}
-    ShopItems.label = "Vending Machine"
-    ShopItems.items = Config.VendingItem
-    ShopItems.slots = #Config.VendingItem
-    TriggerServerEvent("inventory:server:OpenInventory", "shop", "Vendingshop_"..math.random(1, 99), ShopItems)
+    ShopItems.label = label
+    ShopItems.items = Config.VendingItems[type]
+    ShopItems.slots = #Config.VendingItems[type]
+    TriggerServerEvent("inventory:server:OpenInventory", "shop", "Vendingmachine_"..math.random(1, 99), ShopItems)
 end
 
 local function DrawText3Ds(x, y, z, text)
@@ -539,8 +577,9 @@ RegisterCommand('inventory', function()
         if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() then
             local ped = PlayerPedId()
             local curVeh = nil
-            local VendingMachine = nil
-            if not Config.UseTarget then VendingMachine = GetClosestVending() end
+            
+            local VendingMachine, VendingType, VendingLabel = nil
+            if not Config.UseTarget then VendingMachine, VendingType, VendingLabel = GetClosestVending() end
 
             if IsPedInAnyVehicle(ped) then -- Is Player In Vehicle
                 local vehicle = GetVehiclePedIsIn(ped, false)
@@ -638,10 +677,10 @@ RegisterCommand('inventory', function()
                 TriggerServerEvent("inventory:server:OpenInventory", "drop", CurrentDrop)
             elseif VendingMachine then
                 local ShopItems = {}
-                ShopItems.label = "Vending Machine"
-                ShopItems.items = Config.VendingItem
-                ShopItems.slots = #Config.VendingItem
-                TriggerServerEvent("inventory:server:OpenInventory", "shop", "Vendingshop_"..math.random(1, 99), ShopItems)
+                ShopItems.label = VendingLabel
+                ShopItems.items = Config.VendingItems[VendingType]
+                ShopItems.slots = #Config.VendingItems[VendingType]
+                TriggerServerEvent("inventory:server:OpenInventory", "shop", "Vendingmachine_"..math.random(1, 99), ShopItems)
             else
                 openAnim()
                 TriggerServerEvent("inventory:server:OpenInventory")
@@ -883,18 +922,21 @@ end)
 
 CreateThread(function()
     if Config.UseTarget then
-        exports['qb-target']:AddTargetModel(Config.VendingObjects, {
+        for vending, _ in pairs(Config.VendingMachines) do
+            exports['qb-target']:AddTargetModel(Config.VendingMachines[vending], {
             options = {
                 {
                     icon = "fa-solid fa-cash-register",
-                    label = "Vending Machine",
+                    label = Config.VendingMachines[vending]['label'],
                     action = function()
-                        OpenVending()
+                        OpenVending(Config.VendingMachines[vending]['type'], Config.VendingMachines[vending]['label'])
                     end
                 },
             },
             distance = 2.5
         })
+        end
+        
     end
 end)
 

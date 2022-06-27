@@ -2,36 +2,113 @@ Config = {}
 
 Config.UseTarget = GetConvar('UseTarget', 'false') == 'true' -- Use qb-target interactions (don't change this, go to your server.cfg and add `setr UseTarget true` to use this and just that from true to false or the other way around)
 
-Config.VendingObjects = {
-    "prop_vend_soda_01",
-    "prop_vend_soda_02",
-    "prop_vend_water_01"
-}
-
-Config.BinObjects = {
-    "prop_bin_05a",
-}
-
-Config.CraftingObject = `prop_toolchest_05`
-
-Config.VendingItem = {
+Config.VendingMachines = {
     [1] = {
-        name = "kurkakola",
-        price = 4,
+        ['model'] = 'prop_vend_soda_01',
+        ['type'] = 'soda',
+        ['label'] = 'Soda Machine'
+    },
+    [2] = {
+        ['model'] = 'prop_vend_soda_02',
+        ['type'] = 'soda',
+        ['label'] = 'Soda Machine'
+    },
+    [3] = {
+        ['model'] = 'prop_vend_coffe_01',
+        ['type'] = 'coffee',
+        ['label'] = 'Coffee Machine'
+    },
+    [4] = {
+        ['model'] = 'prop_watercooler',
+        ['type'] = 'water',
+        ['label'] = 'Water Dispenser'
+    },
+    [5] = {
+        ['model'] = 'prop_watercooler_dark',
+        ['type'] = 'water',
+        ['label'] = 'Water Dispenser'
+    },
+    [6] = {
+        ['model'] = 'prop_vend_water_01',
+        ['type'] = 'water',
+        ['label'] = 'Water Dispenser'
+    },
+    [7] = {
+        ['model'] = 'prop_vend_snak_01',
+        ['type'] = 'snack',
+        ['label'] = 'Snack Machine'
+    },
+    [8] = {
+        ['model'] = 'prop_vend_snak_01_tu',
+        ['type'] = 'snack',
+        ['label'] = 'Snack Machine'
+    },
+}
+  
+Config.VendingItems = {
+    ['soda'] = {
+       [1] = {
+          name = "kurkakola",
+          price = 4,
+          amount = 50,
+          info = {},
+          type = "item",
+          slot = 1,
+      },
+      [2] = {
+          name = "water_bottle",
+          price = 4,
+          amount = 50,
+          info = {},
+          type = "item",
+          slot = 2,
+      },
+    },
+    ['coffee'] = {
+      [1] = {
+          name = "coffee",
+          price = 3,
+          amount = 50,
+          info = {},
+          type = "item",
+          slot = 1,
+      }
+    },
+    ['water'] = {
+      [1] = {
+        name = "water_bottle",
+        price = 2,
         amount = 50,
         info = {},
         type = "item",
         slot = 1,
+      }
     },
-    [2] = {
-        name = "water_bottle",
-        price = 4,
-        amount = 50,
-        info = {},
-        type = "item",
-        slot = 2,
-    },
+    ['snack'] = {
+      [1] = {
+          name = "twerks_candy",
+          price = 3,
+          amount = 50,
+          info = {},
+          type = "item",
+          slot = 1,
+      },
+      [2] = {
+          name = "snikkel_candy",
+          price = 3,
+          amount = 50,
+          info = {},
+          type = "item",
+          slot = 2,
+      }
+    }
 }
+  
+Config.BinObjects = {
+  "prop_bin_05a",
+}
+
+Config.CraftingObject = `prop_toolchest_05`
 
 Config.CraftingItems = {
     [1] = {
