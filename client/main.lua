@@ -510,6 +510,12 @@ RegisterNetEvent('inventory:client:AddDropItem', function(dropId, player, coords
     }
 end)
 
+function RemoveAllNearbyDrops()
+    for k in pairs(DropsNear) do
+        RemoveNearbyDrop(k)
+    end
+end
+
 function RemoveNearbyDrop(index)
     if DropsNear[index] then
         local dropItem = DropsNear[index].object
@@ -1022,38 +1028,18 @@ function CreateItemDrop(index)
     PlaceObjectOnGroundProperly(dropItem)
     FreezeEntityPosition(dropItem, true)
     -- SetEntityCollision(dropItem, false, false)
-
-	exports['qb-target']:AddTargetEntity(dropItem, {
-		options = {
-			{
-				icon = 'fas fa-backpack',
-				label = 'Open Bag',
-				action = function()
-					TriggerServerEvent("inventory:server:OpenInventory", "drop", index)
-				end,
-			}
-    },
-    distance = 2.5,
-  })
-end
-
-function RemoveAllNearbyDrops()
-    for k, _ in pairs(DropsNear) do
-        RemoveNearbyDrop(k)
-    end
-end
-
-function RemoveNearbyDrop(index)
-    if DropsNear[index] then
-        local dropItem = DropsNear[index].object
-        if DoesEntityExist(dropItem) then
-            DeleteEntity(dropItem)
-        end
-
-        DropsNear[index] = nil
-        if Drops[index] then
-            Drops[index].object = nil
-            Drops[index].isDropShowing = nil
-        end
-    end
+	if Config.UseTarget then
+		exports['qb-target']:AddTargetEntity(dropItem, {
+			options = {
+				{
+					icon = 'fas fa-backpack',
+					label = 'Open Bag',
+					action = function()
+						TriggerServerEvent("inventory:server:OpenInventory", "drop", index)
+					end,
+				}
+			},
+			distance = 2.5,
+		})
+	end
 end
