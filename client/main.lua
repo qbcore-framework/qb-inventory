@@ -512,9 +512,6 @@ end)
 
 RegisterNetEvent('inventory:client:DropItemAnim', function()
     local ped = PlayerPedId()
-    SendNUIMessage({
-        action = "close",
-    })
     RequestAnimDict("pickup_object")
     while not HasAnimDictLoaded("pickup_object") do
         Wait(7)
