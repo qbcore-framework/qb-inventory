@@ -15,7 +15,7 @@ end)
 CreateThread(function()
 	while true do
 		for k,v in pairs(Drops) do
-			if v.createdTime + Config.CleanupDropTime < os.time() and not Drops[k].isOpen then
+			if v and (v.createdTime + Config.CleanupDropTime < os.time()) and not Drops[k].isOpen then
 				Drops[k] = nil
 				TriggerClientEvent("inventory:client:RemoveDropItem", -1, k)
 			end
