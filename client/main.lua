@@ -885,7 +885,7 @@ CreateThread(function()
                             CreateItemDrop(k)
                         end
                     else
-                        sleep = 1
+                        sleep = 0
                         DrawMarker(20, v.coords.x, v.coords.y, v.coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.15, 120, 10, 20, 155, false, false, false, 1, false, false, false)
                     end
 
