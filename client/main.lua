@@ -254,11 +254,15 @@ end
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
     LocalPlayer.state:set("inv_busy", false, true)
     PlayerData = QBCore.Functions.GetPlayerData()
+    QBCore.Functions.TriggerCallback("inventory:server:GetCurrentDrops", function(theDrops)
+		Drops = theDrops
+	end)
 end)
 
 RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
     LocalPlayer.state:set("inv_busy", true, true)
     PlayerData = {}
+    RemoveAllNearbyDrops()
 end)
 
 RegisterNetEvent('QBCore:Client:UpdateObject', function()
@@ -492,6 +496,7 @@ RegisterNetEvent('inventory:client:CheckWeapon', function(weaponName)
     end
 end)
 
+-- This needs to be changed to do a raycast so items arent placed in walls
 RegisterNetEvent('inventory:client:AddDropItem', function(dropId, player, coords)
     local forward = GetEntityForwardVector(GetPlayerPed(GetPlayerFromServerId(player)))
 	local x, y, z = table.unpack(coords + forward * 0.5)
@@ -505,9 +510,34 @@ RegisterNetEvent('inventory:client:AddDropItem', function(dropId, player, coords
     }
 end)
 
+function RemoveAllNearbyDrops()
+    for k in pairs(DropsNear) do
+        RemoveNearbyDrop(k)
+    end
+end
+
+function RemoveNearbyDrop(index)
+    if DropsNear[index] then
+        local dropItem = DropsNear[index].object
+        if DoesEntityExist(dropItem) then
+            DeleteEntity(dropItem)
+        end
+
+        DropsNear[index] = nil
+        if Drops[index] then
+            Drops[index].object = nil
+            Drops[index].isDropShowing = nil
+        end
+    end
+end
+
 RegisterNetEvent('inventory:client:RemoveDropItem', function(dropId)
     Drops[dropId] = nil
-    DropsNear[dropId] = nil
+    if Config.UseItemDrop then
+        RemoveNearbyDrop(dropId)
+    else
+        DropsNear[dropId] = nil
+    end
 end)
 
 RegisterNetEvent('inventory:client:DropItemAnim', function()
@@ -634,7 +664,7 @@ RegisterCommand('inventory', function()
                 OpenTrunk()
             elseif CurrentGlovebox then
                 TriggerServerEvent("inventory:server:OpenInventory", "glovebox", CurrentGlovebox)
-            elseif CurrentDrop then
+            elseif CurrentDrop ~= 0 then
                 TriggerServerEvent("inventory:server:OpenInventory", "drop", CurrentDrop)
             elseif VendingMachine then
                 local ShopItems = {}
@@ -842,14 +872,38 @@ end)
 
 CreateThread(function()
     while true do
-        local sleep = 1000
-        if DropsNear then
+        local sleep = 100
+        if DropsNear ~= nil then
+			local ped = PlayerPedId()
+			local closestDrop = nil
+			local closestDistance = nil
             for k, v in pairs(DropsNear) do
-                if DropsNear[k] then
-                    sleep = 0
-                    DrawMarker(2, v.coords.x, v.coords.y, v.coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.15, 120, 10, 20, 155, false, false, false, 1, false, false, false)
+
+                if DropsNear[k] ~= nil then
+                    if Config.UseItemDrop then
+                        if not v.isDropShowing then
+                            CreateItemDrop(k)
+                        end
+                    else
+                        sleep = 0
+                        DrawMarker(20, v.coords.x, v.coords.y, v.coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.15, 120, 10, 20, 155, false, false, false, 1, false, false, false)
+                    end
+
+					local coords = (v.object ~= nil and GetEntityCoords(v.object)) or vector3(v.coords.x, v.coords.y, v.coords.z)
+					local distance = #(GetEntityCoords(ped) - coords)
+					if distance < 2 and (not closestDistance or distance < closestDistance) then
+						closestDrop = k
+						closestDistance = distance
+					end
                 end
             end
+
+
+			if not closestDrop then
+				CurrentDrop = 0
+			else
+				CurrentDrop = closestDrop
+			end
         end
         Wait(sleep)
     end
@@ -857,20 +911,19 @@ end)
 
 CreateThread(function()
     while true do
-        if Drops and next(Drops) then
+        if Drops ~= nil and next(Drops) ~= nil then
             local pos = GetEntityCoords(PlayerPedId(), true)
             for k, v in pairs(Drops) do
-                if Drops[k] then
+                if Drops[k] ~= nil then
                     local dist = #(pos - vector3(v.coords.x, v.coords.y, v.coords.z))
-                    if dist < 7.5 then
+                    if dist < Config.MaxDropViewDistance then
                         DropsNear[k] = v
-                        if dist < 2 then
-                            CurrentDrop = k
-                        else
-                            CurrentDrop = nil
-                        end
                     else
-                        DropsNear[k] = nil
+                        if Config.UseItemDrop and DropsNear[k] then
+                            RemoveNearbyDrop(k)
+                        else
+                            DropsNear[k] = nil
+                        end
                     end
                 end
             end
@@ -959,3 +1012,34 @@ CreateThread(function()
         Wait(sleep)
     end
 end)
+
+-- Drop Stuff
+
+AddEventHandler('onResourceStop', function(name)
+    if name == GetCurrentResourceName() then
+        if Config.UseItemDrop then RemoveAllNearbyDrops() end
+    end
+end)
+
+function CreateItemDrop(index)
+    local dropItem = CreateObject(Config.ItemDropObject, DropsNear[index].coords.x, DropsNear[index].coords.y, DropsNear[index].coords.z, false, false, false)
+    DropsNear[index].object = dropItem
+    DropsNear[index].isDropShowing = true
+    PlaceObjectOnGroundProperly(dropItem)
+    FreezeEntityPosition(dropItem, true)
+    -- SetEntityCollision(dropItem, false, false)
+	if Config.UseTarget then
+		exports['qb-target']:AddTargetEntity(dropItem, {
+			options = {
+				{
+					icon = 'fas fa-backpack',
+					label = 'Open Bag',
+					action = function()
+						TriggerServerEvent("inventory:server:OpenInventory", "drop", index)
+					end,
+				}
+			},
+			distance = 2.5,
+		})
+	end
+end
