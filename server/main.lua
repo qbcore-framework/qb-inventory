@@ -1497,12 +1497,11 @@ QBCore.Commands.Add("rob", "Rob Player", {}, false, function(source, _)
 	TriggerClientEvent("police:client:RobPlayer", source)
 end)
 
-QBCore.Commands.Add("giveitem", "Give An Item (Admin Only)", {{name="id", help="Player ID"},{name="item", help="Name of the item (not a label)"}, {name="amount", help="Amount of items"}}, true, function(source, args)
+QBCore.Commands.Add("giveitem", "Give An Item (Admin Only)", {{name="id", help="Player ID"},{name="item", help="Name of the item (not a label)"}, {name="amount", help="Amount of items"}}, false, function(source, args)
 	local Player = QBCore.Functions.GetPlayer(tonumber(args[1]))
-	local amount = tonumber(args[3])
+	local amount = tonumber(args[3]) or 1
 	local itemData = QBCore.Shared.Items[tostring(args[2]):lower()]
 	if Player then
-		if amount > 0 then
 			if itemData then
 				-- check iteminfo
 				local info = {}
@@ -1539,9 +1538,6 @@ QBCore.Commands.Add("giveitem", "Give An Item (Admin Only)", {{name="id", help="
 			else
 				TriggerClientEvent('QBCore:Notify', source,  "Item Does Not Exist", "error")
 			end
-		else
-			TriggerClientEvent('QBCore:Notify', source,  "Invalid Amount", "error")
-		end
 	else
 		TriggerClientEvent('QBCore:Notify', source,  "Player Is Not Online", "error")
 	end
