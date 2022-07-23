@@ -91,11 +91,7 @@ local function OpenTrunk()
         Wait(100)
     end
     TaskPlayAnim(PlayerPedId(), "amb@prop_human_bum_bin@idle_b", "idle_d", 4.0, 4.0, -1, 50, 0, false, false, false)
-    if (IsBackEngine(GetEntityModel(vehicle))) then
-        SetVehicleDoorOpen(vehicle, 4, false, false)
-    else
-        SetVehicleDoorOpen(vehicle, 5, false, false)
-    end
+    SetVehicleDoorOpen(vehicle, 5, false, false)
 end
 
 local function CloseTrunk()
@@ -105,11 +101,7 @@ local function CloseTrunk()
         Wait(100)
     end
     TaskPlayAnim(PlayerPedId(), "amb@prop_human_bum_bin@idle_b", "exit", 4.0, 4.0, -1, 50, 0, false, false, false)
-    if (IsBackEngine(GetEntityModel(vehicle))) then
-        SetVehicleDoorShut(vehicle, 4, false)
-    else
-        SetVehicleDoorShut(vehicle, 5, false)
-    end
+    SetVehicleDoorShut(vehicle, 5, false)
 end
 
 local function closeInventory()
@@ -604,57 +596,14 @@ RegisterCommand('inventory', function()
             end
 
             if CurrentVehicle then -- Trunk
-                local vehicleClass = GetVehicleClass(curVeh)
-                local maxweight
-                local slots
-                if vehicleClass == 0 then
-                    maxweight = 38000
-                    slots = 30
-                elseif vehicleClass == 1 then
-                    maxweight = 50000
-                    slots = 40
-                elseif vehicleClass == 2 then
-                    maxweight = 75000
-                    slots = 50
-                elseif vehicleClass == 3 then
-                    maxweight = 42000
-                    slots = 35
-                elseif vehicleClass == 4 then
-                    maxweight = 38000
-                    slots = 30
-                elseif vehicleClass == 5 then
-                    maxweight = 30000
-                    slots = 25
-                elseif vehicleClass == 6 then
-                    maxweight = 30000
-                    slots = 25
-                elseif vehicleClass == 7 then
-                    maxweight = 30000
-                    slots = 25
-                elseif vehicleClass == 8 then
-                    maxweight = 15000
-                    slots = 15
-                elseif vehicleClass == 9 then
-                    maxweight = 60000
-                    slots = 35
-                elseif vehicleClass == 12 then
-                    maxweight = 120000
-                    slots = 35
-                elseif vehicleClass == 13 then
-                    maxweight = 0
-                    slots = 0
-                elseif vehicleClass == 14 then
-                    maxweight = 120000
-                    slots = 50
-                elseif vehicleClass == 15 then
-                    maxweight = 120000
-                    slots = 50
-                elseif vehicleClass == 16 then
-                    maxweight = 120000
-                    slots = 50
-                else
-                    maxweight = 60000
-                    slots = 35
+		local hash = GetEntityModel(curVeh)
+                local maxweight = Config.maxweight
+                local slots = Config.slots
+                local VehicleHashes = QBCore.Shared.VehicleHashes[hash]
+
+                if VehicleHashes and VehicleHashes.maxweight and VehicleHashes.slots then
+                    maxweight = VehicleHashes.maxweight
+                    slots = VehicleHashes.slots
                 end
                 local other = {
                     maxweight = maxweight,

@@ -383,7 +383,9 @@ Config.AttachmentCrafting = { -- Attachment crafting recipes
     }
 }
 
-MaxInventorySlots = 41 -- Player inventory slot amount
+MaxInventorySlots = 41
+Config.maxweight = 10000 -- Maximum Capacity of an un-configured trunk by default: 10 kg
+Config.slots = 15 -- How many slots in those trunks by default: 15 slots
 
 BackEngineVehicles = { -- Vehicles which has its engine on back side of the vehicle
     'ninef',
