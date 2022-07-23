@@ -901,7 +901,9 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 	fromSlot = tonumber(fromSlot)
 	toSlot = tonumber(toSlot)
 
-	if (fromInventory == "player" or fromInventory == "hotbar") and (QBCore.Shared.SplitStr(toInventory, "-")[1] == "itemshop" or toInventory == "crafting") then
+	local fromType = QBCore.Shared.SplitStr(fromInventory, "-")[1]
+	local toType = QBCore.Shared.SplitStr(toInventory, "-")[1]
+	if (fromInventory == "player" or fromInventory == "hotbar") and (toType == "itemshop" or toInventory == "crafting") then
 		return
 	end
 
@@ -923,7 +925,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 					end
 				end
 				Player.Functions.AddItem(fromItemData.name, fromAmount, toSlot, fromItemData.info)
-			elseif QBCore.Shared.SplitStr(toInventory, "-")[1] == "otherplayer" then
+			elseif toType == "otherplayer" then
 				local playerId = tonumber(QBCore.Shared.SplitStr(toInventory, "-")[2])
 				local OtherPlayer = QBCore.Functions.GetPlayer(playerId)
 				local toItemData = OtherPlayer.PlayerData.items[toSlot]
@@ -945,7 +947,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				end
 				local itemInfo = QBCore.Shared.Items[fromItemData.name:lower()]
 				OtherPlayer.Functions.AddItem(itemInfo["name"], fromAmount, toSlot, fromItemData.info)
-			elseif QBCore.Shared.SplitStr(toInventory, "-")[1] == "trunk" then
+			elseif toType == "trunk" then
 				local plate = QBCore.Shared.SplitStr(toInventory, "-")[2]
 				local toItemData = Trunks[plate].items[toSlot]
 				Player.Functions.RemoveItem(fromItemData.name, fromAmount, fromSlot)
@@ -966,7 +968,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				end
 				local itemInfo = QBCore.Shared.Items[fromItemData.name:lower()]
 				AddToTrunk(plate, toSlot, fromSlot, itemInfo["name"], fromAmount, fromItemData.info)
-			elseif QBCore.Shared.SplitStr(toInventory, "-")[1] == "glovebox" then
+			elseif toType == "glovebox" then
 				local plate = QBCore.Shared.SplitStr(toInventory, "-")[2]
 				local toItemData = Gloveboxes[plate].items[toSlot]
 				Player.Functions.RemoveItem(fromItemData.name, fromAmount, fromSlot)
@@ -987,8 +989,9 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				end
 				local itemInfo = QBCore.Shared.Items[fromItemData.name:lower()]
 				AddToGlovebox(plate, toSlot, fromSlot, itemInfo["name"], fromAmount, fromItemData.info)
-			elseif QBCore.Shared.SplitStr(toInventory, "-")[1] == "stash" then
-				local stashId = QBCore.Shared.SplitStr(toInventory, "-")[2]
+			elseif toType == "stash" then
+				local stashId = toInventory:gsub(toType .. "%-", "")
+				-- local stashId = QBCore.Shared.SplitStr(toInventory, "-")[2]
 				local toItemData = Stashes[stashId].items[toSlot]
 				Player.Functions.RemoveItem(fromItemData.name, fromAmount, fromSlot)
 				TriggerClientEvent("inventory:client:CheckWeapon", src, fromItemData.name)
@@ -1009,9 +1012,10 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				end
 				local itemInfo = QBCore.Shared.Items[fromItemData.name:lower()]
 				AddToStash(stashId, toSlot, fromSlot, itemInfo["name"], fromAmount, fromItemData.info)
-			elseif QBCore.Shared.SplitStr(toInventory, "-")[1] == "traphouse" then
+			elseif toType == "traphouse" then
 				-- Traphouse
-				local traphouseId = QBCore.Shared.SplitStr(toInventory, "-")[2]
+				local traphouseId = toInventory:gsub(toType .. "%-", "")
+				-- local traphouseId = QBCore.Shared.SplitStr(toInventory, "-")[2]
 				local toItemData = exports['qb-traphouse']:GetInventoryData(traphouseId, toSlot)
 				local IsItemValid = exports['qb-traphouse']:CanItemBeSaled(fromItemData.name:lower())
 				if IsItemValid then
@@ -1065,7 +1069,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 		else
 			TriggerClientEvent("QBCore:Notify", src, "You don\'t have this item!", "error")
 		end
-	elseif QBCore.Shared.SplitStr(fromInventory, "-")[1] == "otherplayer" then
+	elseif fromType == "otherplayer" then
 		local playerId = tonumber(QBCore.Shared.SplitStr(fromInventory, "-")[2])
 		local OtherPlayer = QBCore.Functions.GetPlayer(playerId)
 		local fromItemData = OtherPlayer.PlayerData.items[fromSlot]
@@ -1107,7 +1111,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 		else
 			TriggerClientEvent("QBCore:Notify", src, "Item doesn\'t exist??", "error")
 		end
-	elseif QBCore.Shared.SplitStr(fromInventory, "-")[1] == "trunk" then
+	elseif fromType == "trunk" then
 		local plate = QBCore.Shared.SplitStr(fromInventory, "-")[2]
 		local fromItemData = Trunks[plate].items[fromSlot]
 		fromAmount = tonumber(fromAmount) ~= nil and tonumber(fromAmount) or fromItemData.amount
@@ -1149,7 +1153,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 		else
 			TriggerClientEvent("QBCore:Notify", src, "Item doesn\'t exist??", "error")
 		end
-	elseif QBCore.Shared.SplitStr(fromInventory, "-")[1] == "glovebox" then
+	elseif fromType == "glovebox" then
 		local plate = QBCore.Shared.SplitStr(fromInventory, "-")[2]
 		local fromItemData = Gloveboxes[plate].items[fromSlot]
 		fromAmount = tonumber(fromAmount) ~= nil and tonumber(fromAmount) or fromItemData.amount
@@ -1191,8 +1195,9 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 		else
 			TriggerClientEvent("QBCore:Notify", src, "Item doesn\'t exist??", "error")
 		end
-	elseif QBCore.Shared.SplitStr(fromInventory, "-")[1] == "stash" then
-		local stashId = QBCore.Shared.SplitStr(fromInventory, "-")[2]
+	elseif fromType == "stash" then
+		local stashId = fromInventory:gsub(fromType .. "%-", "")
+		-- local stashId = QBCore.Shared.SplitStr(fromInventory, "-")[2]
 		local fromItemData = Stashes[stashId].items[fromSlot]
 		fromAmount = tonumber(fromAmount) ~= nil and tonumber(fromAmount) or fromItemData.amount
 		if fromItemData ~= nil and fromItemData.amount >= fromAmount then
@@ -1234,8 +1239,9 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 		else
 			TriggerClientEvent("QBCore:Notify", src, "Item doesn\'t exist??", "error")
 		end
-	elseif QBCore.Shared.SplitStr(fromInventory, "-")[1] == "traphouse" then
-		local traphouseId = QBCore.Shared.SplitStr(fromInventory, "-")[2]
+	elseif fromType == "traphouse" then
+		local traphouseId = fromInventory:gsub(fromType .. "%-", "")
+		-- local traphouseId = QBCore.Shared.SplitStr(fromInventory, "-")[2]
 		local fromItemData = exports['qb-traphouse']:GetInventoryData(traphouseId, fromSlot)
 		fromAmount = tonumber(fromAmount) ~= nil and tonumber(fromAmount) or fromItemData.amount
 		if fromItemData ~= nil and fromItemData.amount >= fromAmount then
@@ -1274,7 +1280,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 		else
 			TriggerClientEvent("QBCore:Notify", src, "Item doesn't exist??", "error")
 		end
-	elseif QBCore.Shared.SplitStr(fromInventory, "-")[1] == "itemshop" then
+	elseif fromType == "itemshop" then
 		local shopType = QBCore.Shared.SplitStr(fromInventory, "-")[2]
 		local itemData = ShopItems[shopType].items[fromSlot]
 		local itemInfo = QBCore.Shared.Items[itemData.name:lower()]
