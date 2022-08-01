@@ -629,13 +629,8 @@ RegisterCommand('inventory', function()
                     [16] = { maxweight = 38000, slots = 30 },
                 }
 
-                if QBCore.Shared.Vehicles[model].trunkslots ~= nil and QBCore.Shared.Vehicles[model].trunkweight ~= nil then
-                    maxweight = BCore.Shared.Vehicles[model].trunkweight * 100
-                    slots = QBCore.Shared.Vehicles[model].trunkslots
-                else
                     maxweight = vehicleTrunkClass[vehicleClass].maxweight or 60000
                     slots = vehicleTrunkClass[vehicleClass].slots or 35
-                end
 
                 
                 local other = {
