@@ -605,8 +605,6 @@ RegisterCommand('inventory', function()
 
             if CurrentVehicle then -- Trunk
                 local vehicleClass = GetVehicleClass(curVeh)
-                local model = GetDisplayNameFromVehicleModel(GetEntityModel(curVeh))
-
 
                 local maxweight = 0
                 local slots = 0
