@@ -2781,10 +2781,10 @@ var requiredItemOpen = false;
         $(".itembox-container").hide();
         $(".itembox-container").fadeIn(250);
         $("#itembox-action").html("<p>Used</p>");
-        $("#itembox-label").html("<p>" + `${data.item.info.label || data.item.label}` + "</p>");
+        $("#itembox-label").html("<p>" + `${data.item.label}` + "</p>");
         $("#itembox-image").html(
             '<div class="item-slot-img"><img src="images/' +
-            `${data.item.info.image || data.item.image}` +
+            `${data.item.image}` +
             '" alt="' +
             data.item.name +
             '" /></div>'
@@ -2814,9 +2814,9 @@ var requiredItemOpen = false;
             '<div id="itembox-action"><p>' +
             type +
             '</p></div><div id="itembox-label"><p>' +
-            `${data.item.info.label || data.item.label}` +
+            `${data.item.label}` +
             '</p></div><div class="item-slot-img"><img src="images/' +
-            `${data.item.info.image || data.item.image}` +
+            `${data.item.image}` +
             '" alt="' +
             data.item.name +
             '" /></div>'
