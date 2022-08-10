@@ -125,26 +125,6 @@ end
 
 exports("GetFirstSlotByItem", GetFirstSlotByItem)
 
-local function SetItemData(source, itemName, key, val)
-	if not itemName or not key then return false end
-
-	local Player = QBCore.Functions.GetPlayer(source)
-
-	if not Player then return end
-
-	local item = GetItemByName(source, itemName)
-
-	if not item then return false end
-
-	item[key] = val
-	Player.PlayerData.items[item.slot] = item
-	Player.Functions.SetPlayerData("items", Player.PlayerData.items)
-
-	return true
-end
-
-exports("SetItemData", SetItemData)
-
 local function AddItem(source, item, amount, slot, info)
 	local Player = QBCore.Functions.GetPlayer(source)
 
@@ -339,6 +319,26 @@ local function SetInventory(source, items)
 end
 
 exports("SetInventory", SetInventory)
+
+local function SetItemData(source, itemName, key, val)
+	if not itemName or not key then return false end
+
+	local Player = QBCore.Functions.GetPlayer(source)
+
+	if not Player then return end
+
+	local item = GetItemByName(source, itemName)
+
+	if not item then return false end
+
+	item[key] = val
+	Player.PlayerData.items[item.slot] = item
+	Player.Functions.SetPlayerData("items", Player.PlayerData.items)
+
+	return true
+end
+
+exports("SetItemData", SetItemData)
 
 local function HasItem(source, items, amount)
     local Player = QBCore.Functions.GetPlayer(source)
