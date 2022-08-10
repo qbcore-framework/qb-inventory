@@ -19,6 +19,39 @@ local WeaponAttachments = {}
 
 -- Functions
 
+local function HasItem(items, amount)
+    local isTable = type(items) == 'table'
+	local isArray = isTable and table.type(items) == 'array' or false
+	local totalItems = #items
+    local count = 0
+    local kvIndex = 2
+	if isTable and not isArray then
+        totalItems = 0
+        for _ in pairs(items) do totalItems += 1 end
+        kvIndex = 1
+    end
+    for _, itemData in pairs(QBCore.PlayerData.items) do
+        if isTable then
+            for k, v in pairs(items) do
+                local itemKV = {k, v}
+                if itemData and itemData.name == itemKV[kvIndex] and ((amount and itemData.amount >= amount) or (not isArray and itemData.amount >= v) or (not amount and isArray)) then
+                    count += 1
+                end
+            end
+            if count == totalItems then
+                return true
+            end
+        else -- Single item as string
+            if itemData and itemData.name == items and (not amount or (itemData and amount and itemData.amount >= amount)) then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+exports("HasItem", HasItem)
+
 local function GetClosestVending()
     local ped = PlayerPedId()
     local pos = GetEntityCoords(ped)
@@ -249,6 +282,49 @@ local function GetAttachmentThresholdItems()
 	return items
 end
 
+local function RemoveNearbyDrop(index)
+    if DropsNear[index] then
+        local dropItem = DropsNear[index].object
+        if DoesEntityExist(dropItem) then
+            DeleteEntity(dropItem)
+        end
+
+        DropsNear[index] = nil
+        if Drops[index] then
+            Drops[index].object = nil
+            Drops[index].isDropShowing = nil
+        end
+    end
+end
+
+local function RemoveAllNearbyDrops()
+    for k in pairs(DropsNear) do
+        RemoveNearbyDrop(k)
+    end
+end
+
+local function CreateItemDrop(index)
+    local dropItem = CreateObject(Config.ItemDropObject, DropsNear[index].coords.x, DropsNear[index].coords.y, DropsNear[index].coords.z, false, false, false)
+    DropsNear[index].object = dropItem
+    DropsNear[index].isDropShowing = true
+    PlaceObjectOnGroundProperly(dropItem)
+    FreezeEntityPosition(dropItem, true)
+	if Config.UseTarget then
+		exports['qb-target']:AddTargetEntity(dropItem, {
+			options = {
+				{
+					icon = 'fas fa-backpack',
+					label = 'Open Bag',
+					action = function()
+						TriggerServerEvent("inventory:server:OpenInventory", "drop", index)
+					end,
+				}
+			},
+			distance = 2.5,
+		})
+	end
+end
+
 -- Events
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
@@ -342,9 +418,9 @@ RegisterNetEvent('inventory:client:OpenInventory', function(PlayerAmmo, inventor
         SendNUIMessage({
             action = "open",
             inventory = inventory,
-            slots = MaxInventorySlots,
+            slots = Config.MaxInventorySlots,
             other = other,
-            maxweight = QBCore.Config.Player.MaxWeight,
+            maxweight = Config.MaxInventoryWeight,
             Ammo = PlayerAmmo,
             maxammo = Config.MaximumAmmoValues,
         })
@@ -356,8 +432,8 @@ RegisterNetEvent('inventory:client:UpdatePlayerInventory', function(isError)
     SendNUIMessage({
         action = "update",
         inventory = PlayerData.items,
-        maxweight = QBCore.Config.Player.MaxWeight,
-        slots = MaxInventorySlots,
+        maxweight = Config.MaxInventoryWeight,
+        slots = Config.MaxInventorySlots,
         error = isError,
     })
 end)
@@ -510,27 +586,6 @@ RegisterNetEvent('inventory:client:AddDropItem', function(dropId, player, coords
     }
 end)
 
-function RemoveAllNearbyDrops()
-    for k in pairs(DropsNear) do
-        RemoveNearbyDrop(k)
-    end
-end
-
-function RemoveNearbyDrop(index)
-    if DropsNear[index] then
-        local dropItem = DropsNear[index].object
-        if DoesEntityExist(dropItem) then
-            DeleteEntity(dropItem)
-        end
-
-        DropsNear[index] = nil
-        if Drops[index] then
-            Drops[index].object = nil
-            Drops[index].isDropShowing = nil
-        end
-    end
-end
-
 RegisterNetEvent('inventory:client:RemoveDropItem', function(dropId)
     Drops[dropId] = nil
     if Config.UseItemDrop then
@@ -678,7 +733,7 @@ RegisterCommand('inventory', function()
             end
         end
     end
-end)
+end, false)
 
 RegisterKeyMapping('inventory', 'Open Inventory', 'keyboard', 'TAB')
 
@@ -687,7 +742,7 @@ RegisterCommand('hotbar', function()
     if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() then
         ToggleHotbar(isHotbar)
     end
-end)
+end, false)
 
 RegisterKeyMapping('hotbar', 'Toggles keybind slots', 'keyboard', 'z')
 
@@ -695,11 +750,11 @@ for i = 1, 6 do
     RegisterCommand('slot' .. i,function()
         if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() then
             if i == 6 then
-                i = MaxInventorySlots
+                i = Config.MaxInventorySlots
             end
             TriggerServerEvent("inventory:server:UseItemSlot", i)
         end
-    end)
+    end, false)
     RegisterKeyMapping('slot' .. i, 'Uses the item in slot ' .. i, 'keyboard', i)
 end
 
@@ -1020,26 +1075,3 @@ AddEventHandler('onResourceStop', function(name)
         if Config.UseItemDrop then RemoveAllNearbyDrops() end
     end
 end)
-
-function CreateItemDrop(index)
-    local dropItem = CreateObject(Config.ItemDropObject, DropsNear[index].coords.x, DropsNear[index].coords.y, DropsNear[index].coords.z, false, false, false)
-    DropsNear[index].object = dropItem
-    DropsNear[index].isDropShowing = true
-    PlaceObjectOnGroundProperly(dropItem)
-    FreezeEntityPosition(dropItem, true)
-    -- SetEntityCollision(dropItem, false, false)
-	if Config.UseTarget then
-		exports['qb-target']:AddTargetEntity(dropItem, {
-			options = {
-				{
-					icon = 'fas fa-backpack',
-					label = 'Open Bag',
-					action = function()
-						TriggerServerEvent("inventory:server:OpenInventory", "drop", index)
-					end,
-				}
-			},
-			distance = 2.5,
-		})
-	end
-end
