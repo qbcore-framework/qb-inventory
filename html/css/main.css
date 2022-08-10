@@ -124,6 +124,11 @@ body {
 	opacity: 1.0;
 	border-bottom-left-radius: 5px;
 	border-bottom-right-radius: 5px;
+	cursor: grab;
+}
+
+.item-slot:active {
+    cursor: grabbing;
 }
 
 .item-slot-hoverClass {
@@ -136,6 +141,7 @@ body {
 
 .inv-option-item {
 	margin-top: 10%;
+	cursor: pointer;
 }
 
 .btn-inv {
