@@ -1,4 +1,4 @@
--- Variables
+--#region Variables
 
 local QBCore = exports['qb-core']:GetCoreObject()
 local PlayerData = QBCore.Functions.GetPlayerData()
@@ -14,11 +14,16 @@ local CurrentGlovebox = nil
 local CurrentStash = nil
 local isCrafting = false
 local isHotbar = false
-local itemInfos = {}
 local WeaponAttachments = {}
 
--- Functions
+--#endregion Variables
 
+--#region Functions
+
+---Checks if you have an item or not
+---@param items string | string[] | table<string, number> The items to check, either a string, array of strings or a key-value table of a string and number with the string representing the name of the item and the number representing the amount
+---@param amount? number The amount of the item to check for, this will only have effect when items is a string or an array of strings
+---@return boolean success Returns true if the player has the item
 local function HasItem(items, amount)
     local isTable = type(items) == 'table'
 	local isArray = isTable and table.type(items) == 'array' or false
@@ -30,7 +35,7 @@ local function HasItem(items, amount)
         for _ in pairs(items) do totalItems += 1 end
         kvIndex = 1
     end
-    for _, itemData in pairs(QBCore.PlayerData.items) do
+    for _, itemData in pairs(PlayerData.items) do
         if isTable then
             for k, v in pairs(items) do
                 local itemKV = {k, v}
@@ -52,12 +57,14 @@ end
 
 exports("HasItem", HasItem)
 
+---Gets the closest vending machine object to the client
+---@return integer closestVendingMachine
 local function GetClosestVending()
     local ped = PlayerPedId()
     local pos = GetEntityCoords(ped)
     local object = nil
     for _, machine in pairs(Config.VendingObjects) do
-        local ClosestObject = GetClosestObjectOfType(pos.x, pos.y, pos.z, 0.75, GetHashKey(machine), 0, 0, 0)
+        local ClosestObject = GetClosestObjectOfType(pos.x, pos.y, pos.z, 0.75, GetHashKey(machine), false, false, false)
         if ClosestObject ~= 0 then
             if object == nil then
                 object = ClosestObject
@@ -67,6 +74,7 @@ local function GetClosestVending()
     return object
 end
 
+---Opens the vending machine shop
 local function OpenVending()
     local ShopItems = {}
     ShopItems.label = "Vending Machine"
@@ -75,6 +83,11 @@ local function OpenVending()
     TriggerServerEvent("inventory:server:OpenInventory", "shop", "Vendingshop_"..math.random(1, 99), ShopItems)
 end
 
+---Draws 3d text in the world on the given position
+---@param x number The x coord of the text to draw
+---@param y number The y coord of the text to draw
+---@param z number The z coord of the text to draw
+---@param text string The text to display
 local function DrawText3Ds(x, y, z, text)
 	SetTextScale(0.35, 0.35)
     SetTextFont(4)
@@ -85,11 +98,25 @@ local function DrawText3Ds(x, y, z, text)
     AddTextComponentString(text)
     SetDrawOrigin(x,y,z, 0)
     DrawText(0.0, 0.0)
-    local factor = (string.len(text)) / 370
-    DrawRect(0.0, 0.0+0.0125, 0.017+ factor, 0.03, 0, 0, 0, 75)
+    local factor = string.len(text) / 370
+    DrawRect(0.0, 0.0125, 0.017 + factor, 0.03, 0, 0, 0, 75)
     ClearDrawOrigin()
 end
 
+---Load an animation dictionary before playing an animation from it
+---@param dict string Animation dictionary to load
+local function LoadAnimDict(dict)
+    if HasAnimDictLoaded(dict) then return end
+
+    RequestAnimDict(dict)
+    while not HasAnimDictLoaded(dict) do
+        Wait(10)
+    end
+end
+
+---Returns a formatted attachments table from item data
+---@param itemdata table Data of an item
+---@return table attachments
 local function FormatWeaponAttachments(itemdata)
     local attachments = {}
     itemdata.name = itemdata.name:upper()
@@ -112,45 +139,46 @@ local function FormatWeaponAttachments(itemdata)
     return attachments
 end
 
+---Checks if the vehicle's engine is at the back or not
+---@param vehModel integer The model hash of the vehicle
+---@return boolean isBackEngine
 local function IsBackEngine(vehModel)
-    if BackEngineVehicles[vehModel] then return true end
-    return false
+    return BackEngineVehicles[vehModel]
 end
 
+---Opens the trunk of the closest vehicle
 local function OpenTrunk()
     local vehicle = QBCore.Functions.GetClosestVehicle()
-    while (not HasAnimDictLoaded("amb@prop_human_bum_bin@idle_b")) do
-        RequestAnimDict("amb@prop_human_bum_bin@idle_b")
-        Wait(100)
-    end
+    LoadAnimDict("amb@prop_human_bum_bin@idle_b")
     TaskPlayAnim(PlayerPedId(), "amb@prop_human_bum_bin@idle_b", "idle_d", 4.0, 4.0, -1, 50, 0, false, false, false)
-    if (IsBackEngine(GetEntityModel(vehicle))) then
+    if IsBackEngine(GetEntityModel(vehicle)) then
         SetVehicleDoorOpen(vehicle, 4, false, false)
     else
         SetVehicleDoorOpen(vehicle, 5, false, false)
     end
 end
 
+---Closes the trunk of the closest vehicle
 local function CloseTrunk()
     local vehicle = QBCore.Functions.GetClosestVehicle()
-    while (not HasAnimDictLoaded("amb@prop_human_bum_bin@idle_b")) do
-        RequestAnimDict("amb@prop_human_bum_bin@idle_b")
-        Wait(100)
-    end
+    LoadAnimDict("amb@prop_human_bum_bin@idle_b")
     TaskPlayAnim(PlayerPedId(), "amb@prop_human_bum_bin@idle_b", "exit", 4.0, 4.0, -1, 50, 0, false, false, false)
-    if (IsBackEngine(GetEntityModel(vehicle))) then
+    if IsBackEngine(GetEntityModel(vehicle)) then
         SetVehicleDoorShut(vehicle, 4, false)
     else
         SetVehicleDoorShut(vehicle, 5, false)
     end
 end
 
+---Closes the inventory NUI
 local function closeInventory()
     SendNUIMessage({
         action = "close",
     })
 end
 
+---Toggles the hotbar of the inventory
+---@param toggle boolean If this is true, the hotbar will open
 local function ToggleHotbar(toggle)
     local HotbarItems = {
         [1] = PlayerData.items[1],
@@ -161,34 +189,22 @@ local function ToggleHotbar(toggle)
         [41] = PlayerData.items[41],
     }
 
-    if toggle then
-        SendNUIMessage({
-            action = "toggleHotbar",
-            open = true,
-            items = HotbarItems
-        })
-    else
-        SendNUIMessage({
-            action = "toggleHotbar",
-            open = false,
-        })
-    end
+    SendNUIMessage({
+        action = "toggleHotbar",
+        open = toggle,
+        items = HotbarItems
+    })
 end
 
-local function LoadAnimDict(dict)
-    RequestAnimDict(dict)
-    while not HasAnimDictLoaded(dict) do
-        Wait(0)
-    end
-end
-
+---Plays the opening animation of the inventory
 local function openAnim()
     LoadAnimDict('pickup_object')
     TaskPlayAnim(PlayerPedId(),'pickup_object', 'putdown_low', 5.0, 1.5, 1.0, 48, 0.0, 0, 0, 0)
 end
 
+---Setup item info for items from Config.CraftingItems
 local function ItemsToItemInfo()
-	itemInfos = {
+	local itemInfos = {
 		[1] = {costs = QBCore.Shared.Items["metalscrap"]["label"] .. ": 22x, " ..QBCore.Shared.Items["plastic"]["label"] .. ": 32x."},
 		[2] = {costs = QBCore.Shared.Items["metalscrap"]["label"] .. ": 30x, " ..QBCore.Shared.Items["plastic"]["label"] .. ": 42x."},
 		[3] = {costs = QBCore.Shared.Items["metalscrap"]["label"] .. ": 30x, " ..QBCore.Shared.Items["plastic"]["label"] .. ": 45x, "..QBCore.Shared.Items["aluminum"]["label"] .. ": 28x."},
@@ -226,8 +242,9 @@ local function ItemsToItemInfo()
 	Config.CraftingItems = items
 end
 
+---Setup item info for items from Config.AttachmentCrafting["items"]
 local function SetupAttachmentItemsInfo()
-	itemInfos = {
+	local itemInfos = {
 		[1] = {costs = QBCore.Shared.Items["metalscrap"]["label"] .. ": 140x, " .. QBCore.Shared.Items["steel"]["label"] .. ": 250x, " .. QBCore.Shared.Items["rubber"]["label"] .. ": 60x"},
 		[2] = {costs = QBCore.Shared.Items["metalscrap"]["label"] .. ": 165x, " .. QBCore.Shared.Items["steel"]["label"] .. ": 285x, " .. QBCore.Shared.Items["rubber"]["label"] .. ": 75x"},
 		[3] = {costs = QBCore.Shared.Items["metalscrap"]["label"] .. ": 190x, " .. QBCore.Shared.Items["steel"]["label"] .. ": 305x, " .. QBCore.Shared.Items["rubber"]["label"] .. ": 85x, " .. QBCore.Shared.Items["smg_extendedclip"]["label"] .. ": 1x"},
@@ -260,10 +277,12 @@ local function SetupAttachmentItemsInfo()
 	Config.AttachmentCrafting["items"] = items
 end
 
+---Runs ItemsToItemInfo() and checks if the client has enough reputation to support the threshold, otherwise the items is not available to craft for the client
+---@return table items
 local function GetThresholdItems()
 	ItemsToItemInfo()
 	local items = {}
-	for k, _ in pairs(Config.CraftingItems) do
+	for k in pairs(Config.CraftingItems) do
 		if PlayerData.metadata["craftingrep"] >= Config.CraftingItems[k].threshold then
 			items[k] = Config.CraftingItems[k]
 		end
@@ -271,6 +290,8 @@ local function GetThresholdItems()
 	return items
 end
 
+---Runs SetupAttachmentItemsInfo() and checks if the client has enough reputation to support the threshold, otherwise the items is not available to craft for the client
+---@return table items
 local function GetAttachmentThresholdItems()
 	SetupAttachmentItemsInfo()
 	local items = {}
@@ -282,6 +303,8 @@ local function GetAttachmentThresholdItems()
 	return items
 end
 
+---Removes drops in the area of the client
+---@param index integer The drop id to remove
 local function RemoveNearbyDrop(index)
     if DropsNear[index] then
         local dropItem = DropsNear[index].object
@@ -297,12 +320,15 @@ local function RemoveNearbyDrop(index)
     end
 end
 
+---Removes all drops in the area of the client
 local function RemoveAllNearbyDrops()
     for k in pairs(DropsNear) do
         RemoveNearbyDrop(k)
     end
 end
 
+---Creates a new item drop object on the ground
+---@param index integer The drop id to save the object in
 local function CreateItemDrop(index)
     local dropItem = CreateObject(Config.ItemDropObject, DropsNear[index].coords.x, DropsNear[index].coords.y, DropsNear[index].coords.z, false, false, false)
     DropsNear[index].object = dropItem
@@ -325,7 +351,9 @@ local function CreateItemDrop(index)
 	end
 end
 
--- Events
+--#endregion Functions
+
+--#region Events
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
     LocalPlayer.state:set("inv_busy", false, true)
@@ -347,6 +375,11 @@ end)
 
 RegisterNetEvent('QBCore:Player:SetPlayerData', function(val)
     PlayerData = val
+end)
+
+AddEventHandler('onResourceStop', function(name)
+    if name ~= GetCurrentResourceName() then return end
+    if Config.UseItemDrop then RemoveAllNearbyDrops() end
 end)
 
 RegisterNetEvent('inventory:client:CheckOpenState', function(type, id, label)
@@ -613,7 +646,21 @@ RegisterNetEvent('inventory:client:SetCurrentStash', function(stash)
     CurrentStash = stash
 end)
 
--- Commands
+RegisterNetEvent('qb-inventory:client:giveAnim', function()
+    LoadAnimDict('mp_common')
+	TaskPlayAnim(PlayerPedId(), 'mp_common', 'givetake1_b', 8.0, 1.0, -1, 16, 0, 0, 0, 0)
+end)
+
+RegisterNetEvent('inventory:client:craftTarget',function()
+    local crafting = {}
+    crafting.label = "Crafting"
+    crafting.items = GetThresholdItems()
+    TriggerServerEvent("inventory:server:OpenInventory", "crafting", math.random(1, 99), crafting)
+end)
+
+--#endregion Events
+
+--#region Commands
 
 RegisterCommand('closeinv', function()
     closeInventory()
@@ -627,7 +674,7 @@ RegisterCommand('inventory', function()
             local VendingMachine = nil
             if not Config.UseTarget then VendingMachine = GetClosestVending() end
 
-            if IsPedInAnyVehicle(ped) then -- Is Player In Vehicle
+            if IsPedInAnyVehicle(ped, false) then -- Is Player In Vehicle
                 local vehicle = GetVehiclePedIsIn(ped, false)
                 CurrentGlovebox = QBCore.Functions.GetPlate(vehicle)
                 curVeh = vehicle
@@ -758,19 +805,9 @@ for i = 1, 6 do
     RegisterKeyMapping('slot' .. i, 'Uses the item in slot ' .. i, 'keyboard', i)
 end
 
-RegisterNetEvent('qb-inventory:client:giveAnim', function()
-    LoadAnimDict('mp_common')
-	TaskPlayAnim(PlayerPedId(), 'mp_common', 'givetake1_b', 8.0, 1.0, -1, 16, 0, 0, 0, 0)
-end)
+--#endregion Commands
 
-RegisterNetEvent('inventory:client:craftTarget',function()
-    local crafting = {}
-    crafting.label = "Crafting"
-    crafting.items = GetThresholdItems()
-    TriggerServerEvent("inventory:server:OpenInventory", "crafting", math.random(1, 99), crafting)
-end)
-
--- NUI
+--#region NUI
 
 RegisterNUICallback('RobMoney', function(data, cb)
     TriggerServerEvent("police:server:RobPlayer", data.TargetId)
@@ -923,7 +960,9 @@ RegisterNUICallback("GiveItem", function(data, cb)
     cb('ok')
 end)
 
--- Threads
+--#endregion NUI
+
+--#region Threads
 
 CreateThread(function()
     while true do
@@ -1068,10 +1107,4 @@ CreateThread(function()
     end
 end)
 
--- Drop Stuff
-
-AddEventHandler('onResourceStop', function(name)
-    if name == GetCurrentResourceName() then
-        if Config.UseItemDrop then RemoveAllNearbyDrops() end
-    end
-end)
+--#endregion Threads
