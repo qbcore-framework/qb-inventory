@@ -26,8 +26,8 @@ local WeaponAttachments = {}
 ---@return boolean success Returns true if the player has the item
 local function HasItem(items, amount)
     local isTable = type(items) == 'table'
-	local isArray = isTable and table.type(items) == 'array' or false
-	local totalItems = #items
+    local isArray = isTable and table.type(items) == 'array' or false
+    local totalItems = #items
     local count = 0
     local kvIndex = 2
 	if isTable and not isArray then
@@ -89,7 +89,7 @@ end
 ---@param z number The z coord of the text to draw
 ---@param text string The text to display
 local function DrawText3Ds(x, y, z, text)
-	SetTextScale(0.35, 0.35)
+    SetTextScale(0.35, 0.35)
     SetTextFont(4)
     SetTextProportional(1)
     SetTextColour(255, 255, 255, 215)
@@ -295,7 +295,7 @@ end
 local function GetAttachmentThresholdItems()
 	SetupAttachmentItemsInfo()
 	local items = {}
-	for k, _ in pairs(Config.AttachmentCrafting["items"]) do
+	for k in pairs(Config.AttachmentCrafting["items"]) do
 		if PlayerData.metadata["attachmentcraftingrep"] >= Config.AttachmentCrafting["items"][k].threshold then
 			items[k] = Config.AttachmentCrafting["items"][k]
 		end
@@ -306,18 +306,19 @@ end
 ---Removes drops in the area of the client
 ---@param index integer The drop id to remove
 local function RemoveNearbyDrop(index)
-    if DropsNear[index] then
-        local dropItem = DropsNear[index].object
-        if DoesEntityExist(dropItem) then
-            DeleteEntity(dropItem)
-        end
+    if not DropsNear[index] then return end
 
-        DropsNear[index] = nil
-        if Drops[index] then
-            Drops[index].object = nil
-            Drops[index].isDropShowing = nil
-        end
+    local dropItem = DropsNear[index].object
+    if DoesEntityExist(dropItem) then
+        DeleteEntity(dropItem)
     end
+
+    DropsNear[index] = nil
+
+    if not Drops[index] then return end
+
+    Drops[index].object = nil
+    Drops[index].isDropShowing = nil
 end
 
 ---Removes all drops in the area of the client
@@ -360,7 +361,7 @@ RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
     PlayerData = QBCore.Functions.GetPlayerData()
     QBCore.Functions.TriggerCallback("inventory:server:GetCurrentDrops", function(theDrops)
 		Drops = theDrops
-	end)
+    end)
 end)
 
 RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
@@ -370,7 +371,7 @@ RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
 end)
 
 RegisterNetEvent('QBCore:Client:UpdateObject', function()
-	QBCore = exports['qb-core']:GetCoreObject()
+    QBCore = exports['qb-core']:GetCoreObject()
 end)
 
 RegisterNetEvent('QBCore:Player:SetPlayerData', function(val)
@@ -403,7 +404,7 @@ RegisterNetEvent('inventory:client:CheckOpenState', function(type, id, label)
     end
 end)
 
-RegisterNetEvent('weapons:client:SetCurrentWeapon', function(data, _)
+RegisterNetEvent('weapons:client:SetCurrentWeapon', function(data)
     CurrentWeaponData = data or {}
 end)
 
@@ -418,7 +419,7 @@ end)
 RegisterNetEvent('inventory:client:requiredItems', function(items, bool)
     local itemTable = {}
     if bool then
-        for k, _ in pairs(items) do
+        for k in pairs(items) do
             itemTable[#itemTable+1] = {
                 item = items[k].name,
                 label = QBCore.Shared.Items[items[k].name]["label"],
@@ -478,23 +479,23 @@ RegisterNetEvent('inventory:client:CraftItems', function(itemName, itemCosts, am
     })
     isCrafting = true
     QBCore.Functions.Progressbar("repair_vehicle", "Crafting..", (math.random(2000, 5000) * amount), false, true, {
-		disableMovement = true,
-		disableCarMovement = true,
-		disableMouse = false,
-		disableCombat = true,
+	    disableMovement = true,
+	    disableCarMovement = true,
+	    disableMouse = false,
+	    disableCombat = true,
 	}, {
-		animDict = "mini@repair",
-		anim = "fixing_a_player",
-		flags = 16,
+	    animDict = "mini@repair",
+	    anim = "fixing_a_player",
+	    flags = 16,
 	}, {}, {}, function() -- Done
-		StopAnimTask(ped, "mini@repair", "fixing_a_player", 1.0)
-        TriggerServerEvent("inventory:server:CraftItems", itemName, itemCosts, amount, toSlot, points)
-        TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items[itemName], 'add')
-        isCrafting = false
+	    StopAnimTask(ped, "mini@repair", "fixing_a_player", 1.0)
+            TriggerServerEvent("inventory:server:CraftItems", itemName, itemCosts, amount, toSlot, points)
+            TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items[itemName], 'add')
+            isCrafting = false
 	end, function() -- Cancel
-		StopAnimTask(ped, "mini@repair", "fixing_a_player", 1.0)
-        QBCore.Functions.Notify("Failed", "error")
-        isCrafting = false
+	    StopAnimTask(ped, "mini@repair", "fixing_a_player", 1.0)
+            QBCore.Functions.Notify("Failed", "error")
+            isCrafting = false
 	end)
 end)
 
@@ -505,23 +506,23 @@ RegisterNetEvent('inventory:client:CraftAttachment', function(itemName, itemCost
     })
     isCrafting = true
     QBCore.Functions.Progressbar("repair_vehicle", "Crafting..", (math.random(2000, 5000) * amount), false, true, {
-		disableMovement = true,
-		disableCarMovement = true,
-		disableMouse = false,
-		disableCombat = true,
+	    disableMovement = true,
+	    disableCarMovement = true,
+	    disableMouse = false,
+	    disableCombat = true,
 	}, {
-		animDict = "mini@repair",
-		anim = "fixing_a_player",
-		flags = 16,
+	    animDict = "mini@repair",
+	    anim = "fixing_a_player",
+	    flags = 16,
 	}, {}, {}, function() -- Done
-		StopAnimTask(ped, "mini@repair", "fixing_a_player", 1.0)
-        TriggerServerEvent("inventory:server:CraftAttachment", itemName, itemCosts, amount, toSlot, points)
-        TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items[itemName], 'add')
-        isCrafting = false
+	    StopAnimTask(ped, "mini@repair", "fixing_a_player", 1.0)
+            TriggerServerEvent("inventory:server:CraftAttachment", itemName, itemCosts, amount, toSlot, points)
+            TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items[itemName], 'add')
+            isCrafting = false
 	end, function() -- Cancel
-		StopAnimTask(ped, "mini@repair", "fixing_a_player", 1.0)
-        QBCore.Functions.Notify("Failed", "error")
-        isCrafting = false
+	    StopAnimTask(ped, "mini@repair", "fixing_a_player", 1.0)
+            QBCore.Functions.Notify("Failed", "error")
+            isCrafting = false
 	end)
 end)
 
@@ -574,41 +575,40 @@ RegisterNetEvent('inventory:client:UseWeapon', function(weaponData, shootbool)
         currentWeapon = weaponName
     else
         TriggerEvent('weapons:client:SetCurrentWeapon', weaponData, shootbool)
-        QBCore.Functions.TriggerCallback("weapon:server:GetWeaponAmmo", function(result, name)
-            local ammo = tonumber(result)
-            if weaponName == "weapon_petrolcan" or weaponName == "weapon_fireextinguisher" then
-                ammo = 4000
+        local weaponHash = joaat(weaponName)
+        local ammo = tonumber(weaponData.info.ammo or 0)
+
+        if weaponName == "weapon_petrolcan" then
+            ammo = 4000
+        end
+
+        GiveWeaponToPed(ped, weaponHash, ammo, false, false)
+        SetPedAmmo(ped, weaponHash, ammo)
+        SetCurrentPedWeapon(ped, weaponHash, true)
+
+        if weaponData.info.attachments then
+            for _, attachment in pairs(weaponData.info.attachments) do
+                GiveWeaponComponentToPed(ped, weaponHash, joaat(attachment.component))
             end
-	    if name ~= weaponName then
-                ammo = 0
-            end
-            GiveWeaponToPed(ped, GetHashKey(weaponName), 0, false, false)
-            SetPedAmmo(ped, GetHashKey(weaponName), ammo)
-            SetCurrentPedWeapon(ped, GetHashKey(weaponName), true)
-            if weaponData.info.attachments ~= nil then
-                for _, attachment in pairs(weaponData.info.attachments) do
-                    GiveWeaponComponentToPed(ped, GetHashKey(weaponName), GetHashKey(attachment.component))
-                end
-            end
-            currentWeapon = weaponName
-        end, CurrentWeaponData)
+        end
+
+        currentWeapon = weaponName
     end
 end)
 
 RegisterNetEvent('inventory:client:CheckWeapon', function(weaponName)
+    if currentWeapon ~= weaponName then return end
     local ped = PlayerPedId()
-    if currentWeapon == weaponName then
-        TriggerEvent('weapons:ResetHolster')
-        SetCurrentPedWeapon(ped, `WEAPON_UNARMED`, true)
-        RemoveAllPedWeapons(ped, true)
-        currentWeapon = nil
-    end
+    TriggerEvent('weapons:ResetHolster')
+    SetCurrentPedWeapon(ped, `WEAPON_UNARMED`, true)
+    RemoveAllPedWeapons(ped, true)
+    currentWeapon = nil
 end)
 
 -- This needs to be changed to do a raycast so items arent placed in walls
 RegisterNetEvent('inventory:client:AddDropItem', function(dropId, player, coords)
     local forward = GetEntityForwardVector(GetPlayerPed(GetPlayerFromServerId(player)))
-	local x, y, z = table.unpack(coords + forward * 0.5)
+    local x, y, z = table.unpack(coords + forward * 0.5)
     Drops[dropId] = {
         id = dropId,
         coords = {
@@ -633,10 +633,7 @@ RegisterNetEvent('inventory:client:DropItemAnim', function()
     SendNUIMessage({
         action = "close",
     })
-    RequestAnimDict("pickup_object")
-    while not HasAnimDictLoaded("pickup_object") do
-        Wait(7)
-    end
+    LoadAnimDict("pickup_object")
     TaskPlayAnim(ped, "pickup_object" ,"pickup_low" ,8.0, -8.0, -1, 1, 0, false, false, false )
     Wait(2000)
     ClearPedTasks(ped)
@@ -648,7 +645,7 @@ end)
 
 RegisterNetEvent('qb-inventory:client:giveAnim', function()
     LoadAnimDict('mp_common')
-	TaskPlayAnim(PlayerPedId(), 'mp_common', 'givetake1_b', 8.0, 1.0, -1, 16, 0, 0, 0, 0)
+    TaskPlayAnim(PlayerPedId(), 'mp_common', 'givetake1_b', 8.0, 1.0, -1, 16, 0, 0, 0, 0)
 end)
 
 RegisterNetEvent('inventory:client:craftTarget',function()
@@ -947,7 +944,7 @@ end)
 RegisterNUICallback("GiveItem", function(data, cb)
     local player, distance = QBCore.Functions.GetClosestPlayer(GetEntityCoords(PlayerPedId()))
     if player ~= -1 and distance < 3 then
-        if (data.inventory == 'player') then
+        if data.inventory == 'player' then
             local playerId = GetPlayerServerId(player)
             SetCurrentPedWeapon(PlayerPedId(),'WEAPON_UNARMED',true)
             TriggerServerEvent("inventory:server:GiveItem", playerId, data.item.name, data.amount, data.item.slot)
