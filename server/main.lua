@@ -2209,19 +2209,19 @@ end, 'admin')
 
 -- We need this thread because otherwise qb-core will throw an error that the exports of qb-inventory are not loaded yet and trying to be used
 CreateThread(function()
-	QBCore.Functions.CreateUseableItem("snowball", function(source, item)
+	CreateUsableItem("snowball", function(source, item)
 		local itemData = GetItemBySlot(source, item.slot)
-		if GetItemBySlot(source, item.slot) then
-			TriggerClientEvent("inventory:client:UseSnowball", source, itemData.amount)
-		end
+		if not itemData then return end
+		TriggerClientEvent("inventory:client:UseSnowball", source, itemData.amount)
 	end)
 
-	QBCore.Functions.CreateUseableItem("driver_license", function(source, item)
-		local PlayerPed = GetPlayerPed(source)
-		local PlayerCoords = GetEntityCoords(PlayerPed)
-		for _, v in pairs(QBCore.Functions.GetPlayers()) do
-			local TargetPed = GetPlayerPed(v)
-			local dist = #(PlayerCoords - GetEntityCoords(TargetPed))
+	CreateUsableItem("driver_license", function(source, item)
+		local playerPed = GetPlayerPed(source)
+		local playerCoords = GetEntityCoords(playerPed)
+		local players = QBCore.Functions.GetPlayers()
+		for _, v in pairs(players) do
+			local targetPed = GetPlayerPed(v)
+			local dist = #(playerCoords - GetEntityCoords(targetPed))
 			if dist < 3.0 then
 				TriggerClientEvent('chat:addMessage', v,  {
 						template = '<div class="chat-message advert"><div class="chat-message-body"><strong>{0}:</strong><br><br> <strong>First Name:</strong> {1} <br><strong>Last Name:</strong> {2} <br><strong>Birth Date:</strong> {3} <br><strong>Licenses:</strong> {4}</div></div>',
@@ -2238,12 +2238,13 @@ CreateThread(function()
 		end
 	end)
 
-	QBCore.Functions.CreateUseableItem("id_card", function(source, item)
-		local PlayerPed = GetPlayerPed(source)
-		local PlayerCoords = GetEntityCoords(PlayerPed)
-		for _, v in pairs(QBCore.Functions.GetPlayers()) do
-			local TargetPed = GetPlayerPed(v)
-			local dist = #(PlayerCoords - GetEntityCoords(TargetPed))
+	CreateUsableItem("id_card", function(source, item)
+		local playerPed = GetPlayerPed(source)
+		local playerCoords = GetEntityCoords(playerPed)
+		local players = QBCore.Functions.GetPlayers()
+		for _, v in pairs(players) do
+			local targetPed = GetPlayerPed(v)
+			local dist = #(playerCoords - GetEntityCoords(targetPed))
 			if dist < 3.0 then
 				local gender = "Man"
 				if item.info.gender == 1 then
