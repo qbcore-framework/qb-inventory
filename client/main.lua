@@ -4,7 +4,6 @@ local QBCore = exports['qb-core']:GetCoreObject()
 local PlayerData = QBCore.Functions.GetPlayerData()
 local inInventory = false
 local currentWeapon = nil
-local CurrentWeaponData = {}
 local currentOtherInventory = nil
 local Drops = {}
 local CurrentDrop = nil
@@ -402,10 +401,6 @@ RegisterNetEvent('inventory:client:CheckOpenState', function(type, id, label)
             TriggerServerEvent('inventory:server:SetIsOpenState', false, type, id)
         end
     end
-end)
-
-RegisterNetEvent('weapons:client:SetCurrentWeapon', function(data)
-    CurrentWeaponData = data or {}
 end)
 
 RegisterNetEvent('inventory:client:ItemBox', function(itemData, type)
