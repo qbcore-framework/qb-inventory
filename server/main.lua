@@ -326,7 +326,7 @@ exports("GetItemsByName", GetItemsByName)
 
 ---Clear the inventory of the player with the provided source and filter any items out of the clearing of the inventory to keep (optional)
 ---@param source number Source of the player to clear the inventory from
----@param filterItems? string[] Array of item names to keep
+---@param filterItems? string | string[] Array of item names to keep
 local function ClearInventory(source, filterItems)
 	local Player = QBCore.Functions.GetPlayer(source)
 	local savedItemData = {}
