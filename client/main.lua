@@ -537,19 +537,12 @@ RegisterNetEvent('inventory:client:PickupSnowballs', function()
         disableCombat = true,
     }, {}, {}, {}, function() -- Done
         ClearPedTasks(ped)
-        TriggerServerEvent('QBCore:Server:AddItem', "snowball", 1)
+	TriggerServerEvent('inventory:server:snowball', 'add')
         TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items["snowball"], "add")
     end, function() -- Cancel
         ClearPedTasks(ped)
         QBCore.Functions.Notify("Canceled", "error")
     end)
-end)
-
-RegisterNetEvent('inventory:client:UseSnowball', function(amount)
-    local ped = PlayerPedId()
-    GiveWeaponToPed(ped, `weapon_snowball`, amount, false, false)
-    SetPedAmmo(ped, `weapon_snowball`, amount)
-    SetCurrentPedWeapon(ped, `weapon_snowball`, true)
 end)
 
 RegisterNetEvent('inventory:client:UseWeapon', function(weaponData, shootbool)
@@ -571,12 +564,12 @@ RegisterNetEvent('inventory:client:UseWeapon', function(weaponData, shootbool)
         GiveWeaponToPed(ped, weaponHash, 10, false, false)
         SetPedAmmo(ped, weaponHash, 10)
         SetCurrentPedWeapon(ped, weaponHash, true)
-        TriggerServerEvent('inventory:server:removeSnowball')
+        TriggerServerEvent('inventory:server:snowball', 'remove')
         TriggerEvent('weapons:client:SetCurrentWeapon', weaponData, shootbool)
         currentWeapon = weaponName
     else
         TriggerEvent('weapons:client:SetCurrentWeapon', weaponData, shootbool)
-        local ammo = tonumber(weaponData.info.ammo or 0)
+        local ammo = tonumber(weaponData.info.ammo) or 0
 
         if weaponName == "weapon_petrolcan" then
             ammo = 4000
