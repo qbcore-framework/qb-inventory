@@ -1132,7 +1132,7 @@ end)
 
 RegisterNetEvent('QBCore:Server:UpdateObject', function()
     if source ~= '' then return end -- Safety check if the event was not called from the server.
-	QBCore = exports['qb-core']:GetCoreObject()
+    QBCore = exports['qb-core']:GetCoreObject()
 end)
 
 RegisterNetEvent('inventory:server:addTrunkItems', function(plate, items)
@@ -1454,33 +1454,29 @@ end)
 RegisterNetEvent('inventory:server:UseItemSlot', function(slot)
 	local src = source
 	local itemData = GetItemBySlot(src, slot)
-	if itemData then
-		local itemInfo = QBCore.Shared.Items[itemData.name]
-		if itemData.type == "weapon" then
-			if itemData.info.quality then
-				if itemData.info.quality > 0 then
-					TriggerClientEvent("inventory:client:UseWeapon", src, itemData, true)
-				else
-					TriggerClientEvent("inventory:client:UseWeapon", src, itemData, false)
-				end
-			else
-				TriggerClientEvent("inventory:client:UseWeapon", src, itemData, true)
-			end
-			TriggerClientEvent('inventory:client:ItemBox', src, itemInfo, "use")
-		elseif itemData.useable then
-			TriggerClientEvent("QBCore:Client:UseItem", src, itemData)
-			TriggerClientEvent('inventory:client:ItemBox', src, itemInfo, "use")
-		end
+	if not itemData then return end
+	local itemInfo = QBCore.Shared.Items[itemData.name]
+	if itemData.type == "weapon" then
+		TriggerClientEvent("inventory:client:UseWeapon", src, itemData, itemData.info.quality and itemData.info.quality <= 0)
+		TriggerClientEvent('inventory:client:ItemBox', src, itemInfo, "use")
+	elseif itemData.useable then
+		UseItem(itemData.name, src, itemData)
+		TriggerClientEvent('inventory:client:ItemBox', src, itemInfo, "use")
 	end
 end)
 
 RegisterNetEvent('inventory:server:UseItem', function(inventory, item)
 	local src = source
-	if inventory == "player" or inventory == "hotbar" then
-		local itemData = GetItemBySlot(src, item.slot)
-		if itemData then
-			TriggerClientEvent("QBCore:Client:UseItem", src, itemData)
-		end
+	if inventory ~= "player" and inventory ~= "hotbar" then return end
+	local itemData = GetItemBySlot(src, item.slot)
+	if not itemData then return end
+	local itemInfo = QBCore.Shared.Items[itemData.name]
+	if itemData.type == "weapon" then
+		TriggerClientEvent("inventory:client:UseWeapon", src, itemData, itemData.info.quality and itemData.info.quality <= 0)
+		TriggerClientEvent('inventory:client:ItemBox', src, itemInfo, "use")
+	else
+		UseItem(itemData.name, src, itemData)
+		TriggerClientEvent('inventory:client:ItemBox', src, itemInfo, "use")
 	end
 end)
 
@@ -2046,6 +2042,14 @@ RegisterServerEvent("inventory:server:GiveItem", function(target, name, amount, 
 	end
 end)
 
+RegisterNetEvent('inventory:server:snowball', function(action)
+	if action == "add" then
+		AddItem(source, "weapon_snowball")
+	elseif action == "remove" then
+		RemoveItem(source, "weapon_snowball")
+	end
+end)
+
 --#endregion Events
 
 --#region Callbacks
@@ -2199,19 +2203,13 @@ QBCore.Commands.Add('clearinv', 'Clear Players Inventory (Admin Only)', { { name
     if Player then
         ClearInventory(playerId)
     else
-		QBCore.Functions.Notify(source, "Player not online", 'error')
+        QBCore.Functions.Notify(source, "Player not online", 'error')
     end
 end, 'admin')
 
 --#endregion Commands
 
 --#region Items
-
-CreateUsableItem("snowball", function(source, item)
-	local itemData = GetItemBySlot(source, item.slot)
-	if not itemData then return end
-	TriggerClientEvent("inventory:client:UseSnowball", source, itemData.amount)
-end)
 
 CreateUsableItem("driver_license", function(source, item)
 	local playerPed = GetPlayerPed(source)
