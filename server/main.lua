@@ -12,6 +12,18 @@ RegisterNetEvent('QBCore:Server:UpdateObject', function()
 	QBCore = exports['qb-core']:GetCoreObject()
 end)
 
+CreateThread(function()
+	while true do
+		for k,v in pairs(Drops) do
+			if v and (v.createdTime + Config.CleanupDropTime < os.time()) and not Drops[k].isOpen then
+				Drops[k] = nil
+				TriggerClientEvent("inventory:client:RemoveDropItem", -1, k)
+			end
+		end
+		Wait(60*1000)
+	end
+end)
+
 -- Functions
 
 local function recipeContains(recipe, fromItem)
@@ -436,6 +448,7 @@ end
 -- Drop items
 local function AddToDrop(dropId, slot, itemName, amount, info)
 	amount = tonumber(amount)
+	Drops[dropId].createdTime = os.time()
 	if Drops[dropId].items[slot] ~= nil and Drops[dropId].items[slot].name == itemName then
 		Drops[dropId].items[slot].amount = Drops[dropId].items[slot].amount + amount
 	else
@@ -458,6 +471,7 @@ local function AddToDrop(dropId, slot, itemName, amount, info)
 end
 
 local function RemoveFromDrop(dropId, slot, itemName, amount)
+	Drops[dropId].createdTime = os.time()
 	if Drops[dropId].items[slot] ~= nil and Drops[dropId].items[slot].name == itemName then
 		if Drops[dropId].items[slot].amount > amount then
 			Drops[dropId].items[slot].amount = Drops[dropId].items[slot].amount - amount
@@ -500,6 +514,9 @@ local function CreateNewDrop(source, fromSlot, toSlot, itemAmount)
 		local itemInfo = QBCore.Shared.Items[itemData.name:lower()]
 		local dropId = CreateDropId()
 		Drops[dropId] = {}
+		Drops[dropId].coords = coords
+		Drops[dropId].createdTime = os.time()
+
 		Drops[dropId].items = {}
 
 		Drops[dropId].items[toSlot] = {
@@ -791,6 +808,7 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 					end
 				end
 				if Drops[id] and not Drops[id].isOpen then
+					secondInv.coords = Drops[id].coords
 					secondInv.name = id
 					secondInv.label = "Dropped-"..tostring(id)
 					secondInv.maxweight = 100000
@@ -798,6 +816,7 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 					secondInv.slots = 30
 					Drops[id].isOpen = src
 					Drops[id].label = secondInv.label
+					Drops[id].createdTime = os.time()
 				else
 					secondInv.name = "none-inv"
 					secondInv.label = "Dropped-None"
@@ -1443,6 +1462,10 @@ QBCore.Functions.CreateCallback('qb-inventory:server:GetStashItems', function(_,
 	cb(GetStashItems(stashId))
 end)
 
+QBCore.Functions.CreateCallback('inventory:server:GetCurrentDrops', function(_, cb)
+	cb(Drops)
+end)
+
 -- command
 
 QBCore.Commands.Add("resetinv", "Reset Inventory (Admin Only)", {{name="type", help="stash/trunk/glovebox"},{name="id/plate", help="ID of stash or license plate"}}, true, function(source, args)
@@ -1474,12 +1497,11 @@ QBCore.Commands.Add("rob", "Rob Player", {}, false, function(source, _)
 	TriggerClientEvent("police:client:RobPlayer", source)
 end)
 
-QBCore.Commands.Add("giveitem", "Give An Item (Admin Only)", {{name="id", help="Player ID"},{name="item", help="Name of the item (not a label)"}, {name="amount", help="Amount of items"}}, true, function(source, args)
+QBCore.Commands.Add("giveitem", "Give An Item (Admin Only)", {{name="id", help="Player ID"},{name="item", help="Name of the item (not a label)"}, {name="amount", help="Amount of items"}}, false, function(source, args)
 	local Player = QBCore.Functions.GetPlayer(tonumber(args[1]))
-	local amount = tonumber(args[3])
+	local amount = tonumber(args[3]) or 1
 	local itemData = QBCore.Shared.Items[tostring(args[2]):lower()]
 	if Player then
-		if amount > 0 then
 			if itemData then
 				-- check iteminfo
 				local info = {}
@@ -1516,9 +1538,6 @@ QBCore.Commands.Add("giveitem", "Give An Item (Admin Only)", {{name="id", help="
 			else
 				TriggerClientEvent('QBCore:Notify', source,  "Item Does Not Exist", "error")
 			end
-		else
-			TriggerClientEvent('QBCore:Notify', source,  "Invalid Amount", "error")
-		end
 	else
 		TriggerClientEvent('QBCore:Notify', source,  "Player Is Not Online", "error")
 	end
