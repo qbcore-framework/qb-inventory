@@ -462,10 +462,8 @@ exports("GetUsableItem", GetUsableItem)
 ---@param itemName string The name of the item to use
 ---@param ... any Arguments for the callback, this will be sent to the callback and can be used to get certain values
 local function UseItem(itemName, ...)
-	local callback = UsableItems[itemName].callback or UsableItems[itemName].cb or type(UsableItems[itemName]) == "function" and UsableItems[itemName]
-
+	local callback = UsableItems[itemName]
 	if not callback then return end
-
 	callback(...)
 end
 
