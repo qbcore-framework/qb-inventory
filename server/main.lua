@@ -1455,7 +1455,7 @@ RegisterNetEvent('inventory:server:UseItemSlot', function(slot)
 	if not itemData then return end
 	local itemInfo = QBCore.Shared.Items[itemData.name]
 	if itemData.type == "weapon" then
-		TriggerClientEvent("inventory:client:UseWeapon", src, itemData, itemData.info.quality and itemData.info.quality <= 0)
+		TriggerClientEvent("inventory:client:UseWeapon", src, itemData, itemData.info.quality and itemData.info.quality > 0)
 		TriggerClientEvent('inventory:client:ItemBox', src, itemInfo, "use")
 	elseif itemData.useable then
 		UseItem(itemData.name, src, itemData)
@@ -1470,7 +1470,7 @@ RegisterNetEvent('inventory:server:UseItem', function(inventory, item)
 	if not itemData then return end
 	local itemInfo = QBCore.Shared.Items[itemData.name]
 	if itemData.type == "weapon" then
-		TriggerClientEvent("inventory:client:UseWeapon", src, itemData, itemData.info.quality and itemData.info.quality <= 0)
+		TriggerClientEvent("inventory:client:UseWeapon", src, itemData, itemData.info.quality and itemData.info.quality > 0)
 		TriggerClientEvent('inventory:client:ItemBox', src, itemInfo, "use")
 	else
 		UseItem(itemData.name, src, itemData)
@@ -1869,6 +1869,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				price = tonumber(itemData.price)
 				if Player.Functions.RemoveMoney("cash", price, "dealer-item-bought") then
 					itemData.info.serie = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
+					itemData.info.quality = 100
 					AddItem(src, itemData.name, 1, toSlot, itemData.info)
 					TriggerClientEvent('qb-drugs:client:updateDealerItems', src, itemData, 1)
 					QBCore.Functions.Notify(src, itemInfo["label"] .. " bought!", "success")
@@ -1890,6 +1891,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 			if Player.Functions.RemoveMoney("cash", price, "itemshop-bought-item") then
                 if QBCore.Shared.SplitStr(itemData.name, "_")[1] == "weapon" then
                     itemData.info.serie = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
+					itemData.info.quality = 100
                 end
 				AddItem(src, itemData.name, fromAmount, toSlot, itemData.info)
 				TriggerClientEvent('qb-shops:client:UpdateShop', src, QBCore.Shared.SplitStr(shopType, "_")[2], itemData, fromAmount)
@@ -1899,6 +1901,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				Player.Functions.RemoveMoney("bank", price, "itemshop-bought-item")
                 if QBCore.Shared.SplitStr(itemData.name, "_")[1] == "weapon" then
                     itemData.info.serie = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
+					itemData.info.quality = 100
                 end
 				AddItem(src, itemData.name, fromAmount, toSlot, itemData.info)
 				TriggerClientEvent('qb-shops:client:UpdateShop', src, QBCore.Shared.SplitStr(shopType, "_")[2], itemData, fromAmount)
@@ -2152,6 +2155,7 @@ QBCore.Commands.Add("giveitem", "Give An Item (Admin Only)", {{name="id", help="
 				elseif itemData["type"] == "weapon" then
 					amount = 1
 					info.serie = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
+					info.quality = 100
 				elseif itemData["name"] == "harness" then
 					info.uses = 20
 				elseif itemData["name"] == "markedbills" then
