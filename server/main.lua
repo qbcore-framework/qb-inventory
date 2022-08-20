@@ -445,6 +445,7 @@ exports("HasItem", HasItem)
 ---@param data any
 local function CreateUsableItem(itemName, data)
 	UsableItems[itemName] = data
+	exports['qb-core']:SetUseableItem(itemName, data)
 end
 
 exports("CreateUsableItem", CreateUsableItem)
@@ -462,7 +463,7 @@ exports("GetUsableItem", GetUsableItem)
 ---@param itemName string The name of the item to use
 ---@param ... any Arguments for the callback, this will be sent to the callback and can be used to get certain values
 local function UseItem(itemName, ...)
-	local callback = UsableItems[itemName]
+	local callback = type(UsableItems[itemName]) == 'function' and UsableItems[itemName] or type(UsableItems[itemName]) == 'table' and (UsableItems[itemName].cb or UsableItems[itemName].callback)
 	if not callback then return end
 	callback(...)
 end
@@ -921,7 +922,7 @@ local function AddToGlovebox(plate, slot, otherslot, itemName, amount, info)
 	end
 end
 
----Remove the item from the stash
+---Remove the item from the glovebox
 ---@param plate string Plate of the car to remove the item from
 ---@param slot number Slot to remove the item from
 ---@param itemName string Name of the item to remove
@@ -1126,6 +1127,16 @@ AddEventHandler('onResourceStart', function(resourceName)
 			SetInventory(k, items)
 		end)
 	end
+end)
+
+AddEventHandler('onServerResourceStart', function(resource)
+	if resource ~= GetCurrentResourceName() then return end
+	UsableItems = exports['qb-core']:GetUseableItems()
+end)
+
+AddEventHandler('onServerResourceStop', function(resource)
+	if resource ~= GetCurrentResourceName() then return end
+	exports['qb-core']:SetUseableItems(UsableItems)
 end)
 
 RegisterNetEvent('QBCore:Server:UpdateObject', function()
