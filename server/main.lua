@@ -160,7 +160,7 @@ local function AddItem(source, item, amount, slot, info)
 	local totalWeight = GetTotalWeight(Player.PlayerData.items)
 	local itemInfo = QBCore.Shared.Items[item:lower()]
 	if not itemInfo and not Player.Offline then
-		QBCore.Functions.Notify(source, "Item does not exist", 'error')
+		QBCore.Functions.Notify(source, Lang:t("notify.idne"), "error")
 		return false
 	end
 
@@ -206,7 +206,7 @@ local function AddItem(source, item, amount, slot, info)
 			end
 		end
 	elseif not Player.Offline then
-		QBCore.Functions.Notify(source, "Inventory too full", 'error')
+		QBCore.Functions.Notify(source, Lang:t("notify.giymif"), "error")
 	end
 	return false
 end
