@@ -2205,7 +2205,7 @@ QBCore.Commands.Add('clearinv', 'Clear Players Inventory (Admin Only)', { { name
     if Player then
         ClearInventory(playerId)
     else
-        QBCore.Functions.Notify(src, Lang:t("notify.pdne"), "error")
+        QBCore.Functions.Notify(source, Lang:t("notify.pdne"), "error")
     end
 end, 'admin')
 
