@@ -463,7 +463,7 @@ exports("GetUsableItem", GetUsableItem)
 ---@param itemName string The name of the item to use
 ---@param ... any Arguments for the callback, this will be sent to the callback and can be used to get certain values
 local function UseItem(itemName, ...)
-	local callback = UsableItems[itemName].__cfx_functionReference and UsableItems[itemName] or UsableItems[itemName].cb or UsableItems[itemName].callback
+	local callback = type(UsableItems[itemName]) == 'table' and (rawget(UsableItems[itemName], '__cfx_functionReference') and UsableItems[itemName] or UsableItems[itemName].cb or UsableItems[itemName].callback)
 	if not callback then return end
 	callback(...)
 end
