@@ -1884,7 +1884,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 					QBCore.Functions.Notify(src, itemInfo["label"] .. " bought!", "success")
 					TriggerEvent("qb-log:server:CreateLog", "dealers", "Dealer item bought", "green", "**"..GetPlayerName(src) .. "** bought a " .. itemInfo["label"] .. "  for $"..price)
 				else
-					QBCore.Functions.Notify(src, "You don't have enough cash..", "error")
+					QBCore.Functions.Notify(src, Lang:t("notify.notencash"), "error")
 				end
 			end
 		elseif QBCore.Shared.SplitStr(shopType, "_")[1] == "Itemshop" then
@@ -1908,7 +1908,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				QBCore.Functions.Notify(src, itemInfo["label"] .. " bought!", "success")
 				TriggerEvent("qb-log:server:CreateLog", "shops", "Shop item bought", "green", "**"..GetPlayerName(src) .. "** bought a " .. itemInfo["label"] .. " for $"..price)
 			else
-				QBCore.Functions.Notify(src, "You don't have enough cash..", "error")
+				QBCore.Functions.Notify(src, Lang:t("notify.notencash"), "error")
 			end
 		else
 			if Player.Functions.RemoveMoney("cash", price, "unkown-itemshop-bought-item") then
@@ -1990,7 +1990,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				end
 			end
 		else
-			QBCore.Functions.Notify(src, "Item doesn't exist??", "error")
+			QBCore.Functions.Notify(src, Lang:t("notify.itemexist"), "error")
 		end
 	end
 end)
@@ -2205,7 +2205,7 @@ QBCore.Commands.Add('clearinv', 'Clear Players Inventory (Admin Only)', { { name
     if Player then
         ClearInventory(playerId)
     else
-        QBCore.Functions.Notify(source, "Player not online", 'error')
+        QBCore.Functions.Notify(src, Lang:t("notify.pdne"), "error")
     end
 end, 'admin')
 
