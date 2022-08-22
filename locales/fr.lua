@@ -39,8 +39,8 @@ local Translations = {
     },
     inf_mapping = {
         ["opn_inv"] = "Ouvrir l'inventaire",
-        ["tog_slots"] = "Active les emplacements de touches",
-        ["use_item"] = "Utilise l'objet dans l'emplacement ",
+        ["tog_slots"] = "Affiche la Hotbar",
+        ["use_item"] = "Utiliser l'objet ",
     },
     menu = {
         ["vending"] = "Distributeur",
