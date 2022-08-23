@@ -37,26 +37,6 @@ body {
     outline: 0;
 }
 
-input { 
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    outline: 0;
-}
-
-input::selection { 
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    outline: 0;
-}
-
 #qbcore-inventory {
 	position: absolute;
 	width: 100%;
