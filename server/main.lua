@@ -6,7 +6,6 @@ local Trunks = {}
 local Gloveboxes = {}
 local Stashes = {}
 local ShopItems = {}
-local UsableItems = {}
 
 --#endregion Variables
 
@@ -444,8 +443,7 @@ exports("HasItem", HasItem)
 ---@param itemName string The name of the item to make usable
 ---@param data any
 local function CreateUsableItem(itemName, data)
-	UsableItems[itemName] = data
-	exports['qb-core']:SetUseableItem(itemName, data)
+	QBCore.Functions.CreateUseableItem(itemName, data)
 end
 
 exports("CreateUsableItem", CreateUsableItem)
@@ -454,16 +452,17 @@ exports("CreateUsableItem", CreateUsableItem)
 ---@param itemName string The item to get the data for
 ---@return any usable_item
 local function GetUsableItem(itemName)
-	return UsableItems[itemName]
+	return QBCore.Functions.CanUseItem(itemName)
 end
 
 exports("GetUsableItem", GetUsableItem)
 
----Use an item from the UsableItems table if a callback is present
+---Use an item from the QBCore.UsableItems table if a callback is present
 ---@param itemName string The name of the item to use
 ---@param ... any Arguments for the callback, this will be sent to the callback and can be used to get certain values
 local function UseItem(itemName, ...)
-	local callback = type(UsableItems[itemName]) == 'table' and (rawget(UsableItems[itemName], '__cfx_functionReference') and UsableItems[itemName] or UsableItems[itemName].cb or UsableItems[itemName].callback)
+	local itemData = GetUsableItem(itemName)
+	local callback = type(itemData) == 'table' and (rawget(itemData, '__cfx_functionReference') and itemData or itemData.cb or itemData.callback) or type(itemData) == 'function' and itemData
 	if not callback then return end
 	callback(...)
 end
@@ -1127,16 +1126,6 @@ AddEventHandler('onResourceStart', function(resourceName)
 			SetInventory(k, items)
 		end)
 	end
-end)
-
-AddEventHandler('onServerResourceStart', function(resource)
-	if resource ~= GetCurrentResourceName() then return end
-	UsableItems = exports['qb-core']:GetUseableItems()
-end)
-
-AddEventHandler('onServerResourceStop', function(resource)
-	if resource ~= GetCurrentResourceName() then return end
-	exports['qb-core']:SetUseableItems(UsableItems)
 end)
 
 RegisterNetEvent('QBCore:Server:UpdateObject', function()
