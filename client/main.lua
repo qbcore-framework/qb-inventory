@@ -632,8 +632,12 @@ RegisterNetEvent('inventory:client:SetCurrentStash', function(stash)
 end)
 
 RegisterNetEvent('qb-inventory:client:giveAnim', function()
-    LoadAnimDict('mp_common')
-    TaskPlayAnim(PlayerPedId(), 'mp_common', 'givetake1_b', 8.0, 1.0, -1, 16, 0, 0, 0, 0)
+    if IsPedInAnyVehicle(PlayerPedId(), false) then
+	return
+    else
+	LoadAnimDict('mp_common')
+	TaskPlayAnim(PlayerPedId(), 'mp_common', 'givetake1_b', 8.0, 1.0, -1, 16, 0, 0, 0, 0)
+    end
 end)
 
 RegisterNetEvent('inventory:client:craftTarget',function()
