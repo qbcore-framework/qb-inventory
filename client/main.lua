@@ -56,6 +56,19 @@ end
 
 exports("HasItem", HasItem)
 
+local function CountItem(items, amount)
+    local PlayerDataX = QBCore.Functions.GetPlayerData()
+    local count = 0
+    for _, itemData in pairs(PlayerDataX.items) do
+		if itemData and itemData.name == items and (not amount or (itemData and amount and itemData.amount >= amount)) then
+			return items, itemData.amount
+		end
+    end
+    return items, count
+end
+
+exports("CountItem", CountItem)
+
 ---Gets the closest vending machine object to the client
 ---@return integer closestVendingMachine
 local function GetClosestVending()
