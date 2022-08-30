@@ -439,6 +439,19 @@ end
 
 exports("HasItem", HasItem)
 
+local function CountItem(source, items, amount)
+    local Player = QBCore.Functions.GetPlayer(source)
+    if not Player then return false end
+    local count = 0
+	local item = GetItemByName(source, items)
+	if item and (not amount or (item and amount and item.amount >= amount)) then
+		return item, item.amount
+	end
+    return item, count
+end
+
+exports("CountItem", CountItem)
+
 ---Create a usable item with a callback on use
 ---@param itemName string The name of the item to make usable
 ---@param data any
