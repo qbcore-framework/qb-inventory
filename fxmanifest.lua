@@ -2,9 +2,11 @@ fx_version 'cerulean'
 game 'gta5'
 
 description 'QB-Inventory'
-version '1.0.0'
+version '1.1.0'
 
 shared_scripts {
+	'@qb-core/shared/locale.lua',
+	'locales/en.lua', -- Change to the language you want
 	'config.lua',
 	'@qb-weapons/config.lua'
 }
@@ -29,7 +31,5 @@ files {
 	'html/attachment_images/*.png',
 	'html/*.ttf'
 }
-
-dependency 'qb-weapons'
 
 lua54 'yes'

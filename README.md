@@ -61,26 +61,38 @@ ensure qb-shops
 
 ## Configuration
 ```
-Config = {} -- Don't touch
+Config = {}
 
-Config.VendingObjects = { -- Props which will be considered as vending machines
+Config.UseTarget = GetConvar('UseTarget', 'false') == 'true' -- Use qb-target interactions (don't change this, go to your server.cfg and add `setr UseTarget true` to use this and just that from true to false or the other way around)
+
+Config.MaxInventoryWeight = 120000 -- Max weight a player can carry (default 120kg, written in grams)
+Config.MaxInventorySlots = 41 -- Max inventory slots for a player
+
+Config.CleanupDropTime = 15 * 60 -- How many seconds it takes for drops to be untouched before being deleted
+Config.MaxDropViewDistance = 12.5 -- The distance in GTA Units that a drop can be seen
+Config.UseItemDrop = false -- This will enable item object to spawn on drops instead of markers
+Config.ItemDropObject = `prop_nigel_bag_pickup` -- if Config.UseItemDrop is true, this will be the prop that spawns for the item
+
+Config.VendingObjects = {
     "prop_vend_soda_01",
     "prop_vend_soda_02",
     "prop_vend_water_01"
 }
 
-Config.BinObjects = { --  Props which will be considered as trash bins
+Config.BinObjects = {
     "prop_bin_05a",
 }
 
-Config.VendingItem = { -- Shop inventory for vending machines
+Config.CraftingObject = `prop_toolchest_05`
+
+Config.VendingItem = {
     [1] = {
-        name = "kurkakola", -- Item name
-        price = 4, -- Price per item
-        amount = 50, -- Stock amount
+        name = "kurkakola",
+        price = 4,
+        amount = 50,
         info = {},
         type = "item",
-        slot = 1, -- Inventory slot item will be displayed
+        slot = 1,
     },
     [2] = {
         name = "water_bottle",
@@ -92,12 +104,12 @@ Config.VendingItem = { -- Shop inventory for vending machines
     },
 }
 
-Config.CraftingItems = { -- Crafting recipes
+Config.CraftingItems = {
     [1] = {
-        name = "lockpick", -- Item which will be gained from crafting
-        amount = 50, -- Limit
+        name = "lockpick",
+        amount = 50,
         info = {},
-        costs = { -- Requirements for crafting
+        costs = {
             ["metalscrap"] = 22,
             ["plastic"] = 32,
         },
@@ -156,11 +168,11 @@ Config.CraftingItems = { -- Crafting recipes
             ["plastic"] = 50,
             ["aluminum"] = 30,
             ["iron"] = 17,
-            ["electronickit"] = 1,
+            ["electronickit"] = 2,
         },
         type = "item",
         slot = 5,
-        threshold = 120,
+        threshold = 110,
         points = 5,
     },
     [6] = {
@@ -263,14 +275,15 @@ Config.CraftingItems = { -- Crafting recipes
     },
 }
 
-Config.AttachmentCrafting = { -- Attachment crafting recipes
-    ["location"] = {x = 88.91, y = 3743.88, z = 40.77, h = 66.5, r = 1.0}, -- Marker location
+Config.AttachmentCraftingLocation = vector3(88.91, 3743.88, 40.77)
+
+Config.AttachmentCrafting = {
     ["items"] = {
         [1] = {
-            name = "pistol_extendedclip", -- Item which will be gained from crafting
-            amount = 50, -- Limit
+            name = "pistol_extendedclip",
+            amount = 50,
             info = {},
-            costs = { -- Requirements for crafting
+            costs = {
                 ["metalscrap"] = 140,
                 ["steel"] = 250,
                 ["rubber"] = 60,
@@ -295,37 +308,35 @@ Config.AttachmentCrafting = { -- Attachment crafting recipes
             points = 2,
         },
         [3] = {
-            name = "rifle_extendedclip",
+            name = "smg_extendedclip",
             amount = 50,
             info = {},
             costs = {
                 ["metalscrap"] = 190,
                 ["steel"] = 305,
                 ["rubber"] = 85,
-                ["smg_extendedclip"] = 1,
             },
             type = "item",
-            slot = 7,
+            slot = 3,
             threshold = 25,
-            points = 8,
+            points = 3,
         },
         [4] = {
-            name = "rifle_drummag",
+            name = "microsmg_extendedclip",
             amount = 50,
             info = {},
             costs = {
                 ["metalscrap"] = 205,
                 ["steel"] = 340,
                 ["rubber"] = 110,
-                ["smg_extendedclip"] = 2,
             },
             type = "item",
-            slot = 8,
+            slot = 4,
             threshold = 50,
-            points = 8,
+            points = 4,
         },
         [5] = {
-            name = "smg_flashlight",
+            name = "smg_drum",
             amount = 50,
             info = {},
             costs = {
@@ -334,12 +345,12 @@ Config.AttachmentCrafting = { -- Attachment crafting recipes
                 ["rubber"] = 130,
             },
             type = "item",
-            slot = 3,
+            slot = 5,
             threshold = 75,
-            points = 3,
+            points = 5,
         },
         [6] = {
-            name = "smg_extendedclip",
+            name = "smg_scope",
             amount = 50,
             info = {},
             costs = {
@@ -348,42 +359,43 @@ Config.AttachmentCrafting = { -- Attachment crafting recipes
                 ["rubber"] = 145,
             },
             type = "item",
-            slot = 4,
+            slot = 6,
             threshold = 100,
-            points = 4,
+            points = 6,
         },
         [7] = {
-            name = "smg_suppressor",
+            name = "assaultrifle_extendedclip",
             amount = 50,
             info = {},
             costs = {
                 ["metalscrap"] = 270,
                 ["steel"] = 435,
                 ["rubber"] = 155,
+                ["smg_extendedclip"] = 1,
             },
             type = "item",
-            slot = 5,
+            slot = 7,
             threshold = 150,
-            points = 5,
+            points = 7,
         },
         [8] = {
-            name = "smg_scope",
+            name = "assaultrifle_drum",
             amount = 50,
             info = {},
             costs = {
                 ["metalscrap"] = 300,
                 ["steel"] = 469,
                 ["rubber"] = 170,
+                ["smg_extendedclip"] = 2,
             },
             type = "item",
-            slot = 6,
+            slot = 8,
             threshold = 200,
-            points = 6,
+            points = 8,
         },
     }
 }
 
-MaxInventorySlots = 41
 Config.maxweight = 10000 -- Maximum Capacity of an un-configured trunk by default: 10 kg
 Config.slots = 15 -- How many slots in those trunks by default: 15 slots
 
@@ -426,7 +438,7 @@ BackEngineVehicles = { -- Vehicles which has its engine on back side of the vehi
     'comet3',
 }
 
-Config.MaximumAmmoValues = { -- Weapon specific maximum ammo count
+Config.MaximumAmmoValues = {
     ["pistol"] = 250,
     ["smg"] = 250,
     ["shotgun"] = 200,
