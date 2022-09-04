@@ -565,7 +565,7 @@ function FormatItemInfo(itemData) {
             var str = ""+ itemData.info.cardNumber + "";
             var res = str.slice(12);
             var cardNumber = "************" + res;
-            $(".item-info-description").html('<p><strong>Card Holder: </strong><span>' + itemData.info.name + '</span></p><p><strong>Citizen ID: </strong><span>' + itemData.info.citizenid + '</span></p><p><strong>Card Number: </strong><span>' + cardNumber + '</span></p>');			
+            $(".item-info-description").html('<p><strong>Card Holder: </strong><span>' + itemData.info.name + '</span></p><p><strong>Citizen ID: </strong><span>' + itemData.info.citizenid + '</span></p><p><strong>Card Number: </strong><span>' + cardNumber + '</span></p>');
         } else if (itemData.name == "labkey") {
             $(".item-info-title").html("<p>" + itemData.label + "</p>");
             $(".item-info-description").html("<p>Lab: " + itemData.info.lab + "</p>");
@@ -712,15 +712,20 @@ function handleDragDrop() {
             toSlot = $(this).attr("data-slot");
             toInventory = $(this).parent();
             toAmount = $("#item-amount").val();
-
+            var toDataUnique = toInventory.find("[data-slot=" + toSlot + "]").data("item");
+            var fromDataUnique = fromInventory.find("[data-slot=" + fromSlot + "]").data("item");
             if (fromSlot == toSlot && fromInventory == toInventory) {
                 return;
             }
             if (toAmount >= 0) {
-                if (
-                    updateweights(fromSlot, toSlot, fromInventory, toInventory, toAmount)
-                ) {
-                    swap(fromSlot, toSlot, fromInventory, toInventory, toAmount);
+                if (toDataUnique && fromDataUnique && toDataUnique.unique == fromDataUnique.unique) {
+                    return;
+                } else {
+                    if (
+                        updateweights(fromSlot, toSlot, fromInventory, toInventory, toAmount)
+                    ) {
+                        swap(fromSlot, toSlot, fromInventory, toInventory, toAmount);
+                    }
                 }
             }
         },
@@ -1425,7 +1430,7 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                             .html(qualityLabel);
                     }
                 }
-				
+
                 $fromInv
                     .find("[data-slot=" + $fromSlot + "]")
                     .data("item", newDataFrom);
