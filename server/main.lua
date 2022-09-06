@@ -6,7 +6,6 @@ local Trunks = {}
 local Gloveboxes = {}
 local Stashes = {}
 local ShopItems = {}
-local UsableItems = {}
 
 --#endregion Variables
 
@@ -166,11 +165,11 @@ local function AddItem(source, item, amount, slot, info)
 
 	amount = tonumber(amount) or 1
 	slot = tonumber(slot) or GetFirstSlotByItem(Player.PlayerData.items, item)
+	info = info or {}
 
-	if itemInfo['type'] == 'weapon' and not info then
-		info = {
-			serie = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
-		}
+	if itemInfo['type'] == 'weapon' then
+		info.serie = info.serie or tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
+		info.quality = info.quality or 100
 	end
 	if (totalWeight + (itemInfo['weight'] * amount)) <= Config.MaxInventoryWeight then
 		if (slot and Player.PlayerData.items[slot]) and (Player.PlayerData.items[slot].name:lower() == item:lower()) and (itemInfo['type'] == 'item' and not itemInfo['unique']) then
@@ -444,7 +443,7 @@ exports("HasItem", HasItem)
 ---@param itemName string The name of the item to make usable
 ---@param data any
 local function CreateUsableItem(itemName, data)
-	UsableItems[itemName] = data
+	QBCore.Functions.CreateUseableItem(itemName, data)
 end
 
 exports("CreateUsableItem", CreateUsableItem)
@@ -453,16 +452,17 @@ exports("CreateUsableItem", CreateUsableItem)
 ---@param itemName string The item to get the data for
 ---@return any usable_item
 local function GetUsableItem(itemName)
-	return UsableItems[itemName]
+	return QBCore.Functions.CanUseItem(itemName)
 end
 
 exports("GetUsableItem", GetUsableItem)
 
----Use an item from the UsableItems table if a callback is present
+---Use an item from the QBCore.UsableItems table if a callback is present
 ---@param itemName string The name of the item to use
 ---@param ... any Arguments for the callback, this will be sent to the callback and can be used to get certain values
 local function UseItem(itemName, ...)
-	local callback = UsableItems[itemName]
+	local itemData = GetUsableItem(itemName)
+	local callback = type(itemData) == 'table' and (rawget(itemData, '__cfx_functionReference') and itemData or itemData.cb or itemData.callback) or type(itemData) == 'function' and itemData
 	if not callback then return end
 	callback(...)
 end
@@ -921,7 +921,7 @@ local function AddToGlovebox(plate, slot, otherslot, itemName, amount, info)
 	end
 end
 
----Remove the item from the stash
+---Remove the item from the glovebox
 ---@param plate string Plate of the car to remove the item from
 ---@param slot number Slot to remove the item from
 ---@param itemName string Name of the item to remove
@@ -1056,7 +1056,7 @@ local function CreateNewDrop(source, fromSlot, toSlot, itemAmount)
 			TriggerClientEvent('Radio.Set', source, false)
 		end
 	else
-		QBCore.Functions.Notify(source, "You don't have this item!", "error")
+		QBCore.Functions.Notify(source, Lang:t("notify.missitem"), "error")
 	end
 end
 
@@ -1414,12 +1414,13 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 					secondInv.slots = 0
 				end
 			end
+			TriggerClientEvent("qb-inventory:client:closeinv", id)
 			TriggerClientEvent("inventory:client:OpenInventory", src, {}, Player.PlayerData.items, secondInv)
 		else
 			TriggerClientEvent("inventory:client:OpenInventory", src, {}, Player.PlayerData.items)
 		end
 	else
-		QBCore.Functions.Notify(src, 'Not Accessible', 'error')
+		QBCore.Functions.Notify(src, Lang:t("notify.noaccess"), 'error')
 	end
 end)
 
@@ -1615,7 +1616,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 					local itemInfo = QBCore.Shared.Items[fromItemData.name:lower()]
 					exports['qb-traphouse']:AddHouseItem(traphouseId, toSlot, itemInfo["name"], fromAmount, fromItemData.info, src)
 				else
-					QBCore.Functions.Notify(src, "You can\'t sell this item..", 'error')
+					QBCore.Functions.Notify(src, Lang:t("notify.nosell"), 'error')
 				end
 			else
 				-- drop
@@ -1646,7 +1647,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				end
 			end
 		else
-			QBCore.Functions.Notify(src, "You don\'t have this item!", "error")
+			QBCore.Functions.Notify(src, Lang:t("notify.missitem"), "error")
 		end
 	elseif QBCore.Shared.SplitStr(fromInventory, "-")[1] == "otherplayer" then
 		local playerId = tonumber(QBCore.Shared.SplitStr(fromInventory, "-")[2])
@@ -1730,7 +1731,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				AddToTrunk(plate, toSlot, fromSlot, itemInfo["name"], fromAmount, fromItemData.info)
 			end
 		else
-			QBCore.Functions.Notify(src, "Item doesn\'t exist??", "error")
+			QBCore.Functions.Notify(src, Lang:t("notify.itemexist"), "error")
 		end
 	elseif QBCore.Shared.SplitStr(fromInventory, "-")[1] == "glovebox" then
 		local plate = QBCore.Shared.SplitStr(fromInventory, "-")[2]
@@ -1772,7 +1773,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				AddToGlovebox(plate, toSlot, fromSlot, itemInfo["name"], fromAmount, fromItemData.info)
 			end
 		else
-			QBCore.Functions.Notify(src, "Item doesn\'t exist??", "error")
+			QBCore.Functions.Notify(src, Lang:t("notify.itemexist"), "error")
 		end
 	elseif QBCore.Shared.SplitStr(fromInventory, "-")[1] == "stash" then
 		local stashId = QBCore.Shared.SplitStr(fromInventory, "-")[2]
@@ -1815,7 +1816,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				AddToStash(stashId, toSlot, fromSlot, itemInfo["name"], fromAmount, fromItemData.info)
 			end
 		else
-			QBCore.Functions.Notify(src, "Item doesn\'t exist??", "error")
+			QBCore.Functions.Notify(src, Lang:t("notify.itemexist"), "error")
 		end
 	elseif QBCore.Shared.SplitStr(fromInventory, "-")[1] == "traphouse" then
 		local traphouseId = QBCore.Shared.SplitStr(fromInventory, "-")[2]
@@ -1875,7 +1876,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 					QBCore.Functions.Notify(src, itemInfo["label"] .. " bought!", "success")
 					TriggerEvent("qb-log:server:CreateLog", "dealers", "Dealer item bought", "green", "**"..GetPlayerName(src) .. "** bought a " .. itemInfo["label"] .. " for $"..price)
 				else
-					QBCore.Functions.Notify(src, "You don\'t have enough cash..", "error")
+					QBCore.Functions.Notify(src, Lang:t("notify.notencash"), "error")
 				end
 			else
 				if Player.Functions.RemoveMoney("cash", price, "dealer-item-bought") then
@@ -1921,7 +1922,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				QBCore.Functions.Notify(src, itemInfo["label"] .. " bought!", "success")
 				TriggerEvent("qb-log:server:CreateLog", "shops", "Shop item bought", "green", "**"..GetPlayerName(src) .. "** bought a " .. itemInfo["label"] .. " for $"..price)
 			else
-				QBCore.Functions.Notify(src, "You don\'t have enough cash..", "error")
+				QBCore.Functions.Notify(src, Lang:t("notify.notencash"), "error")
 			end
 		end
 	elseif fromInventory == "crafting" then
@@ -1930,7 +1931,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 			TriggerClientEvent("inventory:client:CraftItems", src, itemData.name, itemData.costs, fromAmount, toSlot, itemData.points)
 		else
 			TriggerClientEvent("inventory:client:UpdatePlayerInventory", src, true)
-			QBCore.Functions.Notify(src, "You don't have the right items..", "error")
+			QBCore.Functions.Notify(src, Lang:t("notify.noitem"), "error")
 		end
 	elseif fromInventory == "attachment_crafting" then
 		local itemData = Config.AttachmentCrafting["items"][fromSlot]
@@ -1938,7 +1939,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 			TriggerClientEvent("inventory:client:CraftAttachment", src, itemData.name, itemData.costs, fromAmount, toSlot, itemData.points)
 		else
 			TriggerClientEvent("inventory:client:UpdatePlayerInventory", src, true)
-			QBCore.Functions.Notify(src, "You don't have the right items..", "error")
+			QBCore.Functions.Notify(src, Lang:t("notify.noitem"), "error")
 		end
 	else
 		-- drop
@@ -1953,6 +1954,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				if toItemData then
 					toAmount = tonumber(toAmount) and tonumber(toAmount) or toItemData.amount
 					if toItemData.name ~= fromItemData.name then
+						itemInfo = QBCore.Shared.Items[toItemData.name:lower()]
 						RemoveItem(src, toItemData.name, toAmount, toSlot)
 						AddToDrop(fromInventory, toSlot, itemInfo["name"], toAmount, toItemData.info)
 						if itemInfo["name"] == "radio" then
@@ -2008,11 +2010,11 @@ RegisterServerEvent("inventory:server:GiveItem", function(target, name, amount, 
 	target = tonumber(target)
     local OtherPlayer = QBCore.Functions.GetPlayer(target)
     local dist = #(GetEntityCoords(GetPlayerPed(src))-GetEntityCoords(GetPlayerPed(target)))
-	if Player == OtherPlayer then return QBCore.Functions.Notify(src, "You can't give yourself an item?") end
-	if dist > 2 then return QBCore.Functions.Notify(src, "You are too far away to give items!") end
+	if Player == OtherPlayer then return QBCore.Functions.Notify(src, Lang:t("notify.gsitem")) end
+	if dist > 2 then return QBCore.Functions.Notify(src, Lang:t("notify.tftgitem")) end
 	local item = GetItemBySlot(src, slot)
-	if not item then QBCore.Functions.Notify(src, "Item you tried giving not found!"); return end
-	if item.name ~= name then QBCore.Functions.Notify(src, "Incorrect item found try again!"); return end
+	if not item then QBCore.Functions.Notify(src, Lang:t("notify.infound")); return end
+	if item.name ~= name then QBCore.Functions.Notify(src, Lang:t("notify.iifound")); return end
 
 	if amount <= item.amount then
 		if amount == 0 then
@@ -2021,25 +2023,25 @@ RegisterServerEvent("inventory:server:GiveItem", function(target, name, amount, 
 		if RemoveItem(src, item.name, amount, item.slot) then
 			if AddItem(target, item.name, amount, false, item.info) then
 				TriggerClientEvent('inventory:client:ItemBox',target, QBCore.Shared.Items[item.name], "add")
-				QBCore.Functions.Notify(target, "You Received "..amount..' '..item.label.." From "..Player.PlayerData.charinfo.firstname.." "..Player.PlayerData.charinfo.lastname)
+				QBCore.Functions.Notify(target, Lang:t("notify.gitemrec")..amount..' '..item.label..Lang:t("notify.gitemfrom")..Player.PlayerData.charinfo.firstname.." "..Player.PlayerData.charinfo.lastname)
 				TriggerClientEvent("inventory:client:UpdatePlayerInventory", target, true)
 				TriggerClientEvent('inventory:client:ItemBox',src, QBCore.Shared.Items[item.name], "remove")
-				QBCore.Functions.Notify(src, "You gave " .. OtherPlayer.PlayerData.charinfo.firstname.." "..OtherPlayer.PlayerData.charinfo.lastname.. " " .. amount .. " " .. item.label .."!")
+				QBCore.Functions.Notify(src, Lang:t("notify.gitemyg") .. OtherPlayer.PlayerData.charinfo.firstname.." "..OtherPlayer.PlayerData.charinfo.lastname.. " " .. amount .. " " .. item.label .."!")
 				TriggerClientEvent("inventory:client:UpdatePlayerInventory", src, true)
 				TriggerClientEvent('qb-inventory:client:giveAnim', src)
 				TriggerClientEvent('qb-inventory:client:giveAnim', target)
 			else
 				AddItem(src, item.name, amount, item.slot, item.info)
-				QBCore.Functions.Notify(src, "The other players inventory is full!", "error")
-				QBCore.Functions.Notify(target, "Your inventory is full!", "error")
+				QBCore.Functions.Notify(src, Lang:t("notify.gitinvfull"), "error")
+				QBCore.Functions.Notify(target, Lang:t("notify.giymif"), "error")
 				TriggerClientEvent("inventory:client:UpdatePlayerInventory", src, false)
 				TriggerClientEvent("inventory:client:UpdatePlayerInventory", target, false)
 			end
 		else
-			QBCore.Functions.Notify(src, "You do not have enough of the item", "error")
+			QBCore.Functions.Notify(src, Lang:t("notify.gitydhei"), "error")
 		end
 	else
-		QBCore.Functions.Notify(src, "You do not have enough items to transfer")
+		QBCore.Functions.Notify(src, Lang:t("notify.gitydhitt"))
 	end
 end)
 
@@ -2120,10 +2122,10 @@ QBCore.Commands.Add("resetinv", "Reset Inventory (Admin Only)", {{name="type", h
 				Stashes[invId].isOpen = false
 			end
 		else
-			QBCore.Functions.Notify(source,  "Not a valid type..", "error")
+			QBCore.Functions.Notify(source,  Lang:t("notify.navt"), "error")
 		end
 	else
-		QBCore.Functions.Notify(source,  "Arguments not filled out correctly..", "error")
+		QBCore.Functions.Notify(source,  Lang:t("notify.anfoc"), "error")
 	end
 end, "admin")
 
@@ -2167,15 +2169,15 @@ QBCore.Commands.Add("giveitem", "Give An Item (Admin Only)", {{name="id", help="
 				end
 
 				if AddItem(id, itemData["name"], amount, false, info) then
-					QBCore.Functions.Notify(source, "You Have Given " ..GetPlayerName(id).." "..amount.." "..itemData["name"].. "", "success")
+					QBCore.Functions.Notify(source, Lang:t("notify.yhg") ..GetPlayerName(id).." "..amount.." "..itemData["name"].. "", "success")
 				else
-					QBCore.Functions.Notify(source,  "Can't give item!", "error")
+					QBCore.Functions.Notify(source,  Lang:t("notify.cgitem"), "error")
 				end
 			else
-				QBCore.Functions.Notify(source,  "Item Does Not Exist", "error")
+				QBCore.Functions.Notify(source,  Lang:t("notify.idne"), "error")
 			end
 	else
-		QBCore.Functions.Notify(source,  "Player Is Not Online", "error")
+		QBCore.Functions.Notify(source,  Lang:t("notify.pdne"), "error")
 	end
 end, "admin")
 
