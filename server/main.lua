@@ -1890,6 +1890,15 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 			end
 		elseif QBCore.Shared.SplitStr(shopType, "_")[1] == "Itemshop" then
 			if Player.Functions.RemoveMoney("cash", price, "itemshop-bought-item") then
+				if itemData.name == 'duffel-bag' then 
+					itemData.info.bagid = math.random(11111,99999) 
+					end
+				if itemData.name == 'gift' then 
+					itemData.info.bagid = math.random(11111,99999) 
+					end
+				if itemData.name == 'pokebox' then 
+					itemData.info.bagid = math.random(11111,99999) 
+					end
                 if QBCore.Shared.SplitStr(itemData.name, "_")[1] == "weapon" then
                     itemData.info.serie = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
 					itemData.info.quality = 100
@@ -2162,6 +2171,12 @@ QBCore.Commands.Add("giveitem", "Give An Item (Admin Only)", {{name="id", help="
 					info.uses = 20
 				elseif itemData["name"] == "markedbills" then
 					info.worth = math.random(5000, 10000)
+				elseif itemData['name'] == 'duffel-bag' then
+					info.bagid = math.random(11111,99999)
+				elseif itemData['name'] == 'gift' then
+					info.bagid = math.random(11111,99999)
+				elseif itemData['name'] == 'pokebox' then
+					info.bagid = math.random(11111,99999)
 				elseif itemData["name"] == "labkey" then
 					info.lab = exports["qb-methlab"]:GenerateRandomLab()
 				elseif itemData["name"] == "printerdocument" then
