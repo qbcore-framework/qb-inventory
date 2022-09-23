@@ -28,18 +28,18 @@
             </div>
             <div class="inv-container">
                 <div class="ply-inv-container">
-                    <div class="player-inventory" data-inventory="player"></div>
+                    <div class="player-inventory disableSelection" data-inventory="player"></div>
                 </div>
                 <div class="inv-options">
                     <div class="inv-options-list">
-                        <input type="number" id="item-amount" class="inv-option-item" min=1 max="10000" placeholder="Amount" pattern="[0-9]" onfocus="this.value=''" placeholder="" oninput="validity.valid||(value='');"></input>
+                        <input tabindex="-1" type="number" id="item-amount" class="inv-option-item" min=1 max="10000" placeholder="Amount" pattern="[0-9]" onfocus="this.value=''" placeholder="" oninput="validity.valid||(value='');"></input>
                         <div class="inv-option-item" id="item-use"><p>USE</p></div>
                         <div class="inv-option-item" id="item-give"><p>GIVE</p></div>
                         <div class="inv-option-item" id="inv-close"><p>CLOSE</p></div>
                     </div>
                 </div>
                 <div class="oth-inv-container">
-                    <div class="other-inventory" data-inventory="other">
+                    <div class="other-inventory disableSelection" data-inventory="other">
                             <!-- auto generated -->
                     </div>
                 </div>
