@@ -52,7 +52,6 @@ local function LoadInventory(source, citizenid)
 
     if #missingItems > 0 then
         print(("The following items were removed for player %s as they no longer exist"):format(GetPlayerName(source)))
-		QBCore.Debug(missingItems)
     end
 
     return loadedInventory
@@ -1137,6 +1136,10 @@ RegisterNetEvent('inventory:server:addTrunkItems', function(plate, items)
 	Trunks[plate] = {}
 	Trunks[plate].items = items
 end)
+RegisterNetEvent('inventory:server:addGloveboxItems', function(plate, items)
+	Gloveboxes[plate] = {}
+	Gloveboxes[plate].items = items
+end)
 
 RegisterNetEvent('inventory:server:combineItem', function(item, fromItem, toItem)
 	local src = source
@@ -1277,7 +1280,7 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 				secondInv.maxweight = other.maxweight or 60000
 				secondInv.inventory = {}
 				secondInv.slots = other.slots or 50
-				if (Trunks[id] and Trunks[id].isOpen) or (QBCore.Shared.SplitStr(id, "PLZI")[2] and Player.PlayerData.job.name ~= "police") then
+				if (Trunks[id] and Trunks[id].isOpen) or (QBCore.Shared.SplitStr(id, "PLZI")[2] and (Player.PlayerData.job.name ~= "police" or Player.PlayerData.job.type ~= "leo")) then
 					secondInv.name = "none-inv"
 					secondInv.label = "Trunk-None"
 					secondInv.maxweight = other.maxweight or 60000
@@ -1346,6 +1349,7 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 					end
 				end
 			elseif name == "shop" then
+				QBCore.Debug(other.label)
 				secondInv.name = "itemshop-"..id
 				secondInv.label = other.label
 				secondInv.maxweight = 900000
@@ -1378,7 +1382,7 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 					secondInv.label = "Player-"..id
 					secondInv.maxweight = Config.MaxInventoryWeight
 					secondInv.inventory = OtherPlayer.PlayerData.items
-					if Player.PlayerData.job.name == "police" and Player.PlayerData.job.onduty then
+					if (Player.PlayerData.job.name == "police" or Player.PlayerData.job.type == "leo") and Player.PlayerData.job.onduty then
 						secondInv.slots = Config.MaxInventorySlots
 					else
 						secondInv.slots = Config.MaxInventorySlots - 1
