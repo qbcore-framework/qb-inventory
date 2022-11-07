@@ -13,7 +13,6 @@ local CurrentGlovebox = nil
 local CurrentStash = nil
 local isCrafting = false
 local isHotbar = false
-local WeaponAttachments = {}
 
 --#endregion Variables
 
