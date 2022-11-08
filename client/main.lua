@@ -570,7 +570,7 @@ RegisterNetEvent('inventory:client:UseWeapon', function(weaponData, shootbool)
         TriggerEvent('weapons:client:SetCurrentWeapon', weaponData, shootbool)
         local ammo = tonumber(weaponData.info.ammo) or 0
 
-        if weaponName == "weapon_petrolcan" then
+        if weaponName == "weapon_petrolcan" or weaponName == "weapon_fireextinguisher" then
             ammo = 4000
         end
 
