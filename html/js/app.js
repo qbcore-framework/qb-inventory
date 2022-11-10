@@ -1572,7 +1572,9 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                 })
             );
         } else {
-            if (fromData.amount == $toAmount) {
+            if (fromData.amount == $toAmount &&
+                (toData == undefined || toData == null)
+            ) {
                 if (
                     toData != undefined &&
                     toData.combinable != null &&
