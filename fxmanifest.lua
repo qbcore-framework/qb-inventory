@@ -9,7 +9,6 @@ shared_scripts {
     'locales/en.lua',
     'locales/*.lua',
     'config.lua',
-    '@qb-weapons/config.lua'
 }
 
 server_scripts {
@@ -32,5 +31,7 @@ files {
     'html/attachment_images/*.png',
     'html/*.ttf'
 }
+
+dependecy 'qb-weapons'
 
 lua54 'yes'
