@@ -1349,7 +1349,6 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 					end
 				end
 			elseif name == "shop" then
-				QBCore.Debug(other.label)
 				secondInv.name = "itemshop-"..id
 				secondInv.label = other.label
 				secondInv.maxweight = 900000
