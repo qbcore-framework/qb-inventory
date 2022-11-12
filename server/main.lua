@@ -2054,10 +2054,10 @@ RegisterNetEvent('inventory:server:snowball', function(action)
 	end
 end)
 RegisterNetEvent('inventory:server:addTrunkItems', function()
-	print('inventory:server:addTrunkItems has been deprecated please use exports['qb-inventory']:addTrunkItems(plate, items)')
+	print('inventory:server:addTrunkItems has been deprecated please use exports[\'qb-inventory\']:addTrunkItems(plate, items)')
 end)
 RegisterNetEvent('inventory:server:addGloveboxItems', function()
-	print('inventory:server:addGloveboxItems has been deprecated please use exports['qb-inventory']:addGloveboxItems(plate, items)')
+	print('inventory:server:addGloveboxItems has been deprecated please use exports[\'qb-inventory\']:addGloveboxItems(plate, items)')
 end)
 --#endregion Events
 
