@@ -535,8 +535,6 @@ local function SetupShopItems(shopItems)
 end
 
 ---Get items in a stash
----@param stashId string The id of the stash to get
----@return table items
 local function GetStashItems(stashId)
 	local items = {}
 	local result = MySQL.scalar.await('SELECT items FROM stashitems WHERE stash = ?', {stashId})
@@ -567,8 +565,6 @@ local function GetStashItems(stashId)
 end
 
 ---Save the items in a stash
----@param stashId string The stash id to save the items from
----@param items table items to save
 local function SaveStashItems(stashId, items)
 	if Stashes[stashId].label == "Stash-None" or not items then return end
 
@@ -1126,20 +1122,20 @@ AddEventHandler('onResourceStart', function(resourceName)
 		end)
 	end
 end)
-
 RegisterNetEvent('QBCore:Server:UpdateObject', function()
     if source ~= '' then return end -- Safety check if the event was not called from the server.
     QBCore = exports['qb-core']:GetCoreObject()
 end)
-
-RegisterNetEvent('inventory:server:addTrunkItems', function(plate, items)
+function addTrunkItems(plate, items)
 	Trunks[plate] = {}
 	Trunks[plate].items = items
-end)
-RegisterNetEvent('inventory:server:addGloveboxItems', function(plate, items)
+end
+exports('addTrunkItems',addTrunkItems)
+function addGloveboxItems(plate, items)
 	Gloveboxes[plate] = {}
 	Gloveboxes[plate].items = items
-end)
+end
+exports('addGloveboxItems',addGloveboxItems)
 
 RegisterNetEvent('inventory:server:combineItem', function(item, fromItem, toItem)
 	local src = source
