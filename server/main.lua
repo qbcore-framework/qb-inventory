@@ -535,6 +535,8 @@ local function SetupShopItems(shopItems)
 end
 
 ---Get items in a stash
+---@param stashId string The id of the stash to get
+---@return table items
 local function GetStashItems(stashId)
 	local items = {}
 	local result = MySQL.scalar.await('SELECT items FROM stashitems WHERE stash = ?', {stashId})
@@ -2051,7 +2053,12 @@ RegisterNetEvent('inventory:server:snowball', function(action)
 		RemoveItem(source, "weapon_snowball")
 	end
 end)
-
+RegisterNetEvent('inventory:server:addTrunkItems', function()
+	print('inventory:server:addTrunkItems has been deprecated please use exports['qb-inventory']:addTrunkItems(plate, items)')
+end)
+RegisterNetEvent('inventory:server:addGloveboxItems', function()
+	print('inventory:server:addGloveboxItems has been deprecated please use exports['qb-inventory']:addGloveboxItems(plate, items)')
+end)
 --#endregion Events
 
 --#region Callbacks
