@@ -1057,10 +1057,10 @@ local function CreateNewDrop(source, fromSlot, toSlot, itemAmount)
 	end
 end
 
-local function OpenInventory(name, id, other, citid, origin)
+local function OpenInventory(name, id, other, origin)
 	local src = origin
 	local ply = Player(src)
-	local Player = QBCore.Functions.GetPlayerByCitizenId(citid)
+    local Player = QBCore.Functions.GetPlayer(src)
 	if not ply.state.inv_busy then
 		if name and id then
 			local secondInv = {}
