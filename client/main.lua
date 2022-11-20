@@ -406,11 +406,13 @@ RegisterNetEvent('inventory:client:CheckOpenState', function(type, id, label)
     end
 end)
 
-RegisterNetEvent('inventory:client:ItemBox', function(itemData, type)
+RegisterNetEvent('inventory:client:ItemBox', function(itemData, type, amount)
+    if amount ~= nil then amount = "x " .. amount else amount = "" end
     SendNUIMessage({
         action = "itemBox",
         item = itemData,
-        type = type
+        type = type,
+	itemAmount = amount,
     })
 end)
 
@@ -418,10 +420,12 @@ RegisterNetEvent('inventory:client:requiredItems', function(items, bool)
     local itemTable = {}
     if bool then
         for k in pairs(items) do
+	    if items[k].amount ~= nil then amount = "x " .. items[k].amount else amount = "" end
             itemTable[#itemTable+1] = {
                 item = items[k].name,
                 label = QBCore.Shared.Items[items[k].name]["label"],
                 image = items[k].image,
+		amount = amount,
             }
         end
     end
