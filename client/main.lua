@@ -787,7 +787,7 @@ RegisterKeyMapping('hotbar', Lang:t("inf_mapping.tog_slots"), 'keyboard', 'z')
 
 for i = 1, 6 do
     RegisterCommand('slot' .. i,function()
-        if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() then
+        if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() and not LocalPlayer.state.inv_busy then
             if i == 6 then
                 i = Config.MaxInventorySlots
             end
