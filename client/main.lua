@@ -420,7 +420,8 @@ RegisterNetEvent('inventory:client:requiredItems', function(items, bool)
     local itemTable = {}
     if bool then
         for k in pairs(items) do
-	    if items[k].amount ~= nil then amount = "x " .. items[k].amount else amount = "" end
+	    amount = ""
+	    if items[k].amount ~= nil then amount = "x " .. items[k].amount end
             itemTable[#itemTable+1] = {
                 item = items[k].name,
                 label = QBCore.Shared.Items[items[k].name]["label"],
