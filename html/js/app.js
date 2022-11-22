@@ -2848,7 +2848,7 @@ var requiredItemOpen = false;
                         '<div class="requiredItem-box"><div id="requiredItem-action">Required</div><div id="requiredItem-label"><p>' +
                         item.label +
 			' ' +
-                        item.amount +
+                        item.itemAmount +
                         '</p></div><div id="requiredItem-image"><div class="item-slot-img"><img src="images/' +
                         item.image +
                         '" alt="' +
