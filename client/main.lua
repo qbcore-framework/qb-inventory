@@ -425,7 +425,7 @@ RegisterNetEvent('inventory:client:requiredItems', function(items, bool)
                 item = items[k].name,
                 label = QBCore.Shared.Items[items[k].name]["label"],
                 image = items[k].image,
-		amount = amount,
+		itemAmount = amount,
             }
         end
     end
