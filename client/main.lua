@@ -659,6 +659,7 @@ RegisterCommand('closeinv', function()
 end, false)
 
 RegisterCommand('inventory', function()
+		Wait(500)
     if IsNuiFocused() then return end
     if not isCrafting and not inInventory then
         if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() then
