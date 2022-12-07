@@ -508,8 +508,9 @@ end
 ---Setup the shop items
 ---@param shopItems table
 ---@return table items
-local function SetupShopItems(shopItems)
+local function SetupShopItems(id, shopItems)
 	local items = {}
+	print(shopItems)
 	if shopItems and next(shopItems) then
 		for _, item in pairs(shopItems) do
 			local itemInfo = QBCore.Shared.Items[item.name:lower()]
