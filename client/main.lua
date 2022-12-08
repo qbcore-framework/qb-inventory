@@ -442,29 +442,47 @@ end)
 
 RegisterNetEvent('inventory:client:OpenInventory', function(PlayerAmmo, inventory, other)
     if not IsEntityDead(PlayerPedId()) then
-        QBCore.Functions.Progressbar('open_inventory', 'Opening Inventory...', math.random(350, 750), false, true, { -- Name | Label | Time | useWhileDead | canCancel
-            disableMovement = false,
-            disableCarMovement = false,
-            disableMouse = false,
-            disableCombat = false,
-        }, {}, {}, {}, function() -- Play When Done
+        if Config.Progressbar then
+                QBCore.Functions.Progressbar('open_inventory', 'Opening Inventory...', math.random(350, 750), false, true, { -- Name | Label | Time | useWhileDead | canCancel
+                disableMovement = false,
+                disableCarMovement = false,
+                disableMouse = false,
+                disableCombat = false,
+            }, {}, {}, {}, function() -- Play When Done
+                ToggleHotbar(false)
+                SetNuiFocus(true, true)
+                if other then
+                    currentOtherInventory = other.name
+                end
+                SendNUIMessage({
+                	action = "open",
+                	inventory = inventory,
+                	slots = Config.MaxInventorySlots,
+                	other = other,
+                	maxweight = Config.MaxInventoryWeight,
+                	Ammo = PlayerAmmo,
+                	maxammo = Config.MaximumAmmoValues,
+                })
+                inInventory = true
+                end, function() -- Play When Cancel
+            end)
+        else
             ToggleHotbar(false)
             SetNuiFocus(true, true)
             if other then
                 currentOtherInventory = other.name
             end
             SendNUIMessage({
-            	action = "open",
-            	inventory = inventory,
-            	slots = Config.MaxInventorySlots,
-            	other = other,
-            	maxweight = Config.MaxInventoryWeight,
-            	Ammo = PlayerAmmo,
-            	maxammo = Config.MaximumAmmoValues,
+                action = "open",
+                inventory = inventory,
+                slots = Config.MaxInventorySlots,
+                other = other,
+                maxweight = Config.MaxInventoryWeight,
+                Ammo = PlayerAmmo,
+                maxammo = Config.MaximumAmmoValues,
             })
             inInventory = true
-            end, function() -- Play When Cancel
-        end)
+        end
     end
 end)
 
