@@ -508,7 +508,7 @@ end
 ---Setup the shop items
 ---@param shopItems table
 ---@return table items
-local function SetupShopItems(id, shopItems)
+local function SetupShopItems(shopItems)
 	local items = {}
 	if shopItems and next(shopItems) then
 		for _, item in pairs(shopItems) do
