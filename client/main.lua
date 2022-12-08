@@ -455,13 +455,13 @@ RegisterNetEvent('inventory:client:OpenInventory', function(PlayerAmmo, inventor
                     currentOtherInventory = other.name
                 end
                 SendNUIMessage({
-                	action = "open",
-                	inventory = inventory,
-                	slots = Config.MaxInventorySlots,
-                	other = other,
-                	maxweight = Config.MaxInventoryWeight,
-                	Ammo = PlayerAmmo,
-                	maxammo = Config.MaximumAmmoValues,
+                    action = "open",
+                    inventory = inventory,
+                    slots = Config.MaxInventorySlots,
+                    other = other,
+                    maxweight = Config.MaxInventoryWeight,
+                    Ammo = PlayerAmmo,
+                    maxammo = Config.MaximumAmmoValues,
                 })
                 inInventory = true
                 end, function() -- Play When Cancel
