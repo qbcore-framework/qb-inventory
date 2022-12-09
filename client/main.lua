@@ -464,7 +464,7 @@ RegisterNetEvent('inventory:client:OpenInventory', function(PlayerAmmo, inventor
                     maxammo = Config.MaximumAmmoValues,
                 })
                 inInventory = true
-                end, function() -- Play When Cancel
+            end, function() -- Play When Cancel
             end)
         else
             ToggleHotbar(false)
