@@ -10,7 +10,11 @@ Config.MaxDropViewDistance = 12.5 -- The distance in GTA Units that a drop can b
 Config.UseItemDrop = false -- This will enable item object to spawn on drops instead of markers
 Config.ItemDropObject = `prop_nigel_bag_pickup` -- if Config.UseItemDrop is true, this will be the prop that spawns for the item
 
-Config.Progressbar = false
+Config.Progressbar = {
+    Enable = false,         -- True to Enable the progressbar while opening inventory
+    minT = 350,             -- Min Time for Inventory to open
+    maxT = 500              -- Max Time for Inventory to open
+}
 
 Config.VendingObjects = {
     "prop_vend_soda_01",

@@ -442,8 +442,8 @@ end)
 
 RegisterNetEvent('inventory:client:OpenInventory', function(PlayerAmmo, inventory, other)
     if not IsEntityDead(PlayerPedId()) then
-        if Config.Progressbar then
-            QBCore.Functions.Progressbar('open_inventory', 'Opening Inventory...', math.random(350, 750), false, true, { -- Name | Label | Time | useWhileDead | canCancel
+        if Config.Progressbar.Enable then
+            QBCore.Functions.Progressbar('open_inventory', 'Opening Inventory...', math.random(Config.Progressbar.minT, Config.Progressbar.maxT), false, true, { -- Name | Label | Time | useWhileDead | canCancel
                 disableMovement = false,
                 disableCarMovement = false,
                 disableMouse = false,
