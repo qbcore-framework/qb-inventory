@@ -53,7 +53,7 @@ local Translations = {
 }
 
 if GetConvar('qb_locale', 'en') == 'pt' then
-    Lang = Locale:new({
+    Lang = Lang or Locale:new({
         phrases = Translations,
         warnOnMissing = true,
         fallbackLang = Lang,
