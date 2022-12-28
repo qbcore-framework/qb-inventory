@@ -250,6 +250,15 @@ local function RemoveItem(source, item, amount, slot)
 		local amountToRemove = amount
 
 		if not slots then return false end
+		
+		local itemAmountOfPlayer = 0
+		for _, _slot in pairs(slots) do
+			itemAmountOfPlayer += Player.PlayerData.items[_slot].amount
+		end
+
+		if amount > itemAmountOfPlayer then
+			return false
+		end
 
 		for _, _slot in pairs(slots) do
 			if Player.PlayerData.items[_slot].amount > amountToRemove then
@@ -270,6 +279,15 @@ local function RemoveItem(source, item, amount, slot)
 				TriggerEvent('qb-log:server:CreateLog', 'playerinventory', 'RemoveItem', 'red', '**' .. GetPlayerName(source) .. ' (citizenid: ' .. Player.PlayerData.citizenid .. ' | id: ' .. source .. ')** lost item: [slot:' .. _slot .. '], itemname: ' .. item .. ', removed amount: ' .. amount .. ', item removed')
 
 				return true
+			elseif Player.PlayerData.items[_slot].amount < amountToRemove then
+				amount -= Player.PlayerData.items[_slot].amount
+				local removedAmount = Player.PlayerData.items[_slot].amount
+				Player.PlayerData.items[_slot] = nil
+				Player.Functions.SetPlayerData("items", Player.PlayerData.items)
+
+				if not Player.Offline then
+					TriggerEvent('qb-log:server:CreateLog', 'playerinventory', 'RemoveItem', 'red', '**' .. GetPlayerName(source) .. ' (citizenid: ' .. Player.PlayerData.citizenid .. ' | id: ' .. source .. ')** lost item: [slot:' .. _slot .. '], itemname: ' .. item .. ', removed amount: ' .. removedAmount .. ', item removed')
+				end
 			end
 		end
 	end
