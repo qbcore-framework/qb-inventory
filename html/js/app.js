@@ -2155,6 +2155,7 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
     } else {
     }
     handleDragDrop();
+    Inventory.Close();
 }
 
 function isItemAllowed(item, allowedItems) {
