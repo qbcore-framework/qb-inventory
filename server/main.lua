@@ -468,6 +468,29 @@ end
 
 exports("UseItem", UseItem)
 
+---Check if the player can carry given item and amount
+---@param source number The source of the player
+---@param item string The itemname to control
+---@param amount? number The amount of the item to add
+---@return boolean success Returns true if the item can be added or false when there is no weight or slot left
+local function CanCarryItem(source, item, amount)
+    local Player = QBCore.Functions.GetPlayer(source)
+    local items = Player.PlayerData.items
+    local itemData = QBCore.Shared.Items[item:lower()]
+    if not Player then return false end
+    if not itemData then return false end
+    local totalWeight = GetTotalWeight(items) + (itemData.weight * amount)
+    local totalSlots = #items + amount
+    if (itemData.unique and totalSlots > Config.MaxInventorySlots) or 
+        (totalSlots > Config.MaxInventorySlots) then
+        return false
+    end
+    if totalWeight > Config.MaxInventoryWeight then return false end
+    return true
+end
+
+exports('CanCarryItem', CanCarryItem)
+
 ---Check if a recipe contains the item
 ---@param recipe table The recipe of the item
 ---@param fromItem { name: string, amount: number, info?: table, label: string, description: string, weight: number, type: string, unique: boolean, useable: boolean, image: string, shouldClose: boolean, slot: number, combinable: table } The item to check
@@ -2220,7 +2243,7 @@ RegisterServerEvent("inventory:server:GiveItem", function(target, name, amount, 
     local OtherPlayer = QBCore.Functions.GetPlayer(target)
     local dist = #(GetEntityCoords(GetPlayerPed(src))-GetEntityCoords(GetPlayerPed(target)))
 	if Player == OtherPlayer then return QBCore.Functions.Notify(src, Lang:t("notify.gsitem")) end
-	if dist > 2 then return QBCore.Functions.Notify(src, Lang:t("notify.tftgitem")) end
+	if dist > 3 then return QBCore.Functions.Notify(src, Lang:t("notify.tftgitem")) end
 	local item = GetItemBySlot(src, slot)
 	if not item then QBCore.Functions.Notify(src, Lang:t("notify.infound")); return end
 	if item.name ~= name then QBCore.Functions.Notify(src, Lang:t("notify.iifound")); return end
@@ -2312,6 +2335,29 @@ QBCore.Functions.CreateCallback('QBCore:HasItem', function(source, cb, items, am
         end
     end
     cb(retval)
+end)
+
+QBCore.Functions.CreateCallback('inventory:server:getplayers', function(source, cb)
+    local src = source
+    local players = {}
+    local PlayerPed = GetPlayerPed(src)
+    local pCoords = GetEntityCoords(PlayerPed)
+    for _, v in ipairs(QBCore.Functions.GetPlayers()) do
+        local targetped = GetPlayerPed(v)
+        local tCoords = GetEntityCoords(targetped)
+        local dist = #(pCoords - tCoords)
+        if v ~= src then
+            if dist <= 3 then
+                local ped = QBCore.Functions.GetPlayer(v)
+                players[#players+1] = {
+                    id = v,
+                    name = ped.PlayerData.charinfo.firstname .. " " .. ped.PlayerData.charinfo.lastname,
+					dist = '('..math.floor(dist+0.05)..'m)'
+                }
+            end
+        end
+    end
+    cb(players)
 end)
 
 --#endregion Callbacks
