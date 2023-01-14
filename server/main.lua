@@ -1230,7 +1230,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 			TriggerClientEvent("QBCore:Notify", src, "Item doesn\'t exist??", "error")
 		end
 	elseif QBCore.Shared.SplitStr(fromInventory, "-")[1] == "traphouse" then
-		local traphouseId = QBCore.Shared.SplitStr(fromInventory, "-")[2]
+		local traphouseId = QBCore.Shared.SplitStr(fromInventory, "_")[2]
 		local fromItemData = exports['qb-traphouse']:GetInventoryData(traphouseId, fromSlot)
 		local fromAmount = tonumber(fromAmount) ~= nil and tonumber(fromAmount) or fromItemData.amount
 		if fromItemData ~= nil and fromItemData.amount >= fromAmount then
