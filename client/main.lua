@@ -958,7 +958,7 @@ RegisterNUICallback("GiveItem", function(data, cb)
     cb('ok')
 end)
 
-RegisterNUICallback("GetNearPlayers",function(data, cb)
+RegisterNUICallback("GetNearPlayers",function(data)
     QBCore.Debug(data)
     local NearbyPlayers = {}
     QBCore.Functions.TriggerCallback('inventory:server:getplayers', function(players)

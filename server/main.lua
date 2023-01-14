@@ -481,7 +481,7 @@ local function CanCarryItem(source, item, amount)
     if not itemData then return false end
     local totalWeight = GetTotalWeight(items) + (itemData.weight * amount)
     local totalSlots = #items + amount
-    if (itemData.unique and totalSlots > Config.MaxInventorySlots) or 
+    if (itemData.unique and totalSlots > Config.MaxInventorySlots) or
         (totalSlots > Config.MaxInventorySlots) then
         return false
     end
