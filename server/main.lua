@@ -480,11 +480,9 @@ local function CanCarryItem(source, item, amount)
     if not Player then return false end
     if not itemData then return false end
     local totalWeight = GetTotalWeight(items) + (itemData.weight * amount)
-    local totalSlots = #items + amount
-    if (itemData.unique and totalSlots > Config.MaxInventorySlots) or
-        (totalSlots > Config.MaxInventorySlots) then
-        return false
-    end
+	local totalSlots = 0
+	if itemData.unique then totalSlots = #items + amount else totalSlots = #items + 1 end
+    if totalSlots > Config.MaxInventorySlots then return false end
     if totalWeight > Config.MaxInventoryWeight then return false end
     return true
 end
