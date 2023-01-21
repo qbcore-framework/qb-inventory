@@ -964,9 +964,9 @@ RegisterNUICallback("GetNearPlayers",function(data)
     QBCore.Functions.TriggerCallback('inventory:server:getplayers', function(players)
         if players then
             for _,v in ipairs(players) do
-
                 NearbyPlayers[#NearbyPlayers+1] = {name = v.name..' '..v.dist ,ped = v.id, text = v.dist}
-                SendNUIMessage({
+            end
+            SendNUIMessage({
                     action = "NearPlayers",
                     players = NearbyPlayers,
                     item = data.item.name,
@@ -974,7 +974,6 @@ RegisterNUICallback("GetNearPlayers",function(data)
                     inventory = data.inventory,
                     amount = data.amount,
                 })
-            end
         else
             QBCore.Functions.Notify(Lang:t("notify.nonb"), "error")
         end
