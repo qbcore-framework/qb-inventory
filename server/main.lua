@@ -1719,6 +1719,8 @@ end)
 RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, toInventory, fromSlot, toSlot, fromAmount, toAmount)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
+    local playerId = tonumber(QBCore.Shared.SplitStr(toInventory, "-")[2])
+    local OtherPlayer = QBCore.Functions.GetPlayer(playerId)
     fromSlot = tonumber(fromSlot)
     toSlot = tonumber(toSlot)
 
