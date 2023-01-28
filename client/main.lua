@@ -236,7 +236,7 @@ end
 
 ---Checks weight and size of the vehicle trunk
 local function GetTrunkSize(vehicleClass)
-    if not trunkSize[vehicleClass] then return vehicleClass = -1 end
+    if not trunkSize[vehicleClass] then vehicleClass = -1 end
     return trunkSize[vehicleClass].maxweight, trunkSize[vehicleClass].slots
 end
 exports("GetTrunkSize", GetTrunkSize)
