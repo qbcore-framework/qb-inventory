@@ -17,7 +17,7 @@ local trunkSize = {
     [-1] = {--default size if no class is chosen
         maxweight = 60000,
         slots = 35
-    }
+    },
     [0] = {
         maxweight = 38000,
         slots = 30
