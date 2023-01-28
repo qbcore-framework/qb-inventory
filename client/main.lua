@@ -14,10 +14,6 @@ local CurrentStash = nil
 local isCrafting = false
 local isHotbar = false
 local trunkSize = {
-    [-1] = {--default size if no class is chosen
-        maxweight = 60000,
-        slots = 35
-    },
     [0] = {
         maxweight = 38000,
         slots = 30
@@ -54,7 +50,7 @@ local trunkSize = {
         maxweight = 15000,
         slots = 15
     },
-    [9] = {
+    [9] = { -- default weight if no class is set
         maxweight = 60000,
         slots = 35
     },
@@ -236,7 +232,7 @@ end
 
 ---Checks weight and size of the vehicle trunk
 local function GetTrunkSize(vehicleClass)
-    if not trunkSize[vehicleClass] then vehicleClass = -1 end
+    if not trunkSize[vehicleClass] then vehicleClass = 9 end
     return trunkSize[vehicleClass].maxweight, trunkSize[vehicleClass].slots
 end
 exports("GetTrunkSize", GetTrunkSize)
