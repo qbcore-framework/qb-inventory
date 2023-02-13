@@ -468,6 +468,27 @@ end
 
 exports("UseItem", UseItem)
 
+---Check if the player can carry given item and amount
+---@param source number The source of the player
+---@param item string The itemname to control
+---@param amount? number The amount of the item to add
+---@return boolean success Returns true if the item can be added or false when there is no weight or slot left
+local function CanCarryItem(source, item, amount)
+    local Player = QBCore.Functions.GetPlayer(source)
+    local items = Player.PlayerData.items
+    local itemData = QBCore.Shared.Items[item:lower()]
+    if not Player then return false end
+    if not itemData then return false end
+    local totalWeight = GetTotalWeight(items) + (itemData.weight * amount)
+    local totalSlots = 0
+    if itemData.unique then totalSlots = #items + amount else totalSlots = #items + 1 end
+    if totalSlots > Config.MaxInventorySlots then return false end
+    if totalWeight > Config.MaxInventoryWeight then return false end
+    return true
+end
+
+exports('CanCarryItem', CanCarryItem)
+
 ---Check if a recipe contains the item
 ---@param recipe table The recipe of the item
 ---@param fromItem { name: string, amount: number, info?: table, label: string, description: string, weight: number, type: string, unique: boolean, useable: boolean, image: string, shouldClose: boolean, slot: number, combinable: table } The item to check
