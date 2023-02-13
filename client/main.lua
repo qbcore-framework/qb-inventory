@@ -1106,6 +1106,6 @@ end)
 
 --#endregion Threads
 
-RegisterNUICallback("ResetWeaponSlot", function(data, cb)
+RegisterNUICallback("ResetWeaponSlot", function(data)
     TriggerServerEvent("inventory:sever:UpdateWeapon", data.slotToCheck, data.newSlot)
 end)
