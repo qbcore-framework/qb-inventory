@@ -942,12 +942,12 @@ RegisterNUICallback("PlayDropFail", function(_, cb)
 end)
 
 RegisterNUICallback("GiveItem", function(data, cb)
-    local player, distance = QBCore.Functions.GetClosestPlayer(GetEntityCoords(PlayerPedId()))
-    if player ~= -1 and distance < 3 then
+    local player = data.player
+    if player ~= -1 then
         if data.inventory == 'player' then
-            local playerId = GetPlayerServerId(player)
+            local playerId = player
             SetCurrentPedWeapon(PlayerPedId(),'WEAPON_UNARMED',true)
-            TriggerServerEvent("inventory:server:GiveItem", playerId, data.item.name, data.amount, data.item.slot)
+            TriggerServerEvent("inventory:server:GiveItem", playerId, data.item, data.amount, data.slot)
         else
             QBCore.Functions.Notify(Lang:t("notify.notowned"), "error")
         end
@@ -955,6 +955,28 @@ RegisterNUICallback("GiveItem", function(data, cb)
         QBCore.Functions.Notify(Lang:t("notify.nonb"), "error")
     end
     cb('ok')
+end)
+
+RegisterNUICallback("GetNearPlayers",function(data)
+    QBCore.Debug(data)
+    local NearbyPlayers = {}
+    QBCore.Functions.TriggerCallback('inventory:server:getplayers', function(players)
+        if players then
+            for _,v in ipairs(players) do
+                NearbyPlayers[#NearbyPlayers+1] = {name = v.name..' '..v.dist ,ped = v.id, text = v.dist}
+            end
+            SendNUIMessage({
+                    action = "NearPlayers",
+                    players = NearbyPlayers,
+                    item = data.item.name,
+                    slot = data.item.slot,
+                    inventory = data.inventory,
+                    amount = data.amount,
+                })
+        else
+            QBCore.Functions.Notify(Lang:t("notify.nonb"), "error")
+        end
+    end)
 end)
 
 --#endregion NUI

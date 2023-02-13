@@ -565,7 +565,7 @@ function FormatItemInfo(itemData) {
             var str = ""+ itemData.info.cardNumber + "";
             var res = str.slice(12);
             var cardNumber = "************" + res;
-            $(".item-info-description").html('<p><strong>Card Holder: </strong><span>' + itemData.info.name + '</span></p><p><strong>Citizen ID: </strong><span>' + itemData.info.citizenid + '</span></p><p><strong>Card Number: </strong><span>' + cardNumber + '</span></p>');			
+            $(".item-info-description").html('<p><strong>Card Holder: </strong><span>' + itemData.info.name + '</span></p><p><strong>Citizen ID: </strong><span>' + itemData.info.citizenid + '</span></p><p><strong>Card Number: </strong><span>' + cardNumber + '</span></p>');
         } else if (itemData.name == "labkey") {
             $(".item-info-title").html("<p>" + itemData.label + "</p>");
             $(".item-info-description").html("<p>Lab: " + itemData.info.lab + "</p>");
@@ -1425,7 +1425,7 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                             .html(qualityLabel);
                     }
                 }
-				
+
                 $fromInv
                     .find("[data-slot=" + $fromSlot + "]")
                     .data("item", newDataFrom);
@@ -1573,7 +1573,7 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
             );
         } else {
             if (fromData.amount == $toAmount) {
-                if (toData && toData.unique){            
+                if (toData && toData.unique){
                     InventoryError($fromInv, $fromSlot);
                     return;
                 }
@@ -2315,6 +2315,7 @@ var requiredItemOpen = false;
         }
 
         $("#qbcore-inventory").fadeIn(300);
+        $("#inv-dialog-return").fadeOut(0);
         if (data.other != null && data.other != "") {
             $(".other-inventory").attr("data-inventory", data.other.name);
         } else {
@@ -2581,11 +2582,17 @@ var requiredItemOpen = false;
         $(".ply-iteminfo-container").css("display", "none");
         $("#qbcore-inventory").fadeOut(300);
         $(".combine-option-container").hide();
+        $("#item-amount").fadeIn();
+        $("#item-use").fadeIn();
+        $("#item-give").fadeIn();
+        $("#inv-close").fadeIn();
+        $(".inv-dialog-content").remove();
         $(".item-slot").remove();
         if ($("#rob-money").length) {
             $("#rob-money").remove();
         }
         $.post("https://qb-inventory/CloseInventory", JSON.stringify({}));
+        $("#dialog").html("");
 
         if (AttachmentScreenActive) {
             $("#qbcore-inventory").css({ left: "0vw" });
@@ -2865,6 +2872,34 @@ var requiredItemOpen = false;
         }
     };
 
+    Inventory.NearPlayers = function(data) {
+        $("#nearPlayers").html("");
+
+        $.each(data.players, function (index, player) {
+            $(".inv-dialog").append('<div class="inv-dialog-content" id="nearbyPlayerButton" data-player="' + player.ped + '" data-inventory="' + data.inventory + '" data-amount="' + data.amount + '" data-item="' + data.item + '" data-slot="' + data.slot + '"><p>'+ player.name + '</p></div>');
+        });
+    };
+
+    $(document).on("click", "#nearbyPlayerButton", function(e) {
+        e.preventDefault();
+
+        player = $(this).data("player");
+        itemamount = $(this).data("amount");
+        slot = $(this).data("slot");
+        fromInventory = $(this).data("inventory");
+        item = $(this).data("item");
+        $.post("https://qb-inventory/GiveItem",
+            JSON.stringify({
+                inventory: fromInventory,
+                item: item,
+                amount: itemamount,
+                player: player,
+                slot: slot,
+            })
+        );
+        Inventory.Close();
+    })
+
     window.onload = function(e) {
         window.addEventListener("message", function(event) {
             switch (event.data.action) {
@@ -2886,6 +2921,9 @@ var requiredItemOpen = false;
                 case "toggleHotbar":
                     Inventory.ToggleHotbar(event.data);
                     break;
+                case "NearPlayers":
+                    Inventory.NearPlayers(event.data)
+                    break
                 case "RobMoney":
                     $(".inv-options-list").append(
                         '<div class="inv-option-item" id="rob-money"><p>TAKE MONEY</p></div>'
@@ -2915,6 +2953,12 @@ $("#item-give").droppable({
         setTimeout(function() {
             IsDragging = false;
         }, 300);
+        $("#item-amount").fadeOut(0);
+        $("#item-use").fadeOut(0);
+        $("#item-give").fadeOut(0);
+        $("#inv-close").fadeOut(0);
+        $("#inv-dialog-return").fadeIn(0);
+        $("#weapon-attachments").fadeOut(0);
         fromData = ui.draggable.data("item");
         fromInventory = ui.draggable.parent().attr("data-inventory");
         amount = $("#item-amount").val();
@@ -2922,7 +2966,7 @@ $("#item-give").droppable({
             amount = fromData.amount;
         }
         $.post(
-            "https://qb-inventory/GiveItem",
+            "https://qb-inventory/GetNearPlayers",
             JSON.stringify({
                 inventory: fromInventory,
                 item: fromData,
@@ -2931,3 +2975,13 @@ $("#item-give").droppable({
         );
     },
 });
+
+$(document).on("click", "#inv-dialog-return", function(e) {
+    e.preventDefault();
+    $("#item-amount").fadeIn(0);
+    $("#item-use").fadeIn(0);
+    $("#item-give").fadeIn(0);
+    $("#inv-close").fadeIn(0);
+    $("#inv-dialog-return").fadeOut(0);
+    $(".inv-dialog-content").remove();
+})

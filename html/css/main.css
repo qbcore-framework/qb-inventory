@@ -102,6 +102,65 @@ body {
 	left: 1vh;
 }
 
+.inv-dialog {
+	position: absolute;
+	margin: 0 auto;
+	right: 0;
+	width: 9%;
+	top: 28%;
+	left: 1vh;
+}
+
+.inv-dialog-item {
+	margin-top: 10%;
+	cursor: pointer;
+}
+
+.inv-dialog-item>p {
+	color: white;
+	text-align: center;
+	line-height: 48px;
+	text-transform: uppercase;
+	font-size: 1.2vh;
+	font-weight: 900;
+	background-color: rgba(220, 20, 60, 0.6);
+	font-family: 'Poppins', sans-serif;
+}
+
+.inv-dialog-item {
+	width: 75%;
+	height: 50px;
+	background-color: rgb(0 0 0 / 30%);
+	border: 1px solid rgba(255, 255, 255, .01);
+	color: white;
+	transition: background-color .1s linear;
+}
+
+.inv-dialog-item:hover {
+	background-color: rgb(0 0 0 / 20%);
+}
+
+.inv-dialog-content {
+	cursor: pointer;
+	width: 75%;
+	height: 50px;
+	background-color: rgb(0 0 0 / 30%);
+	border: 1px solid rgba(255, 255, 255, .01);
+	color: white;
+	transition: background-color .1s linear;
+}
+
+.inv-dialog-content>p {
+	color: white;
+	text-align: center;
+	line-height: 48px;
+	text-transform: uppercase;
+	font-size: 1.0vh;
+	font-weight: 700;
+	background-color: rgba(0, 0, 0, 0.2);
+	font-family: 'Poppins', sans-serif;
+}
+
 .combine-option-container {
 	display: none;
 	position: absolute;

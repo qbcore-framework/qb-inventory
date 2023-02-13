@@ -2314,6 +2314,29 @@ QBCore.Functions.CreateCallback('QBCore:HasItem', function(source, cb, items, am
     cb(retval)
 end)
 
+QBCore.Functions.CreateCallback('inventory:server:getplayers', function(source, cb)
+    local src = source
+    local players = {}
+    local PlayerPed = GetPlayerPed(src)
+    local pCoords = GetEntityCoords(PlayerPed)
+    for _, v in ipairs(QBCore.Functions.GetPlayers()) do
+        local targetped = GetPlayerPed(v)
+        local tCoords = GetEntityCoords(targetped)
+        local dist = #(pCoords - tCoords)
+        if v ~= src then
+            if dist <= 3 then
+                local ped = QBCore.Functions.GetPlayer(v)
+                players[#players+1] = {
+                    id = v,
+                    name = ped.PlayerData.charinfo.firstname .. " " .. ped.PlayerData.charinfo.lastname,
+                    dist = '('..math.floor(dist+0.05)..'m)'
+                }
+            end
+        end
+    end
+    cb(players)
+end)
+
 --#endregion Callbacks
 
 --#region Commands
