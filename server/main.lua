@@ -1634,6 +1634,7 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 			end
 		end
 		TriggerClientEvent("qb-inventory:client:closeinv", id)
+		Wait(0)
 		TriggerClientEvent("inventory:client:OpenInventory", src, {}, Player.PlayerData.items, secondInv)
 	else
 		TriggerClientEvent("inventory:client:OpenInventory", src, {}, Player.PlayerData.items)
