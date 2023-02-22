@@ -1339,15 +1339,19 @@ AddEventHandler('onResourceStart', function(resourceName)
 		end)
 	end
 end)
+
 RegisterNetEvent('QBCore:Server:UpdateObject', function()
     if source ~= '' then return end -- Safety check if the event was not called from the server.
     QBCore = exports['qb-core']:GetCoreObject()
 end)
+
 function addTrunkItems(plate, items)
 	Trunks[plate] = {}
 	Trunks[plate].items = items
 end
-exports('addTrunkItems',addTrunkItems)
+
+exports('addTrunkItems', addTrunkItems)
+
 function addGloveboxItems(plate, items)
 	Gloveboxes[plate] = {}
 	Gloveboxes[plate].items = items
@@ -2261,11 +2265,13 @@ RegisterNetEvent('inventory:server:snowball', function(action)
 		RemoveItem(source, "weapon_snowball")
 	end
 end)
-RegisterNetEvent('inventory:server:addTrunkItems', function()
-	print('inventory:server:addTrunkItems has been deprecated please use exports[\'qb-inventory\']:addTrunkItems(plate, items)')
+
+RegisterNetEvent('inventory:server:addTrunkItems', function(plate, items)
+	addTrunkItems(plate, items)
 end)
-RegisterNetEvent('inventory:server:addGloveboxItems', function()
-	print('inventory:server:addGloveboxItems has been deprecated please use exports[\'qb-inventory\']:addGloveboxItems(plate, items)')
+
+RegisterNetEvent('inventory:server:addGloveboxItems', function(plate, items)
+	addGloveboxItems(plate, items)
 end)
 --#endregion Events
 
