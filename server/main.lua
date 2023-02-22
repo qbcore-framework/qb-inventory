@@ -1905,7 +1905,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				AddItem(playerId, itemInfo["name"], fromAmount, toSlot, fromItemData.info)
 			end
 		else
-			QBCore.Functions.Notify(src, "Item doesn't exist", "error")
+			QBCore.Functions.Notify(src, Lang:t("notify.itemexist"), "error")
 		end
 	elseif QBCore.Shared.SplitStr(fromInventory, "-")[1] == "trunk" then
 		local plate = QBCore.Shared.SplitStr(fromInventory, "-")[2]
