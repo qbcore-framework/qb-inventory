@@ -964,8 +964,8 @@ RegisterNUICallback("GetNearPlayers",function(data)
             for _,v in ipairs(players) do
                 if Config.AnonymousGiveItem then
                     NearbyPlayers[#NearbyPlayers+1] = {name = Lang:t("label.player").." : "..v.id..' '..v.dist ,ped = v.id, text = v.dist}
-                else                
-                    NearbyPlayers[#NearbyPlayers+1] = {name = v.name..' '..v.dist ,ped = v.id, text = v.dist} 
+                else
+                    NearbyPlayers[#NearbyPlayers+1] = {name = v.name..' '..v.dist ,ped = v.id, text = v.dist}
                 end
             end
             SendNUIMessage({
