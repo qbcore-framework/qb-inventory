@@ -16,7 +16,7 @@ local Translations = {
         ["nonb"] = "No one nearby!",
         ["noaccess"] = "Not Accessible",
         ["nosell"] = "You can\'t sell this item..",
-        ["itemexist"] = "Item doesn\'t exist??",
+        ["itemexist"] = "Item doesn\'t exist",
         ["notencash"] = "You don\'t have enough cash..",
         ["noitem"] = "You don\'t have the right items..",
         ["gsitem"] = "You can\'t give yourself an item?",
@@ -55,4 +55,8 @@ local Translations = {
         ["a_craft"] = "Attachment Crafting",
     },
 }
-Lang = Locale:new({phrases = Translations, warnOnMissing = true})
+
+Lang = Lang or Locale:new({
+    phrases = Translations,
+    warnOnMissing = true
+})
