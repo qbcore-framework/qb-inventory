@@ -33,7 +33,7 @@ local Translations = {
         ["idne"] = "İtem bulunamadı",
         ["pdne"] = "Oyuncu Aktif değil ",
     },
-    inf_mapping = {
+    inf_mapping = { 
         ["opn_inv"] = "Envanteri Aç",
         ["tog_slots"] = "Tuş bağlama yuvalarını değiştirir",
         ["use_item"] = "Yuvadaki öğeyi kullanır",
