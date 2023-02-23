@@ -958,12 +958,15 @@ RegisterNUICallback("GiveItem", function(data, cb)
 end)
 
 RegisterNUICallback("GetNearPlayers",function(data)
-    QBCore.Debug(data)
     local NearbyPlayers = {}
     QBCore.Functions.TriggerCallback('inventory:server:getplayers', function(players)
         if players then
             for _,v in ipairs(players) do
-                NearbyPlayers[#NearbyPlayers+1] = {name = v.name..' '..v.dist ,ped = v.id, text = v.dist}
+                if Config.AnonymousGiveItem then
+                    NearbyPlayers[#NearbyPlayers+1] = {name = Lang:t("label.player").." : "..v.id..' '..v.dist ,ped = v.id, text = v.dist}
+                else                
+                    NearbyPlayers[#NearbyPlayers+1] = {name = v.name..' '..v.dist ,ped = v.id, text = v.dist} 
+                end
             end
             SendNUIMessage({
                     action = "NearPlayers",

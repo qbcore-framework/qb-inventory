@@ -2923,7 +2923,7 @@ var requiredItemOpen = false;
                     break;
                 case "NearPlayers":
                     Inventory.NearPlayers(event.data)
-                    break
+                    break;
                 case "RobMoney":
                     $(".inv-options-list").append(
                         '<div class="inv-option-item" id="rob-money"><p>TAKE MONEY</p></div>'
@@ -2953,12 +2953,12 @@ $("#item-give").droppable({
         setTimeout(function() {
             IsDragging = false;
         }, 300);
-        $("#item-amount").fadeOut(0);
-        $("#item-use").fadeOut(0);
-        $("#item-give").fadeOut(0);
-        $("#inv-close").fadeOut(0);
-        $("#inv-dialog-return").fadeIn(0);
-        $("#weapon-attachments").fadeOut(0);
+        $("#item-amount").hide();
+        $("#item-use").hide();
+        $("#item-give").hide();
+        $("#inv-close").hide();
+        $("#inv-dialog-return").show();
+        $("#weapon-attachments").hide();
         fromData = ui.draggable.data("item");
         fromInventory = ui.draggable.parent().attr("data-inventory");
         amount = $("#item-amount").val();
@@ -2978,10 +2978,10 @@ $("#item-give").droppable({
 
 $(document).on("click", "#inv-dialog-return", function(e) {
     e.preventDefault();
-    $("#item-amount").fadeIn(0);
-    $("#item-use").fadeIn(0);
-    $("#item-give").fadeIn(0);
-    $("#inv-close").fadeIn(0);
-    $("#inv-dialog-return").fadeOut(0);
+    $("#item-amount").show();
+    $("#item-use").show();
+    $("#item-give").show();
+    $("#inv-close").show();
+    $("#inv-dialog-return").hide();
     $(".inv-dialog-content").remove();
 })

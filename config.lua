@@ -4,6 +4,7 @@ Config.UseTarget = GetConvar('UseTarget', 'false') == 'true' -- Use qb-target in
 
 Config.MaxInventoryWeight = 120000 -- Max weight a player can carry (default 120kg, written in grams)
 Config.MaxInventorySlots = 41 -- Max inventory slots for a player
+Config.AnonymousGiveItem = false -- Set this to true if you don't want to show player names upon giving item
 
 Config.KeyBinds = {
     Inventory = 'TAB',

@@ -49,6 +49,7 @@ local Translations = {
     label = {
         ["craft"] = "صياغة",
         ["a_craft"] = "صياغة المرفقات",
+        ["player"] = "Player",
     },
 }
 
