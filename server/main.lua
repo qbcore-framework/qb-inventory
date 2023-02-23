@@ -1634,6 +1634,7 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 			end
 		end
 		TriggerClientEvent("qb-inventory:client:closeinv", id)
+		Wait(0)
 		TriggerClientEvent("inventory:client:OpenInventory", src, {}, Player.PlayerData.items, secondInv)
 	else
 		TriggerClientEvent("inventory:client:OpenInventory", src, {}, Player.PlayerData.items)
@@ -1905,7 +1906,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				AddItem(playerId, itemInfo["name"], fromAmount, toSlot, fromItemData.info)
 			end
 		else
-			QBCore.Functions.Notify(src, "Item doesn't exist", "error")
+			QBCore.Functions.Notify(src, Lang:t("notify.itemexist"), "error")
 		end
 	elseif QBCore.Shared.SplitStr(fromInventory, "-")[1] == "trunk" then
 		local plate = QBCore.Shared.SplitStr(fromInventory, "-")[2]
