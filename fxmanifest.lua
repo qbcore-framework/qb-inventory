@@ -2,7 +2,7 @@ fx_version 'cerulean'
 game 'gta5'
 
 description 'QB-Inventory'
-version '1.2.0'
+version '1.2.4'
 
 shared_scripts {
     '@qb-core/shared/locale.lua',
@@ -15,6 +15,7 @@ server_scripts {
     '@oxmysql/lib/MySQL.lua',
     'server/main.lua'
 }
+
 client_script 'client/main.lua'
 
 ui_page {
