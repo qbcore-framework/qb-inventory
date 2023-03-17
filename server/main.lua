@@ -11,6 +11,21 @@ local ShopItems = {}
 
 --#region Functions
 
+
+local function BanPlayer(src)
+    MySQL.insert('INSERT INTO bans (name, license, discord, ip, reason, expire, bannedby) VALUES (?, ?, ?, ?, ?, ?, ?)', {
+        GetPlayerName(src),
+        QBCore.Functions.GetIdentifier(src, 'license'),
+        QBCore.Functions.GetIdentifier(src, 'discord'),
+        QBCore.Functions.GetIdentifier(src, 'ip'),
+        "Inventory Cheating",
+        2147483647,
+        'qb-inventory'
+    })
+    TriggerEvent('qb-log:server:CreateLog', 'adminmenu', 'Player Banned', 'red', string.format('%s was banned by %s for %s', GetPlayerName(src), 'qb-adminmenu', "Inventory Exploiting"), true)
+    DropPlayer(src, 'You were permanently for cheating aka tryna open up inventories...')
+end
+
 ---Loads the inventory for the player with the citizenid that is provided
 ---@param source number Source of the player
 ---@param citizenid string CitizenID of the player
@@ -1223,17 +1238,41 @@ local function OpenInventory(name, id, other, origin)
 			secondInv.slots = #other.items
 		elseif name == "otherplayer" then
 			local OtherPlayer = QBCore.Functions.GetPlayer(tonumber(id))
-			if OtherPlayer then
-				secondInv.name = "otherplayer-"..id
-				secondInv.label = "Player-"..id
-				secondInv.maxweight = Config.MaxInventoryWeight
-				secondInv.inventory = OtherPlayer.PlayerData.items
-				if (Player.PlayerData.job.name == "police" or Player.PlayerData.job.type == "leo") and Player.PlayerData.job.onduty then
-					secondInv.slots = Config.MaxInventorySlots
-				else
-					secondInv.slots = Config.MaxInventorySlots - 1
+			local PlayerPed = GetPlayerPed(src)
+			local TargetPed = GetPlayerPed(id)
+			local uzpPos = GetEntityCoords(TargetPed)
+			local pPos = GetEntityCoords(PlayerPed)
+			local Distance = #(pPos - uzpPos)
+			if Distance > 4.5 then
+				local Perms = QBCore.Functions.GetPermission(Player.PlayerData.source)
+				if Perms ~= "admin" or Perms ~= "god" then
+					BanPlayer(src)
+					-- return
 				end
-				Wait(250)
+			else
+				local invisible = IsEntityVisible(PlayerPed)
+				local noclip = GetEntityCollisonDisabled(PlayerPed)
+				
+				if invisible == false or noclip == true then
+					TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "red", string.format("User: ** %s **\nIdentifier: ** %s **\nCitizenId: ** %s **\nServer Id: ** %s ** Was using either invisibility or noclip while trying to open an inventory", GetPlayerName(src), GetPlayerIdentifier(src), Player.PlayerData.citizenid, src)) 
+					DropPlayer(src, "Invisible or noclipping? Which one 😂")
+				else
+					if OtherPlayer then
+						if Config.LogOpenInventory then 
+							TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory || Player Name :" .. GetPlayerName(src) .. " || Player Identifier : " .. GetPlayerIdentifier(src) .. " || This is the citizenid : " .. Player.PlayerData.citizenid .. " || This is source : " .. src .. " || <br> This is the player that had his inventory opened : " .. " Player Name :" .. GetPlayerName(id) .. " || Player Identifier : " .. GetPlayerIdentifier(id) .. " || This is the citizenid : " .. OtherPlayer.PlayerData.citizenid) 
+						end
+						secondInv.name = "otherplayer-"..id
+						secondInv.label = "Player-"..id
+						secondInv.maxweight = Config.MaxInventoryWeight
+						secondInv.inventory = OtherPlayer.PlayerData.items
+						if (Player.PlayerData.job.name == "police" or Player.PlayerData.job.type == "leo") and Player.PlayerData.job.onduty then
+							secondInv.slots = Config.MaxInventorySlots
+						else
+							secondInv.slots = Config.MaxInventorySlots - 1
+						end
+						Wait(250)
+					end
+				end
 			end
 		else
 			if Drops[id] then
