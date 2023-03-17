@@ -14,6 +14,7 @@ Config.CleanupDropTime = 15 * 60 -- How many seconds it takes for drops to be un
 Config.MaxDropViewDistance = 12.5 -- The distance in GTA Units that a drop can be seen
 Config.UseItemDrop = false -- This will enable item object to spawn on drops instead of markers
 Config.ItemDropObject = `prop_nigel_bag_pickup` -- if Config.UseItemDrop is true, this will be the prop that spawns for the item
+Config.LogOpenInventory = true -- Set this to false if you dont want the inventory system to log when a player opens another players inventory
 
 Config.VendingObjects = {
     "prop_vend_soda_01",
