@@ -805,7 +805,7 @@ RegisterCommand('inventory', function()
     end
 end, false)
 
-RegisterKeyMapping('inventory', Lang:t("inf_mapping.opn_inv"), 'keyboard', 'TAB')
+RegisterKeyMapping('inventory', Lang:t("inf_mapping.opn_inv"), 'keyboard', Config.KeyBinds.Inventory)
 
 RegisterCommand('hotbar', function()
     isHotbar = not isHotbar
@@ -814,7 +814,7 @@ RegisterCommand('hotbar', function()
     end
 end, false)
 
-RegisterKeyMapping('hotbar', Lang:t("inf_mapping.tog_slots"), 'keyboard', 'z')
+RegisterKeyMapping('hotbar', Lang:t("inf_mapping.tog_slots"), 'keyboard', Config.KeyBinds.HotBar)
 
 for i = 1, 6 do
     RegisterCommand('slot' .. i,function()

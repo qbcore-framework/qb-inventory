@@ -5,6 +5,11 @@ Config.UseTarget = GetConvar('UseTarget', 'false') == 'true' -- Use qb-target in
 Config.MaxInventoryWeight = 120000 -- Max weight a player can carry (default 120kg, written in grams)
 Config.MaxInventorySlots = 41 -- Max inventory slots for a player
 
+Config.KeyBinds = {
+    Inventory = 'TAB',
+    HotBar = 'z'
+}
+
 Config.CleanupDropTime = 15 * 60 -- How many seconds it takes for drops to be untouched before being deleted
 Config.MaxDropViewDistance = 12.5 -- The distance in GTA Units that a drop can be seen
 Config.UseItemDrop = false -- This will enable item object to spawn on drops instead of markers
