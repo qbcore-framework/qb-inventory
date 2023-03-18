@@ -1246,7 +1246,7 @@ local function OpenInventory(name, id, other, origin)
 					TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory  \n  Player Name :" .. GetPlayerName(src) .. " \n Player Identifier : " .. GetPlayerIdentifier(src) .. "  \n This is the citizenid : " .. Player.PlayerData.citizenid .. "  \n  This is source : " .. src .. "  \n  This is the player that had his inventory opened : \n " .. " Player Name :" .. GetPlayerName(id) .. "  \n  Player Identifier : " .. GetPlayerIdentifier(id) .. "  \n  This is the citizenid : " .. OtherPlayer.PlayerData.citizenid)
 					BanPlayer(src)
 				else
-					if Config.LogOpenInventory then 
+					if Config.LogOpenInventory then
 						TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory  \n  Player Name :"..GetPlayerName(src).." \n Player Identifier : " .. GetPlayerIdentifier(src) .. "  \n This is the citizenid : " .. Player.PlayerData.citizenid .. "  \n  This is source : " .. src .. "  \n  This is the player that had his inventory opened : \n " .. " Player Name :" .. GetPlayerName(id) .. "  \n  Player Identifier : " .. GetPlayerIdentifier(id) .. "  \n  This is the citizenid : " .. OtherPlayer.PlayerData.citizenid)
 					end
 				end
@@ -1255,12 +1255,12 @@ local function OpenInventory(name, id, other, origin)
 				local invincible = GetPlayerInvincible(PlayerPed)
 				if invisible == false or invincible == true then
 					if Perms ~= "admin" or Perms ~= "god" then
-						TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "red", string.format("User: ** %s **\nIdentifier: ** %s **\nCitizenId: ** %s **\nServer Id: ** %s ** Was using either invisibility or noclip while trying to open an inventory", GetPlayerName(src), GetPlayerIdentifier(src), Player.PlayerData.citizenid, src)) 
+						TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "red", string.format("User: ** %s **\nIdentifier: ** %s **\nCitizenId: ** %s **\nServer Id: ** %s ** Was using either invisibility or noclip while trying to open an inventory", GetPlayerName(src), GetPlayerIdentifier(src), Player.PlayerData.citizenid, src))
 						DropPlayer(src, "Invisible or invincible? Which one 😂")
 					end
 				else
 					if OtherPlayer then
-						if Config.LogOpenInventory then 
+						if Config.LogOpenInventory then
 							TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory  \n  Player Name :" .. GetPlayerName(src) .. " \n Player Identifier : " .. GetPlayerIdentifier(src) .. "  \n This is the citizenid : " .. Player.PlayerData.citizenid .. "  \n  This is source : " .. src .. "  \n  This is the player that had his inventory opened : \n " .. " Player Name :" .. GetPlayerName(id) .. "  \n  Player Identifier : " .. GetPlayerIdentifier(id) .. "  \n  This is the citizenid : " .. OtherPlayer.PlayerData.citizenid)
 						end
 						secondInv.name = "otherplayer-"..id
@@ -1648,7 +1648,7 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 					TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory  \n  Player Name :" .. GetPlayerName(src) .. " \n Player Identifier : " .. GetPlayerIdentifier(src) .. "  \n This is the citizenid : " .. Player.PlayerData.citizenid .. "  \n  This is source : " .. src .. "  \n  This is the player that had his inventory opened : \n " .. " Player Name :" .. GetPlayerName(id) .. "  \n  Player Identifier : " .. GetPlayerIdentifier(id) .. "  \n  This is the citizenid : " .. OtherPlayer.PlayerData.citizenid)
 					BanPlayer(src)
 				else
-					if Config.LogOpenInventory then 
+					if Config.LogOpenInventory then
 						TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory  \n  Player Name :"..GetPlayerName(src).." \n Player Identifier : " .. GetPlayerIdentifier(src) .. "  \n This is the citizenid : " .. Player.PlayerData.citizenid .. "  \n  This is source : " .. src .. "  \n  This is the player that had his inventory opened : \n " .. " Player Name :" .. GetPlayerName(id) .. "  \n  Player Identifier : " .. GetPlayerIdentifier(id) .. "  \n  This is the citizenid : " .. OtherPlayer.PlayerData.citizenid)
 					end
 				end
@@ -1657,12 +1657,12 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 				local invincible = GetPlayerInvincible(PlayerPed)
 				if invisible == false or invincible == true then
 					if Perms ~= "admin" or Perms ~= "god" then
-						TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "red", string.format("User: ** %s **\nIdentifier: ** %s **\nCitizenId: ** %s **\nServer Id: ** %s ** Was using either invisibility or noclip while trying to open an inventory", GetPlayerName(src), GetPlayerIdentifier(src), Player.PlayerData.citizenid, src)) 
+						TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "red", string.format("User: ** %s **\nIdentifier: ** %s **\nCitizenId: ** %s **\nServer Id: ** %s ** Was using either invisibility or noclip while trying to open an inventory", GetPlayerName(src), GetPlayerIdentifier(src), Player.PlayerData.citizenid, src))
 						DropPlayer(src, "Invisible or invincible? Which one 😂")
 					end
 				else
 					if OtherPlayer then
-						if Config.LogOpenInventory then 
+						if Config.LogOpenInventory then
 							TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory  \n  Player Name :" .. GetPlayerName(src) .. " \n Player Identifier : " .. GetPlayerIdentifier(src) .. "  \n This is the citizenid : " .. Player.PlayerData.citizenid .. "  \n  This is source : " .. src .. "  \n  This is the player that had his inventory opened : \n " .. " Player Name :" .. GetPlayerName(id) .. "  \n  Player Identifier : " .. GetPlayerIdentifier(id) .. "  \n  This is the citizenid : " .. OtherPlayer.PlayerData.citizenid)
 						end
 						secondInv.name = "otherplayer-"..id
