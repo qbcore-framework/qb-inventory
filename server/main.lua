@@ -9,9 +9,9 @@ local ShopItems = {}
 
 --#endregion Variables
 
+
+
 --#region Functions
-
-
 local function BanPlayer(src)
     MySQL.insert('INSERT INTO bans (name, license, discord, ip, reason, expire, bannedby) VALUES (?, ?, ?, ?, ?, ?, ?)', {
         GetPlayerName(src),
@@ -20,9 +20,9 @@ local function BanPlayer(src)
         QBCore.Functions.GetIdentifier(src, 'ip'),
         "Inventory Cheating",
         2147483647,
-        'qb-inventory'
+        'qb-adminmenu'
     })
-    TriggerEvent('qb-log:server:CreateLog', 'adminmenu', 'Player Banned', 'red', string.format('%s was banned by %s for %s', GetPlayerName(src), 'qb-adminmenu', "Inventory Exploiting"), true)
+    TriggerEvent('qb-log:server:CreateLog', 'qb-inventory', 'Player Banned', 'red', string.format('%s was banned by %s for %s', GetPlayerName(src), 'qb-inventory', "Inventory Exploiting"), true)
     DropPlayer(src, 'You were permanently for cheating aka tryna open up inventories...')
 end
 
@@ -1243,23 +1243,28 @@ local function OpenInventory(name, id, other, origin)
 			local uzpPos = GetEntityCoords(TargetPed)
 			local pPos = GetEntityCoords(PlayerPed)
 			local Distance = #(pPos - uzpPos)
-			if Distance > 4.5 then
+			if Distance > 3.0 then
 				local Perms = QBCore.Functions.GetPermission(Player.PlayerData.source)
 				if Perms ~= "admin" or Perms ~= "god" then
+					TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory  \n  Player Name :" .. GetPlayerName(src) .. " \n Player Identifier : " .. GetPlayerIdentifier(src) .. "  \n This is the citizenid : " .. Player.PlayerData.citizenid .. "  \n  This is source : " .. src .. "  \n  This is the player that had his inventory opened : \n " .. " Player Name :" .. GetPlayerName(id) .. "  \n  Player Identifier : " .. GetPlayerIdentifier(id) .. "  \n  This is the citizenid : " .. OtherPlayer.PlayerData.citizenid) 
 					BanPlayer(src)
-					-- return
+				else
+					if Config.LogOpenInventory then 
+						TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory  \n  Player Name :" .. GetPlayerName(src) .. " \n Player Identifier : " .. GetPlayerIdentifier(src) .. "  \n This is the citizenid : " .. Player.PlayerData.citizenid .. "  \n  This is source : " .. src .. "  \n  This is the player that had his inventory opened : \n " .. " Player Name :" .. GetPlayerName(id) .. "  \n  Player Identifier : " .. GetPlayerIdentifier(id) .. "  \n  This is the citizenid : " .. OtherPlayer.PlayerData.citizenid)  
+					end
 				end
 			else
 				local invisible = IsEntityVisible(PlayerPed)
-				local noclip = GetEntityCollisonDisabled(PlayerPed)
-				
-				if invisible == false or noclip == true then
-					TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "red", string.format("User: ** %s **\nIdentifier: ** %s **\nCitizenId: ** %s **\nServer Id: ** %s ** Was using either invisibility or noclip while trying to open an inventory", GetPlayerName(src), GetPlayerIdentifier(src), Player.PlayerData.citizenid, src)) 
-					DropPlayer(src, "Invisible or noclipping? Which one 😂")
+				local invincible = GetPlayerInvincible(PlayerPed)
+				if invisible == false or invincible == true then
+					if Perms ~= "admin" or Perms ~= "god" then
+						TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "red", string.format("User: ** %s **\nIdentifier: ** %s **\nCitizenId: ** %s **\nServer Id: ** %s ** Was using either invisibility or noclip while trying to open an inventory", GetPlayerName(src), GetPlayerIdentifier(src), Player.PlayerData.citizenid, src)) 
+						DropPlayer(src, "Invisible or invincible? Which one 😂")
+					end
 				else
 					if OtherPlayer then
 						if Config.LogOpenInventory then 
-							TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory || Player Name :" .. GetPlayerName(src) .. " || Player Identifier : " .. GetPlayerIdentifier(src) .. " || This is the citizenid : " .. Player.PlayerData.citizenid .. " || This is source : " .. src .. " || <br> This is the player that had his inventory opened : " .. " Player Name :" .. GetPlayerName(id) .. " || Player Identifier : " .. GetPlayerIdentifier(id) .. " || This is the citizenid : " .. OtherPlayer.PlayerData.citizenid) 
+							TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory  \n  Player Name :" .. GetPlayerName(src) .. " \n Player Identifier : " .. GetPlayerIdentifier(src) .. "  \n This is the citizenid : " .. Player.PlayerData.citizenid .. "  \n  This is source : " .. src .. "  \n  This is the player that had his inventory opened : \n " .. " Player Name :" .. GetPlayerName(id) .. "  \n  Player Identifier : " .. GetPlayerIdentifier(id) .. "  \n  This is the citizenid : " .. OtherPlayer.PlayerData.citizenid)  
 						end
 						secondInv.name = "otherplayer-"..id
 						secondInv.label = "Player-"..id
@@ -1309,6 +1314,7 @@ local function OpenInventory(name, id, other, origin)
 		TriggerClientEvent("inventory:client:OpenInventory", src, {}, Player.PlayerData.items)
 	end
 end
+
 exports('OpenInventory',OpenInventory)
 
 --#endregion Functions
@@ -1378,19 +1384,27 @@ AddEventHandler('onResourceStart', function(resourceName)
 		end)
 	end
 end)
+AddEventHandler('inventory:server:CreateDrop', function(items, coords, player)
+	local src = source
 
+	local dropId = CreateDropId()
+	Drops[dropId] = {}
+	Drops[dropId].coords = coords
+	Drops[dropId].createdTime = os.time()
+
+	Drops[dropId].items = items
+
+	TriggerClientEvent("inventory:client:AddDropItem", -1, dropId, player, coords)
+end)
 RegisterNetEvent('QBCore:Server:UpdateObject', function()
     if source ~= '' then return end -- Safety check if the event was not called from the server.
     QBCore = exports['qb-core']:GetCoreObject()
 end)
-
 function addTrunkItems(plate, items)
 	Trunks[plate] = {}
 	Trunks[plate].items = items
 end
-
-exports('addTrunkItems', addTrunkItems)
-
+exports('addTrunkItems',addTrunkItems)
 function addGloveboxItems(plate, items)
 	Gloveboxes[plate] = {}
 	Gloveboxes[plate].items = items
@@ -1635,17 +1649,48 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 			secondInv.slots = #other.items
 		elseif name == "otherplayer" then
 			local OtherPlayer = QBCore.Functions.GetPlayer(tonumber(id))
-			if OtherPlayer then
-				secondInv.name = "otherplayer-"..id
-				secondInv.label = "Player-"..id
-				secondInv.maxweight = Config.MaxInventoryWeight
-				secondInv.inventory = OtherPlayer.PlayerData.items
-				if (Player.PlayerData.job.name == "police" or Player.PlayerData.job.type == "leo") and Player.PlayerData.job.onduty then
-					secondInv.slots = Config.MaxInventorySlots
+			local PlayerPed = GetPlayerPed(src)
+			local TargetPed = GetPlayerPed(id)
+			local uzpPos = GetEntityCoords(TargetPed)
+			local pPos = GetEntityCoords(PlayerPed)
+			local Distance = #(pPos - uzpPos)
+			local Perms = QBCore.Functions.GetPermission(Player.PlayerData.source)
+			if Distance > 3.0 then
+				if Perms ~= "admin" or Perms ~= "god" then
+					TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory  \n  Player Name :" .. GetPlayerName(src) .. " \n Player Identifier : " .. GetPlayerIdentifier(src) .. "  \n This is the citizenid : " .. Player.PlayerData.citizenid .. "  \n  This is source : " .. src .. "  \n  This is the player that had his inventory opened : \n " .. " Player Name :" .. GetPlayerName(id) .. "  \n  Player Identifier : " .. GetPlayerIdentifier(id) .. "  \n  This is the citizenid : " .. OtherPlayer.PlayerData.citizenid) 
+					BanPlayer(src)
+					-- return
 				else
-					secondInv.slots = Config.MaxInventorySlots - 1
+					if Config.LogOpenInventory then 
+						TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory  \n  Player Name :" .. GetPlayerName(src) .. " \n Player Identifier : " .. GetPlayerIdentifier(src) .. "  \n This is the citizenid : " .. Player.PlayerData.citizenid .. "  \n  This is source : " .. src .. "  \n  This is the player that had his inventory opened : \n " .. " Player Name :" .. GetPlayerName(id) .. "  \n  Player Identifier : " .. GetPlayerIdentifier(id) .. "  \n  This is the citizenid : " .. OtherPlayer.PlayerData.citizenid) 
+					end
 				end
-				Wait(250)
+			else
+				local invisible = IsEntityVisible(PlayerPed)
+				local invincible = GetPlayerInvincible(PlayerPed)
+				
+				if invisible == false or invincible == true then
+					if Perms ~= "admin" or Perms ~= "god" then
+						TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "red", string.format("User: ** %s **\nIdentifier: ** %s **\nCitizenId: ** %s **\nServer Id: ** %s ** Was using either invisibility or noclip while trying to open an inventory", GetPlayerName(src), GetPlayerIdentifier(src), Player.PlayerData.citizenid, src)) 
+						DropPlayer(src, "Invisible or invincible? Which one 😂")
+					end
+				else
+					if OtherPlayer then
+						if Config.LogOpenInventory then 
+							TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory  \n  Player Name :" .. GetPlayerName(src) .. " \n Player Identifier : " .. GetPlayerIdentifier(src) .. "  \n This is the citizenid : " .. Player.PlayerData.citizenid .. "  \n  This is source : " .. src .. "  \n  This is the player that had his inventory opened : \n " .. " Player Name :" .. GetPlayerName(id) .. "  \n  Player Identifier : " .. GetPlayerIdentifier(id) .. "  \n  This is the citizenid : " .. OtherPlayer.PlayerData.citizenid) 
+						end
+						secondInv.name = "otherplayer-"..id
+						secondInv.label = "Player-"..id
+						secondInv.maxweight = Config.MaxInventoryWeight
+						secondInv.inventory = OtherPlayer.PlayerData.items
+						if (Player.PlayerData.job.name == "police" or Player.PlayerData.job.type == "leo") and Player.PlayerData.job.onduty then
+							secondInv.slots = Config.MaxInventorySlots
+						else
+							secondInv.slots = Config.MaxInventorySlots - 1
+						end
+						Wait(250)
+					end
+				end
 			end
 		else
 			if Drops[id] then
@@ -1677,7 +1722,6 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 			end
 		end
 		TriggerClientEvent("qb-inventory:client:closeinv", id)
-		Wait(0)
 		TriggerClientEvent("inventory:client:OpenInventory", src, {}, Player.PlayerData.items, secondInv)
 	else
 		TriggerClientEvent("inventory:client:OpenInventory", src, {}, Player.PlayerData.items)
@@ -1697,8 +1741,15 @@ RegisterNetEvent('inventory:server:SaveInventory', function(type, id)
 		else
 			Gloveboxes[id].isOpen = false
 		end
-	elseif type == "stash" then
-		SaveStashItems(id, Stashes[id].items)
+		elseif type == "stash" then
+		local indexstart, indexend = string.find(id, "FishingBox_") -- Default: "FishingBox_" or your Config.Stash.Name
+		if indexstart and indexend then
+			TriggerEvent("m-Fishing:server:saveFishingBox", source, id, Stashes[id].items, function(close)
+				Stashes[id].isOpen = close
+			end)
+		else
+			SaveStashItems(id, Stashes[id].items)
+		end
 	elseif type == "drop" then
 		if Drops[id] then
 			Drops[id].isOpen = false
@@ -1949,7 +2000,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 				AddItem(playerId, itemInfo["name"], fromAmount, toSlot, fromItemData.info)
 			end
 		else
-			QBCore.Functions.Notify(src, Lang:t("notify.itemexist"), "error")
+			QBCore.Functions.Notify(src, "Item doesn't exist", "error")
 		end
 	elseif QBCore.Shared.SplitStr(fromInventory, "-")[1] == "trunk" then
 		local plate = QBCore.Shared.SplitStr(fromInventory, "-")[2]
@@ -2148,11 +2199,43 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 					QBCore.Functions.Notify(src, "You don't have enough cash..", "error")
 				end
 			end
+			
+			elseif itemData.name == 'smallbackpack' then
+         	local info = {
+		        smallbackpackid = math.random(111,999),
+		    }
+        Player.Functions.AddItem('smallbackpack', 1, nil, info, {["quality"] = 100})
+
+        elseif itemData.name == 'mediumbackpack' then
+         	local info = {
+		        mediumbackpackid = math.random(111,999),
+		    }
+        Player.Functions.AddItem('mediumbackpack', 1, nil, info, {["quality"] = 100})
+
+        elseif itemData.name == 'largebackpack' then
+         	local info = {
+		        largebackpackid = math.random(111,999),
+		    }
+        Player.Functions.AddItem('largebackpack', 1, nil, info, {["quality"] = 100})
+			
+			elseif itemData.name == 'fishicebox' then
+         	local info = {
+                boxid = math.random(111,999),
+				boxOwner = Player.PlayerData.charinfo.firstname
+            }
+			Player.Functions.AddItem('fishicebox', 1, nil, info, {["quality"] = 100})
 		elseif QBCore.Shared.SplitStr(shopType, "_")[1] == "Itemshop" then
 			if Player.Functions.RemoveMoney("cash", price, "itemshop-bought-item") then
                 if QBCore.Shared.SplitStr(itemData.name, "_")[1] == "weapon" then
                     itemData.info.serie = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
 					itemData.info.quality = 100
+                end
+				if itemData.name == 'smallbackpack' then
+                    itemData.info.smallbackpackid = math.random(111111,999999)
+                elseif  itemData.name == 'mediumbackpack' then
+                    itemData.info.mediumbackpackid = math.random(111111,999999)
+                elseif  itemData.name == 'largebackpack' then
+                    itemData.info.largebackpackid = math.random(111111,999999)
                 end
 				AddItem(src, itemData.name, fromAmount, toSlot, itemData.info)
 				TriggerClientEvent('qb-shops:client:UpdateShop', src, QBCore.Shared.SplitStr(shopType, "_")[2], itemData, fromAmount)
@@ -2163,6 +2246,13 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
                 if QBCore.Shared.SplitStr(itemData.name, "_")[1] == "weapon" then
                     itemData.info.serie = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
 					itemData.info.quality = 100
+                end
+				if itemData.name == 'smallbackpack' then
+                    itemData.info.smallbackpackid = math.random(111111,999999)
+                elseif  itemData.name == 'mediumbackpack' then
+                    itemData.info.mediumbackpackid = math.random(111111,999999)
+                elseif  itemData.name == 'largebackpack' then
+                    itemData.info.largebackpackid = math.random(111111,999999)
                 end
 				AddItem(src, itemData.name, fromAmount, toSlot, itemData.info)
 				TriggerClientEvent('qb-shops:client:UpdateShop', src, QBCore.Shared.SplitStr(shopType, "_")[2], itemData, fromAmount)
@@ -2257,6 +2347,13 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 	end
 end)
 
+RegisterNetEvent('qb-inventory:server:SaveStashItems', function(stashId, items)
+    MySQL.insert('INSERT INTO stashitems (stash, items) VALUES (:stash, :items) ON DUPLICATE KEY UPDATE items = :items', {
+        ['stash'] = stashId,
+        ['items'] = json.encode(items)
+    })
+end)
+
 RegisterServerEvent("inventory:server:GiveItem", function(target, name, amount, slot)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
@@ -2306,13 +2403,14 @@ RegisterNetEvent('inventory:server:snowball', function(action)
 	end
 end)
 
-RegisterNetEvent('inventory:server:addTrunkItems', function(plate, items)
-	addTrunkItems(plate, items)
+RegisterNetEvent('inventory:server:addTrunkItems', function()
+	print('inventory:server:addTrunkItems has been deprecated please use exports[\'qb-inventory\']:addTrunkItems(plate, items)')
 end)
 
-RegisterNetEvent('inventory:server:addGloveboxItems', function(plate, items)
-	addGloveboxItems(plate, items)
+RegisterNetEvent('inventory:server:addGloveboxItems', function()
+	print('inventory:server:addGloveboxItems has been deprecated please use exports[\'qb-inventory\']:addGloveboxItems(plate, items)')
 end)
+
 --#endregion Events
 
 --#region Callbacks
@@ -2414,6 +2512,13 @@ QBCore.Commands.Add("giveitem", "Give An Item (Admin Only)", {{name="id", help="
 					info.lastname = Player.PlayerData.charinfo.lastname
 					info.birthdate = Player.PlayerData.charinfo.birthdate
 					info.type = "Class C Driver License"
+				elseif itemData["name"] == "policecard" then
+					info.firstname = Player.PlayerData.charinfo.firstname
+					info.lastname = Player.PlayerData.charinfo.lastname
+					info.birthdate = Player.PlayerData.charinfo.birthdate
+					info.gender = Player.PlayerData.charinfo.gender
+					info.nationality = Player.PlayerData.charinfo.nationality
+					info.type = "San Andreas Police Union ID"
 				elseif itemData["type"] == "weapon" then
 					amount = 1
 					info.serie = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
@@ -2530,6 +2635,7 @@ end)
 --#endregion Items
 
 --#region Threads
+
 
 CreateThread(function()
 	while true do
