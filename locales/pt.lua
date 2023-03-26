@@ -50,6 +50,9 @@ local Translations = {
         ["craft"] = "Craftar",
         ["a_craft"] = "Criar acessórios",
     },
+    ban = {
+        ["banplayer"] = "Você foi banido por abusar do sistema de inventário.",
+    },
 }
 
 if GetConvar('qb_locale', 'en') == 'pt' then
