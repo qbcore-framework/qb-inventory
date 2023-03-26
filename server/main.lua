@@ -1234,7 +1234,7 @@ local function OpenInventory(name, id, other, origin)
 						TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory  \n  Player Name :"..GetPlayerName(src).." \n Player Identifier : " .. GetPlayerIdentifier(src) .. "  \n This is the citizenid : " .. Player.PlayerData.citizenid .. "  \n  This is source : " .. src .. "  \n  This is the player that had his inventory opened : \n " .. " Player Name :" .. GetPlayerName(id) .. "  \n  Player Identifier : " .. GetPlayerIdentifier(id) .. "  \n  This is the citizenid : " .. OtherPlayer.PlayerData.citizenid)
 					end
 					if OtherPlayer then
-						if Config.LogOpenInventory then 
+						if Config.LogOpenInventory then
 							TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory  \n  Player Name :" .. GetPlayerName(src) .. " \n Player Identifier : " .. GetPlayerIdentifier(src) .. "  \n This is the citizenid : " .. Player.PlayerData.citizenid .. "  \n  This is source : " .. src .. "  \n  This is the player that had his inventory opened : \n " .. " Player Name :" .. GetPlayerName(id) .. "  \n  Player Identifier : " .. GetPlayerIdentifier(id) .. "  \n  This is the citizenid : " .. OtherPlayer.PlayerData.citizenid)
 						end
 						secondInv.name = "otherplayer-"..id
@@ -1651,7 +1651,7 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 						TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory  \n  Player Name :"..GetPlayerName(src).." \n Player Identifier : " .. GetPlayerIdentifier(src) .. "  \n This is the citizenid : " .. Player.PlayerData.citizenid .. "  \n  This is source : " .. src .. "  \n  This is the player that had his inventory opened : \n " .. " Player Name :" .. GetPlayerName(id) .. "  \n  Player Identifier : " .. GetPlayerIdentifier(id) .. "  \n  This is the citizenid : " .. OtherPlayer.PlayerData.citizenid)
 					end
 					if OtherPlayer then
-						if Config.LogOpenInventory then 
+						if Config.LogOpenInventory then
 							TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory  \n  Player Name :" .. GetPlayerName(src) .. " \n Player Identifier : " .. GetPlayerIdentifier(src) .. "  \n This is the citizenid : " .. Player.PlayerData.citizenid .. "  \n  This is source : " .. src .. "  \n  This is the player that had his inventory opened : \n " .. " Player Name :" .. GetPlayerName(id) .. "  \n  Player Identifier : " .. GetPlayerIdentifier(id) .. "  \n  This is the citizenid : " .. OtherPlayer.PlayerData.citizenid)
 						end
 						secondInv.name = "otherplayer-"..id
