@@ -54,6 +54,9 @@ local Translations = {
         ["craft"] = "Herstellung",
         ["a_craft"] = "Zubehör Herstellung",
     },
+    ban = {
+        ["banplayer"] = "Sie wurden wegen Missbrauchs des Inventarsystems gesperrt.",
+    },
 }
 
 if GetConvar('qb_locale', 'en') == 'de' then
