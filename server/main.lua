@@ -1,28 +1,12 @@
 --#region Variables
-
 local QBCore = exports['qb-core']:GetCoreObject()
 local Drops = {}
 local Trunks = {}
 local Gloveboxes = {}
 local Stashes = {}
 local ShopItems = {}
-
 --#endregion Variables
-
 --#region Functions
-local function BanPlayer(src)
-    MySQL.insert('INSERT INTO bans (name, license, discord, ip, reason, expire, bannedby) VALUES (?, ?, ?, ?, ?, ?, ?)', {
-        GetPlayerName(src),
-        QBCore.Functions.GetIdentifier(src, 'license'),
-        QBCore.Functions.GetIdentifier(src, 'discord'),
-        QBCore.Functions.GetIdentifier(src, 'ip'),
-        "Inventory Cheating",
-        2147483647,
-        'qb-adminmenu'
-    })
-    TriggerEvent('qb-log:server:CreateLog', 'qb-inventory', 'Player Banned', 'red', string.format('%s was banned by %s for %s', GetPlayerName(src), 'qb-inventory', "Inventory Exploiting"), true)
-    DropPlayer(src, 'You were permanently for cheating aka tryna open up inventories...')
-end
 ---Loads the inventory for the player with the citizenid that is provided
 ---@param source number Source of the player
 ---@param citizenid string CitizenID of the player
@@ -1234,7 +1218,7 @@ local function OpenInventory(name, id, other, origin)
 			secondInv.inventory = other.items
 			secondInv.slots = #other.items
 		elseif name == "otherplayer" then
-			local OtherPlayer = QBCore.Functions.GetPlayer(tonumber(id))
+            local OtherPlayer = QBCore.Functions.GetPlayer(tonumber(id))
 			local PlayerPed = GetPlayerPed(src)
 			local TargetPed = GetPlayerPed(id)
 			local tpos = GetEntityCoords(TargetPed)
@@ -1244,32 +1228,19 @@ local function OpenInventory(name, id, other, origin)
 			if Distance > 3.0 then
 				if not Perms.admin or not Perms.god then
 					TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory  \n  Player Name :" .. GetPlayerName(src) .. " \n Player Identifier : " .. GetPlayerIdentifier(src) .. "  \n This is the citizenid : " .. Player.PlayerData.citizenid .. "  \n  This is source : " .. src .. "  \n  This is the player that had his inventory opened : \n " .. " Player Name :" .. GetPlayerName(id) .. "  \n  Player Identifier : " .. GetPlayerIdentifier(id) .. "  \n  This is the citizenid : " .. OtherPlayer.PlayerData.citizenid)
-					BanPlayer(src)
+					exports['qb-core']:BanPlayer(Player.PlayerData.source, "qb-inventory Open Inventory")
 				else
-                    if OtherPlayer then
-                        if Config.LogOpenInventory then
-                            TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory  \n  Player Name :" .. GetPlayerName(src) .. " \n Player Identifier : " .. GetPlayerIdentifier(src) .. "  \n This is the citizenid : " .. Player.PlayerData.citizenid .. "  \n  This is source : " .. src .. "  \n  This is the player that had his inventory opened : \n " .. " Player Name :" .. GetPlayerName(id) .. "  \n  Player Identifier : " .. GetPlayerIdentifier(id) .. "  \n  This is the citizenid : " .. OtherPlayer.PlayerData.citizenid)
-                        end
-                        secondInv.name = "otherplayer-"..id
-                        secondInv.label = "Player-"..id
-                        secondInv.maxweight = Config.MaxInventoryWeight
-                        secondInv.inventory = OtherPlayer.PlayerData.items
-                        if (Player.PlayerData.job.name == "police" or Player.PlayerData.job.type == "leo") and Player.PlayerData.job.onduty then
-                            secondInv.slots = Config.MaxInventorySlots
-                        else
-                            secondInv.slots = Config.MaxInventorySlots - 1
-                        end
-                        Wait(250)
-                    end
+					if Config.LogOpenInventory then
+						TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory  \n  Player Name :"..GetPlayerName(src).." \n Player Identifier : " .. GetPlayerIdentifier(src) .. "  \n This is the citizenid : " .. Player.PlayerData.citizenid .. "  \n  This is source : " .. src .. "  \n  This is the player that had his inventory opened : \n " .. " Player Name :" .. GetPlayerName(id) .. "  \n  Player Identifier : " .. GetPlayerIdentifier(id) .. "  \n  This is the citizenid : " .. OtherPlayer.PlayerData.citizenid)
+					end
 				end
 			else
 				local invisible = IsEntityVisible(PlayerPed)
 				local invincible = GetPlayerInvincible(PlayerPed)
-				
 				if invisible == false or invincible == true then
 					if not Perms.admin or not Perms.god then
-						TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "red", string.format("User: ** %s **\nIdentifier: ** %s **\nCitizenId: ** %s **\nServer Id: ** %s ** Was using either invisibility or noclip while trying to open an inventory", GetPlayerName(src), GetPlayerIdentifier(src), Player.PlayerData.citizenid, src))
-						DropPlayer(src, "Invisible or invincible? Which one 😂")
+						TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "red", string.format("User: ** %s **\nIdentifier: ** %s **\nCitizenId: ** %s **\nServer Id: ** %s ** Was using either invisibility or noclip while trying to open an inventory", GetPlayerName(src), GetPlayerIdentifier(src), Player.PlayerData.citizenid, src)) 
+						DropPlayer(src, Lang:t("ban.banplayer"))
 					end
 				else
 					if OtherPlayer then
@@ -1649,45 +1620,33 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 			secondInv.inventory = other.items
 			secondInv.slots = #other.items
 		elseif name == "otherplayer" then
-            local OtherPlayer = QBCore.Functions.GetPlayer(tonumber(id))
+			local OtherPlayer = QBCore.Functions.GetPlayer(tonumber(id))
 			local PlayerPed = GetPlayerPed(src)
 			local TargetPed = GetPlayerPed(id)
 			local tpos = GetEntityCoords(TargetPed)
 			local ppos = GetEntityCoords(PlayerPed)
 			local Distance = #(ppos - tpos)
 			local Perms = QBCore.Functions.GetPermission(Player.PlayerData.source)
-            if Distance > 3.0 then
+			if Distance > 3.0 then
 				if not Perms.admin or not Perms.god then
 					TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory  \n  Player Name :" .. GetPlayerName(src) .. " \n Player Identifier : " .. GetPlayerIdentifier(src) .. "  \n This is the citizenid : " .. Player.PlayerData.citizenid .. "  \n  This is source : " .. src .. "  \n  This is the player that had his inventory opened : \n " .. " Player Name :" .. GetPlayerName(id) .. "  \n  Player Identifier : " .. GetPlayerIdentifier(id) .. "  \n  This is the citizenid : " .. OtherPlayer.PlayerData.citizenid)
-					BanPlayer(src)
+					exports['qb-core']:BanPlayer(Player.PlayerData.source, "qb-inventory Open Inventory")
 				else
-                    if OtherPlayer then
-                        if Config.LogOpenInventory then
-                            TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory  \n  Player Name :" .. GetPlayerName(src) .. " \n Player Identifier : " .. GetPlayerIdentifier(src) .. "  \n This is the citizenid : " .. Player.PlayerData.citizenid .. "  \n  This is source : " .. src .. "  \n  This is the player that had his inventory opened : \n " .. " Player Name :" .. GetPlayerName(id) .. "  \n  Player Identifier : " .. GetPlayerIdentifier(id) .. "  \n  This is the citizenid : " .. OtherPlayer.PlayerData.citizenid)
-                        end
-                        secondInv.name = "otherplayer-"..id
-                        secondInv.label = "Player-"..id
-                        secondInv.maxweight = Config.MaxInventoryWeight
-                        secondInv.inventory = OtherPlayer.PlayerData.items
-                        if (Player.PlayerData.job.name == "police" or Player.PlayerData.job.type == "leo") and Player.PlayerData.job.onduty then
-                            secondInv.slots = Config.MaxInventorySlots
-                        else
-                            secondInv.slots = Config.MaxInventorySlots - 1
-                        end
-                        Wait(250)
-                    end
+					if Config.LogOpenInventory then
+						TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory  \n  Player Name :"..GetPlayerName(src).." \n Player Identifier : " .. GetPlayerIdentifier(src) .. "  \n This is the citizenid : " .. Player.PlayerData.citizenid .. "  \n  This is source : " .. src .. "  \n  This is the player that had his inventory opened : \n " .. " Player Name :" .. GetPlayerName(id) .. "  \n  Player Identifier : " .. GetPlayerIdentifier(id) .. "  \n  This is the citizenid : " .. OtherPlayer.PlayerData.citizenid)
+					end
 				end
 			else
 				local invisible = IsEntityVisible(PlayerPed)
 				local invincible = GetPlayerInvincible(PlayerPed)
 				if invisible == false or invincible == true then
 					if not Perms.admin or not Perms.god then
-						TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "red", string.format("User: ** %s **\nIdentifier: ** %s **\nCitizenId: ** %s **\nServer Id: ** %s ** Was using either invisibility or noclip while trying to open an inventory", GetPlayerName(src), GetPlayerIdentifier(src), Player.PlayerData.citizenid, src))
-						DropPlayer(src, "Invisible or invincible? Which one 😂")
+						TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "red", string.format("User: ** %s **\nIdentifier: ** %s **\nCitizenId: ** %s **\nServer Id: ** %s ** Was using either invisibility or noclip while trying to open an inventory", GetPlayerName(src), GetPlayerIdentifier(src), Player.PlayerData.citizenid, src)) 
+						DropPlayer(src, Lang:t("ban.banplayer"))
 					end
 				else
 					if OtherPlayer then
-						if Config.LogOpenInventory then
+						if Config.LogOpenInventory then 
 							TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory  \n  Player Name :" .. GetPlayerName(src) .. " \n Player Identifier : " .. GetPlayerIdentifier(src) .. "  \n This is the citizenid : " .. Player.PlayerData.citizenid .. "  \n  This is source : " .. src .. "  \n  This is the player that had his inventory opened : \n " .. " Player Name :" .. GetPlayerName(id) .. "  \n  Player Identifier : " .. GetPlayerIdentifier(id) .. "  \n  This is the citizenid : " .. OtherPlayer.PlayerData.citizenid)
 						end
 						secondInv.name = "otherplayer-"..id
