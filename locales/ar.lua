@@ -50,6 +50,9 @@ local Translations = {
         ["craft"] = "صياغة",
         ["a_craft"] = "صياغة المرفقات",
     },
+    ban = {
+        ["banplayer"] = "لقد تم حظرك لاستغلال قوائم الجرد.",
+    },
 }
 
 if GetConvar('qb_locale', 'en') == 'ar' then
