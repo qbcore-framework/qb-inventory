@@ -54,6 +54,9 @@ local Translations = {
         ["craft"] = "Crafting",
         ["a_craft"] = "Attachment Crafting",
     },
+    ban = {
+        ["banplayer"] = "You have been banned for exploiting the inventories.",
+    },
 }
 
 Lang = Lang or Locale:new({
