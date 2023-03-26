@@ -1233,6 +1233,21 @@ local function OpenInventory(name, id, other, origin)
 					if Config.LogOpenInventory then
 						TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory  \n  Player Name :"..GetPlayerName(src).." \n Player Identifier : " .. GetPlayerIdentifier(src) .. "  \n This is the citizenid : " .. Player.PlayerData.citizenid .. "  \n  This is source : " .. src .. "  \n  This is the player that had his inventory opened : \n " .. " Player Name :" .. GetPlayerName(id) .. "  \n  Player Identifier : " .. GetPlayerIdentifier(id) .. "  \n  This is the citizenid : " .. OtherPlayer.PlayerData.citizenid)
 					end
+					if OtherPlayer then
+						if Config.LogOpenInventory then 
+							TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory  \n  Player Name :" .. GetPlayerName(src) .. " \n Player Identifier : " .. GetPlayerIdentifier(src) .. "  \n This is the citizenid : " .. Player.PlayerData.citizenid .. "  \n  This is source : " .. src .. "  \n  This is the player that had his inventory opened : \n " .. " Player Name :" .. GetPlayerName(id) .. "  \n  Player Identifier : " .. GetPlayerIdentifier(id) .. "  \n  This is the citizenid : " .. OtherPlayer.PlayerData.citizenid)
+						end
+						secondInv.name = "otherplayer-"..id
+						secondInv.label = "Player-"..id
+						secondInv.maxweight = Config.MaxInventoryWeight
+						secondInv.inventory = OtherPlayer.PlayerData.items
+						if (Player.PlayerData.job.name == "police" or Player.PlayerData.job.type == "leo") and Player.PlayerData.job.onduty then
+							secondInv.slots = Config.MaxInventorySlots
+						else
+							secondInv.slots = Config.MaxInventorySlots - 1
+						end
+						Wait(250)
+					end
 				end
 			else
 				local invisible = IsEntityVisible(PlayerPed)
@@ -1634,6 +1649,21 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 				else
 					if Config.LogOpenInventory then
 						TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory  \n  Player Name :"..GetPlayerName(src).." \n Player Identifier : " .. GetPlayerIdentifier(src) .. "  \n This is the citizenid : " .. Player.PlayerData.citizenid .. "  \n  This is source : " .. src .. "  \n  This is the player that had his inventory opened : \n " .. " Player Name :" .. GetPlayerName(id) .. "  \n  Player Identifier : " .. GetPlayerIdentifier(id) .. "  \n  This is the citizenid : " .. OtherPlayer.PlayerData.citizenid)
+					end
+					if OtherPlayer then
+						if Config.LogOpenInventory then 
+							TriggerEvent("qb-log:server:CreateLog", "anticheat", "qb-inventory", "orange", "Player Opened an inventory  \n  Player Name :" .. GetPlayerName(src) .. " \n Player Identifier : " .. GetPlayerIdentifier(src) .. "  \n This is the citizenid : " .. Player.PlayerData.citizenid .. "  \n  This is source : " .. src .. "  \n  This is the player that had his inventory opened : \n " .. " Player Name :" .. GetPlayerName(id) .. "  \n  Player Identifier : " .. GetPlayerIdentifier(id) .. "  \n  This is the citizenid : " .. OtherPlayer.PlayerData.citizenid)
+						end
+						secondInv.name = "otherplayer-"..id
+						secondInv.label = "Player-"..id
+						secondInv.maxweight = Config.MaxInventoryWeight
+						secondInv.inventory = OtherPlayer.PlayerData.items
+						if (Player.PlayerData.job.name == "police" or Player.PlayerData.job.type == "leo") and Player.PlayerData.job.onduty then
+							secondInv.slots = Config.MaxInventorySlots
+						else
+							secondInv.slots = Config.MaxInventorySlots - 1
+						end
+						Wait(250)
 					end
 				end
 			else
