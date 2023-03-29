@@ -2746,8 +2746,8 @@ var requiredItemOpen = false;
                         $(".z-hotbar-inventory")
                             .find("[data-zhotbarslot=" + item.slot + "]")
                             .html(
-                                '<div class="z-hotbar-item-slot-key"><p>6 <i class="fas fa-lock"></i></p></div><div class="z-hotbar-item-slot-img"><img src="images/' +
-                                item.image +
+                                '<div class="z-hotbar-item-slot-key"><p>6 <i class="fas fa-lock"></i></p></div><div class="z-hotbar-item-slot-img"><img src="' +
+                                GetIcon(item.image) +
                                 '" alt="' +
                                 item.name +
                                 '" /></div><div class="z-hotbar-item-slot-amount"><p>' +
@@ -2763,8 +2763,8 @@ var requiredItemOpen = false;
                             .html(
                                 '<div class="z-hotbar-item-slot-key"><p>' +
                                 item.slot +
-                                '</p></div><div class="z-hotbar-item-slot-img"><img src="images/' +
-                                item.image +
+                                '</p></div><div class="z-hotbar-item-slot-img"><img src="' +
+                                GetIcon(item.image) +
                                 '" alt="' +
                                 item.name +
                                 '" /></div><div class="z-hotbar-item-slot-amount"><p>' +
