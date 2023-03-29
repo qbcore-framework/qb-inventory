@@ -774,6 +774,11 @@ function handleDragDrop() {
     });
 }
 
+function GetIcon(link){
+  if (link.startsWith("http")) { return link }
+  else { return "images/" + link }
+}
+
 function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
     var otherinventory = otherLabel.toLowerCase();
     if (otherinventory.split("-")[0] == "dropped") {
@@ -808,8 +813,8 @@ function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
             $fromInv
                 .find("[data-slot=" + $fromSlot + "]")
                 .html(
-                    '<div class="item-slot-img"><img src="images/' +
-                    itemData.image +
+                    '<div class="item-slot-img"><img src="' +
+                    GetIcon(itemData.image) +
                     '" alt="' +
                     itemData.name +
                     '" /></div><div class="item-slot-amount"><p>(' +
@@ -824,8 +829,8 @@ function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
             $fromInv
                 .find("[data-slot=" + $fromSlot + "]")
                 .html(
-                    '<div class="item-slot-img"><img src="images/' +
-                    itemData.image +
+                    '<div class="item-slot-img"><img src="' +
+                    GetIcon(itemData.image) +
                     '" alt="' +
                     itemData.name +
                     '" /></div><div class="item-slot-amount"><p>' +
@@ -852,8 +857,8 @@ function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
             $fromInv
                 .find("[data-slot=" + $fromSlot + "]")
                 .html(
-                    '<div class="item-slot-img"><img src="images/' +
-                    itemData.image +
+                    '<div class="item-slot-img"><img src="' +
+                    GetIcon(itemData.image) +
                     '" alt="' +
                     itemData.name +
                     '" /></div><div class="item-slot-amount"><p>(' +
@@ -868,8 +873,8 @@ function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
             $fromInv
                 .find("[data-slot=" + $fromSlot + "]")
                 .html(
-                    '<div class="item-slot-img"><img src="images/' +
-                    itemData.image +
+                    '<div class="item-slot-img"><img src="' +
+                    GetIcon(itemData.image) +
                     '" alt="' +
                     itemData.name +
                     '" /></div><div class="item-slot-amount"><p>' +
@@ -895,8 +900,8 @@ function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
             $toInv
                 .find("[data-slot=" + $toSlot + "]")
                 .html(
-                    '<div class="item-slot-img"><img src="images/' +
-                    itemData.image +
+                    '<div class="item-slot-img"><img src="' +
+                    GetIcon(itemData.image) +
                     '" alt="' +
                     itemData.name +
                     '" /></div><div class="item-slot-amount"><p>(' +
@@ -911,8 +916,8 @@ function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
             $toInv
                 .find("[data-slot=" + $toSlot + "]")
                 .html(
-                    '<div class="item-slot-img"><img src="images/' +
-                    itemData.image +
+                    '<div class="item-slot-img"><img src="' +
+                    GetIcon(itemData.image) +
                     '" alt="' +
                     itemData.name +
                     '" /></div><div class="item-slot-amount"><p>' +
@@ -1063,8 +1068,8 @@ function optionSwitch(
             .html(
                 '<div class="item-slot-key"><p>' +
                 $toSlot +
-                '</p></div><div class="item-slot-img"><img src="images/' +
-                fromData.image +
+                '</p></div><div class="item-slot-img"><img src="' +
+                GetIcon(fromData.image) +
                 '" alt="' +
                 fromData.name +
                 '" /></div><div class="item-slot-amount"><p>' +
@@ -1079,8 +1084,8 @@ function optionSwitch(
         $toInv
             .find("[data-slot=" + $toSlot + "]")
             .html(
-                '<div class="item-slot-img"><img src="images/' +
-                fromData.image +
+                '<div class="item-slot-img"><img src="' +
+                GetIcon(fromData.image) +
                 '" alt="' +
                 fromData.name +
                 '" /></div><div class="item-slot-amount"><p>' +
@@ -1106,8 +1111,8 @@ function optionSwitch(
             .html(
                 '<div class="item-slot-key"><p>' +
                 $fromSlot +
-                '</p></div><div class="item-slot-img"><img src="images/' +
-                toData.image +
+                '</p></div><div class="item-slot-img"><img src="' +
+                GetIcon(toData.image) +
                 '" alt="' +
                 toData.name +
                 '" /></div><div class="item-slot-amount"><p>' +
@@ -1122,8 +1127,8 @@ function optionSwitch(
         $fromInv
             .find("[data-slot=" + $fromSlot + "]")
             .html(
-                '<div class="item-slot-img"><img src="images/' +
-                toData.image +
+                '<div class="item-slot-img"><img src="' +
+                GetIcon(toData.image) +
                 '" alt="' +
                 toData.name +
                 '" /></div><div class="item-slot-amount"><p>' +
@@ -1228,8 +1233,8 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                         .html(
                             '<div class="item-slot-key"><p>' +
                             $toSlot +
-                            '</p></div><div class="item-slot-img"><img src="images/' +
-                            newData.image +
+                            '</p></div><div class="item-slot-img"><img src="' +
+                            GetIcon(newData.image) +
                             '" alt="' +
                             newData.name +
                             '" /></div><div class="item-slot-amount"><p>' +
@@ -1243,8 +1248,8 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                     $toInv
                         .find("[data-slot=" + $toSlot + "]")
                         .html(
-                            '<div class="item-slot-key"><p>6 <i class="fas fa-lock"></i></p></div><div class="item-slot-img"><img src="images/' +
-                            newData.image +
+                            '<div class="item-slot-key"><p>6 <i class="fas fa-lock"></i></p></div><div class="item-slot-img"><img src="' +
+                            GetIcon(newData.image) +
                             '" alt="' +
                             newData.name +
                             '" /></div><div class="item-slot-amount"><p>' +
@@ -1258,8 +1263,8 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                     $toInv
                         .find("[data-slot=" + $toSlot + "]")
                         .html(
-                            '<div class="item-slot-img"><img src="images/' +
-                            newData.image +
+                            '<div class="item-slot-img"><img src="' +
+                            GetIcon(newData.image) +
                             '" alt="' +
                             newData.name +
                             '" /></div><div class="item-slot-amount"><p>' +
@@ -1350,8 +1355,8 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                         .html(
                             '<div class="item-slot-key"><p>' +
                             $toSlot +
-                            '</p></div><div class="item-slot-img"><img src="images/' +
-                            newData.image +
+                            '</p></div><div class="item-slot-img"><img src="' +
+                            GetIcon(newData.image) +
                             '" alt="' +
                             newData.name +
                             '" /></div><div class="item-slot-amount"><p>' +
@@ -1365,8 +1370,8 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                     $toInv
                         .find("[data-slot=" + $toSlot + "]")
                         .html(
-                            '<div class="item-slot-key"><p>6 <i class="fas fa-lock"></i></p></div><div class="item-slot-img"><img src="images/' +
-                            newData.image +
+                            '<div class="item-slot-key"><p>6 <i class="fas fa-lock"></i></p></div><div class="item-slot-img"><img src="' +
+                            GetIcon(newData.image) +
                             '" alt="' +
                             newData.name +
                             '" /></div><div class="item-slot-amount"><p>' +
@@ -1380,8 +1385,8 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                     $toInv
                         .find("[data-slot=" + $toSlot + "]")
                         .html(
-                            '<div class="item-slot-img"><img src="images/' +
-                            newData.image +
+                            '<div class="item-slot-img"><img src="' +
+                            GetIcon(newData.image) +
                             '" alt="' +
                             newData.name +
                             '" /></div><div class="item-slot-amount"><p>' +
@@ -1439,8 +1444,8 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                     $fromInv
                         .find("[data-slot=" + $fromSlot + "]")
                         .html(
-                            '<div class="item-slot-img"><img src="images/' +
-                            newDataFrom.image +
+                            '<div class="item-slot-img"><img src="' +
+                            GetIcon(newDataFrom.image) +
                             '" alt="' +
                             newDataFrom.name +
                             '" /></div><div class="item-slot-amount"><p>(' +
@@ -1471,8 +1476,8 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                             .html(
                                 '<div class="item-slot-key"><p>' +
                                 $fromSlot +
-                                '</p></div><div class="item-slot-img"><img src="images/' +
-                                newDataFrom.image +
+                                '</p></div><div class="item-slot-img"><img src="' +
+                                GetIcon(newDataFrom.image) +
                                 '" alt="' +
                                 newDataFrom.name +
                                 '" /></div><div class="item-slot-amount"><p>' +
@@ -1491,8 +1496,8 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                         $fromInv
                             .find("[data-slot=" + $fromSlot + "]")
                             .html(
-                                '<div class="item-slot-key"><p>6 <i class="fas fa-lock"></i></p></div><div class="item-slot-img"><img src="images/' +
-                                newDataFrom.image +
+                                '<div class="item-slot-key"><p>6 <i class="fas fa-lock"></i></p></div><div class="item-slot-img"><img src="' +
+                                GetIcon(newDataFrom.image) +
                                 '" alt="' +
                                 newDataFrom.name +
                                 '" /></div><div class="item-slot-amount"><p>' +
@@ -1508,8 +1513,8 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                         $fromInv
                             .find("[data-slot=" + $fromSlot + "]")
                             .html(
-                                '<div class="item-slot-img"><img src="images/' +
-                                newDataFrom.image +
+                                '<div class="item-slot-img"><img src="' +
+                                GetIcon(newDataFrom.image) +
                                 '" alt="' +
                                 newDataFrom.name +
                                 '" /></div><div class="item-slot-amount"><p>' +
@@ -1629,8 +1634,8 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                         .html(
                             '<div class="item-slot-key"><p>' +
                             $toSlot +
-                            '</p></div><div class="item-slot-img"><img src="images/' +
-                            fromData.image +
+                            '</p></div><div class="item-slot-img"><img src="' +
+                            GetIcon(fromData.image) +
                             '" alt="' +
                             fromData.name +
                             '" /></div><div class="item-slot-amount"><p>' +
@@ -1644,8 +1649,8 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                     $toInv
                         .find("[data-slot=" + $toSlot + "]")
                         .html(
-                            '<div class="item-slot-key"><p>6 <i class="fas fa-lock"></i></p></div><div class="item-slot-img"><img src="images/' +
-                            fromData.image +
+                            '<div class="item-slot-key"><p>6 <i class="fas fa-lock"></i></p></div><div class="item-slot-img"><img src="' +
+                            GetIcon(fromData.image) +
                             '" alt="' +
                             fromData.name +
                             '" /></div><div class="item-slot-amount"><p>' +
@@ -1659,8 +1664,8 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                     $toInv
                         .find("[data-slot=" + $toSlot + "]")
                         .html(
-                            '<div class="item-slot-img"><img src="images/' +
-                            fromData.image +
+                            '<div class="item-slot-img"><img src="' +
+                            GetIcon(fromData.image) +
                             '" alt="' +
                             fromData.name +
                             '" /></div><div class="item-slot-amount"><p>' +
@@ -1735,8 +1740,8 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                             .html(
                                 '<div class="item-slot-key"><p>' +
                                 $fromSlot +
-                                '</p></div><div class="item-slot-img"><img src="images/' +
-                                toData.image +
+                                '</p></div><div class="item-slot-img"><img src="' +
+                                GetIcon(toData.image) +
                                 '" alt="' +
                                 toData.name +
                                 '" /></div><div class="item-slot-amount"><p>' +
@@ -1753,8 +1758,8 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                         $fromInv
                             .find("[data-slot=" + $fromSlot + "]")
                             .html(
-                                '<div class="item-slot-key"><p>6 <i class="fas fa-lock"></i></p></div><div class="item-slot-img"><img src="images/' +
-                                toData.image +
+                                '<div class="item-slot-key"><p>6 <i class="fas fa-lock"></i></p></div><div class="item-slot-img"><img src="' +
+                                GetIcon(toData.image) +
                                 '" alt="' +
                                 toData.name +
                                 '" /></div><div class="item-slot-amount"><p>' +
@@ -1768,8 +1773,8 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                         $fromInv
                             .find("[data-slot=" + $fromSlot + "]")
                             .html(
-                                '<div class="item-slot-img"><img src="images/' +
-                                toData.image +
+                                '<div class="item-slot-img"><img src="' +
+                                GetIcon(toData.image) +
                                 '" alt="' +
                                 toData.name +
                                 '" /></div><div class="item-slot-amount"><p>' +
@@ -1911,8 +1916,8 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                         .html(
                             '<div class="item-slot-key"><p>' +
                             $toSlot +
-                            '</p></div><div class="item-slot-img"><img src="images/' +
-                            newDataTo.image +
+                            '</p></div><div class="item-slot-img"><img src="' +
+                            GetIcon(newDataTo.image) +
                             '" alt="' +
                             newDataTo.name +
                             '" /></div><div class="item-slot-amount"><p>' +
@@ -1926,8 +1931,8 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                     $toInv
                         .find("[data-slot=" + $toSlot + "]")
                         .html(
-                            '<div class="item-slot-key"><p>6 <i class="fas fa-lock"></i></p></div><div class="item-slot-img"><img src="images/' +
-                            newDataTo.image +
+                            '<div class="item-slot-key"><p>6 <i class="fas fa-lock"></i></p></div><div class="item-slot-img"><img src="' +
+                            GetIcon(newDataTo.image) +
                             '" alt="' +
                             newDataTo.name +
                             '" /></div><div class="item-slot-amount"><p>' +
@@ -1941,8 +1946,8 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                     $toInv
                         .find("[data-slot=" + $toSlot + "]")
                         .html(
-                            '<div class="item-slot-img"><img src="images/' +
-                            newDataTo.image +
+                            '<div class="item-slot-img"><img src="' +
+                            GetIcon(newDataTo.image) +
                             '" alt="' +
                             newDataTo.name +
                             '" /></div><div class="item-slot-amount"><p>' +
@@ -2017,8 +2022,8 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                     $fromInv
                         .find("[data-slot=" + $fromSlot + "]")
                         .html(
-                            '<div class="item-slot-img"><img src="images/' +
-                            newDataFrom.image +
+                            '<div class="item-slot-img"><img src="' +
+                            GetIcon(newDataFrom.image) +
                             '" alt="' +
                             newDataFrom.name +
                             '" /></div><div class="item-slot-amount"><p>(' +
@@ -2049,8 +2054,8 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                             .html(
                                 '<div class="item-slot-key"><p>' +
                                 $fromSlot +
-                                '</p></div><div class="item-slot-img"><img src="images/' +
-                                newDataFrom.image +
+                                '</p></div><div class="item-slot-img"><img src="' +
+                                GetIcon(newDataFrom.image) +
                                 '" alt="' +
                                 newDataFrom.name +
                                 '" /></div><div class="item-slot-amount"><p>' +
@@ -2069,8 +2074,8 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                         $fromInv
                             .find("[data-slot=" + $fromSlot + "]")
                             .html(
-                                '<div class="item-slot-key"><p>6 <i class="fas fa-lock"></i></p></div><div class="item-slot-img"><img src="images/' +
-                                newDataFrom.image +
+                                '<div class="item-slot-key"><p>6 <i class="fas fa-lock"></i></p></div><div class="item-slot-img"><img src="' +
+                                GetIcon(newDataFrom.image) +
                                 '" alt="' +
                                 newDataFrom.name +
                                 '" /></div><div class="item-slot-amount"><p>' +
@@ -2086,8 +2091,8 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                         $fromInv
                             .find("[data-slot=" + $fromSlot + "]")
                             .html(
-                                '<div class="item-slot-img"><img src="images/' +
-                                newDataFrom.image +
+                                '<div class="item-slot-img"><img src="' +
+                                GetIcon(newDataFrom.image) +
                                 '" alt="' +
                                 newDataFrom.name +
                                 '" /></div><div class="item-slot-amount"><p>' +
@@ -2389,8 +2394,8 @@ var requiredItemOpen = false;
                             .html(
                                 '<div class="item-slot-key"><p>' +
                                 item.slot +
-                                '</p></div><div class="item-slot-img"><img src="images/' +
-                                item.image +
+                                '</p></div><div class="item-slot-img"><img src="' +
+                                GetIcon(item.image) +
                                 '" alt="' +
                                 item.name +
                                 '" /></div><div class="item-slot-amount"><p>' +
@@ -2410,8 +2415,8 @@ var requiredItemOpen = false;
                         $(".player-inventory")
                             .find("[data-slot=" + item.slot + "]")
                             .html(
-                                '<div class="item-slot-key"><p>6 <i class="fas fa-lock"></i></p></div><div class="item-slot-img"><img src="images/' +
-                                item.image +
+                                '<div class="item-slot-key"><p>6 <i class="fas fa-lock"></i></p></div><div class="item-slot-img"><img src="' +
+                                GetIcon(item.image) +
                                 '" alt="' +
                                 item.name +
                                 '" /></div><div class="item-slot-amount"><p>' +
@@ -2431,8 +2436,8 @@ var requiredItemOpen = false;
                         $(".player-inventory")
                             .find("[data-slot=" + item.slot + "]")
                             .html(
-                                '<div class="item-slot-img"><img src="images/' +
-                                item.image +
+                                '<div class="item-slot-img"><img src="' +
+                                GetIcon(item.image) +
                                 '" alt="' +
                                 item.name +
                                 '" /></div><div class="item-slot-amount"><p>' +
@@ -2476,8 +2481,8 @@ var requiredItemOpen = false;
                         $(".other-inventory")
                             .find("[data-slot=" + item.slot + "]")
                             .html(
-                                '<div class="item-slot-img"><img src="images/' +
-                                item.image +
+                                '<div class="item-slot-img"><img src="' +
+                                GetIcon(item.image) +
                                 '" alt="' +
                                 item.name +
                                 '" /></div><div class="item-slot-amount"><p>(' +
@@ -2491,8 +2496,8 @@ var requiredItemOpen = false;
                         $(".other-inventory")
                             .find("[data-slot=" + item.slot + "]")
                             .html(
-                                '<div class="item-slot-img"><img src="images/' +
-                                item.image +
+                                '<div class="item-slot-img"><img src="' +
+                                GetIcon(item.image) +
                                 '" alt="' +
                                 item.name +
                                 '" /></div><div class="item-slot-amount"><p>' +
@@ -2637,8 +2642,8 @@ var requiredItemOpen = false;
                         .html(
                             '<div class="item-slot-key"><p>' +
                             item.slot +
-                            '</p></div><div class="item-slot-img"><img src="images/' +
-                            item.image +
+                            '</p></div><div class="item-slot-img"><img src="' +
+                            GetIcon(item.image) +
                             '" alt="' +
                             item.name +
                             '" /></div><div class="item-slot-amount"><p>' +
@@ -2659,8 +2664,8 @@ var requiredItemOpen = false;
                     $(".player-inventory")
                         .find("[data-slot=" + item.slot + "]")
                         .html(
-                            '<div class="item-slot-key"><p>6 <i class="fas fa-lock"></i></p></div><div class="item-slot-img"><img src="images/' +
-                            item.image +
+                            '<div class="item-slot-key"><p>6 <i class="fas fa-lock"></i></p></div><div class="item-slot-img"><img src="' +
+                            GetIcon(item.image) +
                             '" alt="' +
                             item.name +
                             '" /></div><div class="item-slot-amount"><p>' +
@@ -2681,8 +2686,8 @@ var requiredItemOpen = false;
                     $(".player-inventory")
                         .find("[data-slot=" + item.slot + "]")
                         .html(
-                            '<div class="item-slot-img"><img src="images/' +
-                            item.image +
+                            '<div class="item-slot-img"><img src="' +
+                            GetIcon(item.image) +
                             '" alt="' +
                             item.name +
                             '" /></div><div class="item-slot-amount"><p>' +
@@ -2787,8 +2792,8 @@ var requiredItemOpen = false;
         $("#itembox-action").html("<p>Used</p>");
         $("#itembox-label").html("<p>" + data.item.label + "</p>");
         $("#itembox-image").html(
-            '<div class="item-slot-img"><img src="images/' +
-            data.item.image +
+            '<div class="item-slot-img"><img src="' +
+            GetIcon(data.item.image) +
             '" alt="' +
             data.item.name +
             '" /></div>'
@@ -2819,8 +2824,8 @@ var requiredItemOpen = false;
             type +
             '</p></div><div id="itembox-label"><p>' +
             data.item.label +
-            '</p></div><div class="item-slot-img"><img src="images/' +
-            data.item.image +
+            '</p></div><div class="item-slot-img"><img src="' +
+            GetIcon(data.item.image) +
             '" alt="' +
             data.item.name +
             '" /></div>'
@@ -2845,8 +2850,8 @@ var requiredItemOpen = false;
                     var element =
                         '<div class="requiredItem-box"><div id="requiredItem-action">Required</div><div id="requiredItem-label"><p>' +
                         item.label +
-                        '</p></div><div id="requiredItem-image"><div class="item-slot-img"><img src="images/' +
-                        item.image +
+                        '</p></div><div id="requiredItem-image"><div class="item-slot-img"><img src="' +
+                        GetIcon(item.image) +
                         '" alt="' +
                         item.name +
                         '" /></div></div></div>';
