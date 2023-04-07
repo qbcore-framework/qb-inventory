@@ -685,7 +685,14 @@ RegisterCommand('inventory', function()
                     if (IsBackEngine(GetEntityModel(vehicle))) then
                         trunkpos = GetOffsetFromEntityInWorldCoords(vehicle, 0.0, (dimensionMax.y), 0.0)
                     end
-                    if #(pos - trunkpos) < 1.5 and not IsPedInAnyVehicle(ped) then
+						
+		local dist = 1.5
+                    if GetVehicleClass(vehicle) == 15 or GetVehicleClass(vehicle) == 16 then
+                        trunkpos = GetOffsetFromEntityInWorldCoords(vehicle, 0.0, (dimensionMax.y), 0.0) 
+                        dist = 4.5 
+                    end				
+						
+                    if #(pos - trunkpos) < dist and not IsPedInAnyVehicle(ped) then
                         if GetVehicleDoorLockStatus(vehicle) < 2 then
                             CurrentVehicle = QBCore.Functions.GetPlate(vehicle)
                             curVeh = vehicle
