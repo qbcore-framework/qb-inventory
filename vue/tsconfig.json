@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    // TODO: Only keep this for dev/test
+    "resolveJsonModule": true,
     "target": "es5",
     "module": "esnext",
     "strict": true,
