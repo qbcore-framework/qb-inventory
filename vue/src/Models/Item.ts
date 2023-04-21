@@ -11,3 +11,5 @@ interface Item {
   image: string;
   id: number;
 }
+
+export default Item;
