@@ -23,6 +23,21 @@ class HttpClient {
 
     return await res.json();
   }
+
+  public async Post(url: string, data?: any) {
+    const res = await fetch(
+      `${HttpClient._baseUrl}${url}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      }
+    );
+
+    return await res.json();
+  }
 }
 
 export { httpClientPlugin, HttpClient };

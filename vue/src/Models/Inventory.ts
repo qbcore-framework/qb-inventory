@@ -30,14 +30,36 @@ class Inventory {
       items[item.slot - 1] = item;
     });
 
-    console.log(items);
-
     this.items.value = items;
   }
 
   public Close() {
     this.isVisible.value = false;
     this._httpClient.Get("CloseInventory");
+  }
+
+  public SwapSlots(from: number, to: number) {
+    const fromItem = this.items.value[from];
+    const toItem = this.items.value[to] || null;
+
+    // Update items on server
+    const body: any = {
+      fromInventory: "player",
+      toInventory: "player",
+      fromSlot: from,
+      toSlot: to,
+      fromAmount: fromItem?.amount,
+    }
+
+    if (toItem) {
+      body.toAmount = toItem.amount;
+    }
+
+    this._httpClient.Post("SetInventoryData", body);
+
+    // Update items in vue
+    this.items.value[from] = toItem;
+    this.items.value[to] = fromItem;
   }
 }
 

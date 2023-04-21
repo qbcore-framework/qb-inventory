@@ -6,9 +6,22 @@ defineProps<{
   items: Item[];
 }>();
 
-function onDragStart(event: DragEvent, item: Item) {
-  event.dataTransfer?.setData('text/plain', JSON.stringify(item));
+const emit = defineEmits<{
+  // eslint-disable-next-line no-unused-vars
+  (event: 'swap', index: number, otherIndex: number): void;
+}>();
+
+function onDragStart(event: DragEvent, index: number) {
+  // Store index in dataTransfer
+  event.dataTransfer?.setData('text/plain', index.toString());
 }
+
+function onDrop(event: DragEvent, index: number) {
+  event.preventDefault();
+  const otherIndex = event.dataTransfer?.getData('text/plain');
+  emit('swap', index, parseInt(otherIndex!))
+}
+
 </script>
 
 <template>
@@ -20,7 +33,10 @@ function onDragStart(event: DragEvent, item: Item) {
       <div v-for="(item, index) in items" :key="index">
         <ItemContainer :item="item"
           draggable="true"
-          @dragstart="onDragStart($event, item)"
+          dropzone="move"
+          @drop="onDrop($event, index)"
+          @dragstart="onDragStart($event, index)"
+          @dragover="event => event.preventDefault()"
          />
       </div>
     </div>
