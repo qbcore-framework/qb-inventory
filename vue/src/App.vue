@@ -1,5 +1,5 @@
 <template>
-  <main class="w-screen h-screen text-white flex justify-center items-center bg-gray-900 bg-opacity-30">
+  <main class="w-screen h-screen text-white flex justify-center bg-gray-900 bg-opacity-30">
     <!-- <pre v-text="inventory?.Items.value" /> -->
     <ItemGroup :items="inventory.Items.value" />
   </main>

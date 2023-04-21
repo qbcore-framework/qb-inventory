@@ -2,7 +2,6 @@ import { HttpClient } from "@/plugins/HttpClient";
 import MaxAmmo from "./MaxAmmo";
 import { Ref, ref } from "vue";
 import Item from "./Item";
-
 class Inventory {
   private items = ref<Item[]>([]);
   private isVisible = ref<boolean>(false);
@@ -10,6 +9,7 @@ class Inventory {
 
   constructor() {
     this._httpClient = new HttpClient();
+    // Load json for testing
   }
 
   public get Items() { return this.items; }
@@ -23,7 +23,16 @@ class Inventory {
     slots: number,
   }) {
     this.isVisible.value = true;
-    this.items.value = data.inventory;
+
+    const items = new Array(data.slots);
+    data.inventory.forEach(item => {
+      // Do -1 to account for lua 1-indexing
+      items[item.slot - 1] = item;
+    });
+
+    console.log(items);
+
+    this.items.value = items;
   }
 
   public Close() {

@@ -1,7 +1,8 @@
 interface Item {
   name: string;
   amount: number;
-  info: string;
+  info: object;
+  slot: number;
   label: string;
   description: string;
   weight: number;
@@ -10,6 +11,7 @@ interface Item {
   usable: boolean;
   image: string;
   id: number;
+  shouldClose?: boolean;
 }
 
 export default Item;
