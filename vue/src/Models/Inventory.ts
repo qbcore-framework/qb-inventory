@@ -17,7 +17,7 @@ class Inventory {
 
   public Open(data: {
     Ammo: [],
-    inventory: Item[],
+    inventory: any,
     maxammo: MaxAmmo,
     maxweight: number,
     slots: number,
@@ -25,7 +25,19 @@ class Inventory {
     this.isVisible.value = true;
 
     const items = new Array(data.slots);
-    data.inventory.forEach(item => {
+
+    // If inventory is an object, convert it to an array
+    if (!Array.isArray(data.inventory)) {
+      const inventory: Item[] = [];
+
+      for (const key in data.inventory) {
+        inventory.push(data.inventory[key]);
+      }
+
+      data.inventory = inventory;
+    }
+
+    data.inventory.forEach((item: Item) => {
       // Do -1 to account for lua 1-indexing
       items[item.slot - 1] = item;
     });

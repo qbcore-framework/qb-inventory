@@ -36,7 +36,7 @@ function onDrop(event: DragEvent, index: number) {
           dropzone="move"
           @drop="onDrop($event, index)"
           @dragstart="onDragStart($event, index)"
-          @dragover="event => event.preventDefault()"
+          @dragover.prevent
          />
       </div>
     </div>
