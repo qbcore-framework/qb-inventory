@@ -65,15 +65,6 @@ function onMouseUp(event: MouseEvent) {
   }
 }
 
-function onClick() {
-  console.log('click unregistered', isUserDragging.value, isItemDragged.value);
-  
-  // Only trigger swap event from item on which the item is dropped
-  if(!isItemDragged.value) {
-    console.log('clicked', props.index);
-  }
-}
-
 function onItemDropped(event: CustomEvent) {
   const otherIndex = event.detail;
   emit('swap', props.index, otherIndex);
@@ -87,7 +78,6 @@ function onItemDropped(event: CustomEvent) {
     :style="isUserDragging ? `position: absolute; top: ${y}px; left: ${x}px;` : ''"
     @mousedown="onMouseDown"
     @mouseup="onMouseUp"
-    @click="onClick"
     @item-dropped="onItemDropped"
     >
     <template v-if="item">
