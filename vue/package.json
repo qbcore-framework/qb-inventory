@@ -40,7 +40,9 @@
       "node": true,
       "vue/setup-compiler-macros": true
     },
-    "plugins": ["prettier"],
+    "plugins": [
+      "prettier"
+    ],
     "extends": [
       "plugin:vue/vue3-essential",
       "eslint:recommended",
