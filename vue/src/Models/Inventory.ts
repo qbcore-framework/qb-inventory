@@ -39,7 +39,7 @@ class Inventory {
 
     data.inventory.forEach((item: Item) => {
       // Do -1 to account for lua 1-indexing
-      items[item.slot - 1] = item;
+      items[item.slot] = item;
     });
 
     this.items.value = items;

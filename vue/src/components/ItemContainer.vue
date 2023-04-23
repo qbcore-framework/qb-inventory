@@ -66,8 +66,8 @@ function onMouseUp(event: MouseEvent) {
 }
 
 function onItemDropped(event: CustomEvent) {
-  const otherIndex = event.detail;
-  emit('swap', props.index, otherIndex);
+  const droppedIndex = event.detail;
+  emit('swap', droppedIndex, props.index);
 }
 </script>
 
