@@ -6,10 +6,14 @@ defineProps<{
   items: Item[];
 }>();
 
-// const emit = defineEmits<{
-//   // eslint-disable-next-line no-unused-vars
-//   (event: 'swap', index: number, otherIndex: number): void;
-// }>();
+const emit = defineEmits<{
+  // eslint-disable-next-line no-unused-vars
+  (event: 'swap', index: number, otherIndex: number): void;
+}>();
+
+function onSwap(index: number, otherIndex: number) {
+  emit('swap', index, otherIndex);
+}
 </script>
 
 <template>
@@ -21,6 +25,8 @@ defineProps<{
       <div v-for="(item, index) in items" :key="index">
         <ItemContainer
           :item="item"
+          :index="index"
+          @swap="onSwap"
           />
       </div>
     </div>
