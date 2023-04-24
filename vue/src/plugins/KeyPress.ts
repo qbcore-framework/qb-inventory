@@ -1,22 +1,26 @@
-import { Inventory } from "@/Models/Inventory";
 import { Plugin } from "vue";
 
 const keyPressPlugin: Plugin = {
-  install(app, options: { inventory: Inventory }) {
-    const inventory = options.inventory;
-
+  install(app) {
     // Track key presses for tab, esc
     window.addEventListener("keydown", (e) => {
       if (e.repeat) return;
 
       if (e.key === "Tab") {
         e.preventDefault();
-        inventory.Close();
+        closeInventory();
       } else if (e.key === "Escape") {
-        inventory.Close();
+        e.preventDefault();
+        closeInventory();
       }
     });
   }
+}
+
+function closeInventory() {
+  window.postMessage({
+    action: "close"
+  });
 }
 
 export { keyPressPlugin };

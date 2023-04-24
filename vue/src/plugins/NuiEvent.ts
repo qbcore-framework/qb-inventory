@@ -1,21 +1,26 @@
+import { Container } from "@/Models/Container";
 import { Inventory } from "@/Models/Inventory";
 import { Plugin } from "vue";
 
 const nuiEventPlugin: Plugin = {
-  install(app, options: { inventory: Inventory }) {
+  install(app, options: { inventory: Inventory, container: Container }) {
     const inventory = options.inventory;
+    const container = options.container;
     window.addEventListener('message', (event) => {
       const data = event.data;
       const action = data.action;      
 
       if (action === "open") {
         console.log("open", data);
-
+        // Check if user is opening a container as well
+        if (data.other) {
+          container.Open(data.other);
+        }
         inventory.Open(data);
       } else if (action === "close") {
         console.log("close", data);
-        inventory.Close();        
-        // Close the inventory
+        inventory.Close();
+        container.Close();        
       } else if (action === "update") {
         console.log("update", data);
         

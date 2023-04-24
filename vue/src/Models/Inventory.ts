@@ -1,6 +1,6 @@
 import { HttpClient } from "@/plugins/HttpClient";
 import MaxAmmo from "./MaxAmmo";
-import { Ref, ref } from "vue";
+import { ref } from "vue";
 import Item from "./Item";
 class Inventory {
   private items = ref<Item[]>([]);
