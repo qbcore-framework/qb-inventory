@@ -38,7 +38,10 @@ class Inventory {
     }
 
     data.inventory.forEach((item: Item) => {
-      items[item.slot] = item;
+      // Client returns null for empty slots
+      if (item === null) return;
+      // Account for lua indexing
+      items[item.slot - 1] = item;
     });
 
     this.items.value = items;
@@ -53,12 +56,12 @@ class Inventory {
     const fromItem = this.items.value[from];
     const toItem = this.items.value[to] || null;
 
-    // Update items on server
     const body: any = {
       fromInventory: "player",
       toInventory: "player",
-      fromSlot: from,
-      toSlot: to,
+      // Lua indexing
+      fromSlot: from + 1,
+      toSlot: to + 1,
       fromAmount: fromItem?.amount,
     }
 
