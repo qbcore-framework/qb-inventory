@@ -17,7 +17,7 @@ function onSwap(index: number, otherIndex: number) {
 </script>
 
 <template>
-  <div>
+  <div class="item-group">
     <h1>Item Group</h1>
     <div
       class="grid grid-cols-5 gap-4"
