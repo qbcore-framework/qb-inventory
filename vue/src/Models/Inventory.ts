@@ -23,7 +23,6 @@ class Inventory {
     slots: number,
   }) {
     this.isVisible.value = true;
-
     const items = new Array(data.slots);
 
     // If inventory is an object, convert it to an array
@@ -40,8 +39,10 @@ class Inventory {
     data.inventory.forEach((item: Item) => {
       // Client returns null for empty slots
       if (item === null) return;
-      // Account for lua indexing
-      items[item.slot - 1] = item;
+      // @ts-ignore 
+      items[item.slot + 1] = item;
+      // @ts-ignore 
+      delete item.slot;
     });
 
     this.items.value = items;
@@ -59,9 +60,8 @@ class Inventory {
     const body: any = {
       fromInventory: "player",
       toInventory: "player",
-      // Lua indexing
-      fromSlot: from + 1,
-      toSlot: to + 1,
+      fromSlot: from - 1,
+      toSlot: to - 1,
       fromAmount: fromItem?.amount,
     }
 

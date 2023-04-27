@@ -2,7 +2,6 @@ interface Item {
   name: string;
   amount: number;
   info: object;
-  slot: number;
   label: string;
   description: string;
   weight: number;

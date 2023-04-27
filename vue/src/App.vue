@@ -16,7 +16,7 @@ import ItemGroup from './components/ItemGroup.vue';
 const inventory = inject<Inventory>('inventory')!;
 const container = inject<Container>('container');
 
-function onSwap(index: number, otherIndex: number) {
+function onSwap(index: number, otherIndex: number) { 
   inventory.SwapSlots(index, otherIndex);
 }
 </script>
