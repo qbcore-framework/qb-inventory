@@ -797,6 +797,7 @@ for i = 1, 6 do
                 i = Config.MaxInventorySlots
             end
             TriggerServerEvent("inventory:server:UseItemSlot", i)
+	    closeInventory()
         end
     end, false)
     RegisterKeyMapping('slot' .. i, Lang:t("inf_mapping.use_item") .. i, 'keyboard', i)
