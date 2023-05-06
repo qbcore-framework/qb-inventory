@@ -3,7 +3,7 @@
 {
 	"name": "QB Inventory",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "ghcr.io/lordchunk/devcontainer-typescript:18",
+	"image": "ghcr.io/lordchunk/devcontainers/typescript:18",
 	"features": {
 		"ghcr.io/devcontainers-contrib/features/vue-cli:2": {}
 	},
