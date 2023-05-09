@@ -9,7 +9,6 @@ class Inventory {
 
   constructor() {
     this._httpClient = new HttpClient();
-    // Load json for testing
   }
 
   public get Items() { return this.items; }
@@ -28,7 +27,6 @@ class Inventory {
     // If inventory is an object, convert it to an array
     if (!Array.isArray(data.inventory)) {
       const inventory: Item[] = [];
-
       for (const key in data.inventory) {
         inventory.push(data.inventory[key]);
       }
@@ -40,7 +38,7 @@ class Inventory {
       // Client returns null for empty slots
       if (item === null) return;
       // @ts-ignore 
-      items[item.slot + 1] = item;
+      items[item.slot - 1] = item;
       // @ts-ignore 
       delete item.slot;
     });
@@ -60,8 +58,8 @@ class Inventory {
     const body: any = {
       fromInventory: "player",
       toInventory: "player",
-      fromSlot: from - 1,
-      toSlot: to - 1,
+      fromSlot: from + 1,
+      toSlot: to + 1,
       fromAmount: fromItem?.amount,
     }
 

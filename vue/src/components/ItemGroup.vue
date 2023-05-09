@@ -31,7 +31,7 @@ function onMouseDown(event: MouseEvent, item: Item, index: number) {
 }
 
 function onMouseMove(event: MouseEvent) {
-  if (draggedIndex.value) {
+  if (draggedIndex.value !== null) {
     x.value = x.value + event.movementX;
     y.value = y.value + event.movementY;
   }
@@ -54,7 +54,6 @@ function onItemDropped(event: CustomEvent, otherIndex: number) {
   const droppedIndex = event.detail;
   emit('swap', droppedIndex, otherIndex);
 }
-
 </script>
 
 <template>
