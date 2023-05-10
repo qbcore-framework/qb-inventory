@@ -33,6 +33,6 @@ files {
     'html/*.ttf'
 }
 
-dependecy 'qb-weapons'
+dependency 'qb-weapons'
 
 lua54 'yes'
