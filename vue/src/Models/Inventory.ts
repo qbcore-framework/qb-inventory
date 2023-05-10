@@ -130,8 +130,9 @@ class Inventory {
         fromItem.amount -= amount;
 
         toInventory.items.value[toSlot] = newItem;
-      } else {
-        // Move items
+      }
+      // Move items
+      else {
         toInventory.items.value[toSlot] = fromItem;
         delete this.items.value[fromSlot];
       }

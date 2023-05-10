@@ -46,6 +46,4 @@ const nuiEventPlugin: Plugin = {
   }
 }
 
-
-
 export { nuiEventPlugin };

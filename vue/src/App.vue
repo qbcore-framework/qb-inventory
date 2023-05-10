@@ -19,7 +19,6 @@
         type="number"
       />
       <ItemGroup
-        v-if="container"
         :inventory="container"
         @start-drag="onDragStart($event, container)"
         @end-drag="onDragEnd"
@@ -39,7 +38,7 @@ let fromInventory: Inventory | null = null;
 let fromIndex: number | null = null;
 
 const inventory = inject<Inventory>("inventory")!;
-const container = inject<Container>("container");
+const container = inject<Container>("container")!;
 
 const moveAmount = ref(0);
 
