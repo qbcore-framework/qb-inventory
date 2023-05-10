@@ -65,8 +65,14 @@ class Inventory {
   public MoveItem(fromSlot: number, toSlot: number, toInventory?: Inventory) {
     if(!toInventory) toInventory = this;
 
+    // Don't allow moving to same slot if inventory is the same
+    if (fromSlot == toSlot && this == toInventory) return;
+
     const fromItem = this.items.value[fromSlot];
     const toItem = toInventory.items.value[toSlot] || null;
+
+    // If there is no item in the from slot, don't move
+    if (!fromItem) return;
 
     const body: any = {
       fromInventory: this.Name,
