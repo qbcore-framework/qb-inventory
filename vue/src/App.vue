@@ -13,12 +13,20 @@
         @end-drag="onDragEnd"
         @item-dropped="onItemDropped($event, container)"
         />
+
+      <input 
+        class="h-12 w-20 text-black"
+        v-model.number="moveAmount"
+        min="0"
+        max="100"
+        @keyup="enforceMinMax"
+        type="number" />
   </template>
   </main>
 </template>
 
 <script lang="ts" setup>
-import { inject } from 'vue';
+import { inject, ref } from 'vue';
 import { Inventory } from './Models/Inventory';
 import { Container } from './Models/Container';
 import ItemGroup from './components/ItemGroup.vue';
@@ -28,6 +36,8 @@ let fromIndex: number | null = null;
 
 const inventory = inject<Inventory>('inventory')!;
 const container = inject<Container>('container');
+
+const moveAmount = ref(0);
 
 function onDragStart(index: number, inventory: Inventory) {  
   fromInventory = inventory;
@@ -42,7 +52,20 @@ function onDragEnd() {
 function onItemDropped(index: number, dropInventory: Inventory) {
   if (fromInventory === null || fromIndex === null) return;
 
-  fromInventory.MoveItem(fromIndex, index, dropInventory);
+  fromInventory.MoveItem(fromIndex, index, dropInventory, moveAmount.value !== 0 ? moveAmount.value : undefined);
+}
+
+function enforceMinMax(event: KeyboardEvent) {
+  const el = event.target as HTMLInputElement;
+  
+  if (el.value != "") {
+    if (parseInt(el.value) < parseInt(el.min)) {
+      el.value = el.min;
+    }
+    if (parseInt(el.value) > parseInt(el.max)) {
+      el.value = el.max;
+    }
+  }
 }
 </script>
 
