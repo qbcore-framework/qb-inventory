@@ -2,14 +2,19 @@
 import Item from '@/Models/Item';
 import { ref } from 'vue';
 import ItemContainer from './ItemContainer.vue';
+import { Inventory } from '@/Models/Inventory';
 
 defineProps<{
-  items: Item[];
+  inventory: Inventory;
 }>();
 
 const emit = defineEmits<{
   // eslint-disable-next-line no-unused-vars
-  (event: 'swap', index: number, otherIndex: number): void;
+  (event: 'itemDropped', index: number): void;
+  // eslint-disable-next-line no-unused-vars
+  (event: 'startDrag', index: number): void;
+  // eslint-disable-next-line no-unused-vars
+  (event: 'endDrag'): void;
 }>();
 
 
@@ -18,7 +23,8 @@ let x = ref(0);
 let y = ref(0);
 
 function onMouseDown(event: MouseEvent, item: Item, index: number) {
-  if (item === undefined) return;
+  if (item === undefined || item === null) return;
+  emit('startDrag', index);
 
   draggedIndex.value = index;
 
@@ -26,7 +32,6 @@ function onMouseDown(event: MouseEvent, item: Item, index: number) {
   x.value = event.clientX - event.offsetX;
   y.value = event.clientY - event.offsetY;
 
-  // Register mousemove and mouseup events
   window.addEventListener('mousemove', onMouseMove);
 }
 
@@ -48,11 +53,11 @@ function onMouseUp(event: MouseEvent, index: number) {
   if (element) element.dispatchEvent(new CustomEvent('item-dropped', { detail: index }));
 
   draggedIndex.value = null;
+  emit('endDrag');
 }
 
 function onItemDropped(event: CustomEvent, otherIndex: number) {
-  const droppedIndex = event.detail;
-  emit('swap', droppedIndex, otherIndex);
+  emit('itemDropped', otherIndex);
 }
 </script>
 
@@ -60,7 +65,7 @@ function onItemDropped(event: CustomEvent, otherIndex: number) {
   <div class="item-group">
     <h1>Item Group</h1>
     <div class="grid grid-cols-5 gap-4">
-      <div v-for="(item, index) in items" :key="index">
+      <div v-for="(item, index) in inventory.Items.value" :key="index">
         <ItemContainer :style="index === draggedIndex ? `position: absolute; top: ${y}px; left: ${x}px;` : ''"
           class="item-container"
           :item="item" 
