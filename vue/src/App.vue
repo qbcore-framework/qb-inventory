@@ -1,45 +1,49 @@
 <template>
-  <main class="w-screen h-screen text-white flex justify-center bg-gray-900 bg-opacity-30">
+  <main
+    class="w-screen h-screen text-white flex justify-center bg-gray-900 bg-opacity-30"
+  >
     <template v-if="inventory.IsVisible.value">
-      <ItemGroup :inventory="inventory"
+      <ItemGroup
+        :inventory="inventory"
         @start-drag="onDragStart($event, inventory)"
         @end-drag="onDragEnd"
         @item-dropped="onItemDropped($event, inventory)"
-        />
+      />
+      <input
+        class="h-12 w-20 text-black"
+        v-model.number="moveAmount"
+        min="0"
+        max="100"
+        @keyup="enforceMinMax"
+        @focus="moveAmount = 0"
+        type="number"
+      />
       <ItemGroup
         v-if="container"
         :inventory="container"
         @start-drag="onDragStart($event, container)"
         @end-drag="onDragEnd"
         @item-dropped="onItemDropped($event, container)"
-        />
-
-      <input 
-        class="h-12 w-20 text-black"
-        v-model.number="moveAmount"
-        min="0"
-        max="100"
-        @keyup="enforceMinMax"
-        type="number" />
-  </template>
+      />
+    </template>
   </main>
 </template>
 
 <script lang="ts" setup>
-import { inject, ref } from 'vue';
-import { Inventory } from './Models/Inventory';
-import { Container } from './Models/Container';
-import ItemGroup from './components/ItemGroup.vue';
+import { inject, ref } from "vue";
+import { Inventory } from "./Models/Inventory";
+import { Container } from "./Models/Container";
+import ItemGroup from "./components/ItemGroup.vue";
 
 let fromInventory: Inventory | null = null;
 let fromIndex: number | null = null;
 
-const inventory = inject<Inventory>('inventory')!;
-const container = inject<Container>('container');
+const inventory = inject<Inventory>("inventory")!;
+const container = inject<Container>("container");
 
 const moveAmount = ref(0);
 
-function onDragStart(index: number, inventory: Inventory) {  
+function onDragStart(index: number, inventory: Inventory) {
   fromInventory = inventory;
   fromIndex = index;
 }
@@ -52,12 +56,17 @@ function onDragEnd() {
 function onItemDropped(index: number, dropInventory: Inventory) {
   if (fromInventory === null || fromIndex === null) return;
 
-  fromInventory.MoveItem(fromIndex, index, dropInventory, moveAmount.value !== 0 ? moveAmount.value : undefined);
+  fromInventory.MoveItem(
+    fromIndex,
+    index,
+    dropInventory,
+    moveAmount.value !== 0 ? moveAmount.value : undefined
+  );
 }
 
 function enforceMinMax(event: KeyboardEvent) {
   const el = event.target as HTMLInputElement;
-  
+
   if (el.value != "") {
     if (parseInt(el.value) < parseInt(el.min)) {
       el.value = el.min;
@@ -68,4 +77,3 @@ function enforceMinMax(event: KeyboardEvent) {
   }
 }
 </script>
-
