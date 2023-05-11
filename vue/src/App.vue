@@ -8,6 +8,7 @@
         @start-drag="onDragStart($event, inventory)"
         @end-drag="onDragEnd"
         @item-dropped="onItemDropped($event, inventory)"
+        @quick-move="onQuickMove($event, inventory)"
       />
       <input
         class="h-12 w-20 text-black"
@@ -23,6 +24,7 @@
         @start-drag="onDragStart($event, container)"
         @end-drag="onDragEnd"
         @item-dropped="onItemDropped($event, container)"
+        @quick-move="onQuickMove($event, container)"
       />
     </template>
   </main>
@@ -42,6 +44,10 @@ const container = inject<Container>("container")!;
 
 const moveAmount = ref(0);
 
+function getMoveAmount() {  
+  return moveAmount.value !== 0 ? moveAmount.value : undefined;
+}
+
 function onDragStart(index: number, inventory: Inventory) {
   fromInventory = inventory;
   fromIndex = index;
@@ -59,7 +65,15 @@ function onItemDropped(index: number, dropInventory: Inventory) {
     fromIndex,
     index,
     dropInventory,
-    moveAmount.value !== 0 ? moveAmount.value : undefined
+    getMoveAmount()
+  );
+}
+
+function onQuickMove(index: number, fromInventory: Inventory) {
+  fromInventory.QuickMoveItem(
+    index,
+    fromInventory === inventory ? container : inventory,
+    getMoveAmount()
   );
 }
 

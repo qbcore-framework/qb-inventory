@@ -45,10 +45,8 @@ class Inventory {
 
     // Remove slot from items since this causes issues with 1 based indexing
     data.inventory.forEach((item: any) => {
-      // Client returns null for empty slots
       if (item === null) return;
       items[item.slot - 1] = new Item(item);
-      delete item.slot;
     });
 
     this.items.value = items;
@@ -136,6 +134,24 @@ class Inventory {
         delete this.items.value[fromSlot];
       }
     }
+  }
+
+  public QuickMoveItem(fromSlot: number, toInventory: Inventory, amount?: number) {
+    const fromItem: Item = this.items.value[fromSlot];
+
+    // Check if there it can merge with any items in the to inventory
+    let toSlot = toInventory.items.value.findIndex((item: Item) =>
+      fromItem.canMerge(item)
+    );
+
+    // If there is no item to merge with, find a slot with no item
+    if (toSlot === -1) {
+      toSlot = toInventory.items.value.findIndex((item: Item) => !item);
+    }
+    // If there is no empty slot, don't move
+    if (toSlot === -1) return;
+
+    this.MoveItem(fromSlot, toSlot, toInventory, amount);
   }
 }
 

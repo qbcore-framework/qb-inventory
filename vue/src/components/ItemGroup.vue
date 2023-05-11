@@ -15,6 +15,8 @@ const emit = defineEmits<{
   (event: 'startDrag', index: number): void;
   // eslint-disable-next-line no-unused-vars
   (event: 'endDrag'): void;
+  // eslint-disable-next-line no-unused-vars
+  (event: 'quickMove', index: number): void;
 }>();
 
 
@@ -23,16 +25,24 @@ let x = ref(0);
 let y = ref(0);
 
 function onMouseDown(event: MouseEvent, item: Item, index: number) {
-  if (item === undefined || item === null) return;
-  emit('startDrag', index);
-
-  draggedIndex.value = index;
-
-  // Set initial position and account for mouse offset
-  x.value = event.clientX - event.offsetX;
-  y.value = event.clientY - event.offsetY;
-
-  window.addEventListener('mousemove', onMouseMove);
+  // Right mouse button
+  if (event.button === 2) {
+    console.log('right click');
+    emit('quickMove', index);
+  }
+  // Left mouse button
+  else if (event.button === 0) {
+    if (item === undefined || item === null) return;
+    emit('startDrag', index);
+  
+    draggedIndex.value = index;
+  
+    // Set initial position and account for mouse offset
+    x.value = event.clientX - event.offsetX;
+    y.value = event.clientY - event.offsetY;
+  
+    window.addEventListener('mousemove', onMouseMove);
+  }
 }
 
 function onMouseMove(event: MouseEvent) {
