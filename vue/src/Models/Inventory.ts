@@ -31,11 +31,11 @@ class Inventory {
     slots: number;
   }) {
     this.isVisible.value = true;
-    const items = new Array(data.slots);
+    const items = new Array<Item>(data.slots);
 
     // If inventory is an object, convert it to an array
     if (!Array.isArray(data.inventory)) {
-      const inventory: Item[] = [];
+      const inventory = [];
       for (const key in data.inventory) {
         inventory.push(data.inventory[key]);
       }
@@ -44,12 +44,10 @@ class Inventory {
     }
 
     // Remove slot from items since this causes issues with 1 based indexing
-    data.inventory.forEach((item: Item) => {
+    data.inventory.forEach((item: any) => {
       // Client returns null for empty slots
       if (item === null) return;
-      // @ts-ignore
-      items[item.slot - 1] = item;
-      // @ts-ignore
+      items[item.slot - 1] = new Item(item);
       delete item.slot;
     });
 
@@ -81,15 +79,16 @@ class Inventory {
     // Don't allow moving to same slot if inventory is the same
     if (fromSlot == toSlot && this == toInventory) return;
 
-    const fromItem = this.items.value[fromSlot];
-    const toItem = toInventory.items.value[toSlot];
+    const fromItem: Item = this.items.value[fromSlot];
+    const toItem: Item = toInventory.items.value[toSlot];
 
     // If amount is not set, move all items
     if (amount === undefined) amount = fromItem.amount;
     // Can't move more items than there are in the slot
     if (amount > fromItem.amount) return;
     // Can't split items if there is a different item in the to slot (causes items to disappear)
-    if (toItem && amount < fromItem.amount && toItem.name !== fromItem.name) return;
+    if (toItem && amount < fromItem.amount && toItem.name !== fromItem.name)
+      return;
 
     // If there is no item in the from slot, don't move
     if (!fromItem) return;
@@ -105,15 +104,15 @@ class Inventory {
     this._httpClient.Post("SetInventoryData", body);
 
     // Handle stacking or swapping items
-    if (toItem) {      
+    if (toItem) {
       // If item is the same, stack
-      if (fromItem.name == toItem.name) {        
+      if (fromItem.canMerge(toItem)) {
         toItem.amount += amount;
         fromItem.amount -= amount;
 
         // If there are no items left in the from slot, remove it
         if (fromItem.amount <= 0) delete this.items.value[fromSlot];
-      } 
+      }
       // Swap items
       else {
         this.items.value[fromSlot] = toItem;
@@ -125,7 +124,7 @@ class Inventory {
       // Check if items are being split
       if (amount < fromItem.amount) {
         // Split items
-        const newItem: Item = { ...fromItem };
+        const newItem: Item = new Item(fromItem);
         newItem.amount = amount;
         fromItem.amount -= amount;
 
