@@ -82,14 +82,14 @@ class Inventory {
     if (fromSlot == toSlot && this == toInventory) return;
 
     const fromItem = this.items.value[fromSlot];
-    const toItem = toInventory.items.value[toSlot] || null;
+    const toItem = toInventory.items.value[toSlot];
 
     // If amount is not set, move all items
     if (amount === undefined) amount = fromItem.amount;
     // Can't move more items than there are in the slot
     if (amount > fromItem.amount) return;
-    // Can't split items if there is a different item in the to slot (causes items to dissapear)
-    if (amount < fromItem.amount && toItem.name !== fromItem.name) return;
+    // Can't split items if there is a different item in the to slot (causes items to disappear)
+    if (toItem && amount < fromItem.amount && toItem.name !== fromItem.name) return;
 
     // If there is no item in the from slot, don't move
     if (!fromItem) return;
