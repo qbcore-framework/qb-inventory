@@ -1,24 +1,29 @@
 <script lang="ts" setup>
-import Item from '@/Models/Item';
-import { computed, ref } from 'vue';
-import ItemContainer from './ItemContainer.vue';
-import { Inventory } from '@/Models/Inventory';
+import Item from "@/Models/Item";
+import { computed, ref } from "vue";
+import ItemContainer from "./ItemContainer.vue";
+import { Inventory } from "@/Models/Inventory";
 
-defineProps<{
+interface IProps {
   inventory: Inventory;
-}>();
+  canSelectItems: boolean;
+}
+
+withDefaults(defineProps<IProps>(), {
+  canSelectItems: false,
+});
 
 const emit = defineEmits<{
   // eslint-disable-next-line no-unused-vars
-  (event: 'itemDropped', index: number): void;
+  (event: "itemDropped", index: number): void;
   // eslint-disable-next-line no-unused-vars
-  (event: 'startDrag', index: number): void;
+  (event: "startDrag", index: number): void;
   // eslint-disable-next-line no-unused-vars
-  (event: 'endDrag'): void;
+  (event: "endDrag"): void;
   // eslint-disable-next-line no-unused-vars
-  (event: 'quickMove', index: number): void;
+  (event: "quickMove", index: number): void;
   // eslint-disable-next-line no-unused-vars
-  (event: 'selectItem', index: number): void;
+  (event: "selectItem", index: number): void;
 }>();
 
 let draggedIndex = ref<number | null>(null);
@@ -31,17 +36,19 @@ function onMouseDown(event: MouseEvent, item: Item, index: number) {
   draggedIndex.value = null;
   // Right mouse button
   if (event.button === 2) {
-    emit('quickMove', index);
+    emit("quickMove", index);
   }
   // Left mouse button
   else if (event.button === 0) {
     if (item === undefined || item === null) return;
-    emit('startDrag', index);
-  
+    emit("startDrag", index);
+
     draggedIndex.value = index;
 
     // Set the x and y from the mouse position relative to the item container
-    const element = document.elementsFromPoint(event.clientX, event.clientY).find((element) => element.classList.contains('item-container'))!;
+    const element = document
+      .elementsFromPoint(event.clientX, event.clientY)
+      .find((element) => element.classList.contains("item-container"))!;
     const rect = element.getBoundingClientRect();
     const offsetX = event.clientX - rect.left;
     const offsetY = event.clientY - rect.top;
@@ -50,7 +57,7 @@ function onMouseDown(event: MouseEvent, item: Item, index: number) {
     y.value = event.clientY - offsetY;
 
     didMouseMoveSinceMouseDown = false;
-    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener("mousemove", onMouseMove);
   }
 }
 
@@ -63,27 +70,30 @@ function onMouseMove(event: MouseEvent) {
 }
 
 function onMouseUp(event: MouseEvent, index: number) {
-  window.removeEventListener('mousemove', onMouseMove);
+  window.removeEventListener("mousemove", onMouseMove);
 
   // If mouse didn't move since mouse down, then it was a click
   if (!didMouseMoveSinceMouseDown) {
-    emit('selectItem', index);
+    emit("selectItem", index);
     return;
   }
 
   let elements = document.elementsFromPoint(event.clientX, event.clientY);
-  
-  // Find second item with 'item-container' class
-  const element = elements.filter((element) => element.classList.contains('item-container'))[1];
 
-  if (element) element.dispatchEvent(new CustomEvent('item-dropped', { detail: index }));
+  // Find second item with 'item-container' class
+  const element = elements.filter((element) =>
+    element.classList.contains("item-container")
+  )[1];
+
+  if (element)
+    element.dispatchEvent(new CustomEvent("item-dropped", { detail: index }));
 
   draggedIndex.value = null;
-  emit('endDrag');
+  emit("endDrag");
 }
 
 function onItemDropped(event: CustomEvent, otherIndex: number) {
-  emit('itemDropped', otherIndex);
+  emit("itemDropped", otherIndex);
 }
 </script>
 
@@ -92,15 +102,20 @@ function onItemDropped(event: CustomEvent, otherIndex: number) {
     <h1>Item Group</h1>
     <div class="grid grid-cols-5 gap-4">
       <div v-for="(item, index) in inventory.Items.value" :key="index">
-        <ItemContainer :style="index === draggedIndex ? `position: absolute; top: ${y}px; left: ${x}px;` : ''"
+        <ItemContainer
+          :style="
+            index === draggedIndex
+              ? `position: absolute; top: ${y}px; left: ${x}px;`
+              : ''
+          "
           class="item-container"
-          :item="item" 
+          :item="item"
           :index="index"
-          :selected="computed(() => index === draggedIndex)"
+          :selected="computed(() => canSelectItems && index === draggedIndex)"
           @mousedown="onMouseDown($event, item, index)"
           @mouseup="onMouseUp($event, index)"
           @item-dropped="onItemDropped($event, index)"
-          />
+        />
       </div>
     </div>
   </div>

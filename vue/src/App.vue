@@ -5,6 +5,7 @@
     <template v-if="inventory.IsVisible.value">
       <ItemGroup
         :inventory="inventory"
+        :canSelectItems="true"
         @start-drag="onDragStart($event, inventory)"
         @end-drag="onDragEnd"
         @item-dropped="onItemDropped($event, inventory)"
