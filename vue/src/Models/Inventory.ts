@@ -1,7 +1,8 @@
 import { HttpClient } from "@/plugins/HttpClient";
 import MaxAmmo from "./MaxAmmo";
-import { ref } from "vue";
+import { Ref, ref } from "vue";
 import Item from "./Item";
+import { Weapon } from "./Weapon";
 class Inventory {
   private items = ref<Item[]>([]);
   private isVisible = ref<boolean>(false);
@@ -11,9 +12,10 @@ class Inventory {
 
   constructor() {
     this._httpClient = new HttpClient();
+    window.addEventListener("inventory:close", () => this.Close())
   }
 
-  public get Items() {
+  public get Items(): Ref<Item[]> {
     return this.items;
   }
   public get IsVisible() {
@@ -44,9 +46,12 @@ class Inventory {
     }
 
     // Remove slot from items since this causes issues with 1 based indexing
-    data.inventory.forEach((item: any) => {
-      if (item === null) return;
-      items[item.slot - 1] = new Item(item);
+    data.inventory.forEach((itemData: any) => {
+      if (itemData === null) return;
+      let item: Item;
+      if (itemData.name.startsWith("weapon_")) item = new Weapon(itemData);
+      else item = new Item(itemData);
+      items[itemData.slot - 1] = item;
     });
 
     this.items.value = items;

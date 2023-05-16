@@ -2,7 +2,7 @@
   <main
     class="w-screen h-screen text-white flex justify-center bg-gray-900 bg-opacity-30"
   >
-    <template v-if="inventory.IsVisible.value">
+    <template v-if="inventory.IsVisible.value && !showWeaponPanel">
       <ItemGroup
         :inventory="inventory"
         :canSelectItems="true"
@@ -12,15 +12,23 @@
         @quick-move="onQuickMove($event, inventory)"
         @select-item="onSelectItem($event, inventory)"
       />
-      <input
-        class="h-12 w-20 text-black"
-        v-model.number="moveAmount"
-        min="0"
-        max="100"
-        @keyup="enforceMinMax"
-        @focus="moveAmount = 0"
-        type="number"
-      />
+      <div class="flex-col">
+        <input
+          class="h-12 w-20 text-black"
+          v-model.number="moveAmount"
+          min="0"
+          max="100"
+          @keyup="enforceMinMax"
+          @focus="moveAmount = 0"
+          type="number"
+        />
+        <button
+          class="h-12 w-20"
+          @click="modifyWeapon"
+          :disabled="!isWeaponSelected"
+          v-text="isWeaponSelected ? 'Modify' : 'Not a weapon'"
+        />
+      </div>
       <ItemGroup
         :inventory="container"
         @start-drag="onDragStart($event, container)"
@@ -29,14 +37,18 @@
         @quick-move="onQuickMove($event, container)"
       />
     </template>
+    <WeaponPanel v-else-if="showWeaponPanel" :weapon="(selectedItem as Weapon)"/>
   </main>
 </template>
 
 <script lang="ts" setup>
-import { Ref, inject, ref } from "vue"; 
+import { Ref, computed, inject, ref } from "vue"; 
 import { Inventory } from "./Models/Inventory";
 import { Container } from "./Models/Container";
+import { Weapon } from "./Models/Weapon";
+import Item from "./Models/Item";
 import ItemGroup from "./components/ItemGroup.vue";
+import WeaponPanel from "./components/WeaponPanel.vue";
 
 let fromInventory: Inventory | null = null;
 let fromIndex: number | null = null;
@@ -46,7 +58,14 @@ const inventory = inject<Inventory>("inventory")!;
 const container = inject<Container>("container")!;
 
 let selectedInventory: Ref<Inventory | null> = ref(null);
-let selectedItemIndex: Ref<number | null> = ref(null);
+let selectedItem: Ref<Item | null> = ref(null);
+
+const isWeaponSelected = computed(() => selectedItem.value instanceof Weapon);
+let showWeaponPanel = ref(false);
+
+window.addEventListener("inventory:close", () => {
+  showWeaponPanel.value = false;
+});
 
 function getMoveAmount() {  
   return moveAmount.value !== 0 ? moveAmount.value : undefined;
@@ -83,7 +102,12 @@ function onQuickMove(index: number, fromInventory: Inventory) {
 
 function onSelectItem(index: number, newSelectedInventory: Inventory) {  
   selectedInventory.value = newSelectedInventory;
-  selectedItemIndex.value = index;
+  selectedItem.value = newSelectedInventory.Items.value[index];
+}
+
+function modifyWeapon() {
+  if (!selectedItem.value) return;
+  showWeaponPanel.value = true;
 }
 
 function enforceMinMax(event: KeyboardEvent) {

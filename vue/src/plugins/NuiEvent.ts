@@ -19,8 +19,7 @@ const nuiEventPlugin: Plugin = {
         inventory.Open(data);
       } else if (action === "close") {
         console.log("close", data);
-        inventory.Close();
-        container.Close();        
+        window.dispatchEvent(new CustomEvent("inventory:close"));
       } else if (action === "update") {
         console.log("update", data);
         
