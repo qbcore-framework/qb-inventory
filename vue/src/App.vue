@@ -9,6 +9,7 @@
         @end-drag="onDragEnd"
         @item-dropped="onItemDropped($event, inventory)"
         @quick-move="onQuickMove($event, inventory)"
+        @select-item="onSelectItem($event, inventory)"
       />
       <input
         class="h-12 w-20 text-black"
@@ -31,18 +32,20 @@
 </template>
 
 <script lang="ts" setup>
-import { inject, ref } from "vue";
+import { Ref, inject, ref } from "vue"; 
 import { Inventory } from "./Models/Inventory";
 import { Container } from "./Models/Container";
 import ItemGroup from "./components/ItemGroup.vue";
 
 let fromInventory: Inventory | null = null;
 let fromIndex: number | null = null;
+const moveAmount = ref(0);
 
 const inventory = inject<Inventory>("inventory")!;
 const container = inject<Container>("container")!;
 
-const moveAmount = ref(0);
+let selectedInventory: Ref<Inventory | null> = ref(null);
+let selectedItemIndex: Ref<number | null> = ref(null);
 
 function getMoveAmount() {  
   return moveAmount.value !== 0 ? moveAmount.value : undefined;
@@ -75,6 +78,11 @@ function onQuickMove(index: number, fromInventory: Inventory) {
     fromInventory === inventory ? container : inventory,
     getMoveAmount()
   );
+}
+
+function onSelectItem(index: number, newSelectedInventory: Inventory) {  
+  selectedInventory.value = newSelectedInventory;
+  selectedItemIndex.value = index;
 }
 
 function enforceMinMax(event: KeyboardEvent) {

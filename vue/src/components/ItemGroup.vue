@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import Item from '@/Models/Item';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import ItemContainer from './ItemContainer.vue';
 import { Inventory } from '@/Models/Inventory';
 
@@ -17,17 +17,20 @@ const emit = defineEmits<{
   (event: 'endDrag'): void;
   // eslint-disable-next-line no-unused-vars
   (event: 'quickMove', index: number): void;
+  // eslint-disable-next-line no-unused-vars
+  (event: 'selectItem', index: number): void;
 }>();
-
 
 let draggedIndex = ref<number | null>(null);
 let x = ref(0);
 let y = ref(0);
 
+let didMouseMoveSinceMouseDown = false;
+
 function onMouseDown(event: MouseEvent, item: Item, index: number) {
+  draggedIndex.value = null;
   // Right mouse button
   if (event.button === 2) {
-    console.log('right click');
     emit('quickMove', index);
   }
   // Left mouse button
@@ -36,17 +39,24 @@ function onMouseDown(event: MouseEvent, item: Item, index: number) {
     emit('startDrag', index);
   
     draggedIndex.value = index;
-  
-    // Set initial position and account for mouse offset
-    x.value = event.clientX - event.offsetX;
-    y.value = event.clientY - event.offsetY;
-  
+
+    // Set the x and y from the mouse position relative to the item container
+    const element = document.elementsFromPoint(event.clientX, event.clientY).find((element) => element.classList.contains('item-container'))!;
+    const rect = element.getBoundingClientRect();
+    const offsetX = event.clientX - rect.left;
+    const offsetY = event.clientY - rect.top;
+
+    x.value = event.clientX - offsetX;
+    y.value = event.clientY - offsetY;
+
+    didMouseMoveSinceMouseDown = false;
     window.addEventListener('mousemove', onMouseMove);
   }
 }
 
 function onMouseMove(event: MouseEvent) {
   if (draggedIndex.value !== null) {
+    didMouseMoveSinceMouseDown = true;
     x.value = x.value + event.movementX;
     y.value = y.value + event.movementY;
   }
@@ -54,6 +64,12 @@ function onMouseMove(event: MouseEvent) {
 
 function onMouseUp(event: MouseEvent, index: number) {
   window.removeEventListener('mousemove', onMouseMove);
+
+  // If mouse didn't move since mouse down, then it was a click
+  if (!didMouseMoveSinceMouseDown) {
+    emit('selectItem', index);
+    return;
+  }
 
   let elements = document.elementsFromPoint(event.clientX, event.clientY);
   
@@ -80,6 +96,7 @@ function onItemDropped(event: CustomEvent, otherIndex: number) {
           class="item-container"
           :item="item" 
           :index="index"
+          :selected="computed(() => index === draggedIndex)"
           @mousedown="onMouseDown($event, item, index)"
           @mouseup="onMouseUp($event, index)"
           @item-dropped="onItemDropped($event, index)"
