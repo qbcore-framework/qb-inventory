@@ -10,6 +10,12 @@
       <div v-for="attachment in weaponInfo.AttachmentData" :key="attachment.attachment">
         <span v-text="attachment.label" />
         <img :src="require(`@/assets/attachment_images/${attachment.attachment}.png`)" :alt="attachment.label">
+        <button 
+          class="h-12 w-20"
+          @click="removeAttachment(attachment.attachment)"
+        >
+          Remove
+        </button>
       </div>
     </div>
   </div>
@@ -29,8 +35,10 @@ const props = defineProps({
 let weaponInfo = ref<any>({});
 
 onMounted(async () => {
-  weaponInfo.value = await props.weapon.GetMods();
+  weaponInfo.value = await props.weapon.GetWeaponData();
 });
 
-// console.log(weaponInfo);
+function removeAttachment(attachment: string) {
+  props.weapon.RemoveAttachment(attachment);
+}
 </script>
