@@ -15,7 +15,7 @@
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "cd vue && yarn install",
+	"postCreateCommand": "cd vue && yarn install && npm i -g serve",
 
 	// Configure tool-specific properties.
 	"customizations": {
