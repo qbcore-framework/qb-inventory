@@ -1,11 +1,13 @@
 import { Container } from "@/Models/Container";
+import { Hotbar } from "@/Models/Hotbar";
 import { Inventory } from "@/Models/Inventory";
 import { Plugin } from "vue";
 
 const nuiEventPlugin: Plugin = {
-  install(app, options: { inventory: Inventory, container: Container }) {
+  install(app, options: { inventory: Inventory, container: Container, hotbar: Hotbar }) {
     const inventory = options.inventory;
     const container = options.container;
+    const hotbar = options.hotbar;
     window.addEventListener('message', (event) => {
       const data = event.data;
       const action = data.action;      
@@ -34,7 +36,7 @@ const nuiEventPlugin: Plugin = {
         // Something to do with a required item
       } else if (action === "toggleHotbar") {
         console.log("toggleHotbar", data);
-
+        hotbar.Toggle(data.items, data.open);
         // Toggle the hotbar visibility
       } else if (action === "RobMoney") {
         console.log("RobMoney", data);

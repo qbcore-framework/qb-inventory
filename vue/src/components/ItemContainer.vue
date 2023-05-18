@@ -1,11 +1,15 @@
 <script lang="ts" setup>
 import Item from '@/Models/Item';
-import { Ref } from 'vue';
+import { Ref, ref } from 'vue';
 
-defineProps<{
+interface IProps {
   item: Item;
-  selected: Ref<boolean>;
-}>();
+  selected?: Ref<boolean>;
+}
+
+withDefaults(defineProps<IProps>(), {
+  selected: () => ref(false),
+})
 
 </script>
 

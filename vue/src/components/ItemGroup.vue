@@ -6,7 +6,7 @@ import { Inventory } from "@/Models/Inventory";
 
 interface IProps {
   inventory: Inventory;
-  canSelectItems: boolean;
+  canSelectItems?: boolean;
 }
 
 withDefaults(defineProps<IProps>(), {
