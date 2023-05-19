@@ -32,6 +32,7 @@
 				"dbaeumer.vscode-eslint",
 				"GitHub.copilot-nightly",
 				"GitHub.copilot-labs",
+				"github.vscode-github-actions",
 				"Vue.volar",
 				"ms-azuretools.vscode-docker"
 			]
