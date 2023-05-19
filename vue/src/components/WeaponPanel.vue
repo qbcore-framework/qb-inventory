@@ -1,7 +1,11 @@
 <template>
-  <!-- <pre v-text="weapon" /> -->
   <div>
-    <!-- <pre v-text="weaponInfo" /> -->
+    <div>
+      <h3>{{ weapon.label }}</h3>
+      <p v-text="weapon.description" />
+      <p>Serial number: {{ weapon.info.serie }}</p>
+      <p>Durability: {{ weapon.info.quality }} / {{ Weapon.MAX_QUALITY }}</p>
+    </div>
 
     <img :src="require(`@/assets/images/${weapon.image}`)" :alt="weapon.label">
 

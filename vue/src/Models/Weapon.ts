@@ -4,7 +4,8 @@ import { WeaponInfo } from "./WeaponInfo";
 import { WeaponDataDto } from "./Dto/GetWeaponData";
 
 class Weapon extends Item {
-  override readonly info: WeaponInfo;
+  public static readonly MAX_QUALITY = 100;
+  public override readonly info: WeaponInfo;
 
   private weaponData: WeaponDataDto | null = null;
   public async GetWeaponData(): Promise<WeaponDataDto> {
