@@ -12,7 +12,7 @@ class Item {
   id: number;
   shouldClose?: boolean;
 
-  constructor(data: any) {
+  constructor(data: Item) {
     this.name = data.name;
     this.amount = data.amount;
     this.info = data.info;
@@ -30,11 +30,7 @@ class Item {
   canMerge(item: Item): boolean {
     if (item === null || item === undefined) return false;
 
-    return (
-      this.name === item.name &&
-      !this.unique &&
-      !item.unique
-    );
+    return this.name === item.name && !this.unique && !item.unique;
   }
 }
 

@@ -4,13 +4,16 @@ import { Inventory } from "@/Models/Inventory";
 import { Plugin } from "vue";
 
 const nuiEventPlugin: Plugin = {
-  install(app, options: { inventory: Inventory, container: Container, hotbar: Hotbar }) {
+  install(
+    app,
+    options: { inventory: Inventory; container: Container; hotbar: Hotbar }
+  ) {
     const inventory = options.inventory;
     const container = options.container;
     const hotbar = options.hotbar;
-    window.addEventListener('message', (event) => {
+    window.addEventListener("message", (event) => {
       const data = event.data;
-      const action = data.action;      
+      const action = data.action;
 
       if (action === "open") {
         console.log("open", data);
@@ -24,7 +27,7 @@ const nuiEventPlugin: Plugin = {
         window.dispatchEvent(new CustomEvent("inventory:close"));
       } else if (action === "update") {
         console.log("update", data);
-        
+
         // Update the inventory
       } else if (action === "itemBox") {
         console.log("itemBox", data);
@@ -44,7 +47,7 @@ const nuiEventPlugin: Plugin = {
         // Add option to take money from player
       }
     });
-  }
-}
+  },
+};
 
 export { nuiEventPlugin };

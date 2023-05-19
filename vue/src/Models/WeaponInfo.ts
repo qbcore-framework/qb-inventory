@@ -7,4 +7,4 @@ interface WeaponInfo {
   attachments: WeaponAttachment[];
 }
 
-export { WeaponInfo }
+export { WeaponInfo };

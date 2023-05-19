@@ -9,10 +9,11 @@
 </template>
 
 <script lang="ts" setup>
-import { Hotbar } from '@/Models/Hotbar';
-import { inject, ref } from 'vue';
-import ItemContainer from './ItemContainer.vue';
+import { Hotbar } from "@/Models/Hotbar";
+import { inject, ref } from "vue";
+import ItemContainer from "./ItemContainer.vue";
 
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const hotbar = inject<Hotbar>("hotbar")!;
 const items = ref(hotbar.items);
 const isOpen = ref(hotbar.open);

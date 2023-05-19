@@ -1,7 +1,5 @@
 <template>
-  <main
-    class="w-screen h-screen text-white bg-gray-900 bg-opacity-30"
-  >
+  <main class="w-screen h-screen text-white bg-gray-900 bg-opacity-30">
     <InventoryContainer />
   </main>
   <HotbarContainer />

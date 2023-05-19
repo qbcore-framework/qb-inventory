@@ -12,7 +12,7 @@ class Inventory {
 
   constructor() {
     this._httpClient = new HttpClient();
-    window.addEventListener("inventory:close", () => this.Close())
+    window.addEventListener("inventory:close", () => this.Close());
   }
 
   public get Items(): Ref<Item[]> {
@@ -46,7 +46,7 @@ class Inventory {
     }
 
     // Remove slot from items since this causes issues with 1 based indexing
-    data.inventory.forEach((itemData: any) => {
+    data.inventory.forEach((itemData: (Item & { slot: number }) | null) => {
       if (itemData === null) return;
       let item: Item;
       if (itemData.name.startsWith("weapon_")) item = new Weapon(itemData);
@@ -75,6 +75,7 @@ class Inventory {
     toInventory?: Inventory,
     amount?: number
   ) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     if (!toInventory) toInventory = this;
     // Cant move negative amount of items
     if (amount !== undefined && amount <= 0) return;
@@ -96,7 +97,7 @@ class Inventory {
     // If there is no item in the from slot, don't move
     if (!fromItem) return;
 
-    const body: any = {
+    const body = {
       fromInventory: this.Name,
       toInventory: toInventory.Name,
       fromSlot: fromSlot + 1,
@@ -141,7 +142,11 @@ class Inventory {
     }
   }
 
-  public QuickMoveItem(fromSlot: number, toInventory: Inventory, amount?: number) {
+  public QuickMoveItem(
+    fromSlot: number,
+    toInventory: Inventory,
+    amount?: number
+  ) {
     const fromItem: Item = this.items.value[fromSlot];
 
     // Check if there it can merge with any items in the to inventory

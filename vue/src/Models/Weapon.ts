@@ -14,13 +14,18 @@ class Weapon extends Item {
       weapon: this.name,
       ItemData: this,
     });
-    return this.weaponData!;
+
+    if (this.weaponData === null)
+      throw new Error("Weapon data is null after fetch");
+
+    return this.weaponData;
   }
 
   private readonly _httpClient: HttpClient;
   // Required for RemoveAttachment 🙃
   private readonly _slot: number;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(data: any) {
     super(data);
     this.info = data.info;
@@ -29,21 +34,25 @@ class Weapon extends Item {
   }
 
   public async RemoveAttachment(attachmentName: string) {
-    const attachment = (await this.GetWeaponData())
-      .AttachmentData
-      .find((a) => a.attachment === attachmentName);
+    const attachment = (await this.GetWeaponData()).AttachmentData.find(
+      (a) => a.attachment === attachmentName
+    );
 
     const weaponData = JSON.parse(JSON.stringify(this));
     weaponData.slot = this._slot;
 
     if (!attachment) return;
-    const res = await this._httpClient.Post(`RemoveAttachment`, {
+    await this._httpClient.Post(`RemoveAttachment`, {
       AttachmentData: attachment,
       WeaponData: weaponData,
     });
 
+    if (this.weaponData === null) throw new Error("Weapon data is null");
+
     // Remove attachment from weapon
-    this.weaponData!.AttachmentData = this.weaponData!.AttachmentData.filter((a) => a.attachment !== attachmentName);
+    this.weaponData.AttachmentData = this.weaponData.AttachmentData.filter(
+      (a) => a.attachment !== attachmentName
+    );
   }
 }
 

@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import Item from "@/Models/Item";
 import { computed, ref } from "vue";
-import ItemContainer from "./ItemContainer.vue";
 import { Inventory } from "@/Models/Inventory";
+import ItemContainer from "./ItemContainer.vue";
 
 interface IProps {
   inventory: Inventory;
@@ -14,21 +14,16 @@ withDefaults(defineProps<IProps>(), {
 });
 
 const emit = defineEmits<{
-  // eslint-disable-next-line no-unused-vars
   (event: "itemDropped", index: number): void;
-  // eslint-disable-next-line no-unused-vars
   (event: "startDrag", index: number): void;
-  // eslint-disable-next-line no-unused-vars
   (event: "endDrag"): void;
-  // eslint-disable-next-line no-unused-vars
   (event: "quickMove", index: number): void;
-  // eslint-disable-next-line no-unused-vars
   (event: "selectItem", index: number): void;
 }>();
 
-let draggedIndex = ref<number | null>(null);
-let x = ref(0);
-let y = ref(0);
+const draggedIndex = ref<number | null>(null);
+const x = ref(0);
+const y = ref(0);
 
 let didMouseMoveSinceMouseDown = false;
 
@@ -46,6 +41,7 @@ function onMouseDown(event: MouseEvent, item: Item, index: number) {
     draggedIndex.value = index;
 
     // Set the x and y from the mouse position relative to the item container
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const element = document
       .elementsFromPoint(event.clientX, event.clientY)
       .find((element) => element.classList.contains("item-container"))!;
@@ -78,7 +74,7 @@ function onMouseUp(event: MouseEvent, index: number) {
     return;
   }
 
-  let elements = document.elementsFromPoint(event.clientX, event.clientY);
+  const elements = document.elementsFromPoint(event.clientX, event.clientY);
 
   // Find second item with 'item-container' class
   const element = elements.filter((element) =>

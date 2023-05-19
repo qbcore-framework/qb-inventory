@@ -35,7 +35,10 @@
         @quick-move="onQuickMove($event, container)"
       />
     </template>
-    <WeaponPanel v-else-if="showWeaponPanel" :weapon="(selectedItem as Weapon)" />
+    <WeaponPanel
+      v-else-if="showWeaponPanel"
+      :weapon="(selectedItem as Weapon)"
+    />
   </div>
 </template>
 
@@ -52,14 +55,16 @@ let fromInventory: Inventory | null = null;
 let fromIndex: number | null = null;
 const moveAmount = ref(0);
 
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const inventory = inject<Inventory>("inventory")!;
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const container = inject<Container>("container")!;
 
-let selectedInventory: Ref<Inventory | null> = ref(null);
-let selectedItem: Ref<Item | null> = ref(null);
+const selectedInventory: Ref<Inventory | null> = ref(null);
+const selectedItem: Ref<Item | null> = ref(null);
 
 const isWeaponSelected = computed(() => selectedItem.value instanceof Weapon);
-let showWeaponPanel = ref(false);
+const showWeaponPanel = ref(false);
 
 window.addEventListener("inventory:close", () => {
   showWeaponPanel.value = false;
