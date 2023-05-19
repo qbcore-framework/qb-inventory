@@ -4,14 +4,11 @@ import { WeaponInfo } from "./WeaponInfo";
 import { WeaponDataDto } from "./Dto/GetWeaponData";
 
 class Weapon extends Item {
-  public get Info(): WeaponInfo {
-    return this.info as WeaponInfo;
-  }
+  override readonly info: WeaponInfo;
 
   private weaponData: WeaponDataDto | null = null;
   public async GetWeaponData(): Promise<WeaponDataDto> {
     if (this.weaponData) return this.weaponData;
-    // Allow for async loading of weapon data
     this.weaponData = await this._httpClient.Post(`GetWeaponData`, {
       weapon: this.name,
       ItemData: this,
@@ -25,12 +22,12 @@ class Weapon extends Item {
 
   constructor(data: any) {
     super(data);
+    this.info = data.info;
     this._httpClient = new HttpClient();
     this._slot = data.slot;
   }
 
   public async RemoveAttachment(attachmentName: string) {
-    console.log("RemoveAttachment");
     const attachment = (await this.GetWeaponData())
       .AttachmentData
       .find((a) => a.attachment === attachmentName);
@@ -44,7 +41,8 @@ class Weapon extends Item {
       WeaponData: weaponData,
     });
 
-    console.log(res);
+    // Remove attachment from weapon
+    this.weaponData!.AttachmentData = this.weaponData!.AttachmentData.filter((a) => a.attachment !== attachmentName);
   }
 }
 

@@ -5,7 +5,7 @@
 
     <img :src="require(`@/assets/images/${weapon.image}`)" :alt="weapon.label">
 
-    <div v-if="weaponInfo.AttachmentData?.length">
+    <div v-if="weaponInfo?.AttachmentData?.length">
       <h3>Attachments:</h3>
       <div v-for="attachment in weaponInfo.AttachmentData" :key="attachment.attachment">
         <span v-text="attachment.label" />
@@ -22,6 +22,7 @@
 </template>
 
 <script lang="ts" setup>
+import { WeaponDataDto } from '@/Models/Dto/GetWeaponData';
 import { Weapon } from '@/Models/Weapon';
 import { onMounted, ref } from 'vue';
 
@@ -32,13 +33,15 @@ const props = defineProps({
   }
 });
 
-let weaponInfo = ref<any>({});
+let weaponInfo = ref<WeaponDataDto | null>(null);
 
 onMounted(async () => {
   weaponInfo.value = await props.weapon.GetWeaponData();
 });
 
-function removeAttachment(attachment: string) {
+async function removeAttachment(attachment: string) {
   props.weapon.RemoveAttachment(attachment);
+  // Ideally, updating this value would be done reactively, but I'm not sure how to do that.
+  weaponInfo.value = await props.weapon.GetWeaponData();
 }
 </script>
