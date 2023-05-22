@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import Item from "./Item";
+import { Item } from "./Item";
 
 class Hotbar {
   private _items = ref<Item[]>([]);

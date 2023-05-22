@@ -12,7 +12,7 @@ class Item {
   id: number;
   shouldClose?: boolean;
 
-  constructor(data: Item) {
+  constructor(data: any) {
     this.name = data.name;
     this.amount = data.amount;
     this.info = data.info;
@@ -34,4 +34,4 @@ class Item {
   }
 }
 
-export default Item;
+export { Item };

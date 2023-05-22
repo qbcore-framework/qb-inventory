@@ -1,7 +1,7 @@
 import { HttpClient } from "@/plugins/HttpClient";
-import MaxAmmo from "./MaxAmmo";
+import MaxAmmo from "./Interfaces/MaxAmmo";
 import { Ref, ref } from "vue";
-import Item from "./Item";
+import { Item } from "./Item";
 import { Weapon } from "./Weapon";
 class Inventory {
   private items = ref<Item[]>([]);
@@ -86,6 +86,9 @@ class Inventory {
     const fromItem: Item = this.items.value[fromSlot];
     const toItem: Item = toInventory.items.value[toSlot];
 
+    // If there is no item in the from slot, don't move
+    if (!fromItem) return;
+
     // If amount is not set, move all items
     if (amount === undefined) amount = fromItem.amount;
     // Can't move more items than there are in the slot
@@ -93,9 +96,6 @@ class Inventory {
     // Can't split items if there is a different item in the to slot (causes items to disappear)
     if (toItem && amount < fromItem.amount && toItem.name !== fromItem.name)
       return;
-
-    // If there is no item in the from slot, don't move
-    if (!fromItem) return;
 
     const body = {
       fromInventory: this.Name,
@@ -148,6 +148,9 @@ class Inventory {
     amount?: number
   ) {
     const fromItem: Item = this.items.value[fromSlot];
+
+    // If there is no item in the from slot, don't move
+    if (!fromItem) return;
 
     // Check if there it can merge with any items in the to inventory
     let toSlot = toInventory.items.value.findIndex((item: Item) =>

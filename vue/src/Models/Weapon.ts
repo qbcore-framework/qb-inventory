@@ -1,6 +1,6 @@
 import { HttpClient } from "@/plugins/HttpClient";
-import Item from "./Item";
-import { WeaponInfo } from "./WeaponInfo";
+import { Item } from "./Item";
+import { WeaponInfo } from "./Interfaces/WeaponInfo";
 import { WeaponDataDto } from "./Dto/GetWeaponData";
 
 class Weapon extends Item {
