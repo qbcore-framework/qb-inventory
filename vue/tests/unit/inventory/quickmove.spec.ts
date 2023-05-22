@@ -23,19 +23,17 @@ describe("Inventory", () => {
   beforeEach(() => {
     inventory = new Inventory();
     inventory.Open({
-      Ammo: [],
-      inventory: [],
-      maxammo: { pistol: 0, smg: 0, rifle: 0, shotgun: 0 },
-      maxweight: 1000,
-      slots: 10,
+      ammo: [],
+      items: new Array(10),
+      maxAmmo: { pistol: 0, smg: 0, rifle: 0, shotgun: 0 },
+      maxWeight: 1000,
     });
     otherInventory = new Inventory();
     otherInventory.Open({
-      Ammo: [],
-      inventory: [],
-      maxammo: { pistol: 0, smg: 0, rifle: 0, shotgun: 0 },
-      maxweight: 1000,
-      slots: 10,
+      ammo: [],
+      items: new Array(10),
+      maxAmmo: { pistol: 0, smg: 0, rifle: 0, shotgun: 0 },
+      maxWeight: 1000,
     });
     const itemBase = {
       description: "description",

@@ -1,0 +1,32 @@
+import { Item } from "@/Models/Item";
+import { Weapon } from "@/Models/Weapon";
+
+/**
+ * Parse inventory from the client to NUI into an array of items
+ */
+function ParseInventory(itemData: any, slots: number): Item[] {
+  const items = new Array<Item>(slots);
+
+  // If inventory is an object, convert it to an array
+  if (!Array.isArray(itemData)) {
+    const inventory = [];
+    for (const key in itemData) {
+      inventory.push(itemData[key]);
+    }
+
+    itemData = inventory;
+  }
+
+  // Remove slot from items since this causes issues with 1 based indexing
+  itemData.forEach((itemData: (Item & { slot: number }) | null) => {
+    if (itemData === null) return;
+    let item: Item;
+    if (itemData.name.startsWith("weapon_")) item = new Weapon(itemData);
+    else item = new Item(itemData);
+    items[itemData.slot - 1] = item;
+  });
+
+  return items;
+}
+
+export { ParseInventory };

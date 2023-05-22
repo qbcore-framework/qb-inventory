@@ -1,4 +1,6 @@
+import MaxAmmo from "./Interfaces/MaxAmmo";
 import { Inventory } from "./Inventory";
+import { Item } from "./Item";
 
 class Container extends Inventory {
   constructor() {
@@ -6,11 +8,13 @@ class Container extends Inventory {
     this.Close();
   }
 
-  public override Open(
-    data: any & {
-      name: string;
-    }
-  ): void {
+  public override Open(data: {
+    ammo: [];
+    items: Item[];
+    maxAmmo: MaxAmmo;
+    maxWeight: number;
+    name: string;
+  }): void {
     this.name = data.name;
     super.Open(data);
   }

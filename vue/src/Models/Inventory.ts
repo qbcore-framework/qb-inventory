@@ -26,35 +26,13 @@ class Inventory {
   }
 
   public Open(data: {
-    Ammo: [];
-    inventory: any;
-    maxammo: MaxAmmo;
-    maxweight: number;
-    slots: number;
+    ammo: [];
+    items: Item[];
+    maxAmmo: MaxAmmo;
+    maxWeight: number;
   }) {
     this.isVisible.value = true;
-    const items = new Array<Item>(data.slots);
-
-    // If inventory is an object, convert it to an array
-    if (!Array.isArray(data.inventory)) {
-      const inventory = [];
-      for (const key in data.inventory) {
-        inventory.push(data.inventory[key]);
-      }
-
-      data.inventory = inventory;
-    }
-
-    // Remove slot from items since this causes issues with 1 based indexing
-    data.inventory.forEach((itemData: (Item & { slot: number }) | null) => {
-      if (itemData === null) return;
-      let item: Item;
-      if (itemData.name.startsWith("weapon_")) item = new Weapon(itemData);
-      else item = new Item(itemData);
-      items[itemData.slot - 1] = item;
-    });
-
-    this.items.value = items;
+    this.items.value = data.items;
   }
 
   public Close() {

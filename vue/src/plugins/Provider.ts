@@ -4,7 +4,6 @@ import { Inventory } from "@/Models/Inventory";
 import { Plugin } from "vue";
 
 const ProviderPlugin: Plugin = {
-  // Track key presses for tab, esc
   install(
     app,
     options: { inventory: Inventory; container: Container; hotbar: Hotbar }
