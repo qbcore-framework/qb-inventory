@@ -1,14 +1,12 @@
 import { Inventory } from "@/Models/Inventory";
 import { Item } from "@/Models/Item";
 
-const mockPost = jest.fn();
-const mockGet = jest.fn();
 jest.mock("@/plugins/HttpClient", () => {
   return {
     HttpClient: jest.fn().mockImplementation(() => {
       return {
-        Post: mockPost,
-        Get: mockGet,
+        Post: jest.fn(),
+        Get: jest.fn(),
       };
     }),
   };
@@ -209,9 +207,6 @@ describe("Inventory", () => {
       inventory.Items.value[fromSlot] = initialFromItem;
 
       const otherInventory = new Inventory();
-      const initialToItem = null;
-      // otherInventory.Items.value[toSlot] = initialToItem;
-
       inventory.MoveItem(fromSlot, toSlot, otherInventory);
 
       expect(inventory.Items.value[fromSlot]).toBeUndefined();
