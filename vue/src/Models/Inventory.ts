@@ -149,6 +149,9 @@ class Inventory {
   ) {
     const fromItem: Item = this.items.value[fromSlot];
 
+    // If there is no item in the from slot, don't move
+    if (!fromItem) return;
+
     // Check if there it can merge with any items in the to inventory
     let toSlot = toInventory.items.value.findIndex((item: Item) =>
       fromItem.canMerge(item)

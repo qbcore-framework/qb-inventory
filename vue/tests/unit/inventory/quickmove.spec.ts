@@ -154,14 +154,11 @@ describe("Inventory", () => {
       const initialFromItem = tenCoffeeItem;
       inventory.Items.value[fromSlot] = initialFromItem;
 
-      const initialToItem = coffeeItem;
-      otherInventory.Items.value[0] = initialToItem;
+      inventory.QuickMoveItem(fromSlot, otherInventory, 4);
 
-      inventory.QuickMoveItem(fromSlot, otherInventory, 1);
-
-      expect(inventory.Items.value[fromSlot].amount).toEqual(9);
-      expect(otherInventory.Items.value[1].name).toEqual("Coffee");
-      expect(otherInventory.Items.value[1].amount).toEqual(2);
+      expect(inventory.Items.value[fromSlot].amount).toEqual(6);
+      expect(otherInventory.Items.value[0].name).toEqual("Coffee");
+      expect(otherInventory.Items.value[0].amount).toEqual(4);
     });
   });
 });
