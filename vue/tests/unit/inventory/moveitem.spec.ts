@@ -1,5 +1,6 @@
 import { Inventory } from "@/Models/Inventory";
 import { Item } from "@/Models/Item";
+import { ItemFactory } from "../item.spec";
 
 jest.mock("@/plugins/HttpClient", () => {
   return {
@@ -21,37 +22,10 @@ describe("Inventory", () => {
 
   beforeEach(() => {
     inventory = new Inventory();
-    const itemBase = {
-      description: "description",
-      amount: 1,
-      image: "404.png",
-      info: {},
-      weight: 1,
-      type: "item",
-      unique: false,
-      usable: true,
-      id: 1,
-      shouldClose: false,
-    };
 
-    coffeeItem = new Item({
-      ...itemBase,
-      name: "Coffee",
-      label: "Coffee",
-    });
-
-    teaItem = new Item({
-      ...itemBase,
-      name: "Tea",
-      label: "Tea",
-    });
-
-    tenCoffeeItem = new Item({
-      ...itemBase,
-      name: "Coffee",
-      label: "Coffee",
-      amount: 10,
-    });
+    coffeeItem = ItemFactory({ name: "Coffee", amount: 1 });
+    teaItem = ItemFactory({ name: "Tea", amount: 1 });
+    tenCoffeeItem = ItemFactory({ name: "Coffee", amount: 10 });
   });
 
   describe("MoveItem", () => {

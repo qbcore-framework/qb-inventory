@@ -1,3 +1,4 @@
+import { ItemCtorParams } from "@/Models/Interfaces/ItemCtorParams";
 import { Item } from "@/Models/Item";
 import { Weapon } from "@/Models/Weapon";
 
@@ -21,8 +22,25 @@ function ParseInventory(itemData: any, slots: number): Item[] {
   itemData.forEach((itemData: (Item & { slot: number }) | null) => {
     if (itemData === null) return;
     let item: Item;
-    if (itemData.name.startsWith("weapon_")) item = new Weapon(itemData);
-    else item = new Item(itemData);
+
+    const params: ItemCtorParams = {
+      name: itemData.name,
+      amount: itemData.amount,
+      info: itemData.info,
+      label: itemData.label,
+      description: itemData.description,
+      weight: itemData.weight,
+      type: itemData.type,
+      unique: itemData.unique,
+      usable: itemData.usable,
+      image: itemData.image,
+      id: itemData.id,
+      shouldClose: itemData.shouldClose,
+    };
+
+    if (itemData.name.startsWith("weapon_"))
+      item = new Weapon(params, itemData.slot);
+    else item = new Item(params);
     items[itemData.slot - 1] = item;
   });
 

@@ -1,5 +1,6 @@
 import { HttpClient } from "@/plugins/HttpClient";
 import { Item } from "./Item";
+import { ItemCtorParams } from "./Interfaces/ItemCtorParams";
 import { WeaponInfo } from "./Interfaces/WeaponInfo";
 import { WeaponDataDto } from "./Dto/GetWeaponData";
 
@@ -25,12 +26,11 @@ class Weapon extends Item {
   // Required for RemoveAttachment 🙃
   private readonly _slot: number;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  constructor(data: any) {
+  constructor(data: ItemCtorParams, slot: number) {
     super(data);
-    this.info = data.info;
+    this.info = data.info as WeaponInfo;
+    this._slot = slot;
     this._httpClient = new HttpClient();
-    this._slot = data.slot;
   }
 
   public async RemoveAttachment(attachmentName: string) {

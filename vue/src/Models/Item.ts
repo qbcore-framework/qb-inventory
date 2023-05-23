@@ -1,3 +1,5 @@
+import { ItemCtorParams } from "./Interfaces/ItemCtorParams";
+
 class Item {
   name: string;
   amount: number;
@@ -12,7 +14,7 @@ class Item {
   id: number;
   shouldClose?: boolean;
 
-  constructor(data: any) {
+  constructor(data: ItemCtorParams) {
     this.name = data.name;
     this.amount = data.amount;
     this.info = data.info;
