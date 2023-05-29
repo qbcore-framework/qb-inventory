@@ -9,7 +9,7 @@ interface IProps {
   canSelectItems?: boolean;
 }
 
-const props = withDefaults(defineProps<IProps>(), {
+withDefaults(defineProps<IProps>(), {
   canSelectItems: false,
 });
 
@@ -91,8 +91,6 @@ function onMouseUp(event: MouseEvent, index: number) {
 function onItemDropped(event: CustomEvent, otherIndex: number) {
   emit("itemDropped", otherIndex);
 }
-
-console.log("Items: ", props.inventory.Items.value);
 </script>
 
 <template>

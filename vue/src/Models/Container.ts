@@ -33,8 +33,6 @@ class Container extends Inventory {
       console.log("open standard container");
       this.state = new StandardContainerState(this, data);
     }
-
-    console.log("Container updated", this.Items.value);
   }
 }
 

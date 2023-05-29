@@ -10,8 +10,6 @@ class StandardContainerState implements IInventoryState {
     private readonly container: Container,
     inventoryData: OpenInventoryDto
   ) {
-    console.log("StandardContainerState", inventoryData);
-
     this.open(inventoryData);
     this.name = inventoryData.name;
   }
