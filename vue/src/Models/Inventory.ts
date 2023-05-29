@@ -2,7 +2,7 @@ import { HttpClient } from "@/plugins/HttpClient";
 import MaxAmmo from "./Interfaces/MaxAmmo";
 import { Ref, ref } from "vue";
 import { Item } from "./Item";
-import { IInventoryState } from "./ContainerStates/IInventoryState";
+import { IInventoryState } from "./Interfaces/IInventoryState";
 import { PLayerInventoryState } from "./ContainerStates/PlayerInventoryState";
 
 class Inventory {

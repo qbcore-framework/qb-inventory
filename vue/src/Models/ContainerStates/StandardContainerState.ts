@@ -1,6 +1,6 @@
 import { Container } from "../Container";
 import { OpenInventoryDto } from "../Dto/OpenInventory";
-import { IInventoryState } from "./IInventoryState";
+import { IInventoryState } from "../Interfaces/IInventoryState";
 
 /**
  * Used when opening a container with items e.g. a trunk, glovebox, stash, etc.
@@ -10,6 +10,8 @@ class StandardContainerState implements IInventoryState {
     private readonly container: Container,
     inventoryData: OpenInventoryDto
   ) {
+    console.log("StandardContainerState", inventoryData);
+
     this.open(inventoryData);
     this.name = inventoryData.name;
   }

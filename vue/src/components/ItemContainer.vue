@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import Item from "@/Models/Item";
+import { Item } from "@/Models/Item";
 import { Ref, ref } from "vue";
 
 interface IProps {

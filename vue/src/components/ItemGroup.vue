@@ -1,15 +1,15 @@
 <script lang="ts" setup>
-import Item from "@/Models/Item";
 import { computed, ref } from "vue";
 import { Inventory } from "@/Models/Inventory";
 import ItemContainer from "./ItemContainer.vue";
+import { Item } from "@/Models/Item";
 
 interface IProps {
   inventory: Inventory;
   canSelectItems?: boolean;
 }
 
-withDefaults(defineProps<IProps>(), {
+const props = withDefaults(defineProps<IProps>(), {
   canSelectItems: false,
 });
 
@@ -91,6 +91,8 @@ function onMouseUp(event: MouseEvent, index: number) {
 function onItemDropped(event: CustomEvent, otherIndex: number) {
   emit("itemDropped", otherIndex);
 }
+
+console.log("Items: ", props.inventory.Items.value);
 </script>
 
 <template>

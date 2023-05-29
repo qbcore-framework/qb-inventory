@@ -1,6 +1,6 @@
 import { OpenInventoryDto } from "../Dto/OpenInventory";
 import { Inventory } from "../Inventory";
-import { IInventoryState } from "./IInventoryState";
+import { IInventoryState } from "../Interfaces/IInventoryState";
 
 /**
  * Used for opening the player's inventory.

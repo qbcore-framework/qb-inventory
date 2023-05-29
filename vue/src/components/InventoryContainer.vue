@@ -47,7 +47,7 @@ import { Ref, computed, inject, ref } from "vue";
 import { Inventory } from "../Models/Inventory";
 import { Container } from "../Models/Container";
 import { Weapon } from "../Models/Weapon";
-import Item from "../Models/Item";
+import { Item } from "../Models/Item";
 import ItemGroup from "./ItemGroup.vue";
 import WeaponPanel from "./WeaponPanel.vue";
 

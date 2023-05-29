@@ -1,5 +1,5 @@
 import { Container } from "../Container";
-import { IInventoryState } from "./IInventoryState";
+import { IInventoryState } from "../Interfaces/IInventoryState";
 
 class EmptyContainerState implements IInventoryState {
   constructor(private readonly container: Container) {

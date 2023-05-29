@@ -19,15 +19,14 @@ const nuiEventPlugin: Plugin = {
       if (action === "open") {
         console.log("open", data);
         // Check if user is opening a container as well
-        if (data.other) {
-          container.Open({
-            ammo: data.other.Ammo,
-            items: ParseInventory(data.other.inventory, data.other.slots),
-            maxAmmo: data.other.maxammo,
-            maxWeight: data.other.maxweight,
-            name: data.other.name,
-          });
-        }
+        container.UpdateState({
+          ammo: data.other.Ammo,
+          items: ParseInventory(data.other.inventory, data.other.slots),
+          maxAmmo: data.other.maxammo,
+          maxWeight: data.other.maxweight,
+          name: data.other.name,
+        });
+
         inventory.Open({
           ammo: data.Ammo,
           items: ParseInventory(data.inventory, data.slots),
