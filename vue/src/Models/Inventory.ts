@@ -2,16 +2,19 @@ import { HttpClient } from "@/plugins/HttpClient";
 import MaxAmmo from "./Interfaces/MaxAmmo";
 import { Ref, ref } from "vue";
 import { Item } from "./Item";
-import { Weapon } from "./Weapon";
+import { IInventoryState } from "./ContainerStates/IInventoryState";
+import { PLayerInventoryState } from "./ContainerStates/PlayerInventoryState";
+
 class Inventory {
   private items = ref<Item[]>([]);
   private isVisible = ref<boolean>(false);
-  protected name = "player";
+  protected state: IInventoryState;
 
   protected readonly _httpClient: HttpClient;
 
   constructor() {
     this._httpClient = new HttpClient();
+    this.state = new PLayerInventoryState(this);
     window.addEventListener("inventory:close", () => this.Close());
   }
 
@@ -20,9 +23,6 @@ class Inventory {
   }
   public get IsVisible() {
     return this.isVisible;
-  }
-  public get Name() {
-    return this.name;
   }
 
   public Open(data: {
@@ -76,8 +76,8 @@ class Inventory {
       return;
 
     const body = {
-      fromInventory: this.Name,
-      toInventory: toInventory.Name,
+      fromInventory: this.state.getName(),
+      toInventory: toInventory.state.getName(),
       fromSlot: fromSlot + 1,
       toSlot: toSlot + 1,
       fromAmount: amount || fromItem.amount,

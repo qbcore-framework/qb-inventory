@@ -15,14 +15,7 @@ class Container extends Inventory {
     maxWeight: number;
     name: string;
   }): void {
-    this.name = data.name;
     super.Open(data);
-  }
-
-  public override Close(): void {
-    this.Items.value = new Array(20);
-    // QB-Inventory uses this to indicate for unused "ground"
-    this.name = "0";
   }
 }
 
