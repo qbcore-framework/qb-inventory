@@ -26,7 +26,12 @@ class Weapon extends Item {
   // Required for RemoveAttachment 🙃
   private readonly _slot: number;
 
-  constructor(data: ItemCtorParams, slot: number) {
+  constructor(
+    data: ItemCtorParams & {
+      info: WeaponInfo;
+    },
+    slot: number
+  ) {
     super(data);
     this.info = data.info as WeaponInfo;
     this._slot = slot;

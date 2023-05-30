@@ -1,4 +1,5 @@
 import { ItemCtorParams } from "@/Models/Interfaces/ItemCtorParams";
+import { WeaponInfo } from "@/Models/Interfaces/WeaponInfo";
 import { Item } from "@/Models/Item";
 import { Weapon } from "@/Models/Weapon";
 
@@ -39,7 +40,10 @@ function ParseInventory(itemData: any, slots: number): Item[] {
     };
 
     if (itemData.name.startsWith("weapon_"))
-      item = new Weapon(params, itemData.slot);
+      item = new Weapon(
+        params as ItemCtorParams & { info: WeaponInfo },
+        itemData.slot
+      );
     else item = new Item(params);
     items[itemData.slot - 1] = item;
   });
