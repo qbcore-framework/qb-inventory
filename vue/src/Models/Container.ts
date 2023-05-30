@@ -9,16 +9,7 @@ class Container extends Inventory {
     this.Close();
   }
 
-  // public override Open(data: {
-  //   ammo: [];
-  //   items: Item[];
-  //   maxAmmo: MaxAmmo;
-  //   maxWeight: number;
-  //   name: string;
-  // }): void {
-  //   super.Open(data);
-  // }
-  public UpdateState(data: OpenInventoryDto) {
+  public UpdateState(data: OpenInventoryDto | undefined) {
     if (data === undefined) {
       // Player is not opening an existing container
       console.log("open empty container");
