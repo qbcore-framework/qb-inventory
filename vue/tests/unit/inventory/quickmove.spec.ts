@@ -1,5 +1,5 @@
 import { Inventory } from "@/Models/Inventory";
-import { Item } from "@/Models/Item";
+import { Item } from "@/Models/Item/Item";
 import { ItemFactory } from "../item.spec";
 
 jest.mock("@/plugins/HttpClient", () => {

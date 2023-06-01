@@ -1,4 +1,4 @@
-import { ItemCtorParams } from "./Interfaces/ItemCtorParams";
+import { ItemCtorParams } from "../Interfaces/ItemCtorParams";
 
 class Item {
   name: string;

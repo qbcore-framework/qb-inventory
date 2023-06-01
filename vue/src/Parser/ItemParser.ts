@@ -1,7 +1,7 @@
 import { ItemCtorParams } from "@/Models/Interfaces/ItemCtorParams";
 import { WeaponInfo } from "@/Models/Interfaces/WeaponInfo";
-import { Item } from "@/Models/Item";
-import { Weapon } from "@/Models/Weapon";
+import { Item } from "@/Models/Item/Item";
+import { Weapon } from "@/Models/Item/Weapon";
 
 /**
  * Parse inventory from the client to NUI into an array of items

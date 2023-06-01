@@ -1,8 +1,8 @@
 import { HttpClient } from "@/plugins/HttpClient";
 import { Item } from "./Item";
-import { ItemCtorParams } from "./Interfaces/ItemCtorParams";
-import { WeaponInfo } from "./Interfaces/WeaponInfo";
-import { WeaponDataDto } from "./Dto/GetWeaponData";
+import { ItemCtorParams } from "../Interfaces/ItemCtorParams";
+import { WeaponInfo } from "../Interfaces/WeaponInfo";
+import { WeaponDataDto } from "../Dto/GetWeaponData";
 
 class Weapon extends Item {
   public static readonly MAX_QUALITY = 100;

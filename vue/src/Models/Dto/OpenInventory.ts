@@ -1,5 +1,6 @@
 import MaxAmmo from "../Interfaces/MaxAmmo";
-import { Item } from "../Item";
+import { CraftingItem } from "../Item/CraftingItem";
+import { Item } from "../Item/Item";
 
 interface OpenInventoryDto {
   ammo: [];
@@ -9,4 +10,8 @@ interface OpenInventoryDto {
   name: string;
 }
 
-export { OpenInventoryDto };
+interface OpenCraftingInventoryDto extends OpenInventoryDto {
+  items: CraftingItem[];
+}
+
+export { OpenInventoryDto, OpenCraftingInventoryDto };

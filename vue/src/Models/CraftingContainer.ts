@@ -1,5 +1,5 @@
 import { Inventory } from "./Inventory";
-import { Item } from "./Item";
+import { Item } from "./Item/Item";
 
 class CraftingContainer extends Inventory {
   override MoveItem(

@@ -5,7 +5,7 @@ import { IInventoryState } from "../Interfaces/IInventoryState";
 /**
  * Used when opening a container with items e.g. a trunk, glovebox, stash, etc.
  */
-class StandardContainerState implements IInventoryState {
+class StoredContainerState implements IInventoryState {
   constructor(
     private readonly container: Container,
     inventoryData: OpenInventoryDto
@@ -26,4 +26,4 @@ class StandardContainerState implements IInventoryState {
   }
 }
 
-export { StandardContainerState };
+export { StoredContainerState };
