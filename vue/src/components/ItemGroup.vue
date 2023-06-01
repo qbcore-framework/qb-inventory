@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 import { computed, ref } from "vue";
-import { Inventory } from "@/Models/Inventory";
+import { PlayerInventory } from "@/Models/Container/PlayerInventory";
 import ItemContainer from "./ItemContainer.vue";
-import { Item } from "@/Models/Item";
+import { Item } from "@/Models/Item/Item";
 
 interface IProps {
-  inventory: Inventory;
+  inventory: PlayerInventory;
   canSelectItems?: boolean;
 }
 

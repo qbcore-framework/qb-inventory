@@ -1,6 +1,6 @@
 <template>
   <div class="flex justify-center">
-    <template v-if="inventory.IsVisible.value && !showWeaponPanel">
+    <template v-if="inventory.isVisible.value && !showWeaponPanel">
       <ItemGroup
         :inventory="inventory"
         :canSelectItems="true"
@@ -44,23 +44,24 @@
 
 <script lang="ts" setup>
 import { Ref, computed, inject, ref } from "vue";
-import { Inventory } from "../Models/Inventory";
-import { Container } from "../Models/Container";
-import { Weapon } from "../Models/Weapon";
-import { Item } from "../Models/Item";
+import { PlayerInventory } from "../Models/Container/PlayerInventory";
+import { Container } from "../Models/Container/Container";
+import { Weapon } from "../Models/Item/Weapon";
+import { Item } from "../Models/Item/Item";
 import ItemGroup from "./ItemGroup.vue";
 import WeaponPanel from "./WeaponPanel.vue";
+import { ContainerBase } from "@/Models/Container/ContainerBase";
 
-let fromInventory: Inventory | null = null;
+let fromInventory: ContainerBase<Item> | null = null;
 let fromIndex: number | null = null;
 const moveAmount = ref(0);
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const inventory = inject<Inventory>("inventory")!;
+const inventory = inject<PlayerInventory>("inventory")!;
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const container = inject<Container>("container")!;
 
-const selectedInventory: Ref<Inventory | null> = ref(null);
+const selectedInventory: Ref<ContainerBase<Item> | null> = ref(null);
 const selectedItem: Ref<Item | null> = ref(null);
 
 const isWeaponSelected = computed(() => selectedItem.value instanceof Weapon);
@@ -74,7 +75,7 @@ function getMoveAmount() {
   return moveAmount.value !== 0 ? moveAmount.value : undefined;
 }
 
-function onDragStart(index: number, inventory: Inventory) {
+function onDragStart(index: number, inventory: ContainerBase<Item>) {
   fromInventory = inventory;
   fromIndex = index;
 }
@@ -84,13 +85,13 @@ function onDragEnd() {
   fromIndex = null;
 }
 
-function onItemDropped(index: number, dropInventory: Inventory) {
+function onItemDropped(index: number, dropInventory: ContainerBase<Item>) {
   if (fromInventory === null || fromIndex === null) return;
 
   fromInventory.MoveItem(fromIndex, index, dropInventory, getMoveAmount());
 }
 
-function onQuickMove(index: number, fromInventory: Inventory) {
+function onQuickMove(index: number, fromInventory: ContainerBase<Item>) {
   fromInventory.QuickMoveItem(
     index,
     fromInventory === inventory ? container : inventory,
@@ -98,7 +99,10 @@ function onQuickMove(index: number, fromInventory: Inventory) {
   );
 }
 
-function onSelectItem(index: number, newSelectedInventory: Inventory) {
+function onSelectItem(
+  index: number,
+  newSelectedInventory: ContainerBase<Item>
+) {
   selectedInventory.value = newSelectedInventory;
   selectedItem.value = newSelectedInventory.Items.value[index];
 }

@@ -34,6 +34,15 @@ class Item {
 
     return this.name === item.name && !this.unique && !item.unique;
   }
+
+  canSwap(item: Item): boolean {
+    return this._canSwap(item) && item._canSwap(this);
+  }
+
+  // Internal method for checking if this items allows swapping with another item
+  protected _canSwap(item: Item): boolean {
+    return true;
+  }
 }
 
 export { Item };
