@@ -38,7 +38,7 @@
 
 <script lang="ts" setup>
 import { WeaponDataDto } from "@/Models/Dto/GetWeaponData";
-import { Weapon } from "@/Models/Weapon";
+import { Weapon } from "@/Models/Item/Weapon";
 import { onMounted, ref } from "vue";
 
 const props = defineProps({

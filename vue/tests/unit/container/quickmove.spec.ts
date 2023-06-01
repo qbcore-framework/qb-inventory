@@ -1,5 +1,5 @@
-import { Inventory } from "@/Models/Inventory";
-import { Item } from "@/Models/Item";
+import { PlayerInventory } from "@/Models/Container/PlayerInventory";
+import { Item } from "@/Models/Item/Item";
 import { ItemFactory } from "../item.spec";
 
 jest.mock("@/plugins/HttpClient", () => {
@@ -14,28 +14,28 @@ jest.mock("@/plugins/HttpClient", () => {
 });
 
 describe("Inventory", () => {
-  let inventory: Inventory;
-  let otherInventory: Inventory;
+  let inventory: PlayerInventory;
+  let otherInventory: PlayerInventory;
 
   let coffeeItem: Item;
   let teaItem: Item;
   let tenCoffeeItem: Item;
 
   beforeEach(() => {
-    inventory = new Inventory();
-    inventory.Open({
-      ammo: [],
-      items: new Array(10),
-      maxAmmo: { pistol: 0, smg: 0, rifle: 0, shotgun: 0 },
-      maxWeight: 1000,
-    });
-    otherInventory = new Inventory();
-    otherInventory.Open({
-      ammo: [],
-      items: new Array(10),
-      maxAmmo: { pistol: 0, smg: 0, rifle: 0, shotgun: 0 },
-      maxWeight: 1000,
-    });
+    inventory = new PlayerInventory();
+    inventory.UpdateContents(
+      new Array(10),
+      1000,
+      { pistol: 0, smg: 0, rifle: 0, shotgun: 0 },
+      []
+    );
+    otherInventory = new PlayerInventory();
+    otherInventory.UpdateContents(
+      new Array(10),
+      1000,
+      { pistol: 0, smg: 0, rifle: 0, shotgun: 0 },
+      []
+    );
 
     coffeeItem = ItemFactory({ name: "Coffee", amount: 1 });
     teaItem = ItemFactory({ name: "Tea", amount: 1 });

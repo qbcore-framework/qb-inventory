@@ -1,8 +1,8 @@
 import { HttpClient } from "@/plugins/HttpClient";
 import { Item } from "./Item";
-import { ItemCtorParams } from "./Interfaces/ItemCtorParams";
-import { WeaponInfo } from "./Interfaces/WeaponInfo";
-import { WeaponDataDto } from "./Dto/GetWeaponData";
+import { ItemCtorParams } from "../Interfaces/ItemCtorParams";
+import { WeaponInfo } from "../Interfaces/WeaponInfo";
+import { WeaponDataDto } from "../Dto/GetWeaponData";
 
 class Weapon extends Item {
   public static readonly MAX_QUALITY = 100;
@@ -26,7 +26,12 @@ class Weapon extends Item {
   // Required for RemoveAttachment 🙃
   private readonly _slot: number;
 
-  constructor(data: ItemCtorParams, slot: number) {
+  constructor(
+    data: ItemCtorParams & {
+      info: WeaponInfo;
+    },
+    slot: number
+  ) {
     super(data);
     this.info = data.info as WeaponInfo;
     this._slot = slot;

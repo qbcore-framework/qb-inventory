@@ -1,43 +1,28 @@
-import { HttpClient } from "@/plugins/HttpClient";
-import MaxAmmo from "./Interfaces/MaxAmmo";
 import { Ref, ref } from "vue";
-import { Item } from "./Item";
-import { Weapon } from "./Weapon";
-class Inventory {
-  private items = ref<Item[]>([]);
-  private isVisible = ref<boolean>(false);
-  protected name = "player";
+import { Item } from "../Item/Item";
+import { HttpClient } from "@/plugins/HttpClient";
+import MaxAmmo from "../Interfaces/MaxAmmo";
 
-  protected readonly _httpClient: HttpClient;
+abstract class ContainerBase<TItem extends Item> {
+  readonly Items = ref<TItem[]>([]) as Ref<TItem[]>;
+  protected readonly _httpClient = new HttpClient();
 
-  constructor() {
-    this._httpClient = new HttpClient();
-    window.addEventListener("inventory:close", () => this.Close());
+  private _maxWeight = ref(0);
+
+  public get maxWeight() {
+    return this._maxWeight;
   }
 
-  public get Items(): Ref<Item[]> {
-    return this.items;
-  }
-  public get IsVisible() {
-    return this.isVisible;
-  }
-  public get Name() {
-    return this.name;
-  }
+  abstract getName(): string;
 
-  public Open(data: {
-    ammo: [];
-    items: Item[];
-    maxAmmo: MaxAmmo;
-    maxWeight: number;
-  }) {
-    this.isVisible.value = true;
-    this.items.value = data.items;
-  }
-
-  public Close() {
-    this.isVisible.value = false;
-    this._httpClient.Get("CloseInventory");
+  protected _UpdateContents(
+    items: TItem[],
+    maxWeight: number,
+    maxAmmo: MaxAmmo,
+    ammo: []
+  ) {
+    this.Items.value = items;
+    this._maxWeight.value = maxWeight;
   }
 
   /**
@@ -50,7 +35,7 @@ class Inventory {
   public MoveItem(
     fromSlot: number,
     toSlot: number,
-    toInventory?: Inventory,
+    toInventory?: ContainerBase<Item>,
     amount?: number
   ) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -61,8 +46,8 @@ class Inventory {
     // Don't allow moving to same slot if inventory is the same
     if (fromSlot == toSlot && this == toInventory) return;
 
-    const fromItem: Item = this.items.value[fromSlot];
-    const toItem: Item = toInventory.items.value[toSlot];
+    const fromItem = this.Items.value[fromSlot];
+    const toItem: Item = toInventory.Items.value[toSlot];
 
     // If there is no item in the from slot, don't move
     if (!fromItem) return;
@@ -76,8 +61,8 @@ class Inventory {
       return;
 
     const body = {
-      fromInventory: this.Name,
-      toInventory: toInventory.Name,
+      fromInventory: this.getName(),
+      toInventory: toInventory.getName(),
       fromSlot: fromSlot + 1,
       toSlot: toSlot + 1,
       fromAmount: amount || fromItem.amount,
@@ -93,12 +78,15 @@ class Inventory {
         fromItem.amount -= amount;
 
         // If there are no items left in the from slot, remove it
-        if (fromItem.amount <= 0) delete this.items.value[fromSlot];
+        if (fromItem.amount <= 0) delete this.Items.value[fromSlot];
       }
       // Swap items
       else {
-        this.items.value[fromSlot] = toItem;
-        toInventory.items.value[toSlot] = fromItem;
+        // Check if items can be swapped
+        if (fromItem.canSwap(toItem)) {
+          this.Items.value[fromSlot] = toItem as TItem;
+          toInventory.Items.value[toSlot] = fromItem;
+        }
       }
     }
     // Handle moving or splitting items
@@ -110,34 +98,34 @@ class Inventory {
         newItem.amount = amount;
         fromItem.amount -= amount;
 
-        toInventory.items.value[toSlot] = newItem;
+        toInventory.Items.value[toSlot] = newItem;
       }
       // Move items
       else {
-        toInventory.items.value[toSlot] = fromItem;
-        delete this.items.value[fromSlot];
+        toInventory.Items.value[toSlot] = fromItem;
+        delete this.Items.value[fromSlot];
       }
     }
   }
 
   public QuickMoveItem(
     fromSlot: number,
-    toInventory: Inventory,
+    toInventory: ContainerBase<Item>,
     amount?: number
   ) {
-    const fromItem: Item = this.items.value[fromSlot];
+    const fromItem = this.Items.value[fromSlot];
 
     // If there is no item in the from slot, don't move
     if (!fromItem) return;
 
     // Check if there it can merge with any items in the to inventory
-    let toSlot = toInventory.items.value.findIndex((item: Item) =>
+    let toSlot = toInventory.Items.value.findIndex((item) =>
       fromItem.canMerge(item)
     );
 
     // If there is no item to merge with, find a slot with no item
     if (toSlot === -1) {
-      toSlot = toInventory.items.value.findIndex((item: Item) => !item);
+      toSlot = toInventory.Items.value.findIndex((item) => !item);
     }
     // If there is no empty slot, don't move
     if (toSlot === -1) return;
@@ -146,4 +134,4 @@ class Inventory {
   }
 }
 
-export { Inventory };
+export { ContainerBase };

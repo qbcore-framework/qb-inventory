@@ -4,12 +4,12 @@ import "./assets/tailwind.css";
 import { httpClientPlugin } from "./plugins/HttpClient";
 import { ProviderPlugin } from "./plugins/Provider";
 import { keyPressPlugin } from "./plugins/KeyPress";
-import { Inventory } from "./Models/Inventory";
+import { PlayerInventory } from "./Models/Container/PlayerInventory";
 import { nuiEventPlugin } from "./plugins/NuiEvent";
-import { Container } from "./Models/Container";
+import { Container } from "./Models/Container/Container";
 import { Hotbar } from "./Models/Hotbar";
 
-const inventory = new Inventory();
+const inventory = new PlayerInventory();
 const container = new Container();
 const hotbar = new Hotbar();
 

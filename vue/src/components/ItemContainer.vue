@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import Item from "@/Models/Item";
+import { Item } from "@/Models/Item/Item";
 import { Ref, ref } from "vue";
 
 interface IProps {
-  item: Item;
+  item?: Item;
   selected?: Ref<boolean>;
 }
 
@@ -32,5 +32,6 @@ withDefaults(defineProps<IProps>(), {
       />
       <span class="text-center" v-text="item.label" />
     </template>
+    <div v-else></div>
   </div>
 </template>

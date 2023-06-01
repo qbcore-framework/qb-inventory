@@ -1,6 +1,7 @@
 import { ItemCtorParams } from "@/Models/Interfaces/ItemCtorParams";
-import { Item } from "@/Models/Item";
-import { Weapon } from "@/Models/Weapon";
+import { WeaponInfo } from "@/Models/Interfaces/WeaponInfo";
+import { Item } from "@/Models/Item/Item";
+import { Weapon } from "@/Models/Item/Weapon";
 
 /**
  * Parse inventory from the client to NUI into an array of items
@@ -39,7 +40,10 @@ function ParseInventory(itemData: any, slots: number): Item[] {
     };
 
     if (itemData.name.startsWith("weapon_"))
-      item = new Weapon(params, itemData.slot);
+      item = new Weapon(
+        params as ItemCtorParams & { info: WeaponInfo },
+        itemData.slot
+      );
     else item = new Item(params);
     items[itemData.slot - 1] = item;
   });

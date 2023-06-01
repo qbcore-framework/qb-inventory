@@ -1,4 +1,4 @@
-import { ItemCtorParams } from "./Interfaces/ItemCtorParams";
+import { ItemCtorParams } from "../Interfaces/ItemCtorParams";
 
 class Item {
   name: string;
@@ -33,6 +33,15 @@ class Item {
     if (item === null || item === undefined) return false;
 
     return this.name === item.name && !this.unique && !item.unique;
+  }
+
+  canSwap(item: Item): boolean {
+    return this._canSwap(item) && item._canSwap(this);
+  }
+
+  // Internal method for checking if this items allows swapping with another item
+  protected _canSwap(item: Item): boolean {
+    return true;
   }
 }
 
