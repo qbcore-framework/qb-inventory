@@ -1,22 +1,20 @@
 <script lang="ts" setup>
 import { Item } from "@/Models/Item/Item";
-import { Ref, ref } from "vue";
+import { inject, ref } from "vue";
 
 interface IProps {
   item?: Item;
-  selected?: Ref<boolean>;
 }
+defineProps<IProps>();
 
-withDefaults(defineProps<IProps>(), {
-  selected: () => ref(false),
-});
+const selectedItem = inject(Item.SELECTED_ITEM, ref<Item | null>(null));
 </script>
 
 <template>
   <div
     :class="[
       'w-32 h-48 p-2 flex flex-col bg-black z-0',
-      selected.value ? 'bg-blue-600' : 'bg-black',
+      selectedItem === item ? 'bg-blue-600' : 'bg-black',
     ]"
   >
     <template v-if="item">

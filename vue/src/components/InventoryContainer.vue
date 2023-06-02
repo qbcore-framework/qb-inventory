@@ -8,7 +8,6 @@
         @end-drag="onDragEnd"
         @item-dropped="onItemDropped($event, inventory)"
         @quick-move="onQuickMove($event, inventory)"
-        @select-item="onSelectItem($event, inventory)"
       />
       <div class="flex-col">
         <input
@@ -41,6 +40,7 @@
       <ItemGroup
         v-if="craftingContainer.isVisible.value"
         :inventory="craftingContainer"
+        :canSelectItems="true"
         @start-drag="onDragStart($event, craftingContainer)"
         @end-drag="onDragEnd"
         @item-dropped="onItemDropped($event, craftingContainer)"
@@ -55,7 +55,7 @@
 </template>
 
 <script lang="ts" setup>
-import { Ref, computed, inject, ref } from "vue";
+import { Ref, computed, inject, provide, ref } from "vue";
 import { PlayerInventory } from "../Models/Container/PlayerInventory";
 import { Container } from "../Models/Container/Container";
 import { Weapon } from "../Models/Item/Weapon";
@@ -75,8 +75,8 @@ const container = inject<Container>("container")!;
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const craftingContainer = inject<Container>("craftingContainer")!;
 
-const selectedInventory: Ref<ContainerBase<Item> | null> = ref(null);
-const selectedItem: Ref<Item | null> = ref(null);
+provide(Item.SELECTED_ITEM, ref(null));
+const selectedItem: Ref<Item | null> = inject(Item.SELECTED_ITEM, ref(null));
 
 const isWeaponSelected = computed(() => selectedItem.value instanceof Weapon);
 const showWeaponPanel = ref(false);
@@ -111,14 +111,6 @@ function onQuickMove(index: number, fromInventory: ContainerBase<Item>) {
     fromInventory === inventory ? container : inventory,
     getMoveAmount()
   );
-}
-
-function onSelectItem(
-  index: number,
-  newSelectedInventory: ContainerBase<Item>
-) {
-  selectedInventory.value = newSelectedInventory;
-  selectedItem.value = newSelectedInventory.Items.value[index];
 }
 
 function modifyWeapon() {

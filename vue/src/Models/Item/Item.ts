@@ -1,4 +1,6 @@
 class Item {
+  public static readonly SELECTED_ITEM = "selectedItem";
+
   constructor(
     public name: string,
     public amount: number,

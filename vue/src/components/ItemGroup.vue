@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref } from "vue";
+import { inject, ref } from "vue";
 import { PlayerInventory } from "@/Models/Container/PlayerInventory";
 import ItemContainer from "./ItemContainer.vue";
 import { Item } from "@/Models/Item/Item";
@@ -9,7 +9,7 @@ interface IProps {
   canSelectItems?: boolean;
 }
 
-withDefaults(defineProps<IProps>(), {
+const props = withDefaults(defineProps<IProps>(), {
   canSelectItems: false,
 });
 
@@ -18,7 +18,6 @@ const emit = defineEmits<{
   (event: "startDrag", index: number): void;
   (event: "endDrag"): void;
   (event: "quickMove", index: number): void;
-  (event: "selectItem", index: number): void;
 }>();
 
 const draggedIndex = ref<number | null>(null);
@@ -26,6 +25,7 @@ const x = ref(0);
 const y = ref(0);
 
 let didMouseMoveSinceMouseDown = false;
+const selectedItem = inject(Item.SELECTED_ITEM, ref<Item | null>(null));
 
 function onMouseDown(event: MouseEvent, item: Item, index: number) {
   draggedIndex.value = null;
@@ -70,8 +70,18 @@ function onMouseUp(event: MouseEvent, index: number) {
 
   // If mouse didn't move since mouse down, then it was a click
   if (!didMouseMoveSinceMouseDown) {
-    emit("selectItem", index);
-    return;
+    if (props.canSelectItems) {
+      const newSelectedItem = props.inventory.Items.value[index];
+      // Selecting empty slot
+      if (newSelectedItem === undefined) {
+        selectedItem.value = null;
+      } else {
+        selectedItem.value = newSelectedItem;
+      }
+      return;
+    } else {
+      selectedItem.value = null;
+    }
   }
 
   const elements = document.elementsFromPoint(event.clientX, event.clientY);
@@ -107,7 +117,6 @@ function onItemDropped(event: CustomEvent, otherIndex: number) {
           class="item-container"
           :item="item"
           :index="index"
-          :selected="computed(() => canSelectItems && index === draggedIndex)"
           @mousedown="onMouseDown($event, item, index)"
           @mouseup="onMouseUp($event, index)"
           @item-dropped="onItemDropped($event, index)"
