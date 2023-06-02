@@ -6,6 +6,11 @@ import MaxAmmo from "../Interfaces/MaxAmmo";
 abstract class ContainerBase<TItem extends Item> {
   readonly Items = ref<TItem[]>([]) as Ref<TItem[]>;
   protected readonly _httpClient = new HttpClient();
+  private _isVisible = ref(false);
+
+  get isVisible() {
+    return this._isVisible;
+  }
 
   private _maxWeight = ref(0);
 
@@ -14,6 +19,20 @@ abstract class ContainerBase<TItem extends Item> {
   }
 
   abstract getName(): string;
+
+  constructor() {
+    window.addEventListener("inventory:close", () => this.Close());
+  }
+
+  public Close() {
+    this._isVisible.value = false;
+    // TODO: Move this to NUI event handler
+    this._httpClient.Get("CloseInventory");
+  }
+
+  public Open() {
+    this._isVisible.value = true;
+  }
 
   protected _UpdateContents(
     items: TItem[],
@@ -94,9 +113,7 @@ abstract class ContainerBase<TItem extends Item> {
       // Check if items are being split
       if (amount < fromItem.amount) {
         // Split items
-        const newItem: Item = new Item(fromItem);
-        newItem.amount = amount;
-        fromItem.amount -= amount;
+        const newItem: Item = fromItem.split(amount);
 
         toInventory.Items.value[toSlot] = newItem;
       }

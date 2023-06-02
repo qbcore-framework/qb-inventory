@@ -1,6 +1,5 @@
 import { HttpClient } from "@/plugins/HttpClient";
 import { Item } from "./Item";
-import { ItemCtorParams } from "../Interfaces/ItemCtorParams";
 import { WeaponInfo } from "../Interfaces/WeaponInfo";
 import { WeaponDataDto } from "../Dto/GetWeaponData";
 
@@ -27,13 +26,23 @@ class Weapon extends Item {
   private readonly _slot: number;
 
   constructor(
-    data: ItemCtorParams & {
-      info: WeaponInfo;
-    },
-    slot: number
+    slot: number,
+    name: string,
+    amount: number,
+    info: WeaponInfo,
+    label: string,
+    description: string,
+    weight: number,
+    type: string,
+    unique: boolean,
+    usable: boolean,
+    image: string,
+    id: number,
+    shouldClose?: boolean
   ) {
-    super(data);
-    this.info = data.info as WeaponInfo;
+    // eslint-disable-next-line prettier/prettier
+    super(name, amount, info, label, description, weight, type, unique, usable, image, id, shouldClose);
+    this.info = info;
     this._slot = slot;
     this._httpClient = new HttpClient();
   }

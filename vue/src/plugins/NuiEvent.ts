@@ -1,8 +1,9 @@
 import { Container } from "@/Models/Container/Container";
 import { Hotbar } from "@/Models/Hotbar";
 import { PlayerInventory } from "@/Models/Container/PlayerInventory";
-import { ParseInventory } from "@/Parser/ItemParser";
+import { ParseCraftingInventory, ParseInventory } from "@/Parser/ItemParser";
 import { Plugin } from "vue";
+import { CraftingContainer } from "@/Models/Container/CraftingContainer";
 
 const nuiEventPlugin: Plugin = {
   install(
@@ -10,11 +11,13 @@ const nuiEventPlugin: Plugin = {
     options: {
       inventory: PlayerInventory;
       container: Container;
+      craftingContainer: CraftingContainer;
       hotbar: Hotbar;
     }
   ) {
     const inventory = options.inventory;
     const container = options.container;
+    const craftingContainer = options.craftingContainer;
     const hotbar = options.hotbar;
     window.addEventListener("message", (event) => {
       const data = event.data;
@@ -23,13 +26,22 @@ const nuiEventPlugin: Plugin = {
       if (action === "open") {
         console.log("open", data);
         if (data.other) {
-          container.UpdateContents(
-            data.other.name,
-            ParseInventory(data.other.inventory, data.other.slots),
-            data.other.maxweight,
-            data.other.maxammo,
-            data.other.Ammo
-          );
+          if (data.other.name === "crafting") {
+            craftingContainer.UpdateContents(
+              ParseCraftingInventory(data.other.inventory, data.other.slots),
+              data.other.maxweight
+            );
+            craftingContainer.Open();
+          } else {
+            container.UpdateContents(
+              data.other.name,
+              ParseInventory(data.other.inventory, data.other.slots),
+              data.other.maxweight,
+              data.other.maxammo,
+              data.other.Ammo
+            );
+            container.Open();
+          }
         } else {
           container.UpdateContents(
             "0",
@@ -43,6 +55,7 @@ const nuiEventPlugin: Plugin = {
             },
             []
           );
+          container.Open();
         }
 
         inventory.UpdateContents(

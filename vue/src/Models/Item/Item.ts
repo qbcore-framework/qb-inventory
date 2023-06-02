@@ -1,33 +1,18 @@
-import { ItemCtorParams } from "../Interfaces/ItemCtorParams";
-
 class Item {
-  name: string;
-  amount: number;
-  info: object;
-  label: string;
-  description: string;
-  weight: number;
-  type: string;
-  unique: boolean;
-  usable: boolean;
-  image: string;
-  id: number;
-  shouldClose?: boolean;
-
-  constructor(data: ItemCtorParams) {
-    this.name = data.name;
-    this.amount = data.amount;
-    this.info = data.info;
-    this.label = data.label;
-    this.description = data.description;
-    this.weight = data.weight;
-    this.type = data.type;
-    this.unique = data.unique;
-    this.usable = data.usable;
-    this.image = data.image;
-    this.id = data.id;
-    this.shouldClose = data.shouldClose;
-  }
+  constructor(
+    public name: string,
+    public amount: number,
+    public info: object,
+    public label: string,
+    public description: string,
+    public weight: number,
+    public type: string,
+    public unique: boolean,
+    public usable: boolean,
+    public image: string,
+    public id: number,
+    public shouldClose?: boolean
+  ) {}
 
   canMerge(item: Item): boolean {
     if (item === null || item === undefined) return false;
@@ -37,6 +22,29 @@ class Item {
 
   canSwap(item: Item): boolean {
     return this._canSwap(item) && item._canSwap(this);
+  }
+
+  split(amount: number): Item {
+    if (amount > this.amount) {
+      throw new Error("Cannot split item into more than it's amount");
+    }
+
+    this.amount -= amount;
+
+    return new Item(
+      this.name,
+      amount,
+      this.info,
+      this.label,
+      this.description,
+      this.weight,
+      this.type,
+      this.unique,
+      this.usable,
+      this.image,
+      this.id,
+      this.shouldClose
+    );
   }
 
   // Internal method for checking if this items allows swapping with another item
