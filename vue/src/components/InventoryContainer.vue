@@ -27,12 +27,24 @@
           v-text="isWeaponSelected ? 'Modify' : 'Not a weapon'"
         />
       </div>
+      <!-- Container -->
       <ItemGroup
+        v-if="container.isVisible.value"
         :inventory="container"
         @start-drag="onDragStart($event, container)"
         @end-drag="onDragEnd"
         @item-dropped="onItemDropped($event, container)"
         @quick-move="onQuickMove($event, container)"
+      />
+
+      <!-- Crafting container -->
+      <ItemGroup
+        v-if="craftingContainer.isVisible.value"
+        :inventory="craftingContainer"
+        @start-drag="onDragStart($event, craftingContainer)"
+        @end-drag="onDragEnd"
+        @item-dropped="onItemDropped($event, craftingContainer)"
+        @quick-move="onQuickMove($event, craftingContainer)"
       />
     </template>
     <WeaponPanel
@@ -60,6 +72,8 @@ const moveAmount = ref(0);
 const inventory = inject<PlayerInventory>("inventory")!;
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const container = inject<Container>("container")!;
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const craftingContainer = inject<Container>("craftingContainer")!;
 
 const selectedInventory: Ref<ContainerBase<Item> | null> = ref(null);
 const selectedItem: Ref<Item | null> = ref(null);
