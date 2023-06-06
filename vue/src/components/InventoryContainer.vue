@@ -25,7 +25,7 @@
           :disabled="!canModifyWeapon"
           v-text="canModifyWeapon ? 'Modify' : 'Can\'t modify.'"
         />
-        <ItemInfo />
+        <ItemInfo class="absolute" />
       </div>
       <!-- Container -->
       <ItemGroup
