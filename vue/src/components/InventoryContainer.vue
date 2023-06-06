@@ -75,8 +75,8 @@ const container = inject<Container>("container")!;
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const craftingContainer = inject<Container>("craftingContainer")!;
 
-provide(Item.SELECTED_ITEM, ref(null));
 const selectedItem: Ref<Item | null> = inject(Item.SELECTED_ITEM, ref(null));
+provide(Item.SELECTED_ITEM, selectedItem);
 
 const isWeaponSelected = computed(() => selectedItem.value instanceof Weapon);
 const showWeaponPanel = ref(false);
