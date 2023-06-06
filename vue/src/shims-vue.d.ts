@@ -4,3 +4,7 @@ declare module '*.vue' {
   const component: DefineComponent<{}, {}, any>
   export default component
 }
+
+if (GetParentResourceName() !== undefined) {
+  declare function GetParentResourceName(): string;
+}

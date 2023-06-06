@@ -10,6 +10,18 @@ import { Container } from "./Models/Container/Container";
 import { Hotbar } from "./Models/Hotbar";
 import { CraftingContainer } from "./Models/Container/CraftingContainer";
 
+const nuiImportMocker = await import("./plugins/NuitEventMocker");
+
+if (
+  process.env.NODE_ENV === "development" &&
+  GetParentResourceName() === undefined
+) {
+  console.log("Running in browser");
+  nuiImportMocker.Start();
+} else {
+  console.log("Running in game");
+}
+
 const inventory = new PlayerInventory();
 const container = new Container();
 const craftingContainer = new CraftingContainer();
