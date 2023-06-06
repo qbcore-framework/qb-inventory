@@ -31,7 +31,7 @@
       <ItemGroup
         v-if="container.isVisible.value"
         :inventory="container"
-        :canSelectItems="true"
+        :canSelectItems="false"
         @start-drag="onDragStart($event, container)"
         @end-drag="onDragEnd"
         @item-dropped="onItemDropped($event, container)"
@@ -57,7 +57,7 @@
 </template>
 
 <script lang="ts" setup>
-import { Ref, computed, inject, provide, ref } from "vue";
+import { Ref, computed, inject, ref } from "vue";
 import { PlayerInventory } from "../Models/Container/PlayerInventory";
 import { Container } from "../Models/Container/Container";
 import { Weapon } from "../Models/Item/Weapon";
@@ -79,7 +79,6 @@ const container = inject<Container>("container")!;
 const craftingContainer = inject<Container>("craftingContainer")!;
 
 const selectedItem: Ref<Item | null> = inject(Item.SELECTED_ITEM, ref(null));
-provide(Item.SELECTED_ITEM, selectedItem);
 
 const canModifyWeapon = computed(
   () =>

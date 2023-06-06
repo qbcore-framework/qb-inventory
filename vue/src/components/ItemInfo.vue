@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>Item info panel</h1>
-    <pre v-text="selectedItem?.info" />
+    <pre v-text="hoveredItem?.info" />
   </div>
 </template>
 
@@ -9,5 +9,5 @@
 import { Item } from "@/Models/Item/Item";
 import { inject, ref } from "vue";
 
-const selectedItem = inject(Item.SELECTED_ITEM, ref<Item | null>(null));
+const hoveredItem = inject(Item.HOVERED_ITEM, ref<Item | null>(null));
 </script>

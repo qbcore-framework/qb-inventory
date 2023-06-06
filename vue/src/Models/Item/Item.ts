@@ -1,6 +1,7 @@
 class Item {
   // Key used for inject/provide to track the currently selected item in the UI
   public static readonly SELECTED_ITEM = "selectedItem";
+  public static readonly HOVERED_ITEM = "hoveredItem";
 
   constructor(
     public name: string,
