@@ -22,14 +22,16 @@
         <button
           class="h-12 w-20"
           @click="modifyWeapon"
-          :disabled="!isWeaponSelected"
-          v-text="isWeaponSelected ? 'Modify' : 'Not a weapon'"
+          :disabled="!canModifyWeapon"
+          v-text="canModifyWeapon ? 'Modify' : 'Can\'t modify.'"
         />
+        <ItemInfo />
       </div>
       <!-- Container -->
       <ItemGroup
         v-if="container.isVisible.value"
         :inventory="container"
+        :canSelectItems="true"
         @start-drag="onDragStart($event, container)"
         @end-drag="onDragEnd"
         @item-dropped="onItemDropped($event, container)"
@@ -63,6 +65,7 @@ import { Item } from "../Models/Item/Item";
 import ItemGroup from "./ItemGroup.vue";
 import WeaponPanel from "./WeaponPanel.vue";
 import { ContainerBase } from "@/Models/Container/ContainerBase";
+import ItemInfo from "./ItemInfo.vue";
 
 let fromInventory: ContainerBase<Item> | null = null;
 let fromIndex: number | null = null;
@@ -78,7 +81,12 @@ const craftingContainer = inject<Container>("craftingContainer")!;
 const selectedItem: Ref<Item | null> = inject(Item.SELECTED_ITEM, ref(null));
 provide(Item.SELECTED_ITEM, selectedItem);
 
-const isWeaponSelected = computed(() => selectedItem.value instanceof Weapon);
+const canModifyWeapon = computed(
+  () =>
+    selectedItem.value instanceof Weapon &&
+    inventory.Items.value.includes(selectedItem.value)
+);
+
 const showWeaponPanel = ref(false);
 
 window.addEventListener("inventory:close", () => {
