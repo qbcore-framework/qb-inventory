@@ -565,7 +565,7 @@ function FormatItemInfo(itemData) {
             var str = ""+ itemData.info.cardNumber + "";
             var res = str.slice(12);
             var cardNumber = "************" + res;
-            $(".item-info-description").html('<p><strong>Card Holder: </strong><span>' + itemData.info.name + '</span></p><p><strong>Citizen ID: </strong><span>' + itemData.info.citizenid + '</span></p><p><strong>Card Number: </strong><span>' + cardNumber + '</span></p>');			
+            $(".item-info-description").html('<p><strong>Card Holder: </strong><span>' + itemData.info.name + '</span></p><p><strong>Citizen ID: </strong><span>' + itemData.info.citizenid + '</span></p><p><strong>Card Number: </strong><span>' + cardNumber + '</span></p>');
         } else if (itemData.name == "labkey") {
             $(".item-info-title").html("<p>" + itemData.label + "</p>");
             $(".item-info-description").html("<p>Lab: " + itemData.info.lab + "</p>");
@@ -976,12 +976,7 @@ function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
         return false;
     }
 
-    $("#player-inv-weight").html(
-        "⚖️: " +
-        (parseInt(totalWeight) / 1000).toFixed(2) +
-        " / " +
-        (playerMaxWeight / 1000).toFixed(2)
-    );
+    $("#player-inv-weight").progressbar({ value: (parseInt(totalWeight)), max: playerMaxWeight });
     if (
         $fromInv.attr("data-inventory").split("-")[0] != "itemshop" &&
         $toInv.attr("data-inventory").split("-")[0] != "itemshop" &&
@@ -989,12 +984,7 @@ function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
         $toInv.attr("data-inventory") != "crafting"
     ) {
         $("#other-inv-label").html(otherLabel);
-        $("#other-inv-weight").html(
-            "⚖️: " +
-            (parseInt(totalWeightOther) / 1000).toFixed(2) +
-            " / " +
-            (otherMaxWeight / 1000).toFixed(2)
-        );
+        $("#other-inv-weight").progressbar({ value: (parseInt(totalWeightOther)), max: otherMaxWeight });
     }
 
     return true;
@@ -1425,7 +1415,7 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                             .html(qualityLabel);
                     }
                 }
-				
+
                 $fromInv
                     .find("[data-slot=" + $fromSlot + "]")
                     .data("item", newDataFrom);
@@ -1573,7 +1563,7 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
             );
         } else {
             if (fromData.amount == $toAmount) {
-                if (toData && toData.unique){            
+                if (toData && toData.unique){
                     InventoryError($fromInv, $fromSlot);
                     return;
                 }
@@ -2511,12 +2501,7 @@ var requiredItemOpen = false;
             });
         }
 
-        $("#player-inv-weight").html(
-            "⚖️: " +
-            (totalWeight / 1000).toFixed(2) +
-            " / " +
-            (data.maxweight / 1000).toFixed(2)
-        );
+        $("#player-inv-weight").progressbar({ value: totalWeight, max: data.maxweight });
         playerMaxWeight = data.maxweight;
         if (data.other != null) {
             var name = data.other.name.toString();
@@ -2527,23 +2512,13 @@ var requiredItemOpen = false;
                 $("#other-inv-label").html(data.other.label);
             } else {
                 $("#other-inv-label").html(data.other.label);
-                $("#other-inv-weight").html(
-                    "⚖️: " +
-                    (totalWeightOther / 1000).toFixed(2) +
-                    " / " +
-                    (data.other.maxweight / 1000).toFixed(2)
-                );
+                $("#other-inv-weight").progressbar({ value: totalWeightOther, max: data.other.maxweight });
             }
             otherMaxWeight = data.other.maxweight;
             otherLabel = data.other.label;
         } else {
             $("#other-inv-label").html(Inventory.droplabel);
-            $("#other-inv-weight").html(
-                "⚖️: " +
-                (totalWeightOther / 1000).toFixed(2) +
-                " / " +
-                (Inventory.dropmaxweight / 1000).toFixed(2)
-            );
+            $("#other-inv-weight").progressbar({ value: totalWeightOther, max: Inventory.dropmaxweight });
             otherMaxWeight = Inventory.dropmaxweight;
             otherLabel = Inventory.droplabel;
         }
@@ -2700,12 +2675,7 @@ var requiredItemOpen = false;
             }
         });
 
-        $("#player-inv-weight").html(
-            "⚖️: " +
-            (totalWeight / 1000).toFixed(2) +
-            " / " +
-            (data.maxweight / 1000).toFixed(2)
-        );
+        $("#player-inv-weight").progressbar({ value: totalWeight, max: data.maxweight });
 
         handleDragDrop();
     };
