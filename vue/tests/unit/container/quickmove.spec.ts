@@ -1,6 +1,6 @@
 import { PlayerInventory } from "@/Models/Container/PlayerInventory";
 import { Item } from "@/Models/Item/Item";
-import { ItemFactory } from "../../factories/itemfactory";
+import { ItemFactory } from "@tests/factories/itemfactory";
 
 jest.mock("@/plugins/HttpClient", () => {
   return {

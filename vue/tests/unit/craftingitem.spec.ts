@@ -1,4 +1,4 @@
-import { CraftingItemFactory, ItemFactory } from "../factories/itemfactory";
+import { CraftingItemFactory, ItemFactory } from "@tests/factories/itemfactory";
 
 describe("CraftingItem", () => {
   describe("canCraft", () => {
