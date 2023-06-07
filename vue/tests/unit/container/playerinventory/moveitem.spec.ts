@@ -13,7 +13,7 @@ jest.mock("@/plugins/HttpClient", () => {
   };
 });
 
-describe("Inventory", () => {
+describe("PlayerInventory", () => {
   let inventory: PlayerInventory;
 
   let coffeeItem: Item;
