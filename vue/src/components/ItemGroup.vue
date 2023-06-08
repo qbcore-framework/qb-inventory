@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { inject, ref } from "vue";
+import { computed, inject, onUnmounted, ref } from "vue";
 import { PlayerInventory } from "@/Models/Container/PlayerInventory";
 import ItemContainer from "./ItemContainer.vue";
 import { Item } from "@/Models/Item/Item";
@@ -21,8 +21,13 @@ const emit = defineEmits<{
 }>();
 
 const draggedIndex = ref<number | null>(null);
-const x = ref(0);
-const y = ref(0);
+const dragX = ref(0);
+const dragY = ref(0);
+const scrollX = ref(0);
+const scrollY = ref(0);
+
+const x = computed(() => dragX.value + scrollX.value);
+const y = computed(() => dragY.value + scrollY.value);
 
 let didMouseMoveSinceMouseDown = false;
 const selectedItem = inject(Item.SELECTED_ITEM, ref<Item | null>(null));
@@ -49,8 +54,8 @@ function onMouseDown(event: MouseEvent, item: Item, index: number) {
     const offsetX = event.clientX - rect.left;
     const offsetY = event.clientY - rect.top;
 
-    x.value = event.clientX - offsetX;
-    y.value = event.clientY - offsetY;
+    dragX.value = event.clientX - offsetX;
+    dragY.value = event.clientY - offsetY;
 
     didMouseMoveSinceMouseDown = false;
     window.addEventListener("mousemove", onMouseMove);
@@ -60,8 +65,8 @@ function onMouseDown(event: MouseEvent, item: Item, index: number) {
 function onMouseMove(event: MouseEvent) {
   if (draggedIndex.value !== null) {
     didMouseMoveSinceMouseDown = true;
-    x.value = x.value + event.movementX;
-    y.value = y.value + event.movementY;
+    dragX.value = dragX.value + event.movementX;
+    dragY.value = dragY.value + event.movementY;
   }
 }
 
@@ -101,6 +106,11 @@ function onMouseUp(event: MouseEvent, index: number) {
 function onItemDropped(event: CustomEvent, otherIndex: number) {
   emit("itemDropped", otherIndex);
 }
+
+window.addEventListener("scroll", () => {
+  scrollX.value = window.scrollX;
+  scrollY.value = window.scrollY;
+});
 </script>
 
 <template>
