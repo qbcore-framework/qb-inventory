@@ -24,6 +24,7 @@ function onMouseLeave() {
     :class="[
       'w-32 h-48 p-2 flex flex-col bg-black z-0 relative',
       selectedItem === item ? 'bg-blue-600' : 'bg-black',
+      hoveredItem === item ? 'z-10' : '',
     ]"
     @mouseenter="onMouseEnter"
     @mouseleave="onMouseLeave"
