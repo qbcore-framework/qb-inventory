@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, inject, onUnmounted, ref } from "vue";
+import { computed, inject, ref } from "vue";
 import { PlayerInventory } from "@/Models/Container/PlayerInventory";
 import ItemContainer from "./ItemContainer.vue";
 import { Item } from "@/Models/Item/Item";
