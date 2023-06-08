@@ -35,6 +35,12 @@ class CraftingContainer extends ContainerBase<CraftingItem> {
     if (!craftItem.canCraft(toInventory.Items.value, amount)) return;
 
     super.MoveItem(fromSlot, toSlot, toInventory, amount);
+
+    // Remove the items required to craft the item being moved
+    toInventory.Items.value = craftItem.removeCraftingItems(
+      toInventory.Items.value,
+      amount
+    );
   }
 
   override QuickMoveItem(
