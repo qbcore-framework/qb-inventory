@@ -1,5 +1,6 @@
 <template>
   <div class="flex justify-center">
+    <GroundDropBox @item-dropped="onQuickMove($event.detail, inventory)" />
     <TransitionGroup>
       <template v-if="inventory.isVisible.value && !showWeaponPanel">
         <ItemGroup
@@ -30,7 +31,7 @@
         </div>
         <!-- Container -->
         <ItemGroup
-          v-if="container.isVisible.value"
+          v-if="container.isVisible.value && !container.isGround()"
           :inventory="container"
           :canSelectItems="false"
           @start-drag="onDragStart($event, container)"
@@ -55,11 +56,12 @@
         :weapon="(selectedItem as Weapon)"
       />
     </TransitionGroup>
+    <GroundDropBox @item-dropped="onQuickMove($event.detail, inventory)" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { Ref, computed, inject, ref } from "vue";
+import { Ref, computed, inject, provide, ref } from "vue";
 import { PlayerInventory } from "../Models/Container/PlayerInventory";
 import { Container } from "../Models/Container/Container";
 import { Weapon } from "../Models/Item/Weapon";
@@ -68,9 +70,10 @@ import ItemGroup from "./ItemGroup.vue";
 import WeaponPanel from "./WeaponPanel.vue";
 import { ContainerBase } from "@/Models/Container/ContainerBase";
 import ItemInfo from "./ItemInfo.vue";
+import GroundDropBox from "./GroundDropBox.vue";
 
 let fromInventory: ContainerBase<Item> | null = null;
-let fromIndex: number | null = null;
+const fromIndex: Ref<number | null> = ref(null);
 const moveAmount = ref(0);
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -79,6 +82,15 @@ const inventory = inject<PlayerInventory>("inventory")!;
 const container = inject<Container>("container")!;
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const craftingContainer = inject<Container>("craftingContainer")!;
+provide(
+  "showGroundDropBox",
+  computed(
+    () =>
+      container.isVisible.value &&
+      container.isGround() &&
+      fromIndex.value !== null
+  )
+);
 
 const selectedItem: Ref<Item | null> = inject(Item.SELECTED_ITEM, ref(null));
 
@@ -100,21 +112,28 @@ function getMoveAmount() {
 
 function onDragStart(index: number, inventory: ContainerBase<Item>) {
   fromInventory = inventory;
-  fromIndex = index;
+  fromIndex.value = index;
 }
 
 function onDragEnd() {
   fromInventory = null;
-  fromIndex = null;
+  fromIndex.value = null;
 }
 
 function onItemDropped(index: number, dropInventory: ContainerBase<Item>) {
-  if (fromInventory === null || fromIndex === null) return;
+  if (fromInventory === null || fromIndex.value === null) return;
 
-  fromInventory.MoveItem(fromIndex, index, dropInventory, getMoveAmount());
+  fromInventory.MoveItem(
+    fromIndex.value,
+    index,
+    dropInventory,
+    getMoveAmount()
+  );
 }
 
 function onQuickMove(index: number, fromInventory: ContainerBase<Item>) {
+  console.log("quick move", index, fromInventory);
+
   fromInventory.QuickMoveItem(
     index,
     fromInventory === inventory ? container : inventory,

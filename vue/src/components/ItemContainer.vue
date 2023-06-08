@@ -22,7 +22,7 @@ function onMouseLeave() {
 <template>
   <div
     :class="[
-      'w-32 h-32 p-2 flex flex-col bg-gray-200/20 z-0 relative',
+      'w-28 h-28 p-2 flex flex-col bg-gray-200/20 z-0 relative',
       selectedItem === item ? 'bg-blue-600' : '',
       hoveredItem === item ? 'z-10' : '',
     ]"
@@ -37,12 +37,12 @@ function onMouseLeave() {
       class="absolute bottom-0 left-0 right-0 bg-green-600 w-2"
     />
     <template v-if="item">
-      <div class="flex justify-between items-end w-full h-full relative">
+      <div class="flex justify-between items-end w-full h-full relative z-10">
         <span> {{ item.weight }}kg </span>
         <span> x{{ item.amount }} </span>
       </div>
       <img
-        class="absolute top-0 left-0 right-0 bottom-0 w-full h-full object-contain p-6"
+        class="absolute top-0 left-0 right-0 bottom-0 w-full h-full object-contain p-3"
         draggable="false"
         :src="require(`@/assets/images/${item.image}`)"
       />

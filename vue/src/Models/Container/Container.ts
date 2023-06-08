@@ -11,7 +11,11 @@ class Container extends ContainerBase<Item> {
   }
 
   getName(): string {
-    return this._name === "0" ? "Ground" : this._name;
+    return this._name === "0" ? "Drop" : this._name;
+  }
+
+  isGround(): boolean {
+    return this._name === "0";
   }
 
   UpdateContents(

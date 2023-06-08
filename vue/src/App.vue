@@ -1,7 +1,7 @@
 <template>
   <main
     :class="[
-      'w-screen h-screen text-white overflow-y-scroll',
+      'w-screen h-screen text-white',
       isDevBrowser() ? 'bg-cover bg-center bg-repeat-space' : '',
     ]"
     :style="
