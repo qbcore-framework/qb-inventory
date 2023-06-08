@@ -12,7 +12,7 @@ const hoveredItem = inject(Item.HOVERED_ITEM, ref<Item | null>(null));
 const selectedItem = inject(Item.SELECTED_ITEM, ref<Item | null>(null));
 
 function onMouseEnter() {
-  if (props.item) hoveredItem.value = props.item;
+  hoveredItem.value = props.item ?? null;
 }
 function onMouseLeave() {
   if (hoveredItem.value === props.item) hoveredItem.value = null;
