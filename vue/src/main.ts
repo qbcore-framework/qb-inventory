@@ -9,6 +9,17 @@ import { nuiEventPlugin } from "./plugins/NuiEvent";
 import { Container } from "./Models/Container/Container";
 import { Hotbar } from "./Models/Hotbar";
 import { CraftingContainer } from "./Models/Container/CraftingContainer";
+const { NuiEventMocker } = await import("./plugins/NuiEventMocker");
+
+if (
+  process.env.NODE_ENV === "development" &&
+  typeof GetParentResourceName === "undefined"
+) {
+  console.log("Running in browser");
+  NuiEventMocker();
+} else {
+  console.log("Running in game");
+}
 
 const inventory = new PlayerInventory();
 const container = new Container();
