@@ -19,8 +19,10 @@ describe("CraftingContainer", () => {
   let inventory: PlayerInventory;
   let craftingContainer: CraftingContainer;
 
-  let ingredient1: Item;
-  let ingredient2: Item;
+  let coffee1: Item;
+  let coffee2: Item;
+  let tea1: Item;
+  let tea2: Item;
 
   let craftedItem: CraftingItem;
 
@@ -28,12 +30,22 @@ describe("CraftingContainer", () => {
     inventory = new PlayerInventory();
     craftingContainer = new CraftingContainer();
 
-    ingredient1 = ItemFactory({
+    coffee1 = ItemFactory({
       name: "Coffee",
       amount: 5,
     });
 
-    ingredient2 = ItemFactory({
+    coffee2 = ItemFactory({
+      name: "Coffee",
+      amount: 5,
+    });
+
+    tea1 = ItemFactory({
+      name: "Tea",
+      amount: 5,
+    });
+
+    tea2 = ItemFactory({
       name: "Tea",
       amount: 5,
     });
@@ -44,7 +56,7 @@ describe("CraftingContainer", () => {
         Coffee: 1,
         Tea: 1,
       },
-      amount: 1,
+      amount: 10,
     });
   });
 
@@ -84,37 +96,20 @@ describe("CraftingContainer", () => {
       const toSlot = 3;
       const toInventory = inventory;
       craftingContainer.Items.value[fromSlot] = craftedItem;
+      const amountToCraft = 2;
+
+      toInventory.Items.value[0] = coffee1;
+      toInventory.Items.value[1] = tea1;
 
       // Act
-      craftingContainer.MoveItem(fromSlot, toSlot, toInventory, 2);
+      craftingContainer.MoveItem(fromSlot, toSlot, toInventory, amountToCraft);
 
       // Assert
       expect(craftingContainer.Items.value[fromSlot]).toEqual(craftedItem);
-      expect(ingredient1.amount).toEqual(3);
-      expect(ingredient2.amount).toEqual(3);
-      expect(toInventory.Items.value[toSlot]).toEqual(craftedItem);
-      expect(toInventory.Items.value[toSlot].amount).toEqual(2);
-    });
-
-    it("should move the item if the destination inventory has the required items for crafting", () => {
-      // Arrange
-      const fromSlot = 0;
-      const toSlot = 3;
-      const toInventory = inventory;
-      craftingContainer.Items.value[fromSlot] = craftedItem;
-      toInventory.Items.value[0] = ingredient1;
-      toInventory.Items.value[1] = ingredient2;
-
-      // Act
-      craftingContainer.MoveItem(fromSlot, toSlot, toInventory);
-
-      // Assert
-      expect(craftingContainer.Items.value[fromSlot]).toBeUndefined();
-      expect(toInventory.Items.value[toSlot]).toEqual(craftedItem);
-      expect(toInventory.Items.value[0]).toEqual(ingredient1);
-      expect(toInventory.Items.value[1]).toEqual(ingredient2);
-      expect(ingredient1.amount).toEqual(5);
-      expect(ingredient2.amount).toEqual(5);
+      expect(coffee1.amount).toEqual(3);
+      expect(tea1.amount).toEqual(3);
+      expect(toInventory.Items.value[toSlot].name).toEqual(craftedItem.name);
+      expect(toInventory.Items.value[toSlot].amount).toEqual(amountToCraft);
     });
 
     it("shouldn't move the item if the destination inventory doesn't have enough of the required items for crafting", () => {
@@ -123,7 +118,7 @@ describe("CraftingContainer", () => {
       const toSlot = 3;
       const toInventory = inventory;
       craftingContainer.Items.value[fromSlot] = craftedItem;
-      toInventory.Items.value[0] = ingredient1;
+      toInventory.Items.value[0] = coffee1;
 
       // Act
       craftingContainer.MoveItem(fromSlot, toSlot, toInventory);
@@ -131,8 +126,8 @@ describe("CraftingContainer", () => {
       // Assert
       expect(craftingContainer.Items.value[fromSlot]).toEqual(craftedItem);
       expect(toInventory.Items.value[toSlot]).toBeUndefined();
-      expect(toInventory.Items.value[0]).toEqual(ingredient1);
-      expect(ingredient1.amount).toEqual(10);
+      expect(toInventory.Items.value[0]).toEqual(coffee1);
+      expect(coffee1.amount).toEqual(5);
     });
   });
 });
