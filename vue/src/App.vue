@@ -1,8 +1,8 @@
 <template>
   <main
     :class="[
-      'w-screen h-screen text-white bg-gray-900 bg-opacity-30 overflow-y-scroll',
-      isDevBrowser() ? 'bg-cover bg-center' : '',
+      'w-screen h-screen text-white overflow-y-scroll',
+      isDevBrowser() ? 'bg-cover bg-center bg-repeat-space' : '',
     ]"
     :style="
       isDevBrowser()
