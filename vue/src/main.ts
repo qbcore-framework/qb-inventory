@@ -9,7 +9,7 @@ import { nuiEventPlugin } from "./plugins/NuiEvent";
 import { Container } from "./Models/Container/Container";
 import { Hotbar } from "./Models/Hotbar";
 import { CraftingContainer } from "./Models/Container/CraftingContainer";
-const { NuiEventMocker } = await import("./plugins/NuiEventMocker");
+const { NuiEventMocker } = await import("./mock/NuiEventMocker");
 
 if (
   process.env.NODE_ENV === "development" &&
