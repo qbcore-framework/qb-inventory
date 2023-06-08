@@ -3,8 +3,12 @@ import { Item } from "../Item/Item";
 import { ContainerBase } from "./ContainerBase";
 
 class CraftingContainer extends ContainerBase<CraftingItem> {
-  getName(): string {
+  getId(): string {
     return "crafting";
+  }
+
+  getName(): string {
+    return "Crafting Table";
   }
 
   UpdateContents(items: CraftingItem[], maxWeight: number) {

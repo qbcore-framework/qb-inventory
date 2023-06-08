@@ -106,7 +106,6 @@ function onMouseUp(event: MouseEvent, index: number) {
 function onItemDropped(event: CustomEvent, otherIndex: number) {
   emit("itemDropped", otherIndex);
 }
-
 window.addEventListener("scroll", () => {
   scrollX.value = window.scrollX;
   scrollY.value = window.scrollY;
@@ -115,7 +114,7 @@ window.addEventListener("scroll", () => {
 
 <template>
   <div class="item-group">
-    <h1>Item Group</h1>
+    <h3 v-text="inventory.getName()" class="font-bold text-xl mb-2" />
     <div class="grid grid-cols-5 gap-4">
       <div v-for="(item, index) in inventory.Items.value" :key="index">
         <ItemContainer

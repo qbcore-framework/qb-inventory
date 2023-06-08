@@ -7,8 +7,12 @@ class PlayerInventory extends ContainerBase<Item> {
     super();
   }
 
-  getName(): string {
+  getId(): string {
     return "player";
+  }
+
+  getName(): string {
+    return "Inventory";
   }
 
   UpdateContents(items: Item[], maxWeight: number, maxAmmo: MaxAmmo, ammo: []) {

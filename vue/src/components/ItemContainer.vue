@@ -22,8 +22,8 @@ function onMouseLeave() {
 <template>
   <div
     :class="[
-      'w-32 h-48 p-2 flex flex-col bg-black z-0 relative',
-      selectedItem === item ? 'bg-blue-600' : 'bg-black',
+      'w-32 h-32 p-2 flex flex-col bg-gray-200/20 z-0 relative',
+      selectedItem === item ? 'bg-blue-600' : '',
       hoveredItem === item ? 'z-10' : '',
     ]"
     @mouseenter="onMouseEnter"
@@ -37,17 +37,16 @@ function onMouseLeave() {
       class="absolute bottom-0 left-0 right-0 bg-green-600 w-2"
     />
     <template v-if="item">
-      <span class="text-right">
-        {{ item.amount }}
-        |
-        {{ item.weight }}
-      </span>
+      <div class="flex justify-between items-end w-full h-full relative">
+        <span> {{ item.weight }}kg </span>
+        <span> x{{ item.amount }} </span>
+      </div>
       <img
+        class="absolute top-0 left-0 right-0 bottom-0 w-full h-full object-contain p-6"
         draggable="false"
         :src="require(`@/assets/images/${item.image}`)"
-        class="py-2"
       />
-      <span class="text-center" v-text="item.label" />
+      <!-- <span class="text-center" v-text="item.label" /> -->
     </template>
     <div v-else></div>
   </div>

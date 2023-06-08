@@ -18,6 +18,7 @@ abstract class ContainerBase<TItem extends Item> {
     return this._maxWeight;
   }
 
+  abstract getId(): string;
   abstract getName(): string;
 
   constructor() {
@@ -80,8 +81,8 @@ abstract class ContainerBase<TItem extends Item> {
       return;
 
     const body = {
-      fromInventory: this.getName(),
-      toInventory: toInventory.getName(),
+      fromInventory: this.getId(),
+      toInventory: toInventory.getId(),
       fromSlot: fromSlot + 1,
       toSlot: toSlot + 1,
       fromAmount: amount || fromItem.amount,
