@@ -13,7 +13,7 @@ const { NuiEventMocker } = await import("./plugins/NuiEventMocker");
 
 if (
   process.env.NODE_ENV === "development" &&
-  GetParentResourceName() === undefined
+  typeof GetParentResourceName === "undefined"
 ) {
   console.log("Running in browser");
   NuiEventMocker();

@@ -5,6 +5,4 @@ declare module '*.vue' {
   export default component
 }
 
-if (GetParentResourceName() !== undefined) {
-  declare function GetParentResourceName(): string;
-}
+declare function GetParentResourceName(): string;
