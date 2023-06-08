@@ -1,58 +1,60 @@
 <template>
   <div class="flex justify-center">
-    <template v-if="inventory.isVisible.value && !showWeaponPanel">
-      <ItemGroup
-        :inventory="inventory"
-        :canSelectItems="true"
-        @start-drag="onDragStart($event, inventory)"
-        @end-drag="onDragEnd"
-        @item-dropped="onItemDropped($event, inventory)"
-        @quick-move="onQuickMove($event, inventory)"
-      />
-      <div class="flex-col">
-        <input
-          class="h-12 w-20 text-black"
-          v-model.number="moveAmount"
-          min="0"
-          max="100"
-          @keyup="enforceMinMax"
-          @focus="moveAmount = 0"
-          type="number"
+    <TransitionGroup>
+      <template v-if="inventory.isVisible.value && !showWeaponPanel">
+        <ItemGroup
+          :inventory="inventory"
+          :canSelectItems="true"
+          @start-drag="onDragStart($event, inventory)"
+          @end-drag="onDragEnd"
+          @item-dropped="onItemDropped($event, inventory)"
+          @quick-move="onQuickMove($event, inventory)"
         />
-        <button
-          class="h-12 w-20"
-          @click="modifyWeapon"
-          :disabled="!canModifyWeapon"
-          v-text="canModifyWeapon ? 'Modify' : 'Can\'t modify.'"
+        <div class="flex-col">
+          <input
+            class="h-12 w-20 text-black"
+            v-model.number="moveAmount"
+            min="0"
+            max="100"
+            @keyup="enforceMinMax"
+            @focus="moveAmount = 0"
+            type="number"
+          />
+          <button
+            class="h-12 w-20"
+            @click="modifyWeapon"
+            :disabled="!canModifyWeapon"
+            v-text="canModifyWeapon ? 'Modify' : 'Can\'t modify.'"
+          />
+          <ItemInfo class="absolute" />
+        </div>
+        <!-- Container -->
+        <ItemGroup
+          v-if="container.isVisible.value"
+          :inventory="container"
+          :canSelectItems="false"
+          @start-drag="onDragStart($event, container)"
+          @end-drag="onDragEnd"
+          @item-dropped="onItemDropped($event, container)"
+          @quick-move="onQuickMove($event, container)"
         />
-        <ItemInfo class="absolute" />
-      </div>
-      <!-- Container -->
-      <ItemGroup
-        v-if="container.isVisible.value"
-        :inventory="container"
-        :canSelectItems="false"
-        @start-drag="onDragStart($event, container)"
-        @end-drag="onDragEnd"
-        @item-dropped="onItemDropped($event, container)"
-        @quick-move="onQuickMove($event, container)"
-      />
 
-      <!-- Crafting container -->
-      <ItemGroup
-        v-if="craftingContainer.isVisible.value"
-        :inventory="craftingContainer"
-        :canSelectItems="true"
-        @start-drag="onDragStart($event, craftingContainer)"
-        @end-drag="onDragEnd"
-        @item-dropped="onItemDropped($event, craftingContainer)"
-        @quick-move="onQuickMove($event, craftingContainer)"
+        <!-- Crafting container -->
+        <ItemGroup
+          v-if="craftingContainer.isVisible.value"
+          :inventory="craftingContainer"
+          :canSelectItems="true"
+          @start-drag="onDragStart($event, craftingContainer)"
+          @end-drag="onDragEnd"
+          @item-dropped="onItemDropped($event, craftingContainer)"
+          @quick-move="onQuickMove($event, craftingContainer)"
+        />
+      </template>
+      <WeaponPanel
+        v-else-if="showWeaponPanel"
+        :weapon="(selectedItem as Weapon)"
       />
-    </template>
-    <WeaponPanel
-      v-else-if="showWeaponPanel"
-      :weapon="(selectedItem as Weapon)"
-    />
+    </TransitionGroup>
   </div>
 </template>
 
@@ -138,3 +140,15 @@ function enforceMinMax(event: KeyboardEvent) {
   }
 }
 </script>
+
+<style scoped>
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
+</style>
