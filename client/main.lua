@@ -447,6 +447,8 @@ RegisterNetEvent('inventory:client:OpenInventory', function(PlayerAmmo, inventor
         if other then
             currentOtherInventory = other.name
         end
+        -- Toggle blur
+        TriggerScreenblurFadeIn(200.0)
         SendNUIMessage({
             action = "open",
             inventory = inventory,
@@ -870,6 +872,10 @@ RegisterNUICallback("CloseInventory", function(_, cb)
         ClearPedTasks(PlayerPedId())
         return
     end
+
+    -- Remove blur
+    TriggerScreenblurFadeOut(200.0)
+
     if CurrentVehicle ~= nil then
         CloseTrunk()
         TriggerServerEvent("inventory:server:SaveInventory", "trunk", CurrentVehicle)
