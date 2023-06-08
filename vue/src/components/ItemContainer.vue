@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { Item } from "@/Models/Item/Item";
+import { Weapon } from "@/Models/Item/Weapon";
 import { inject, ref } from "vue";
 
 interface IProps {
@@ -21,12 +22,19 @@ function onMouseLeave() {
 <template>
   <div
     :class="[
-      'w-32 h-48 p-2 flex flex-col bg-black z-0',
+      'w-32 h-48 p-2 flex flex-col bg-black z-0 relative',
       selectedItem === item ? 'bg-blue-600' : 'bg-black',
     ]"
     @mouseenter="onMouseEnter"
     @mouseleave="onMouseLeave"
   >
+    <div
+      v-if="item instanceof Weapon"
+      :style="{
+        height: item.info.quality + '%',
+      }"
+      class="absolute bottom-0 left-0 right-0 bg-green-600 w-2"
+    />
     <template v-if="item">
       <span class="text-right">
         {{ item.amount }}
