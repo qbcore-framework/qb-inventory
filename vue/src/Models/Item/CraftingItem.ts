@@ -38,6 +38,7 @@ class CraftingItem extends Item {
    */
   canCraft(items: Item[], amount?: number) {
     if (amount === undefined) amount = 1;
+    if (amount <= 0) return false;
 
     // Check if all required items are present in the correct amounts
     for (const requiredItemName in this.costs) {
@@ -51,6 +52,39 @@ class CraftingItem extends Item {
     }
 
     return true;
+  }
+
+  /**
+   * Removes the items used to craft this item from the given items
+   * @param items List of items used to craft this item
+   * @param amount Amount of items to craft
+   */
+  removeCraftingItems(items: Item[], amount?: number): Item[] {
+    if (amount === undefined) amount = 1;
+    if (amount <= 0) return items;
+
+    // Remove the items used to craft this item
+    for (const requiredItemName in this.costs) {
+      if (Object.prototype.hasOwnProperty.call(this.costs, requiredItemName)) {
+        let amountToRemove = this.costs[requiredItemName] * amount;
+        const ingedients = items.filter(
+          (item) => item.name === requiredItemName
+        );
+        // Loop through all items with the required name and remove them until the required amount is reached
+        for (const ingredient of ingedients) {
+          if (amountToRemove <= 0) break;
+          if (ingredient.amount <= amountToRemove) {
+            amountToRemove -= ingredient.amount;
+            items.splice(items.indexOf(ingredient), 1);
+          } else {
+            ingredient.amount -= amountToRemove;
+            amountToRemove = 0;
+          }
+        }
+      }
+    }
+
+    return items;
   }
 }
 

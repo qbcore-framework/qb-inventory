@@ -3,6 +3,7 @@
     "target": "ES2022",
     "module": "esnext",
     "strict": true,
+    "resolveJsonModule": true,
     "jsx": "preserve",
     "importHelpers": true,
     "moduleResolution": "node",
@@ -16,7 +17,8 @@
     "baseUrl": ".",
     "types": [
       "webpack-env",
-      "jest"
+      "jest",
+      "@types/jest"
     ],
     "paths": {
       "@/*": [
@@ -24,7 +26,7 @@
       ],
       "@tests/*": [
         "tests/*"
-      ],
+      ]
     },
     "lib": [
       "esnext",

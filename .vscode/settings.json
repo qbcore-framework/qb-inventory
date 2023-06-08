@@ -1,4 +1,6 @@
 {
     "Lua.runtime.nonstandardSymbol": ["/**/", "`", "+=", "-=", "*=", "/="],
-    "Lua.runtime.version": "Lua 5.4"
+    "Lua.runtime.version": "Lua 5.4",
+    "jest.jestCommandLine": "yarn test:unit",
+    "jest.rootPath": "./vue"
 }
