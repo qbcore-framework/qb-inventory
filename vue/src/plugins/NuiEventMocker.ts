@@ -11,6 +11,9 @@ function NuiEventMocker() {
       openInventory();
     }
   });
+
+  // Open inventory on load
+  openInventory();
 }
 
 function openInventory() {
