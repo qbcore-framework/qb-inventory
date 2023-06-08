@@ -1,25 +1,20 @@
-let isInventoryOpen = false;
+import inventoryOpenEvent from "@/../cypress/fixtures/inventory-open-event.json";
 
 function NuiEventMocker() {
   // Listen to tab
   window.addEventListener("keydown", (e) => {
     if (e.repeat) return;
 
-    if (e.key === "Tab") {
+    // This can't be tab because that also would trigger the close event
+    if (e.key === "`") {
       e.preventDefault();
-      if (!isInventoryOpen) {
-        openInventory();
-      }
-      isInventoryOpen = !isInventoryOpen;
+      openInventory();
     }
   });
 }
 
 function openInventory() {
-  // TODO: Implement mocking NUI open event
-  // window.postMessage({
-  //   action: "close",
-  // });
+  window.postMessage(inventoryOpenEvent);
 }
 
 export { NuiEventMocker };
