@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed top-0 left-0 z-50" ref="dropdown" v-show="item !== null">
+  <div class="fixed top-0 left-0 z-50" ref="dropdown" v-show="show">
     <!-- Blur background with classes -->
     <ItemInfo class="backdrop-blur-lg p-1 border rounded bg-gray-800/30" />
   </div>
@@ -28,5 +28,19 @@ watch([x, y], () => {
 
   dropdown.value.style.left = `calc(${x.value + 10}px + 1em)`;
   dropdown.value.style.top = `calc(${y.value + 10}px - 2em)`;
+});
+
+// Delay showing the dropdown
+const show = ref(false);
+watch(item, () => {
+  if (item.value === null) {
+    show.value = false;
+    return;
+  }
+
+  setTimeout(() => {
+    if (item.value === null) return;
+    show.value = true;
+  }, 500);
 });
 </script>
