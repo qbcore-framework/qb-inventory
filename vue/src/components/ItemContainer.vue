@@ -38,7 +38,8 @@ function onMouseLeave() {
     />
     <template v-if="item">
       <div class="flex justify-between items-end w-full h-full relative z-10">
-        <span> {{ item.weight }}kg </span>
+        <span v-if="item.weight"> {{ item.weight / 1000 }}kg </span>
+        <span v-else />
         <span> x{{ item.amount }} </span>
       </div>
       <img
