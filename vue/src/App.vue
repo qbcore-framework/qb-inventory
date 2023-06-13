@@ -1,15 +1,12 @@
 <template>
-  <main
-    :class="[
-      'w-screen h-screen text-white',
-      isDevBrowser() ? 'bg-cover bg-center bg-repeat-space' : '',
-    ]"
-    :style="
-      isDevBrowser()
-        ? `background: url(${require('@/mock/background.jpg')})`
-        : ''
-    "
-  >
+  <div
+    v-if="isDevBrowser()"
+    :style="{
+      background: 'url(' + require('@/mock/background.jpg') + ')',
+    }"
+    class="w-screen h-screen bg-no-repeat bg-center bg-cover fixed -z-10 blur transform scale-105"
+  />
+  <main class="w-screen h-screen text-white">
     <InventoryContainer />
   </main>
   <HotbarContainer />
