@@ -68,7 +68,6 @@ import { Item } from "../Models/Item/Item";
 import ItemGroup from "./ItemGroup.vue";
 import WeaponPanel from "./WeaponPanel.vue";
 import { ContainerBase } from "@/Models/Container/ContainerBase";
-import ItemInfo from "./ItemInfo.vue";
 import GroundDropBox from "./GroundDropBox.vue";
 
 let fromInventory: ContainerBase<Item> | null = null;
