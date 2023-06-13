@@ -11,15 +11,15 @@
           @item-dropped="onItemDropped($event, inventory)"
           @quick-move="onQuickMove($event, inventory)"
         />
-        <div class="flex-col">
+        <div class="flex flex-col px-4">
+          <span class="h-9" />
           <input
             class="h-12 w-20 text-black"
-            v-model.number="moveAmount"
-            min="0"
-            max="100"
-            @keyup="enforceMinMax"
-            @focus="moveAmount = 0"
             type="number"
+            v-model="moveAmount"
+            min="0"
+            max="1000"
+            @keyup="enforceMinMax"
           />
           <button
             class="h-12 w-20"
