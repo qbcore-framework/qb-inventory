@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="text-white">
     <p class="font-bold" v-text="hoveredItem?.label" />
     <p
       v-for="(info, index) in parseInfo(hoveredItem?.info ?? {})"

@@ -27,7 +27,6 @@
             :disabled="!canModifyWeapon"
             v-text="canModifyWeapon ? 'Modify' : 'Can\'t modify.'"
           />
-          <ItemInfo class="absolute" />
         </div>
         <!-- Container -->
         <ItemGroup
@@ -132,8 +131,6 @@ function onItemDropped(index: number, dropInventory: ContainerBase<Item>) {
 }
 
 function onQuickMove(index: number, fromInventory: ContainerBase<Item>) {
-  console.log("quick move", index, fromInventory);
-
   fromInventory.QuickMoveItem(
     index,
     fromInventory === inventory ? container : inventory,

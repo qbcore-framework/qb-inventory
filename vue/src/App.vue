@@ -13,11 +13,13 @@
     <InventoryContainer />
   </main>
   <HotbarContainer />
+  <ItemDropdown />
 </template>
 
 <script lang="ts" setup>
-import InventoryContainer from "./components/InventoryContainer.vue";
-import HotbarContainer from "./components/HotbarContainer.vue";
+import InventoryContainer from "@/components/InventoryContainer.vue";
+import HotbarContainer from "@/components/HotbarContainer.vue";
+import ItemDropdown from "@/components/ItemDropdown.vue";
 
 function isDevBrowser() {
   return (
