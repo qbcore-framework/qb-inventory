@@ -1,4 +1,5 @@
 import inventoryOpenEvent from "@/../cypress/fixtures/inventory-open-event.json";
+import inventoryOpenContainerEvent from "@/../cypress/fixtures/inventory-open-container-event.json";
 
 function NuiEventMocker() {
   // Listen to tab
@@ -8,16 +9,23 @@ function NuiEventMocker() {
     // This can't be tab because that also would trigger the close event
     if (e.key === "`") {
       e.preventDefault();
-      openInventory();
+      openInventoryWithEmptyContainer();
+    } else if (e.key === "1") {
+      e.preventDefault();
+      openInventoryWithFilledContainer();
     }
   });
 
   // Open inventory on load
-  openInventory();
+  openInventoryWithFilledContainer();
 }
 
-function openInventory() {
+function openInventoryWithEmptyContainer() {
   window.postMessage(inventoryOpenEvent);
+}
+
+function openInventoryWithFilledContainer() {
+  window.postMessage(inventoryOpenContainerEvent);
 }
 
 export { NuiEventMocker };

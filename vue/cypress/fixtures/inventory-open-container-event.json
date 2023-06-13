@@ -1,0 +1,227 @@
+{
+  "inventory": [
+      {
+          "info": [],
+          "slot": 1,
+          "shouldClose": false,
+          "name": "phone",
+          "useable": false,
+          "amount": 1,
+          "type": "item",
+          "unique": true,
+          "weight": 700,
+          "label": "Phone",
+          "description": "Neat phone ya got there",
+          "image": "phone.png"
+      },
+      {
+          "info": {
+              "lastname": "Udder",
+              "citizenid": "WKC60732",
+              "gender": 0,
+              "birthdate": "2023-04-19",
+              "firstname": "Jamie",
+              "nationality": "Afghanistan"
+          },
+          "slot": 2,
+          "shouldClose": false,
+          "name": "id_card",
+          "useable": true,
+          "amount": 1,
+          "type": "item",
+          "unique": true,
+          "weight": 0,
+          "label": "ID Card",
+          "description": "A card containing all your information to identify yourself",
+          "image": "id_card.png"
+      },
+      {
+          "info": {
+              "lastname": "Udder",
+              "birthdate": "2023-04-19",
+              "firstname": "Jamie",
+              "type": "Class C Driver License"
+          },
+          "slot": 3,
+          "shouldClose": false,
+          "name": "driver_license",
+          "useable": true,
+          "amount": 1,
+          "type": "item",
+          "unique": true,
+          "weight": 0,
+          "label": "Drivers License",
+          "description": "Permit to show you can drive a vehicle",
+          "image": "driver_license.png"
+      },
+      {
+          "info": [],
+          "slot": 4,
+          "shouldClose": true,
+          "label": "Pistol ammo",
+          "useable": true,
+          "name": "pistol_ammo",
+          "type": "item",
+          "unique": false,
+          "weight": 200,
+          "description": "Ammo for Pistols",
+          "amount": 30,
+          "image": "pistol_ammo.png"
+      },
+      {
+          "amount": 1,
+          "slot": 5,
+          "description": "A small firearm designed to be held in one hand",
+          "label": "Walther P99",
+          "useable": false,
+          "name": "weapon_pistol",
+          "unique": true,
+          "weight": 1000,
+          "type": "weapon",
+          "info": {
+              "serie": "42VDx5AX799sxMX",
+              "quality": 30
+          },
+          "image": "weapon_pistol.png"
+      },
+      {
+          "amount": 1,
+          "slot": 6,
+          "description": "A pump-action smoothbore gun for firing small shot at short range",
+          "label": "Pump Shotgun",
+          "useable": false,
+          "name": "weapon_pumpshotgun",
+          "unique": true,
+          "weight": 1000,
+          "type": "weapon",
+          "info": {
+              "serie": "15XCs5oz957sfkP",
+              "quality": 100
+          },
+          "image": "weapon_pumpshotgun.png"
+      }
+  ],
+  "Ammo": [],
+  "action": "open",
+  "slots": 41,
+  "maxammo": {
+      "pistol": 250,
+      "shotgun": 200,
+      "rifle": 250,
+      "smg": 250
+  },
+  "maxweight": 120000,
+  "other": {
+    "inventory": [
+        {
+            "info": [],
+            "slot": 1,
+            "shouldClose": false,
+            "name": "phone",
+            "useable": false,
+            "amount": 1,
+            "type": "item",
+            "unique": true,
+            "weight": 700,
+            "label": "Phone",
+            "description": "Neat phone ya got there",
+            "image": "phone.png"
+        },
+        {
+            "info": {
+                "lastname": "Udder",
+                "citizenid": "WKC60732",
+                "gender": 0,
+                "birthdate": "2023-04-19",
+                "firstname": "Jamie",
+                "nationality": "Afghanistan"
+            },
+            "slot": 2,
+            "shouldClose": false,
+            "name": "id_card",
+            "useable": true,
+            "amount": 1,
+            "type": "item",
+            "unique": true,
+            "weight": 0,
+            "label": "ID Card",
+            "description": "A card containing all your information to identify yourself",
+            "image": "id_card.png"
+        },
+        {
+            "info": {
+                "lastname": "Udder",
+                "birthdate": "2023-04-19",
+                "firstname": "Jamie",
+                "type": "Class C Driver License"
+            },
+            "slot": 3,
+            "shouldClose": false,
+            "name": "driver_license",
+            "useable": true,
+            "amount": 1,
+            "type": "item",
+            "unique": true,
+            "weight": 0,
+            "label": "Drivers License",
+            "description": "Permit to show you can drive a vehicle",
+            "image": "driver_license.png"
+        },
+        {
+            "info": [],
+            "slot": 4,
+            "shouldClose": true,
+            "label": "Pistol ammo",
+            "useable": true,
+            "name": "pistol_ammo",
+            "type": "item",
+            "unique": false,
+            "weight": 200,
+            "description": "Ammo for Pistols",
+            "amount": 30,
+            "image": "pistol_ammo.png"
+        },
+        {
+            "amount": 1,
+            "slot": 5,
+            "description": "A small firearm designed to be held in one hand",
+            "label": "Walther P99",
+            "useable": false,
+            "name": "weapon_pistol",
+            "unique": true,
+            "weight": 1000,
+            "type": "weapon",
+            "info": {
+                "serie": "42VDx5AX799sxMX",
+                "quality": 30
+            },
+            "image": "weapon_pistol.png"
+        },
+        {
+            "amount": 1,
+            "slot": 6,
+            "description": "A pump-action smoothbore gun for firing small shot at short range",
+            "label": "Pump Shotgun",
+            "useable": false,
+            "name": "weapon_pumpshotgun",
+            "unique": true,
+            "weight": 1000,
+            "type": "weapon",
+            "info": {
+                "serie": "15XCs5oz957sfkP",
+                "quality": 100
+            },
+            "image": "weapon_pumpshotgun.png"
+        }
+    ],
+    "Ammo": [],
+    "slots": 10,
+    "maxammo": {
+        "pistol": 250,
+        "shotgun": 200,
+        "rifle": 250,
+        "smg": 250
+    },
+    "maxweight": 120000
+  }
+}
