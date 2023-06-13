@@ -41,6 +41,6 @@ watch(item, () => {
   setTimeout(() => {
     if (item.value === null) return;
     show.value = true;
-  }, 500);
+  }, 300);
 });
 </script>
