@@ -1,7 +1,7 @@
 <template>
   <div class="flex justify-center">
     <GroundDropBox @item-dropped="onQuickMove($event.detail, inventory)" />
-    <TransitionGroup>
+    <TransitionGroup name="fade">
       <template v-if="inventory.isVisible.value && !showWeaponPanel">
         <ItemGroup
           :inventory="inventory"
@@ -50,12 +50,13 @@
           @quick-move="onQuickMove($event, craftingContainer)"
         />
       </template>
-      <WeaponPanel
-        v-else-if="showWeaponPanel"
-        :weapon="(selectedItem as Weapon)"
-      />
     </TransitionGroup>
     <GroundDropBox @item-dropped="onQuickMove($event.detail, inventory)" />
+    <WeaponPanel
+      class="absolute"
+      v-if="showWeaponPanel"
+      :weapon="(selectedItem as Weapon)"
+    />
   </div>
 </template>
 
@@ -157,13 +158,13 @@ function enforceMinMax(event: KeyboardEvent) {
 </script>
 
 <style scoped>
-.v-enter-active,
-.v-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.2s ease;
 }
 
-.v-enter-from,
-.v-leave-to {
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
 }
 
