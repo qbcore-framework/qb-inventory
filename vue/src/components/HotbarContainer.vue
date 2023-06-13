@@ -1,7 +1,6 @@
 <template>
   <!-- Display centered at bottom of screen -->
   <div class="fixed bottom-0 left-0 right-0 flex justify-center">
-    <!-- Display hotbar -->
     <Transition>
       <div class="flex flex-row" v-if="isOpen">
         <ItemContainer

@@ -47,7 +47,6 @@ function onMouseLeave() {
         draggable="false"
         :src="require(`@/assets/images/${item.image}`)"
       />
-      <!-- <span class="text-center" v-text="item.label" /> -->
     </template>
     <div v-else></div>
   </div>

@@ -1,6 +1,5 @@
 <template>
   <div class="fixed top-0 left-0 z-50" ref="dropdown" v-show="show">
-    <!-- Blur background with classes -->
     <ItemInfo class="backdrop-blur-lg p-1 border rounded bg-gray-800/30" />
   </div>
 </template>
