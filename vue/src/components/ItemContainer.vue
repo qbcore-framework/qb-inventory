@@ -22,8 +22,8 @@ function onMouseLeave() {
 <template>
   <div
     :class="[
-      'w-28 h-28 p-2 flex flex-col bg-gray-200/20 z-0 relative',
-      selectedItem === item ? 'bg-blue-600' : '',
+      'w-28 h-28 p-2 flex flex-col z-0 relative cursor-pointer ease-in-out transition-transform duration-75 transform',
+      selectedItem === item ? 'bg-gray-400/20 scale-105' : 'bg-gray-200/20',
       hoveredItem === item ? 'z-10' : '',
     ]"
     @mouseenter="onMouseEnter"
