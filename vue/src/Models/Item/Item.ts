@@ -18,6 +18,10 @@ class Item {
     public shouldClose?: boolean
   ) {}
 
+  get totalWeight(): number {
+    return this.weight * this.amount;
+  }
+
   canMerge(item: Item): boolean {
     if (item === null || item === undefined) return false;
 

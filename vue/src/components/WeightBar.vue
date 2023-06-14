@@ -1,6 +1,12 @@
 <template>
-  <div class="w-full h-4 mb-4 flex flex-col bg-red-400">
-    <div class="h-full bg-red-600" ref="bar" />
+  <div class="w-full h-6 mb-4 bg-gray-200/20 relative">
+    <div class="h-full bg-gray-200/40" ref="bar" />
+
+    <span
+      class="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center"
+    >
+      {{ usedWeight / 1000 }}kg / {{ props.container.maxWeight.value / 1000 }}kg
+    </span>
   </div>
 </template>
 
@@ -15,13 +21,13 @@ const props = defineProps<{
 
 const bar = ref<HTMLDivElement | null>(null);
 
-const weightPercentage = computed(() => {
-  const itemWeight = props.container.Items.value.reduce(
-    (acc, item) => acc + item.weight * item.amount,
-    0
-  );
+const usedWeight = computed(() =>
+  props.container.Items.value.reduce((acc, item) => acc + item.totalWeight, 0)
+);
 
-  return (itemWeight / props.container.maxWeight.value) * 100;
+const weightPercentage = computed(() => {
+  if (props.container.maxWeight === null) return null;
+  return (usedWeight.value / props.container.maxWeight.value) * 100;
 });
 
 function updateBar() {
