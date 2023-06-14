@@ -3,6 +3,7 @@ import { computed, inject, ref } from "vue";
 import { PlayerInventory } from "@/Models/Container/PlayerInventory";
 import ItemContainer from "./ItemContainer.vue";
 import { Item } from "@/Models/Item/Item";
+import WeightBar from "./WeightBar.vue";
 
 interface IProps {
   inventory: PlayerInventory;
@@ -115,6 +116,7 @@ window.addEventListener("scroll", () => {
 <template>
   <div class="item-group">
     <h3 v-text="inventory.getName()" class="font-bold text-xl mb-2" />
+    <WeightBar :container="inventory" />
     <div class="grid grid-cols-5 gap-4">
       <div v-for="(item, index) in inventory.Items.value" :key="index">
         <ItemContainer
