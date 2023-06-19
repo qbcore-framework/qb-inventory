@@ -1,6 +1,6 @@
 <template>
   <div class="fixed top-0 left-0 z-50" ref="dropdown" v-show="show">
-    <ItemInfo class="backdrop-blur-lg p-1 border rounded bg-gray-800/30" />
+    <ItemInfo class="p-1 border rounded bg-gray-800/80" />
   </div>
 </template>
 
@@ -20,6 +20,10 @@ function onMouseMove(event: MouseEvent) {
   y.value = event.clientY;
 }
 window.addEventListener("mousemove", onMouseMove);
+
+window.addEventListener("inventory:close", () => {
+  item.value = null;
+});
 
 // Bind the x and y to the style of the dropdown
 watch([x, y], () => {
