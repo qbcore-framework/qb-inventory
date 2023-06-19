@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { computed, inject, ref } from "vue";
-import { PlayerInventory } from "@/Models/Container/PlayerInventory";
 import ItemContainer from "./ItemContainer.vue";
 import { Item } from "@/Models/Item/Item";
 import WeightBar from "./WeightBar.vue";
+import { ContainerBase } from "@/Models/Container/ContainerBase";
 
 interface IProps {
-  inventory: PlayerInventory;
+  inventory: ContainerBase<Item>;
   canSelectItems?: boolean;
 }
 
