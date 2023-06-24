@@ -1177,6 +1177,14 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
         } else if ($toAmount == 0) {
             $toAmount = fromData.amount;
         }
+
+        if ((toData != undefined || toData != null) && toData.type == "weapon") {
+            $.post("https://qb-inventory/ResetWeaponSlot", JSON.stringify({
+                slotToCheck: $toSlot,
+                newSlot: $fromSlot
+            }));
+       }
+        
         if (
             (toData != undefined || toData != null) &&
             toData.name == fromData.name &&
@@ -2141,6 +2149,9 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
             } else {
                 InventoryError($fromInv, $fromSlot);
             }
+        }
+        if ($fromInv.attr("data-inventory").search("trunk-") !== -1) {
+            $.post("https://qb-inventory/UpdateTrunkData", JSON.stringify({}))
         }
     } else {
     }
