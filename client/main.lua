@@ -13,6 +13,68 @@ local CurrentGlovebox = nil
 local CurrentStash = nil
 local isCrafting = false
 local isHotbar = false
+local trunkSize = {
+    [0] = {
+        maxweight = 38000,
+        slots = 30
+    },
+    [1] = {
+        maxweight = 50000,
+        slots = 40
+    },
+    [2] = {
+        maxweight = 75000,
+        slots = 50
+    },
+    [3] = {
+        maxweight = 42000,
+        slots = 35
+    },
+    [4] = {
+        maxweight = 38000,
+        slots = 30
+    },
+    [5] = {
+        maxweight = 30000,
+        slots = 25
+    },
+    [6] = {
+        maxweight = 30000,
+        slots = 25
+    },
+    [7] = {
+        maxweight = 30000,
+        slots = 25
+    },
+    [8] = {
+        maxweight = 15000,
+        slots = 15
+    },
+    [9] = { -- default weight if no class is set
+        maxweight = 60000,
+        slots = 35
+    },
+    [12] = {
+        maxweight = 120000,
+        slots = 25
+    },
+    [13] = {
+        maxweight = 0,
+        slots = 0
+    },
+    [14] = {
+        maxweight = 120000,
+        slots = 50
+    },
+    [15] = {
+        maxweight = 120000,
+        slots = 50
+    },
+    [16] = {
+        maxweight = 120000,
+        slots = 50
+    }
+}
 
 --#endregion Variables
 
@@ -167,6 +229,13 @@ local function CloseTrunk()
         SetVehicleDoorShut(vehicle, 5, false)
     end
 end
+
+---Checks weight and size of the vehicle trunk
+local function GetTrunkSize(vehicleClass)
+    if not trunkSize[vehicleClass] then vehicleClass = 9 end
+    return trunkSize[vehicleClass].maxweight, trunkSize[vehicleClass].slots
+end
+exports("GetTrunkSize", GetTrunkSize)
 
 ---Closes the inventory NUI
 local function closeInventory()
@@ -704,57 +773,7 @@ RegisterCommand('inventory', function()
 
             if CurrentVehicle then -- Trunk
                 local vehicleClass = GetVehicleClass(curVeh)
-                local maxweight
-                local slots
-                if vehicleClass == 0 then
-                    maxweight = 38000
-                    slots = 30
-                elseif vehicleClass == 1 then
-                    maxweight = 50000
-                    slots = 40
-                elseif vehicleClass == 2 then
-                    maxweight = 75000
-                    slots = 50
-                elseif vehicleClass == 3 then
-                    maxweight = 42000
-                    slots = 35
-                elseif vehicleClass == 4 then
-                    maxweight = 38000
-                    slots = 30
-                elseif vehicleClass == 5 then
-                    maxweight = 30000
-                    slots = 25
-                elseif vehicleClass == 6 then
-                    maxweight = 30000
-                    slots = 25
-                elseif vehicleClass == 7 then
-                    maxweight = 30000
-                    slots = 25
-                elseif vehicleClass == 8 then
-                    maxweight = 15000
-                    slots = 15
-                elseif vehicleClass == 9 then
-                    maxweight = 60000
-                    slots = 35
-                elseif vehicleClass == 12 then
-                    maxweight = 120000
-                    slots = 35
-                elseif vehicleClass == 13 then
-                    maxweight = 0
-                    slots = 0
-                elseif vehicleClass == 14 then
-                    maxweight = 120000
-                    slots = 50
-                elseif vehicleClass == 15 then
-                    maxweight = 120000
-                    slots = 50
-                elseif vehicleClass == 16 then
-                    maxweight = 120000
-                    slots = 50
-                else
-                    maxweight = 60000
-                    slots = 35
-                end
+                local maxweight, slots = GetTrunkSize(vehicleClass)
                 local other = {
                     maxweight = maxweight,
                     slots = slots,
