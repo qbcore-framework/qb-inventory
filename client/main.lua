@@ -1125,3 +1125,7 @@ CreateThread(function()
 end)
 
 --#endregion Threads
+
+RegisterNUICallback('UpdateTrunkData', function()
+    TriggerServerEvent("inventory:server:SaveInventory", "trunk", CurrentVehicle)
+end)

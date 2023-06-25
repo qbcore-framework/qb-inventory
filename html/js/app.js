@@ -2142,6 +2142,9 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                 InventoryError($fromInv, $fromSlot);
             }
         }
+        if ($fromInv.attr("data-inventory").search("trunk-") !== -1) {
+            $.post("https://qb-inventory/UpdateTrunkData", JSON.stringify({}))
+        }
     } else {
     }
     handleDragDrop();
