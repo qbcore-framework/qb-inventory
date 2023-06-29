@@ -317,10 +317,10 @@ body {
 }
 
 .player-inv-info {
-	position: absolute;
-	left: 14.5%;
-	top: 22.2%;
-	width: 695px;
+    position: absolute;
+    left: 14.3%;
+    top: 21.2%;
+    width: 530px;
 }
 
 #player-inv-label {
@@ -401,10 +401,10 @@ body {
 }
 
 .other-inv-info {
-	position: absolute;
-	left: 56%;
-	top: 22.2%;
-	width: 695px;
+    position: absolute;
+    left: 56.1%;
+    top: 21.2%;
+    width: 530px;
 }
 
 .ply-iteminfo-container {
