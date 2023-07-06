@@ -32,7 +32,6 @@ window.addEventListener("inventory:item-box", (event) => {
   item.value = eitem;
   type.value = etype as ItemBoxType;
 
-  // Remove the item after 2 seconds
   clearTimeout(timer);
   timer = setTimeout(() => {
     item.value = null;
