@@ -4,6 +4,7 @@ import { PlayerInventory } from "@/Models/Container/PlayerInventory";
 import { ParseCraftingInventory, ParseInventory } from "@/Parser/ItemParser";
 import { Plugin } from "vue";
 import { CraftingContainer } from "@/Models/Container/CraftingContainer";
+import { CreateContainerItem } from "@/Parser/ItemParser";
 
 const nuiEventPlugin: Plugin = {
   install(
@@ -76,10 +77,17 @@ const nuiEventPlugin: Plugin = {
           data.maxammo,
           data.Ammo
         );
-        // Update the inventory
       } else if (action === "itemBox") {
         console.log("itemBox", data);
 
+        window.dispatchEvent(
+          new CustomEvent("inventory:item-box", {
+            detail: {
+              item: CreateContainerItem(data.item),
+              type: data.type,
+            },
+          })
+        );
         // Something to do with the item box
       } else if (action === "requiredItem") {
         console.log("requiredItem", data);

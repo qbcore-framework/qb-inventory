@@ -107,4 +107,4 @@ function CreateContainerItem(itemData: Item & { slot: number }): Item {
   return item;
 }
 
-export { ParseInventory, ParseCraftingInventory };
+export { ParseInventory, ParseCraftingInventory, CreateContainerItem };
