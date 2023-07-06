@@ -30,7 +30,7 @@
 				"vue.volar",
 				"esbenp.prettier-vscode",
 				"dbaeumer.vscode-eslint",
-				"GitHub.copilot-nightly",
+				"GitHub.copilot@prerelease",
 				"GitHub.copilot-labs",
 				"github.vscode-github-actions",
 				"Vue.volar",
