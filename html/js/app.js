@@ -594,7 +594,7 @@ function handleDragDrop() {
             var itemData = $(this).data("item");
             var dragAmount = $("#item-amount").val();
             if (!itemData.useable) {
-                $("#item-use").css("background", "rgba(35,35,35, 0.5");
+                $("#item-use").css("background", "rgba(35, 35, 35, 0.5)");
             }
 
             if (dragAmount == 0) {
