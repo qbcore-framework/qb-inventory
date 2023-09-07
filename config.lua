@@ -385,3 +385,17 @@ Config.MaximumAmmoValues = {
     ["shotgun"] = 200,
     ["rifle"] = 250,
 }
+
+Config.Throwables = {
+    "weapon_ball",
+    "weapon_bzgas",
+    "weapon_flare",
+    "weapon_grenade",
+    "weapon_molotov",
+    "weapon_pipebomb",
+    "weapon_proxmine",
+    "weapon_smokegrenade",
+    "weapon_snowball",
+    "weapon_stickybomb",
+    "weapon_flashbang",
+}

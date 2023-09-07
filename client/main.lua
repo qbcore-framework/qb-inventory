@@ -622,13 +622,6 @@ RegisterNetEvent('inventory:client:UseWeapon', function(weaponData, shootbool)
         RemoveAllPedWeapons(ped, true)
         TriggerEvent('weapons:client:SetCurrentWeapon', nil, shootbool)
         currentWeapon = nil
-    elseif weaponName == "weapon_stickybomb" or weaponName == "weapon_pipebomb" or weaponName == "weapon_smokegrenade" or weaponName == "weapon_flare" or weaponName == "weapon_proxmine" or weaponName == "weapon_ball"  or weaponName == "weapon_molotov" or weaponName == "weapon_grenade" or weaponName == "weapon_bzgas" then
-        TriggerEvent('weapons:client:DrawWeapon', weaponName)
-        GiveWeaponToPed(ped, weaponHash, 1, false, false)
-        SetPedAmmo(ped, weaponHash, 1)
-        SetCurrentPedWeapon(ped, weaponHash, true)
-        TriggerEvent('weapons:client:SetCurrentWeapon', weaponData, shootbool)
-        currentWeapon = weaponName
     elseif weaponName == "weapon_snowball" then
         TriggerEvent('weapons:client:DrawWeapon', weaponName)
         GiveWeaponToPed(ped, weaponHash, 10, false, false)
@@ -638,6 +631,18 @@ RegisterNetEvent('inventory:client:UseWeapon', function(weaponData, shootbool)
         TriggerEvent('weapons:client:SetCurrentWeapon', weaponData, shootbool)
         currentWeapon = weaponName
     else
+        for _,v in pairs(Config.Throwables) do
+            print(weaponName, v)
+            if weaponName == v then
+                TriggerEvent('weapons:client:DrawWeapon', weaponName)
+                GiveWeaponToPed(ped, weaponHash, 1, false, false)
+                SetPedAmmo(ped, weaponHash, 1)
+                SetCurrentPedWeapon(ped, weaponHash, true)
+                TriggerEvent('weapons:client:SetCurrentWeapon', weaponData, shootbool)
+                currentWeapon = weaponName
+                return
+            end
+        end
         TriggerEvent('weapons:client:DrawWeapon', weaponName)
         TriggerEvent('weapons:client:SetCurrentWeapon', weaponData, shootbool)
         local ammo = tonumber(weaponData.info.ammo) or 0
