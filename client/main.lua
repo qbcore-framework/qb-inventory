@@ -632,7 +632,6 @@ RegisterNetEvent('inventory:client:UseWeapon', function(weaponData, shootbool)
         currentWeapon = weaponName
     else
         for _,v in pairs(Config.Throwables) do
-            print(weaponName, v)
             if weaponName == v then
                 TriggerEvent('weapons:client:DrawWeapon', weaponName)
                 GiveWeaponToPed(ped, weaponHash, 1, false, false)
