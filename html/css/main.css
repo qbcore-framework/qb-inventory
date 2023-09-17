@@ -319,8 +319,8 @@ body {
 .player-inv-info {
 	position: absolute;
 	left: 14.5%;
-	top: 22.2%;
-	width: 695px;
+	top: 20%;
+	width: 530px;
 }
 
 #player-inv-label {
@@ -403,8 +403,8 @@ body {
 .other-inv-info {
 	position: absolute;
 	left: 56%;
-	top: 22.2%;
-	width: 695px;
+	top: 20%;
+	width: 530px;
 }
 
 .ply-iteminfo-container {
