@@ -319,8 +319,8 @@ body {
 .player-inv-info {
 	position: absolute;
 	left: 14.5%;
-	top: 20%;
-	width: 530px;
+	top: 22.2%;
+	width: 695px;
 }
 
 #player-inv-label {
@@ -403,8 +403,8 @@ body {
 .other-inv-info {
 	position: absolute;
 	left: 56%;
-	top: 20%;
-	width: 530px;
+	top: 22.2%;
+	width: 695px;
 }
 
 .ply-iteminfo-container {
@@ -929,4 +929,20 @@ body {
 
 .weapon-attachments-back:hover {
 	background-color: rgb(18, 18, 18);
+}
+
+
+@media screen and (max-width: 1920px) {
+	.player-inv-info {
+	  position: absolute;
+	  left: 14.5%;
+	  top: 21%;
+	  width: 530px;
+	}
+	.other-inv-info {
+	  position: absolute;
+	  left: 56%;
+	  top: 21%;
+	  width: 530px;
+	}
 }
