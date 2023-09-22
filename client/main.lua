@@ -13,68 +13,6 @@ local CurrentGlovebox = nil
 local CurrentStash = nil
 local isCrafting = false
 local isHotbar = false
-local trunkSize = {
-    [0] = {
-        maxweight = 38000,
-        slots = 30
-    },
-    [1] = {
-        maxweight = 50000,
-        slots = 40
-    },
-    [2] = {
-        maxweight = 75000,
-        slots = 50
-    },
-    [3] = {
-        maxweight = 42000,
-        slots = 35
-    },
-    [4] = {
-        maxweight = 38000,
-        slots = 30
-    },
-    [5] = {
-        maxweight = 30000,
-        slots = 25
-    },
-    [6] = {
-        maxweight = 30000,
-        slots = 25
-    },
-    [7] = {
-        maxweight = 30000,
-        slots = 25
-    },
-    [8] = {
-        maxweight = 15000,
-        slots = 15
-    },
-    [9] = { -- default weight if no class is set
-        maxweight = 60000,
-        slots = 35
-    },
-    [12] = {
-        maxweight = 120000,
-        slots = 25
-    },
-    [13] = {
-        maxweight = 0,
-        slots = 0
-    },
-    [14] = {
-        maxweight = 120000,
-        slots = 50
-    },
-    [15] = {
-        maxweight = 120000,
-        slots = 50
-    },
-    [16] = {
-        maxweight = 120000,
-        slots = 50
-    }
-}
 
 --#endregion Variables
 
@@ -229,10 +167,9 @@ local function CloseTrunk()
         SetVehicleDoorShut(vehicle, 5, false)
     end
 end
-
 ---Checks weight and size of the vehicle trunk
 local function GetTrunkSize(vehicleClass)
-    if not trunkSize[vehicleClass] then vehicleClass = 9 end
+    local trunkSize = Config.TrunkSpace[vehicleClass] or Config.TrunkSpace["default"]
     return trunkSize[vehicleClass].maxweight, trunkSize[vehicleClass].slots
 end
 exports("GetTrunkSize", GetTrunkSize)
@@ -773,11 +710,17 @@ RegisterCommand('inventory', function()
 
             if CurrentVehicle then -- Trunk
                 local vehicleClass = GetVehicleClass(curVeh)
-                local maxweight, slots = GetTrunkSize(vehicleClass)
+                local trunkConfig = Config.TrunkSpace[vehicleClass] or Config.TrunkSpace["default"]
+                if not trunkConfig then return print("Cannot get the vehicle trunk config") end
+                local slots = trunkConfig.slots
+                local maxweight = trunkConfig.maxWeight
+                if not slots or not maxweight then return print("Cannot get the vehicle slots and maxweight") end
+
                 local other = {
                     maxweight = maxweight,
                     slots = slots,
                 }
+
                 TriggerServerEvent("inventory:server:OpenInventory", "trunk", CurrentVehicle, other)
                 OpenTrunk()
             elseif CurrentGlovebox then

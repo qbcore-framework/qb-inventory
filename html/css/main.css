@@ -930,3 +930,19 @@ body {
 .weapon-attachments-back:hover {
 	background-color: rgb(18, 18, 18);
 }
+
+
+@media screen and (max-width: 1920px) {
+	.player-inv-info {
+	  position: absolute;
+	  left: 14.5%;
+	  top: 21%;
+	  width: 530px;
+	}
+	.other-inv-info {
+	  position: absolute;
+	  left: 56%;
+	  top: 21%;
+	  width: 530px;
+	}
+}
