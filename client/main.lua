@@ -578,6 +578,7 @@ RegisterNetEvent('inventory:client:UseWeapon', function(weaponData, shootbool)
         TriggerEvent('weapons:client:DrawWeapon', weaponName)
         TriggerEvent('weapons:client:SetCurrentWeapon', weaponData, shootbool)
         local ammo = tonumber(weaponData.info.ammo) or 0
+        local tint = tonumber(weaponData.info.tint) or 0
 
         if weaponName == "weapon_petrolcan" or weaponName == "weapon_fireextinguisher" then
             ammo = 4000
@@ -586,6 +587,7 @@ RegisterNetEvent('inventory:client:UseWeapon', function(weaponData, shootbool)
         GiveWeaponToPed(ped, weaponHash, ammo, false, false)
         SetPedAmmo(ped, weaponHash, ammo)
         SetCurrentPedWeapon(ped, weaponHash, true)
+        SetPedWeaponTintIndex(ped, weaponHash, tint)
 
         if weaponData.info.attachments then
             for _, attachment in pairs(weaponData.info.attachments) do
