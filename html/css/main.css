@@ -957,3 +957,26 @@ body {
 		width: 530px;
 	}
 }
+
+@media screen and (max-width:3840px) and (max-height: 2160px) {
+	.inv-options {
+		width: 10%;
+		top: 38%;
+	}
+
+	#player-inv-label {
+		font-weight: 28px;
+	}
+
+	#player-inv-weight {
+		width: 27.8vw;
+	}
+
+	#other-inv-label {
+		font-weight: 28px;
+	}
+
+	#other-inv-weight {
+		width: 28vw;
+	}
+}
