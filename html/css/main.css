@@ -97,8 +97,8 @@ body {
 	position: absolute;
 	margin: 0 auto;
 	right: 0;
-	width: 10%;
-	top: 38%;
+	width: 9%;
+	top: 28%;
 	left: 1vh;
 }
 
@@ -306,8 +306,8 @@ body {
 	position: relative;
 	margin: 0 auto;
 	margin-top: 21%;
-	width: 150px;
-	height: 150px;
+	width: 70px;
+	height: 70px;
 	max-width: 100%;
 	max-height: 100%;
 }
@@ -326,7 +326,7 @@ body {
 #player-inv-label {
 	position: relative;
 	color: white;
-	font-size: 28px;
+	font-size: 16px;
 	font-style: italic;
 	font-family: 'Poppins', sans-serif;
 	font-weight: bold;
@@ -343,13 +343,13 @@ body {
 	font-family: 'Poppins', sans-serif;
 	letter-spacing: 0.2vh;
 	float: left;
-	width: 27.8vw;
+	width: 100%;
 }
 
 #other-inv-label {
 	position: relative;
 	color: white;
-	font-size: 28px;
+	font-size: 16px;
 	font-style: italic;
 	font-family: 'Poppins', sans-serif;
 	font-weight: bold;
@@ -366,7 +366,7 @@ body {
 	font-family: 'Poppins', sans-serif;
 	letter-spacing: 0.2vh;
 	float: left;
-	width: 28vw;
+	width: 100%;
 }
 
 .player-inv-weight {
