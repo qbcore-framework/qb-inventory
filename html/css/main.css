@@ -139,9 +139,9 @@ body {
 }
 
 .btn-inv {
-	width: 100%!important;
-	max-width: 100%!important;
-	padding: 10%!important;
+	width: 100% !important;
+	max-width: 100% !important;
+	padding: 10% !important;
 	background-color: rgba(235, 235, 235, 0);
 }
 
@@ -382,7 +382,7 @@ body {
 }
 
 .ui-progressbar.ui-widget.ui-widget-content {
-    border: none;
+	border: none;
 }
 
 .ui-progressbar.ui-widget-content {
@@ -879,33 +879,43 @@ body {
 	0% {
 		transform: translate(1px, 1px) rotate(0deg);
 	}
+
 	10% {
 		transform: translate(-1px, -2px) rotate(-1deg);
 	}
+
 	20% {
 		transform: translate(-3px, 0px) rotate(1deg);
 	}
+
 	30% {
 		transform: translate(3px, 2px) rotate(0deg);
 	}
+
 	40% {
 		transform: translate(1px, -1px) rotate(1deg);
 	}
+
 	50% {
 		transform: translate(-1px, 2px) rotate(-1deg);
 	}
+
 	60% {
 		transform: translate(-3px, 1px) rotate(0deg);
 	}
+
 	70% {
 		transform: translate(3px, 1px) rotate(-1deg);
 	}
+
 	80% {
 		transform: translate(-1px, -1px) rotate(1deg);
 	}
+
 	90% {
 		transform: translate(1px, 2px) rotate(0deg);
 	}
+
 	100% {
 		transform: translate(1px, -2px) rotate(-1deg);
 	}
@@ -934,15 +944,39 @@ body {
 
 @media screen and (max-width: 1920px) {
 	.player-inv-info {
-	  position: absolute;
-	  left: 14.5%;
-	  top: 21%;
-	  width: 530px;
+		position: absolute;
+		left: 14.5%;
+		top: 21%;
+		width: 530px;
 	}
+
 	.other-inv-info {
-	  position: absolute;
-	  left: 56%;
-	  top: 21%;
-	  width: 530px;
+		position: absolute;
+		left: 56%;
+		top: 21%;
+		width: 530px;
+	}
+}
+
+@media screen and (max-width:3840px) and (max-height: 2160px) {
+	.inv-options {
+		width: 10%;
+		top: 38%;
+	}
+
+	#player-inv-label {
+		font-weight: 28px;
+	}
+
+	#player-inv-weight {
+		width: 27.8vw;
+	}
+
+	#other-inv-label {
+		font-weight: 28px;
+	}
+
+	#other-inv-weight {
+		width: 28vw;
 	}
 }
