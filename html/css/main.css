@@ -154,7 +154,7 @@ input[type="number"]::-webkit-outer-spin-button {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: calc(20% - 5.5px);
+    width: calc(20% - 1.5px);
     margin: 0.5px;
     height: 10vh;
     background-color: rgba(0, 0, 0, 0.3);
