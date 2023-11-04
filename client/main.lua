@@ -116,9 +116,13 @@ end
 ---@param itemdata table Data of an item
 ---@return table attachments
 local function FormatWeaponAttachments(itemdata)
+    if not itemdata.info or not itemdata.info.attachments or #itemdata.info.attachments == 0 then
+        return {}
+    end
     local attachments = {}
     local weaponName = itemdata.name
     local WeaponAttachments = exports['qb-weapons']:getConfigWeaponAttachments()
+    if not WeaponAttachments then return {} end
     for attachmentType, weapons in pairs(WeaponAttachments) do
         local componentHash = weapons[weaponName]
         if componentHash then
