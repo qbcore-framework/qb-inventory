@@ -334,6 +334,12 @@ function setItemInfo(title, description) {
 }
 
 function generateDescription(itemData) {
+    if (itemData.type === "weapon") {
+        let ammo = itemData.info.ammo ?? 0;
+        return `<p><strong>Serial Number: </strong><span>${itemData.info.serie}</span></p>
+                    <p><strong>Ammunition: </strong><span>${ammo}</span></p>
+                    <p>${itemData.description}</p>`;
+    }
     switch (itemData.name) {
         case "id_card":
             return `<p><strong>CSN: </strong><span>${itemData.info.citizenid}</span></p>
