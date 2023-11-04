@@ -1,7 +1,7 @@
 :root {
-    --text-color: #000000;
-    --background-color: #c0c0c0;
-    --font-size: 0.7vh;
+    --text-color: #2d2d2d;
+    --background-color: rgb(145, 0, 24);
+    --font-size: 0.8vh;
     --hover-color: #bdbdbd;
 }
 
@@ -212,9 +212,9 @@ input[type="number"]::-webkit-outer-spin-button {
     position: absolute;
     white-space: nowrap;
     bottom: 0;
-    height: 1vh;
+    height: 1.5vh;
     width: 100%;
-    background-color: var(--background-color);
+    background-color: rgb(61, 61, 61);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -224,7 +224,7 @@ input[type="number"]::-webkit-outer-spin-button {
     margin: 0;
     font-size: var(--font-size);
     text-transform: uppercase;
-    color: var(--text-color);
+    color: white;
     font-weight: bolder;
 }
 
@@ -264,7 +264,7 @@ input[type="number"]::-webkit-outer-spin-button {
     text-align: center;
     height: 3vh;
     font-weight: bolder;
-    color: var(--text-color);
+    color: white;
     background-color: var(--background-color);
 }
 
@@ -282,10 +282,11 @@ input[type="number"]::-webkit-outer-spin-button {
     top: 67%;
     left: 50%;
     width: 15vw;
+    color: white;
     transform: translate(-50%, -50%);
     align-items: center;
     text-align: center;
-    background-color: var(--background-color);
+    background-color: rgb(61, 61, 61);
     border-radius: 5px;
 }
 
