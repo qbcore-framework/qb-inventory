@@ -6,6 +6,11 @@
 }
 
 body {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
     background: none !important;
     font-family: "Roboto", sans-serif;
 }
@@ -130,8 +135,7 @@ input[type="number"]::-webkit-outer-spin-button {
     width: 28%;
     height: 47.16%;
     float: left;
-    overflow-x: hidden;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .other-inventory {
@@ -145,8 +149,7 @@ input[type="number"]::-webkit-outer-spin-button {
     width: 28%;
     height: 47.16%;
     float: left;
-    overflow-x: hidden;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .item-slot {

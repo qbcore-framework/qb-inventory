@@ -408,11 +408,34 @@ function FormatItemInfo(itemData) {
     }
 }
 
+$(document).on("wheel", function (e) {
+    if (IsDragging) {
+        var delta = e.originalEvent.deltaY;
+        var $playerInventory = $(".player-inventory");
+        var $otherInventory = $(".other-inventory");
+
+        var playerInventoryOffset = $playerInventory.offset();
+        var otherInventoryOffset = $otherInventory.offset();
+        var mouseX = e.originalEvent.clientX;
+        var mouseY = e.originalEvent.clientY;
+
+        if (mouseX > playerInventoryOffset.left && mouseX < playerInventoryOffset.left + $playerInventory.width() && mouseY > playerInventoryOffset.top && mouseY < playerInventoryOffset.top + $playerInventory.height()) {
+            $playerInventory.scrollTop($playerInventory.scrollTop() + delta);
+        } else if (mouseX > otherInventoryOffset.left && mouseX < otherInventoryOffset.left + $otherInventory.width() && mouseY > otherInventoryOffset.top && mouseY < otherInventoryOffset.top + $otherInventory.height()) {
+            $otherInventory.scrollTop($otherInventory.scrollTop() + delta);
+        }
+
+        if ((mouseX > playerInventoryOffset.left && mouseX < playerInventoryOffset.left + $playerInventory.width() && mouseY > playerInventoryOffset.top && mouseY < playerInventoryOffset.top + $playerInventory.height()) || (mouseX > otherInventoryOffset.left && mouseX < otherInventoryOffset.left + $otherInventory.width() && mouseY > otherInventoryOffset.top && mouseY < otherInventoryOffset.top + $otherInventory.height())) {
+            e.preventDefault();
+        }
+    }
+});
+
 function handleDragDrop() {
     $(".item-drag").draggable({
         helper: "clone",
         appendTo: "body",
-        scroll: true,
+        scroll: false,
         revertDuration: 0,
         revert: "invalid",
         cancel: ".item-nodrag",
