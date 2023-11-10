@@ -1,16 +1,11 @@
 :root {
-    --text-color: #000000;
-    --background-color: #c0c0c0;
-    --font-size: 0.7vh;
+    --text-color: #2d2d2d;
+    --background-color: rgb(0, 104, 145);
+    --font-size: 0.8vh;
     --hover-color: #bdbdbd;
 }
 
 body {
-    width: 100vw;
-    height: 100vh;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
     background: none !important;
     font-family: "Roboto", sans-serif;
 }
@@ -62,7 +57,7 @@ input[type="number"]::-webkit-outer-spin-button {
     height: 5px;
     top: 25.5%;
     left: 14.2%;
-    width: 27.8%;
+    width: 29.8%;
     position: absolute;
     transition: width 0.2s;
     background-color: #2d2d2d;
@@ -88,7 +83,7 @@ input[type="number"]::-webkit-outer-spin-button {
 #other-inv-progressbar {
     position: absolute;
     top: 25.5%;
-    width: 27.8%;
+    width: 29.8%;
     right: 14.4%;
     height: 5px;
     transition: width 0.2s;
@@ -117,7 +112,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 .ui-progressbar-medium .ui-progressbar-value {
-    background-color: yellow;
+    background-color: var(--background-color);
 }
 
 .ui-progressbar-high .ui-progressbar-value {
@@ -132,10 +127,11 @@ input[type="number"]::-webkit-outer-spin-button {
     position: absolute;
     top: 26%;
     left: 14.2%;
-    width: 28%;
-    height: 47.16%;
+    width: 30%;
+    height: 50.16%;
     float: left;
-    overflow-y: auto;
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
 
 .other-inventory {
@@ -146,10 +142,11 @@ input[type="number"]::-webkit-outer-spin-button {
     position: absolute;
     top: 26%;
     right: 14.2%;
-    width: 28%;
-    height: 47.16%;
+    width: 30%;
+    height: 50.16%;
     float: left;
-    overflow-y: auto;
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
 
 .item-slot {
@@ -160,7 +157,6 @@ input[type="number"]::-webkit-outer-spin-button {
     width: calc(20% - 1.5px);
     margin: 0.5px;
     height: 10vh;
-    background-color: rgba(0, 0, 0, 0.3);
 }
 
 .item-slot-img {
@@ -171,6 +167,8 @@ input[type="number"]::-webkit-outer-spin-button {
     height: 100%;
     margin: 0;
     padding: 0;
+    background-color: rgba(34, 34, 34, 0.849);
+    border-radius: 5px;
 }
 
 .item-slot-img img {
@@ -180,19 +178,19 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .item-slot-key {
     font-weight: bolder;
-    color: var(--text-color);
+    color: white;
     position: absolute;
     top: 5px;
     left: 5px;
     width: 20px;
     height: 20px;
-    background-color: var(--background-color);
+    background-color: rgb(58, 58, 58);
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 3px;
-    box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.1), 0 2px 2px rgba(0, 0, 0, 0.2);
-    background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+    border-radius: 90px;
+    box-shadow: inset 0 -2px 0 rgba(255, 255, 255, 0.1), 0 2px 2px rgba(255, 255, 255, 0.2);
+    background-image: linear-gradient(to bottom, rgb(7, 145, 199), rgba(255, 255, 255, 0.466));
 }
 
 .item-slot-key p {
@@ -214,33 +212,37 @@ input[type="number"]::-webkit-outer-spin-button {
 .item-slot-label {
     position: absolute;
     white-space: nowrap;
-    bottom: 0;
-    height: 1vh;
+    bottom: 2px;
+    height: 1.5vh;
+    gap: 20px;
     width: 100%;
-    background-color: var(--background-color);
+    background-color: rgb(58, 58, 58);
+    border-radius: 5px;
     display: flex;
     justify-content: center;
     align-items: center;
+    border: 1px solid rgb(124, 124, 124);
 }
 
 .item-slot-label p {
     margin: 0;
     font-size: var(--font-size);
     text-transform: uppercase;
-    color: var(--text-color);
+    color: rgb(255, 255, 255);
     font-weight: bolder;
 }
 
 .item-slot-quality {
     position: absolute;
-    bottom: 1vh;
-    width: 100%;
+    bottom: 1.7vh;
+    width: 96%;
     height: 4px;
-    background-color: #2d2d2d;
+    background-color: #2d2d2d11;
+    border-radius: 3px;
 }
 
 .item-slot-quality-bar {
-    height: 4px;
+    height: 3px;
 }
 
 .inv-options {
@@ -267,8 +269,10 @@ input[type="number"]::-webkit-outer-spin-button {
     text-align: center;
     height: 3vh;
     font-weight: bolder;
-    color: var(--text-color);
+    color: white;
     background-color: var(--background-color);
+    border-radius: 8px;
+    border: 2px solid rgb(124, 124, 124);
 }
 
 #item-use p,
@@ -284,12 +288,14 @@ input[type="number"]::-webkit-outer-spin-button {
     position: fixed;
     top: 67%;
     left: 50%;
-    width: 15vw;
+    width: 11vw;
+    color: white;
     transform: translate(-50%, -50%);
     align-items: center;
     text-align: center;
-    background-color: var(--background-color);
-    border-radius: 5px;
+    background-color: rgba(61, 61, 61, 0.342);
+    border-radius: 8px;
+    border: 1px solid rgb(124, 124, 124);
 }
 
 .weapon-attachments-container {
@@ -323,15 +329,15 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .weapon-attachments-container-detail-durability {
     height: 1.5vh;
-    width: 10vh;
-    background-color: rgba(0, 0, 0, 0.3);
+    width: 10vh;    
+    background-color: rgba(34, 34, 34, 0.74);
     border-radius: 1px;
 }
 
 .weapon-attachments-container-detail-durability-total {
     height: 100%;
     width: 50%;
-    background-color: rgb(39, 174, 96);
+    background-color: rgb(39, 124, 174);
 }
 
 .weapon-attachments-container-image {
@@ -364,17 +370,17 @@ input[type="number"]::-webkit-outer-spin-button {
     top: 80%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: var(--background-color);
+    background-color: rgba(59, 58, 58, 0.74);
 }
 
 .weapon-attachments-remove > i {
-    color: var(--text-color);
+    color: whitesmoke;
     font-size: 2vh;
     padding: 1vh;
 }
 
 .weapon-attachments-remove:hover {
-    background-color: var(--hover-color);
+    background-color: rgba(66, 66, 66, 0.74);
 }
 
 .weapon-attachments-back {
@@ -384,10 +390,10 @@ input[type="number"]::-webkit-outer-spin-button {
     width: 10vh;
     height: 6vh;
     margin: 5vh;
-    color: var(--text-color);
+    color: white;
     text-align: center;
     line-height: 6vh;
-    background-color: var(--background-color);
+    background-color: rgba(34, 34, 34, 0.74);
     transition: 0.05s linear;
 }
 
