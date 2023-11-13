@@ -396,7 +396,7 @@ function generateDescription(itemData) {
             return `<p>Lab: ${itemData.info.lab}</p>`;
         default:
             let itemDescr = itemData.description;
-	    if (itemData.info.costs != undefined && itemData.info.costs != null) itemDescr += `<p><strong>Benodigdheden:</strong><span>${itemData.info.costs}</span></p>`;
+	    if (itemData.info.costs != undefined && itemData.info.costs != null) itemDescr += `<p><strong>ITEMS NEEDED:</strong><span>${itemData.info.costs}</span></p>`;
             return itemDescr;
     }
 }
