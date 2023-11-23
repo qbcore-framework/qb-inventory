@@ -1352,6 +1352,13 @@ end
 
 exports('addTrunkItems', addTrunkItems)
 
+function getTrunkItems(plate)
+	if not Trunks[plate] then return end
+	return Trunks[plate].items
+end
+
+exports('getTrunkItems', getTrunkItems)
+
 function addGloveboxItems(plate, items)
 	Gloveboxes[plate] = {}
 	Gloveboxes[plate].items = items
