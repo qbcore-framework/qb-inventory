@@ -637,7 +637,7 @@ function updateOtherProgressBar(totalWeightOther, otherMaxWeight) {
 }
 
 function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
-	var otherinventory = otherLabel.toLowerCase();
+    var otherinventory = otherLabel.toLowerCase();
     if (otherinventory.split("-")[0] == "dropped") {
         toData = $toInv.find("[data-slot=" + $toSlot + "]").data("item");
         if (toData !== null && toData !== undefined) {
