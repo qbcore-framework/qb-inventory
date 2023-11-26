@@ -396,7 +396,7 @@ function generateDescription(itemData) {
             return `<p>Lab: ${itemData.info.lab}</p>`;
         default:
             let itemDescr = itemData.description;
-	    if (itemData.info.costs != undefined && itemData.info.costs != null) itemDescr += `<p><strong>ITEMS NEEDED:</strong><span>${itemData.info.costs}</span></p>`;
+	    if (itemData.info.costs != undefined && itemData.info.costs != null) itemDescr += `<p><strong>ITEMS NEEDED:</strong> <span>${itemData.info.costs}</span></p>`;
             return itemDescr;
     }
 }
@@ -637,7 +637,7 @@ function updateOtherProgressBar(totalWeightOther, otherMaxWeight) {
 }
 
 function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
-    var otherinventory = otherLabel.toLowerCase();
+	var otherinventory = otherLabel.toLowerCase();
     if (otherinventory.split("-")[0] == "dropped") {
         toData = $toInv.find("[data-slot=" + $toSlot + "]").data("item");
         if (toData !== null && toData !== undefined) {
@@ -650,7 +650,7 @@ function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
         return true;
     }
 
-    if (($fromInv.attr("data-inventory").split("-")[0] == "itemshop" && $toInv.attr("data-inventory").split("-")[0] == "itemshop") || ($fromInv.attr("data-inventory") == "crafting" && $toInv.attr("data-inventory") == "crafting")) {
+    if (($fromInv.attr("data-inventory").split("-")[0] == "itemshop" && $toInv.attr("data-inventory").split("-")[0] == "itemshop") || ($fromInv.attr("data-inventory") == "crafting" && $toInv.attr("data-inventory") == "crafting") || ($fromInv.attr("data-inventory") == "attachment_crafting" && $toInv.attr("data-inventory") == "attachment_crafting")) {
         itemData = $fromInv.find("[data-slot=" + $fromSlot + "]").data("item");
         if ($fromInv.attr("data-inventory").split("-")[0] == "itemshop") {
             $fromInv.find("[data-slot=" + $fromSlot + "]").html('<div class="item-slot-img"><img src="images/' + itemData.image + '" alt="' + itemData.name + '" /></div><div class="item-slot-amount"><p>(' + itemData.amount + ") $" + itemData.price + '</p></div><div class="item-slot-label"><p>' + itemData.label + "</p></div>");
@@ -662,7 +662,7 @@ function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
         return false;
     }
 
-    if ($toAmount == 0 && ($fromInv.attr("data-inventory").split("-")[0] == "itemshop" || $fromInv.attr("data-inventory") == "crafting")) {
+    if ($toAmount == 0 && ($fromInv.attr("data-inventory").split("-")[0] == "itemshop" || $fromInv.attr("data-inventory") == "crafting"  || $fromInv.attr("data-inventory") == "attachment_crafting")) {
         itemData = $fromInv.find("[data-slot=" + $fromSlot + "]").data("item");
         if ($fromInv.attr("data-inventory").split("-")[0] == "itemshop") {
             $fromInv.find("[data-slot=" + $fromSlot + "]").html('<div class="item-slot-img"><img src="images/' + itemData.image + '" alt="' + itemData.name + '" /></div><div class="item-slot-amount"><p>(' + itemData.amount + ") $" + itemData.price + '</p></div><div class="item-slot-label"><p>' + itemData.label + "</p></div>");
@@ -674,7 +674,7 @@ function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
         return false;
     }
 
-    if ($toInv.attr("data-inventory").split("-")[0] == "itemshop" || $toInv.attr("data-inventory") == "crafting") {
+    if ($toInv.attr("data-inventory").split("-")[0] == "itemshop" || $toInv.attr("data-inventory") == "crafting" || $toInv.attr("data-inventory") == "attachment_crafting") {
         itemData = $toInv.find("[data-slot=" + $toSlot + "]").data("item");
         if ($toInv.attr("data-inventory").split("-")[0] == "itemshop") {
             $toInv.find("[data-slot=" + $toSlot + "]").html('<div class="item-slot-img"><img src="images/' + itemData.image + '" alt="' + itemData.name + '" /></div><div class="item-slot-amount"><p>(' + itemData.amount + ") $" + itemData.price + '</p></div><div class="item-slot-label"><p>' + itemData.label + "</p></div>");
@@ -717,12 +717,12 @@ function updateweights($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
         }
     }
 
-    if (totalWeight > playerMaxWeight || (totalWeightOther > otherMaxWeight && $fromInv.attr("data-inventory").split("-")[0] != "itemshop" && $fromInv.attr("data-inventory") != "crafting")) {
+    if (totalWeight > playerMaxWeight || (totalWeightOther > otherMaxWeight && $fromInv.attr("data-inventory").split("-")[0] != "itemshop" && $fromInv.attr("data-inventory") != "crafting" && $fromInv.attr("data-inventory") != "attachment_crafting")) {
         InventoryError($fromInv, $fromSlot);
         return false;
     }
     updateProgressBar(parseInt(totalWeight), playerMaxWeight);
-    if ($fromInv.attr("data-inventory").split("-")[0] != "itemshop" && $toInv.attr("data-inventory").split("-")[0] != "itemshop" && $fromInv.attr("data-inventory") != "crafting" && $toInv.attr("data-inventory") != "crafting") {
+    if ($fromInv.attr("data-inventory").split("-")[0] != "itemshop" && $toInv.attr("data-inventory").split("-")[0] != "itemshop" && $fromInv.attr("data-inventory") != "crafting" && $toInv.attr("data-inventory") != "attachment_crafting") {
         $("#other-inv-label").html(otherLabel);
         updateOtherProgressBar(parseInt(totalWeightOther), otherMaxWeight);
     }
