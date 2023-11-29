@@ -256,6 +256,10 @@ local function RemoveItem(source, item, amount, slot)
 		if not slots then return false end
 
 		for _, _slot in pairs(slots) do
+			if not Player.PlayerData.items[_slot] then
+				DropPlayer(source, 'Failed to remove item, most likely cheating')
+				return false
+			end
 			if Player.PlayerData.items[_slot].amount > amountToRemove then
 				Player.PlayerData.items[_slot].amount = Player.PlayerData.items[_slot].amount - amountToRemove
 				Player.Functions.SetPlayerData('items', Player.PlayerData.items)
