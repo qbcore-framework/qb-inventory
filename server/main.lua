@@ -226,6 +226,7 @@ local function RemoveItem(source, item, amount, slot)
 	slot = tonumber(slot)
 
 	if slot then
+		if not Player.PlayerData.items[slot] then DropPlayer(source, 'Failed to remove item, most likely cheating') end
 		if Player.PlayerData.items[slot].amount > amount then
 			Player.PlayerData.items[slot].amount = Player.PlayerData.items[slot].amount - amount
 			Player.Functions.SetPlayerData('items', Player.PlayerData.items)
