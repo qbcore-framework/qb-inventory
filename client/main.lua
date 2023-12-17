@@ -900,7 +900,7 @@ RegisterNUICallback("SetInventoryData", function(data, cb)
     local isTimeoutOccurred = false
     local currentRequestId = GetGameTimer()
     QBCore.Functions.TriggerCallback('inventory:requestserver', function(isConnected, requestId)
-        if requestId ~= currentRequestId or isTimeoutOccurred then 
+        if requestId ~= currentRequestId or isTimeoutOccurred then
             return
         end
         isResponseReceived = true
