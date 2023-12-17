@@ -1719,25 +1719,23 @@ QBCore.Functions.CreateCallback('inventory:requestserver', function(source, cb, 
 end)
 
 RegisterNetEvent('inventory:statusBreak', function(data)
-	local src = source
-	local Player = QBCore.Functions.GetPlayer(src)
-	local discordId = QBCore.Functions.GetIdentifier(src, 'discord'):gsub("discord:", "")
-        local discordMention = "<@" .. discordId .. ">"
-	local content = {
-		{
-			["color"] = '2302179',
-			["title"] = "**Player Kicked**",
-			["description"] = "**"..discordMention .. " / "..GetPlayerName(src).."** was kicked for inventory action timeout. \n\n From: **" ..data.fromInventory.." \n **To:** "..data.toInventory.."**",			
-			["footer"] = {
-			["text"] = "Inventory",
-	            	},
-	        }
-	    }
-		PerformHttpRequest("YOUR_DISCORD_WEBHOOK_LINK", function(err, text, headers) end, 'POST', json.encode({username = "Inventory", embeds = content}), { ['Content-Type'] = 'application/json' })	
-		--TriggerEvent("qb-log:server:CreateLog", "inventory", "Player Kicked", "orange", "**" .. discordMention .. " / " .. GetPlayerName(src) .. "** was kicked for inventory timeout. \n\n From: **" .. data.fromInventory .. " \n **To:** " .. data.toInventory .. "**")
-		DropPlayer(source, "Something went wrong. \n\n If you or the server were experiencing network issues or timing out, simply relaunch your game and reconnect.")
-
-	end)
+    local src = source
+    local discordId = QBCore.Functions.GetIdentifier(src, 'discord'):gsub("discord:", "")
+    local discordMention = "<@" .. discordId .. ">"
+    local content = {
+        {
+            ["color"] = '2302179',
+            ["title"] = "**Player Kicked**",
+            ["description"] = "**" .. discordMention .. " / " .. GetPlayerName(src) .. "** was kicked for inventory action timeout. \n\n From: **" .. data.fromInventory .. " \n **To:** " .. data.toInventory .. "**",
+            ["footer"] = {
+                ["text"] = "Inventory",
+            },
+        }
+    }
+    PerformHttpRequest("YOUR_DISCORD_WEBHOOK_LINK", function(_, _, _) end, 'POST', json.encode({username = "Inventory", embeds = content}), { ['Content-Type'] = 'application/json' })
+    --TriggerEvent("qb-log:server:CreateLog", "inventory", "Player Kicked", "orange", "**" .. discordMention .. " / " .. GetPlayerName(src) .. "** was kicked for inventory timeout. \n\n From: **" .. data.fromInventory .. " \n **To:** " .. data.toInventory .. "**")
+    DropPlayer(src, "Something went wrong. \n\n If you or the server were experiencing network issues or timing out, simply relaunch your game and reconnect.")
+end)
 
 RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, toInventory, fromSlot, toSlot, fromAmount, toAmount)
 	local src = source
