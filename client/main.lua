@@ -899,24 +899,20 @@ RegisterNUICallback("SetInventoryData", function(data, cb)
     local isResponseReceived = false
     local isTimeoutOccurred = false
     local currentRequestId = GetGameTimer()
-
     QBCore.Functions.TriggerCallback('inventory:requestserver', function(isConnected, requestId)
         if requestId ~= currentRequestId or isTimeoutOccurred then 
             return
         end
-
         isResponseReceived = true
-
         if isConnected then
             TriggerServerEvent('inventory:server:SetInventoryData', data.fromInventory, data.toInventory, data.fromSlot, data.toSlot, data.fromAmount, data.toAmount)
             cb('ok')
         end
     end, currentRequestId)
-
     Citizen.SetTimeout(2000, function()
         if not isResponseReceived then
             isTimeoutOccurred = true
-            TriggerServerEvent("inventory:statusBreak", data.fromInventory, data.toInventory, data.fromSlot, data.toSlot, data.fromAmount, data.toAmount)
+            TriggerServerEvent("inventory:statusBreak", data)
         end
     end)
 end)
