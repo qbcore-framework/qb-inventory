@@ -1709,6 +1709,27 @@ RegisterNetEvent('inventory:server:UseItem', function(inventory, item)
 	end
 end)
 
+QBCore.Functions.CreateCallback('inventory:requestserver', function(source, cb, requestId)
+    local Player = QBCore.Functions.GetPlayer(source)
+    if Player then
+        cb(true, requestId)
+    else
+        cb(false, requestId)
+    end
+end)
+
+RegisterNetEvent('inventory:statusBreak', function(fromInventory, toInventory, fromSlot, toSlot, fromAmount, toAmount)
+    local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+    if Player then
+        local CitizenID = Player.PlayerData.citizenid
+        local discordId = QBCore.Functions.GetIdentifier(src, 'discord'):gsub("discord:", "")
+        local discordMention = "<@" .. discordId .. ">"
+        --TriggerEvent("qb-log:server:CreateLog", "inventory", "Player Kicked", "orange", "**" .. discordMention .. " / " .. GetPlayerName(src) .. "** was kicked for inventory timeout. \n\n From: **" .. fromInventory .. " \n **To:** " .. toInventory .. "**")
+        DropPlayer(src, "Something went wrong. \n\n If you or the server were experiencing network issues or timing out, simply relaunch your game and reconnect.")
+    end
+end)
+
 RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, toInventory, fromSlot, toSlot, fromAmount, toAmount)
 	local src = source
 	local Player = QBCore.Functions.GetPlayer(src)
