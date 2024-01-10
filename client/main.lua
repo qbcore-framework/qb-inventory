@@ -55,32 +55,6 @@ end
 
 exports('HasItem', HasItem)
 
----Gets the closest vending machine object to the client
----@return integer closestVendingMachine
-local function GetClosestVending()
-    local ped = PlayerPedId()
-    local pos = GetEntityCoords(ped)
-    local object = nil
-    for _, machine in pairs(Config.VendingObjects) do
-        local ClosestObject = GetClosestObjectOfType(pos.x, pos.y, pos.z, 0.75, joaat(machine), false, false, false)
-        if ClosestObject ~= 0 then
-            if object == nil then
-                object = ClosestObject
-            end
-        end
-    end
-    return object
-end
-
----Opens the vending machine shop
-local function OpenVending()
-    local ShopItems = {}
-    ShopItems.label = 'Vending Machine'
-    ShopItems.items = Config.VendingItem
-    ShopItems.slots = #Config.VendingItem
-    TriggerServerEvent('inventory:server:OpenInventory', 'shop', 'Vendingshop_' .. math.random(1, 99), ShopItems)
-end
-
 ---Draws 3d text in the world on the given position
 ---@param x number The x coord of the text to draw
 ---@param y number The y coord of the text to draw
@@ -676,8 +650,6 @@ RegisterCommand('inventory', function()
         if not PlayerData.metadata['isdead'] and not PlayerData.metadata['inlaststand'] and not PlayerData.metadata['ishandcuffed'] and not IsPauseMenuActive() then
             local ped = PlayerPedId()
             local curVeh = nil
-            local VendingMachine = nil
-            if not Config.UseTarget then VendingMachine = GetClosestVending() end
 
             if IsPedInAnyVehicle(ped, false) then -- Is Player In Vehicle
                 local vehicle = GetVehiclePedIsIn(ped, false)
@@ -729,12 +701,6 @@ RegisterCommand('inventory', function()
                 TriggerServerEvent('inventory:server:OpenInventory', 'glovebox', CurrentGlovebox)
             elseif CurrentDrop ~= 0 then
                 TriggerServerEvent('inventory:server:OpenInventory', 'drop', CurrentDrop)
-            elseif VendingMachine then
-                local ShopItems = {}
-                ShopItems.label = 'Vending Machine'
-                ShopItems.items = Config.VendingItem
-                ShopItems.slots = #Config.VendingItem
-                TriggerServerEvent('inventory:server:OpenInventory', 'shop', 'Vendingshop_' .. math.random(1, 99), ShopItems)
             else
                 openAnim()
                 TriggerServerEvent('inventory:server:OpenInventory')
@@ -990,23 +956,6 @@ CreateThread(function()
             DropsNear = {}
         end
         Wait(500)
-    end
-end)
-
-CreateThread(function()
-    if Config.UseTarget then
-        exports['qb-target']:AddTargetModel(Config.VendingObjects, {
-            options = {
-                {
-                    icon = 'fa-solid fa-cash-register',
-                    label = Lang:t('menu.vending'),
-                    action = function()
-                        OpenVending()
-                    end
-                },
-            },
-            distance = 2.5
-        })
     end
 end)
 

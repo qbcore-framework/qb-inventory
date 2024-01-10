@@ -15,36 +15,11 @@ Config.MaxDropViewDistance = 12.5               -- The distance in GTA Units tha
 Config.UseItemDrop = false                      -- This will enable item object to spawn on drops instead of markers
 Config.ItemDropObject = `prop_nigel_bag_pickup` -- if Config.UseItemDrop is true, this will be the prop that spawns for the item
 
-Config.VendingObjects = {
-    'prop_vend_soda_01',
-    'prop_vend_soda_02',
-    'prop_vend_water_01'
-}
-
 Config.BinObjects = {
     'prop_bin_05a',
 }
 
 Config.CraftingObject = `prop_toolchest_05`
-
-Config.VendingItem = {
-    {
-        name = 'kurkakola',
-        price = 4,
-        amount = 50,
-        info = {},
-        type = 'item',
-        slot = 1,
-    },
-    {
-        name = 'water_bottle',
-        price = 4,
-        amount = 50,
-        info = {},
-        type = 'item',
-        slot = 2,
-    },
-}
 
 -- See the vehicle class here: https://docs.fivem.net/natives/?_0x29439776AAA00A62
 -- The template:
