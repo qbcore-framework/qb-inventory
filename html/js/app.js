@@ -394,6 +394,46 @@ function generateDescription(itemData) {
             return `<p><strong>Card Holder: </strong><span>${itemData.info.name}</span></p>`;
         case "labkey":
             return `<p>Lab: ${itemData.info.lab}</p>`;
+        case "helmet":
+            return `<p><strong> Helmet Model : </strong><span>#${itemData.info.model}</span></p>
+            <p><strong>Helmet Variant: </strong><span>#${itemData.info.variant}</span></p>`;
+        case "top":
+            return `<p><strong> T-Shirt Model : </strong><span>#${itemData.info.shirt_model}</span></p>
+            <p><strong>T-Shirt Variant: </strong><span>#${itemData.info.shirt_variant}</span></p>
+            <p><strong>Jacket Variant: </strong><span>#${itemData.info.jacket_model}</span></p>
+            <p><strong>Jacket Variant: </strong><span>#${itemData.info.jacket_variant}</span></p>
+            <p><strong>Gloves Variant: </strong><span>#${itemData.info.gloves_model}</span></p>
+            <p><strong>Gloves Variant: </strong><span>#${itemData.info.gloves_variant}</span></p>`;
+        case "pants":
+            return `<p><strong> Pants Model : </strong><span>#${itemData.info.model}</span></p>
+            <p><strong>Pants Variant: </strong><span>#${itemData.info.variant}</span></p>`;
+        case "shoes":
+            return `<p><strong> Shoes Model : </strong><span>#${itemData.info.model}</span></p>
+            <p><strong>Shoes Variant: </strong><span>#${itemData.info.variant}</span></p>`;
+        case "neck":
+            return `<p><strong> Necklace Model : </strong><span>#${itemData.info.model}</span></p>
+            <p><strong>Necklace Variant: </strong><span>#${itemData.info.variant}</span></p>`;
+        case "ear":
+            return `<p><strong> Earings Model : </strong><span>#${itemData.info.model}</span></p>
+            <p><strong>Earings Variant: </strong><span>#${itemData.info.variant}</span></p>`;
+        case "glasses":
+            return `<p><strong> Glasses Model : </strong><span>#${itemData.info.model}</span></p>
+            <p><strong>Glasses Variant: </strong><span>#${itemData.info.variant}</span></p>`;
+        case "bracelet":
+            return `<p><strong> Bracelet Model : </strong><span>#${itemData.info.model}</span></p>
+            <p><strong>Barings Variant: </strong><span>#${itemData.info.variant}</span></p>`;
+        case "watch":
+            return `<p><strong> Watch Model : </strong><span>#${itemData.info.model}</span></p>
+            <p><strong>Watch Variant: </strong><span>#${itemData.info.variant}</span></p>`;
+        case "mask":
+            return `<p><strong> Mask Model : </strong><span>#${itemData.info.model}</span></p>
+            <p><strong>Mask Variant: </strong><span>#${itemData.info.variant}</span></p>`;
+        case "vest":
+            return `<p><strong> Best Model : </strong><span>#${itemData.info.model}</span></p>
+            <p><strong>Best Variant: </strong><span>#${itemData.info.variant}</span></p>`;
+        case "bag":
+            return `<p><strong> Bag Model : </strong><span>#${itemData.info.model}</span></p>
+            <p><strong>Bag Variant: </strong><span>#${itemData.info.variant}</span></p>`;
         default:
             let itemDescr = itemData.description;
 	    if (itemData.info.costs != undefined && itemData.info.costs != null) itemDescr += `<p><strong>ITEMS NEEDED:</strong> <span>${itemData.info.costs}</span></p>`;
