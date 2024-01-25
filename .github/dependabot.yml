@@ -1,0 +1,18 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      vue:
+        patterns:
+          - "@vue/*"
+      eslint:
+        patterns:
+          - "eslint"
+          - "eslint-*"
