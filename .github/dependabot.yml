@@ -11,6 +11,7 @@ updates:
     groups:
       vue:
         patterns:
+          - "vue"
           - "@vue/*"
       eslint:
         patterns:
