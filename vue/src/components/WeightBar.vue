@@ -22,7 +22,7 @@ const props = defineProps<{
 const bar = ref<HTMLDivElement | null>(null);
 
 const usedWeight = computed(() =>
-  props.container.Items.value.reduce((acc, item) => acc + item.totalWeight, 0)
+  props.container.Items.value.reduce((acc, item) => acc + item.totalWeight, 0),
 );
 
 const weightPercentage = computed(() => {

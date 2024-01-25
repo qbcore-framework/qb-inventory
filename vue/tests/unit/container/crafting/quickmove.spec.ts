@@ -27,14 +27,14 @@ describe("Inventory", () => {
       new Array(10),
       1000,
       { pistol: 0, smg: 0, rifle: 0, shotgun: 0 },
-      []
+      [],
     );
     otherInventory = new PlayerInventory();
     otherInventory.UpdateContents(
       new Array(10),
       1000,
       { pistol: 0, smg: 0, rifle: 0, shotgun: 0 },
-      []
+      [],
     );
 
     coffeeItem = ItemFactory({ name: "Coffee", amount: 1 });

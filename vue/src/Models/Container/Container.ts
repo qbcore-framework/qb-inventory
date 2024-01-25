@@ -23,7 +23,7 @@ class Container extends ContainerBase<Item> {
     items: Item[],
     maxWeight: number,
     maxAmmo: MaxAmmo,
-    ammo: []
+    ammo: [],
   ) {
     this._UpdateContents(items, maxWeight, maxAmmo, ammo);
     this._name = name;

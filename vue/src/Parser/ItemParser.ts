@@ -21,7 +21,7 @@ function ParseCraftingInventory(itemData: any, slots: number): CraftingItem[] {
 function StructureInventoryArray<TItem extends Item>(
   itemParseFunction: (itemData: any) => TItem,
   itemData: any,
-  slots: number
+  slots: number,
 ): TItem[] {
   const items = new Array<TItem>(slots);
 
@@ -62,7 +62,7 @@ function CreateCraftingItem(itemData: CraftingItem): CraftingItem {
     itemData.usable,
     itemData.image,
     itemData.id,
-    itemData.shouldClose
+    itemData.shouldClose,
   );
 }
 
@@ -85,7 +85,7 @@ function CreateContainerItem(itemData: Item & { slot: number }): Item {
       itemData.usable,
       itemData.image,
       itemData.id,
-      itemData.shouldClose
+      itemData.shouldClose,
     );
   } else {
     item = new Item(
@@ -100,7 +100,7 @@ function CreateContainerItem(itemData: Item & { slot: number }): Item {
       itemData.usable,
       itemData.image,
       itemData.id,
-      itemData.shouldClose
+      itemData.shouldClose,
     );
   }
 

@@ -14,12 +14,12 @@ export function ItemFactory(overrides?: Partial<Item>): Item {
     overrides?.usable ?? false,
     overrides?.image ?? "test.png",
     overrides?.id ?? 1,
-    overrides?.shouldClose ?? undefined
+    overrides?.shouldClose ?? undefined,
   );
 }
 
 export function CraftingItemFactory(
-  overrides?: Partial<CraftingItem>
+  overrides?: Partial<CraftingItem>,
 ): CraftingItem {
   return new CraftingItem(
     overrides?.costs ?? {},
@@ -36,6 +36,6 @@ export function CraftingItemFactory(
     overrides?.usable ?? false,
     overrides?.image ?? "test.png",
     overrides?.id ?? 1,
-    overrides?.shouldClose ?? undefined
+    overrides?.shouldClose ?? undefined,
   );
 }

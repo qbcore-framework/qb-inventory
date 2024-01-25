@@ -38,7 +38,7 @@ class Weapon extends Item {
     usable: boolean,
     image: string,
     id: number,
-    shouldClose?: boolean
+    shouldClose?: boolean,
   ) {
     // eslint-disable-next-line prettier/prettier
     super(name, amount, info, label, description, weight, type, unique, usable, image, id, shouldClose);
@@ -49,7 +49,7 @@ class Weapon extends Item {
 
   public async RemoveAttachment(attachmentName: string) {
     const attachment = (await this.GetWeaponData()).AttachmentData.find(
-      (a) => a.attachment === attachmentName
+      (a) => a.attachment === attachmentName,
     );
 
     const weaponData = JSON.parse(JSON.stringify(this));
@@ -65,7 +65,7 @@ class Weapon extends Item {
 
     // Remove attachment from weapon
     this.weaponData.AttachmentData = this.weaponData.AttachmentData.filter(
-      (a) => a.attachment !== attachmentName
+      (a) => a.attachment !== attachmentName,
     );
   }
 }

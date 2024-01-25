@@ -55,7 +55,7 @@
     <WeaponPanel
       class="absolute"
       v-if="showWeaponPanel"
-      :weapon="(selectedItem as Weapon)"
+      :weapon="selectedItem as Weapon"
     />
   </div>
 </template>
@@ -87,8 +87,8 @@ provide(
     () =>
       container.isVisible.value &&
       container.isGround() &&
-      fromIndex.value !== null
-  )
+      fromIndex.value !== null,
+  ),
 );
 
 const selectedItem: Ref<Item | null> = inject(Item.SELECTED_ITEM, ref(null));
@@ -96,7 +96,7 @@ const selectedItem: Ref<Item | null> = inject(Item.SELECTED_ITEM, ref(null));
 const canModifyWeapon = computed(
   () =>
     selectedItem.value instanceof Weapon &&
-    inventory.Items.value.includes(selectedItem.value)
+    inventory.Items.value.includes(selectedItem.value),
 );
 
 const showWeaponPanel = ref(false);
@@ -126,7 +126,7 @@ function onItemDropped(index: number, dropInventory: ContainerBase<Item>) {
     fromIndex.value,
     index,
     dropInventory,
-    getMoveAmount()
+    getMoveAmount(),
   );
 }
 
@@ -134,7 +134,7 @@ function onQuickMove(index: number, fromInventory: ContainerBase<Item>) {
   fromInventory.QuickMoveItem(
     index,
     fromInventory === inventory ? container : inventory,
-    getMoveAmount()
+    getMoveAmount(),
   );
 }
 

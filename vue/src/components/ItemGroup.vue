@@ -94,7 +94,7 @@ function onMouseUp(event: MouseEvent, index: number) {
 
   // Find second item with 'item-container' class
   const element = elements.filter((element) =>
-    element.classList.contains("item-container")
+    element.classList.contains("item-container"),
   )[1];
 
   if (element)

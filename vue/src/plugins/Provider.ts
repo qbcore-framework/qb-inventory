@@ -13,7 +13,7 @@ const ProviderPlugin: Plugin = {
       container: Container;
       craftingContainer: CraftingContainer;
       hotbar: Hotbar;
-    }
+    },
   ) {
     app.provide("inventory", options.inventory);
     app.provide("container", options.container);

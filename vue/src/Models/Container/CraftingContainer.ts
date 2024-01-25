@@ -21,7 +21,7 @@ class CraftingContainer extends ContainerBase<CraftingItem> {
         rifle: 0,
         smg: 0,
       },
-      []
+      [],
     );
   }
 
@@ -29,7 +29,7 @@ class CraftingContainer extends ContainerBase<CraftingItem> {
     fromSlot: number,
     toSlot: number,
     toInventory: ContainerBase<Item>,
-    amount?: number
+    amount?: number,
   ): void {
     // Check if toInventory contains the items required to craft the item being moved
     const craftItem = this.Items.value[fromSlot];
@@ -43,14 +43,14 @@ class CraftingContainer extends ContainerBase<CraftingItem> {
     // Remove the items required to craft the item being moved
     toInventory.Items.value = craftItem.removeCraftingItems(
       toInventory.Items.value,
-      amount
+      amount,
     );
   }
 
   override QuickMoveItem(
     fromSlot: number,
     toInventory: ContainerBase<Item>,
-    amount?: number
+    amount?: number,
   ): void {
     // Check if toInventory contains the items required to craft the item being moved
     const craftItem = this.Items.value[fromSlot];

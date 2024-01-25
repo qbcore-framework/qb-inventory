@@ -39,7 +39,7 @@ abstract class ContainerBase<TItem extends Item> {
     items: TItem[],
     maxWeight: number,
     maxAmmo: MaxAmmo,
-    ammo: []
+    ammo: [],
   ) {
     this.Items.value = items;
     this._maxWeight.value = maxWeight;
@@ -56,7 +56,7 @@ abstract class ContainerBase<TItem extends Item> {
     fromSlot: number,
     toSlot: number,
     toInventory?: ContainerBase<Item>,
-    amount?: number
+    amount?: number,
   ) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     if (!toInventory) toInventory = this;
@@ -129,7 +129,7 @@ abstract class ContainerBase<TItem extends Item> {
   public QuickMoveItem(
     fromSlot: number,
     toInventory: ContainerBase<Item>,
-    amount?: number
+    amount?: number,
   ) {
     const fromItem = this.Items.value[fromSlot];
 
@@ -138,7 +138,7 @@ abstract class ContainerBase<TItem extends Item> {
 
     // Check if there it can merge with any items in the to inventory
     let toSlot = toInventory.Items.value.findIndex((item) =>
-      fromItem.canMerge(item)
+      fromItem.canMerge(item),
     );
 
     // If there is no item to merge with, find a slot with no item

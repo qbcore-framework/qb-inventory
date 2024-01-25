@@ -15,7 +15,7 @@ class Item {
     public usable: boolean,
     public image: string,
     public id: number,
-    public shouldClose?: boolean
+    public shouldClose?: boolean,
   ) {}
 
   get totalWeight(): number {
@@ -51,7 +51,7 @@ class Item {
       this.usable,
       this.image,
       this.id,
-      this.shouldClose
+      this.shouldClose,
     );
   }
 

@@ -14,7 +14,7 @@ const nuiEventPlugin: Plugin = {
       container: Container;
       craftingContainer: CraftingContainer;
       hotbar: Hotbar;
-    }
+    },
   ) {
     const inventory = options.inventory;
     const container = options.container;
@@ -30,7 +30,7 @@ const nuiEventPlugin: Plugin = {
           if (data.other.name === "crafting") {
             craftingContainer.UpdateContents(
               ParseCraftingInventory(data.other.inventory, data.other.slots),
-              data.other.maxweight
+              data.other.maxweight,
             );
             craftingContainer.Open();
           } else {
@@ -39,7 +39,7 @@ const nuiEventPlugin: Plugin = {
               ParseInventory(data.other.inventory, data.other.slots),
               data.other.maxweight,
               data.other.maxammo,
-              data.other.Ammo
+              data.other.Ammo,
             );
             container.Open();
           }
@@ -54,7 +54,7 @@ const nuiEventPlugin: Plugin = {
               rifle: 0,
               smg: 0,
             },
-            []
+            [],
           );
           container.Open();
         }
@@ -63,7 +63,7 @@ const nuiEventPlugin: Plugin = {
           ParseInventory(data.inventory, data.slots),
           data.maxweight,
           data.maxammo,
-          data.Ammo
+          data.Ammo,
         );
         inventory.Open();
       } else if (action === "close") {
@@ -75,7 +75,7 @@ const nuiEventPlugin: Plugin = {
           ParseInventory(data.inventory, data.slots),
           data.maxweight,
           data.maxammo,
-          data.Ammo
+          data.Ammo,
         );
       } else if (action === "itemBox") {
         console.log("itemBox", data);
@@ -86,7 +86,7 @@ const nuiEventPlugin: Plugin = {
               item: CreateContainerItem(data.item),
               type: data.type,
             },
-          })
+          }),
         );
         // Something to do with the item box
       } else if (action === "requiredItem") {

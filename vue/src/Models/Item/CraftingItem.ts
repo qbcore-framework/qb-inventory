@@ -17,7 +17,7 @@ class CraftingItem extends Item {
     usable: boolean,
     image: string,
     id: number,
-    shouldClose?: boolean
+    shouldClose?: boolean,
   ) {
     // eslint-disable-next-line prettier/prettier
     super(name, amount, info, label, description, weight, type, unique, usable, image, id, shouldClose);
@@ -68,7 +68,7 @@ class CraftingItem extends Item {
       if (Object.prototype.hasOwnProperty.call(this.costs, requiredItemName)) {
         let amountToRemove = this.costs[requiredItemName] * amount;
         const ingedients = items.filter(
-          (item) => item.name === requiredItemName
+          (item) => item.name === requiredItemName,
         );
         // Loop through all items with the required name and remove them until the required amount is reached
         for (const ingredient of ingedients) {
