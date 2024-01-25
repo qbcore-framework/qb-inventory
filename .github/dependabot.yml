@@ -17,3 +17,7 @@ updates:
         patterns:
           - "eslint"
           - "eslint-*"
+      cypress:
+        patterns:
+          - "cypress"
+          - "cypress-*"
