@@ -36,8 +36,12 @@
 				"Vue.volar",
 				"ms-azuretools.vscode-docker",
 				"Orta.vscode-jest"
-			]
-		}
+			],
+			"settings": {
+				"jest.jestCommandLine": "yarn test:unit",
+				"jest.rootPath": "./vue"
+			},
+		},
 	},
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.

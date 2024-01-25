@@ -2,6 +2,8 @@
 node_modules
 /dist
 
+# Jest code coverage files
+coverage
 
 # local env files
 .env.local
