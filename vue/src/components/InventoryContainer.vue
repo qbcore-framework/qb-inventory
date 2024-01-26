@@ -169,6 +169,7 @@ function enforceMinMax(event: KeyboardEvent) {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+  z-index: -1;
 }
 
 /* Remove arrows from number input */
