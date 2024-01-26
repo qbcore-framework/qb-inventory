@@ -20,9 +20,7 @@
       >
         <span v-text="attachment.label" />
         <img
-          :src="
-            require(`@/assets/attachment_images/${attachment.attachment}.png`)
-          "
+          :src="require(`@/assets/images/${attachment.attachment}.png`)"
           :alt="attachment.label"
         />
         <button
@@ -52,6 +50,8 @@ const weaponInfo = ref<WeaponDataDto | null>(null);
 
 onMounted(async () => {
   weaponInfo.value = await props.weapon.GetWeaponData();
+
+  console.log(weaponInfo.value);
 });
 
 async function RemoveAttachment(attachment: string) {
