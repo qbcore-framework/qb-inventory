@@ -52,10 +52,13 @@
       </template>
     </TransitionGroup>
     <GroundDropBox @item-dropped="onQuickMove($event.detail, inventory)" />
+    <!-- Ignore "(selectedItem as Weapon)" part as this seems to break the Vue syntax highlighting in VSCode -->
+    <!-- prettier-ignore -->
     <WeaponPanel
       class="absolute"
-      v-if="showWeaponPanel"
-      :weapon="selectedItem as Weapon"
+      v-if="showWeaponPanel && selectedItem"
+      :weapon="(selectedItem as Weapon)"
+      @close-panel="showWeaponPanel = false"
     />
   </div>
 </template>

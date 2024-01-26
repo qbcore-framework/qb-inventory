@@ -6,12 +6,14 @@
     }"
     class="w-screen h-screen bg-no-repeat bg-center bg-cover fixed -z-10 blur transform scale-105"
   />
-  <main class="w-screen h-screen text-white">
-    <InventoryContainer />
-  </main>
-  <HotbarContainer />
-  <ItemDropdown />
-  <ItemBox />
+  <div class="h-screen w-screen">
+    <main class="w-screen h-screen text-white">
+      <InventoryContainer />
+    </main>
+    <HotbarContainer />
+    <ItemDropdown />
+    <ItemBox />
+  </div>
 </template>
 
 <script lang="ts" setup>

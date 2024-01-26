@@ -1,5 +1,11 @@
 <template>
-  <div class="flex flex-col items-center">
+  <div class="flex flex-col items-center relative">
+    <button
+      class="absolute top-0 right-0 w-8 h-8 bg-gray-200/20 hover:bg-gray-200/40 border"
+      @click="$emit('close-panel')"
+    >
+      X
+    </button>
     <div class="w-96 flex justify-center flex-col space-y-2">
       <div>
         <h3 class="text-5xl mb-2" v-text="weapon.label" />
@@ -72,6 +78,8 @@ const props = defineProps({
     required: true,
   },
 });
+
+defineEmits(["close-panel"]);
 
 const weaponInfo = ref<WeaponDataDto | null>(null);
 

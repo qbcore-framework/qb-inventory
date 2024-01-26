@@ -2,7 +2,7 @@ import inventoryOpenEvent from "@/../cypress/fixtures/inventory-open-event.json"
 import inventoryOpenContainerEvent from "@/../cypress/fixtures/inventory-open-container-event.json";
 import fetchGetWeaponDataResponse from "@/../cypress/fixtures/fetch-get-weapon-data-response.json";
 
-function NuiEventMocker() {
+function NuiMocker() {
   // Listen to tab
   window.addEventListener("keydown", (e) => {
     if (e.repeat) return;
@@ -42,4 +42,4 @@ function openInventoryWithFilledContainer() {
   window.postMessage(inventoryOpenContainerEvent);
 }
 
-export { NuiEventMocker };
+export { NuiMocker };

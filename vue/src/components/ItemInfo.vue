@@ -38,9 +38,9 @@ function parseInfoValues(key: string, value: string): string {
     return Number(value).toFixed(0);
   }
 
-  // If value is an object, stringify it
-  if (typeof value === "object") {
-    return JSON.stringify(value);
+  // Attachment data currently misses labels for non-permanent attachments
+  if (key === "attachments") {
+    return "visible in weapon modification menu";
   }
 
   return value;
