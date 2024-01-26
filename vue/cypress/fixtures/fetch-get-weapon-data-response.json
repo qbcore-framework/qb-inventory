@@ -1,0 +1,39 @@
+{
+  "AttachmentData": [
+    {
+      "attachment": "suppressor_attachment",
+      "label": "Suppressor"
+    },
+    {
+      "attachment": "suppressor_attachment",
+      "label": "Suppressor"
+    },
+    {
+      "attachment": "suppressor_attachment",
+      "label": "Suppressor"
+    },
+    {
+      "attachment": "suppressor_attachment",
+      "label": "Suppressor"
+    },
+    {
+      "attachment": "suppressor_attachment",
+      "label": "Suppressor"
+    },
+    {
+      "attachment": "suppressor_attachment",
+      "label": "Suppressor"
+    }
+  ],
+  "WeaponData": {
+    "ammotype": "AMMO_PISTOL",
+    "description": "A small firearm designed to be held in one hand",
+    "image": "weapon_pistol.png",
+    "label": "Walther P99",
+    "name": "weapon_pistol",
+    "type": "weapon",
+    "unique": true,
+    "useable": false,
+    "weight": 1000
+  }
+}

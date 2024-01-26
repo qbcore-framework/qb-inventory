@@ -1,19 +1,46 @@
 <template>
-  <div>
-    <div>
-      <h3>{{ weapon.label }}</h3>
-      <p v-text="weapon.description" />
-      <p>Serial number: {{ weapon.info.serie }}</p>
-      <p>Durability: {{ weapon.info.quality }} / {{ Weapon.MAX_QUALITY }}</p>
+  <div class="flex flex-col items-center">
+    <div class="w-96 flex justify-center flex-col space-y-2">
+      <div>
+        <h3 class="text-5xl mb-2" v-text="weapon.label" />
+        <p v-text="weapon.description" />
+        <span class="font-medium">Serial number: </span>
+        <span> {{ weapon.info.serie }}</span>
+      </div>
+
+      <img
+        :src="require(`@/assets/attachment_images/${weapon.image}`)"
+        :alt="weapon.label"
+        class="w-max"
+      />
+      <div class="relative bg-gray-200/20 w-full h-4">
+        <div
+          :style="{
+            width: weapon.info.quality + '%',
+          }"
+          class="absolute bottom-0 left-0 right-0 bg-green-600 h-full z-50"
+        />
+      </div>
+
+      <div class="space-y-2">
+        <span class="font-medium">Permanent attachments:</span>
+        <div
+          v-for="attachment in getStaticAttachments()"
+          :key="attachment.item"
+        >
+          <li
+            class="list-disc"
+            v-if="attachment.label"
+            v-text="attachment.label"
+          />
+        </div>
+      </div>
+
+      <div class="pb-2" v-if="weaponInfo?.AttachmentData?.length">
+        <span class="font-medium">Removable attachments:</span>
+      </div>
     </div>
-
-    <img
-      :src="require(`@/assets/images/${weapon.image}`)"
-      :alt="weapon.label"
-    />
-
-    <div v-if="weaponInfo?.AttachmentData?.length">
-      <h3>Attachments:</h3>
+    <div v-if="weaponInfo?.AttachmentData?.length" class="flex">
       <div
         v-for="attachment in weaponInfo.AttachmentData"
         :key="attachment.attachment"
@@ -50,9 +77,11 @@ const weaponInfo = ref<WeaponDataDto | null>(null);
 
 onMounted(async () => {
   weaponInfo.value = await props.weapon.GetWeaponData();
-
-  console.log(weaponInfo.value);
 });
+
+function getStaticAttachments() {
+  return props.weapon.info.attachments;
+}
 
 async function RemoveAttachment(attachment: string) {
   props.weapon.RemoveAttachment(attachment);

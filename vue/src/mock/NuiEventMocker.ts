@@ -1,5 +1,6 @@
 import inventoryOpenEvent from "@/../cypress/fixtures/inventory-open-event.json";
 import inventoryOpenContainerEvent from "@/../cypress/fixtures/inventory-open-container-event.json";
+import fetchGetWeaponDataResponse from "@/../cypress/fixtures/fetch-get-weapon-data-response.json";
 
 function NuiEventMocker() {
   // Listen to tab
@@ -15,6 +16,19 @@ function NuiEventMocker() {
       openInventoryWithFilledContainer();
     }
   });
+
+  // monkey patch fetch to intercept "GetWeaponData"
+  const originalFetch = window.fetch;
+
+  window.fetch = async function (input: RequestInfo | URL, init?: RequestInit) {
+    if (typeof input === "string" && input.includes("GetWeaponData")) {
+      return {
+        json: async () => fetchGetWeaponDataResponse,
+      } as Response;
+    }
+
+    return originalFetch(input, init);
+  };
 
   // Open inventory on load
   openInventoryWithFilledContainer();

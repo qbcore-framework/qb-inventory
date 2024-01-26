@@ -99,7 +99,33 @@
               "quality": 100
           },
           "image": "weapon_pumpshotgun.png"
-      }
+      },
+      {
+        "label": "Walther P99",
+        "info": {
+            "attachments": [
+                {
+                    "label": "Flashlight",
+                    "component": "COMPONENT_AT_PI_FLSH"
+                },
+                {
+                    "component": 1709866683
+                }
+            ],
+            "serie": "13Zps1kL012qnXy",
+            "quality": 67.60000000000491,
+            "ammo": 66
+        },
+        "name": "weapon_pistol",
+        "type": "weapon",
+        "amount": 1,
+        "unique": true,
+        "image": "weapon_pistol.png",
+        "description": "A small firearm designed to be held in one hand",
+        "weight": 1000,
+        "useable": false,
+        "slot": 7
+    }
   ],
   "Ammo": [],
   "action": "open",
