@@ -77,6 +77,7 @@ import GroundDropBox from "./GroundDropBox.vue";
 let fromInventory: ContainerBase<Item> | null = null;
 const fromIndex: Ref<number | null> = ref(null);
 const moveAmount = ref(0);
+const isDragging = ref(false);
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const inventory = inject<PlayerInventory>("inventory")!;
@@ -90,7 +91,8 @@ provide(
     () =>
       container.isVisible.value &&
       container.isGround() &&
-      fromIndex.value !== null,
+      isDragging.value === true &&
+      showWeaponPanel.value === false,
   ),
 );
 
@@ -115,11 +117,13 @@ function getMoveAmount() {
 function onDragStart(index: number, inventory: ContainerBase<Item>) {
   fromInventory = inventory;
   fromIndex.value = index;
+  isDragging.value = true;
 }
 
 function onDragEnd() {
   fromInventory = null;
   fromIndex.value = null;
+  isDragging.value = false;
 }
 
 function onItemDropped(index: number, dropInventory: ContainerBase<Item>) {

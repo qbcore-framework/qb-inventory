@@ -84,6 +84,8 @@ function onMouseUp(event: MouseEvent, index: number) {
       } else {
         selectedItem.value = newSelectedItem;
       }
+
+      emit("endDrag");
       return;
     } else {
       selectedItem.value = null;
