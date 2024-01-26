@@ -1,5 +1,6 @@
 import { PlayerInventory } from "@/Models/Container/PlayerInventory";
 import { Item } from "@/Models/Item/Item";
+import { PlayerInventoryFactory } from "@tests/factories/containerfactory";
 import { ItemFactory } from "@tests/factories/itemfactory";
 
 jest.mock("@/plugins/HttpClient", () => {
@@ -21,7 +22,7 @@ describe("PlayerInventory", () => {
   let tenCoffeeItem: Item;
 
   beforeEach(() => {
-    inventory = new PlayerInventory();
+    inventory = PlayerInventoryFactory();
 
     coffeeItem = ItemFactory({ name: "Coffee", amount: 1 });
     teaItem = ItemFactory({ name: "Tea", amount: 1 });
@@ -180,7 +181,7 @@ describe("PlayerInventory", () => {
       const initialFromItem = coffeeItem;
       inventory.Items.value[fromSlot] = initialFromItem;
 
-      const otherInventory = new PlayerInventory();
+      const otherInventory = PlayerInventoryFactory();
       inventory.MoveItem(fromSlot, toSlot, otherInventory);
 
       expect(inventory.Items.value[fromSlot]).toBeUndefined();

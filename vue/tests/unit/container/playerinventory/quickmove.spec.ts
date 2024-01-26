@@ -1,5 +1,6 @@
 import { PlayerInventory } from "@/Models/Container/PlayerInventory";
 import { Item } from "@/Models/Item/Item";
+import { PlayerInventoryFactory } from "@tests/factories/containerfactory";
 import { ItemFactory } from "@tests/factories/itemfactory";
 
 jest.mock("@/plugins/HttpClient", () => {
@@ -22,20 +23,12 @@ describe("PlayerInventory", () => {
   let tenCoffeeItem: Item;
 
   beforeEach(() => {
-    inventory = new PlayerInventory();
-    inventory.UpdateContents(
-      new Array(10),
-      1000,
-      { pistol: 0, smg: 0, rifle: 0, shotgun: 0 },
-      [],
-    );
-    otherInventory = new PlayerInventory();
-    otherInventory.UpdateContents(
-      new Array(10),
-      1000,
-      { pistol: 0, smg: 0, rifle: 0, shotgun: 0 },
-      [],
-    );
+    inventory = PlayerInventoryFactory({
+      items: Array(10),
+    });
+    otherInventory = PlayerInventoryFactory({
+      items: Array(10),
+    });
 
     coffeeItem = ItemFactory({ name: "Coffee", amount: 1 });
     teaItem = ItemFactory({ name: "Tea", amount: 1 });

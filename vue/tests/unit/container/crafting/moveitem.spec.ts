@@ -2,6 +2,10 @@ import { CraftingContainer } from "@/Models/Container/CraftingContainer";
 import { PlayerInventory } from "@/Models/Container/PlayerInventory";
 import { CraftingItem } from "@/Models/Item/CraftingItem";
 import { Item } from "@/Models/Item/Item";
+import {
+  CraftingContainerFactory,
+  PlayerInventoryFactory,
+} from "@tests/factories/containerfactory";
 import { CraftingItemFactory, ItemFactory } from "@tests/factories/itemfactory";
 
 jest.mock("@/plugins/HttpClient", () => {
@@ -27,8 +31,8 @@ describe("CraftingContainer", () => {
   let craftedItem: CraftingItem;
 
   beforeEach(() => {
-    inventory = new PlayerInventory();
-    craftingContainer = new CraftingContainer();
+    inventory = PlayerInventoryFactory();
+    craftingContainer = CraftingContainerFactory();
 
     coffee1 = ItemFactory({
       name: "Coffee",

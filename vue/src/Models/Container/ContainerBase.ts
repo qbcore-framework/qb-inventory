@@ -45,6 +45,15 @@ abstract class ContainerBase<TItem extends Item> {
     this._maxWeight.value = maxWeight;
   }
 
+  public GetRemainingWeight() {
+    const currentWeight = this.Items.value.reduce(
+      (total, item) => total + item.weight * item.amount,
+      0,
+    );
+
+    return this.maxWeight.value - currentWeight;
+  }
+
   /**
    *  Move items from one inventory to another or within the same inventory.
    *
@@ -60,7 +69,7 @@ abstract class ContainerBase<TItem extends Item> {
   ) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     if (!toInventory) toInventory = this;
-    // Cant move negative amount of items
+    // Can't move negative amount of items
     if (amount !== undefined && amount <= 0) return;
 
     // Don't allow moving to same slot if inventory is the same
@@ -79,6 +88,8 @@ abstract class ContainerBase<TItem extends Item> {
     // Can't split items if there is a different item in the to slot (causes items to disappear)
     if (toItem && amount < fromItem.amount && toItem.name !== fromItem.name)
       return;
+    // Can't move items if there if weight limit is exceeded
+    if (toInventory.GetRemainingWeight() < fromItem.weight * amount) return;
 
     const body = {
       fromInventory: this.getId(),
