@@ -83,6 +83,8 @@ abstract class ContainerBase<TItem extends Item> {
 
     // If amount is not set, move all items
     if (amount === undefined) amount = fromItem.amount;
+    // If item is unique, only move one item
+    if (fromItem.unique) amount = 1;
     // Can't move more items than there are in the slot
     if (amount > fromItem.amount) return;
     // Can't split items if there is a different item in the to slot (causes items to disappear)

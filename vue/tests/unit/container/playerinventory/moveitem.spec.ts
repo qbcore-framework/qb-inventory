@@ -188,5 +188,20 @@ describe("PlayerInventory", () => {
       expect(otherInventory.Items.value[toSlot].name).toEqual("Coffee");
       expect(otherInventory.Items.value[toSlot].amount).toEqual(1);
     });
+
+    it("Should only move one item if the item is unique", () => {
+      const fromSlot = 0;
+      const toSlot = 1;
+
+      const initialFromItem = tenCoffeeItem;
+      tenCoffeeItem.unique = true;
+      inventory.Items.value[fromSlot] = initialFromItem;
+
+      inventory.MoveItem(fromSlot, toSlot, undefined, 10);
+
+      expect(inventory.Items.value[fromSlot].amount).toEqual(9);
+      expect(inventory.Items.value[toSlot].name).toEqual("Coffee");
+      expect(inventory.Items.value[toSlot].amount).toEqual(1);
+    });
   });
 });
