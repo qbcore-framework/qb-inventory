@@ -2,6 +2,7 @@ import { HttpClient } from "@/plugins/HttpClient";
 import { Item } from "./Item";
 import { WeaponInfo } from "../Interfaces/WeaponInfo";
 import { WeaponDataDto } from "../Dto/GetWeaponData";
+import { Combinable } from "../Interfaces/Combinable";
 
 class Weapon extends Item {
   public static readonly MAX_QUALITY = 100;
@@ -39,9 +40,10 @@ class Weapon extends Item {
     image: string,
     id: number,
     shouldClose?: boolean,
+    combinable?: Combinable,
   ) {
     // eslint-disable-next-line prettier/prettier
-    super(name, amount, info, label, description, weight, type, unique, usable, image, id, shouldClose);
+    super(name, amount, info, label, description, weight, type, unique, usable, image, id, shouldClose, combinable);
     this.info = info;
     this._slot = slot;
     this._httpClient = new HttpClient();

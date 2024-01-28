@@ -86,6 +86,7 @@ function CreateContainerItem(itemData: Item & { slot: number }): Item {
       itemData.image,
       itemData.id,
       itemData.shouldClose,
+      itemData.combinable,
     );
   } else {
     item = new Item(
@@ -101,6 +102,7 @@ function CreateContainerItem(itemData: Item & { slot: number }): Item {
       itemData.image,
       itemData.id,
       itemData.shouldClose,
+      itemData.combinable,
     );
   }
 

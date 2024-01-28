@@ -2,11 +2,26 @@
   <div class="text-white">
     <p class="font-bold" v-text="hoveredItem?.label" />
     <p
-      v-for="(info, index) in parseInfo(hoveredItem?.info ?? {})"
+      v-for="(info, index) in stringifyInfo(hoveredItem?.info ?? {})"
       v-text="info"
       v-bind:key="index"
     />
     <p v-text="hoveredItem?.description" />
+    <div class="mt-2" v-if="hoveredItem?.combinable">
+      <p>
+        Drag any of the following items onto this one to make
+        <span class="font-medium">{{ hoveredItem.combinable.reward }}</span
+        >:
+      </p>
+      <ul class="list-disc">
+        <li
+          v-for="(combinableInfo, index) in hoveredItem.combinable.accept"
+          v-text="combinableInfo"
+          v-bind:key="index"
+          class="ml-5"
+        />
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -16,7 +31,7 @@ import { inject, ref } from "vue";
 
 const hoveredItem = inject(Item.HOVERED_ITEM, ref<Item | null>(null));
 
-function parseInfo(info: object): string[] {
+function stringifyInfo(info: object): string[] {
   return Object.entries(info).map(
     ([key, value]) =>
       // Capitalize first letter of key
@@ -25,6 +40,11 @@ function parseInfo(info: object): string[] {
         value,
       )}`,
   );
+}
+
+function stringifyCombinableInfo(combinableInfo: string[]): string {
+  // Convert array to comma separated string
+  return combinableInfo.join(", ");
 }
 
 function parseInfoValues(key: string, value: string): string {
