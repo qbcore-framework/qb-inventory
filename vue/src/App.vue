@@ -14,6 +14,7 @@
     <ItemDropdown />
     <ItemBox />
   </div>
+  <ModalPanel />
 </template>
 
 <script lang="ts" setup>
@@ -21,6 +22,7 @@ import InventoryContainer from "@/components/InventoryContainer.vue";
 import HotbarContainer from "@/components/HotbarContainer.vue";
 import ItemDropdown from "@/components/ItemDropdown.vue";
 import ItemBox from "@/components/ItemBox.vue";
+import ModalPanel from "./components/ModalPanel.vue";
 
 function isDevBrowser() {
   return (

@@ -10,6 +10,7 @@
     "postinstall": "cypress install"
   },
   "dependencies": {
+    "@headlessui/vue": "^1.7.17",
     "autoprefixer": "^10",
     "core-js": "^3.35.1",
     "postcss": "^8",

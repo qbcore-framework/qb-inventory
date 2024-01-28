@@ -9,6 +9,7 @@ import { nuiEventPlugin } from "./plugins/NuiEvent";
 import { Container } from "./Models/Container/Container";
 import { Hotbar } from "./Models/Hotbar";
 import { CraftingContainer } from "./Models/Container/CraftingContainer";
+import { ModalPanel } from "./plugins/ModalPanel";
 const { NuiMocker } = await import("./mock/NuiMocker");
 
 if (
@@ -25,10 +26,17 @@ const inventory = new PlayerInventory();
 const container = new Container();
 const craftingContainer = new CraftingContainer();
 const hotbar = new Hotbar();
+const modalPanel = new ModalPanel();
 
 createApp(App)
   .use(httpClientPlugin)
   .use(keyPressPlugin)
-  .use(ProviderPlugin, { inventory, container, craftingContainer, hotbar })
+  .use(ProviderPlugin, {
+    inventory,
+    container,
+    craftingContainer,
+    hotbar,
+    modalPanel,
+  })
   .use(nuiEventPlugin, { inventory, container, craftingContainer, hotbar })
   .mount("#app");
