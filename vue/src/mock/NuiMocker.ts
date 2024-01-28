@@ -1,6 +1,7 @@
 import inventoryOpenEvent from "@/../cypress/fixtures/inventory-open-event.json";
 import inventoryOpenContainerEvent from "@/../cypress/fixtures/inventory-open-container-event.json";
 import fetchGetWeaponDataResponse from "@/../cypress/fixtures/fetch-get-weapon-data-response.json";
+import inventoryToggleHotbarEvent from "@/../cypress/fixtures/inventory-toggle-hotbar-event.json";
 
 function NuiMocker() {
   // Listen to tab
@@ -14,6 +15,9 @@ function NuiMocker() {
     } else if (e.key === "1") {
       e.preventDefault();
       openInventoryWithFilledContainer();
+    } else if (e.key === "z") {
+      e.preventDefault();
+      toggleToolBar();
     }
   });
 
@@ -40,6 +44,11 @@ function openInventoryWithEmptyContainer() {
 
 function openInventoryWithFilledContainer() {
   window.postMessage(inventoryOpenContainerEvent);
+}
+
+function toggleToolBar() {
+  window.postMessage({ action: "close" });
+  window.postMessage(inventoryToggleHotbarEvent);
 }
 
 export { NuiMocker };

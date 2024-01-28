@@ -1,0 +1,73 @@
+{
+    "open": true,
+    "items": [
+        {
+            "amount": 1,
+            "image": "weapon_pistol.png",
+            "type": "weapon",
+            "name": "weapon_pistol",
+            "unique": true,
+            "description": "A small firearm designed to be held in one hand",
+            "info": {
+                "ammo": 40,
+                "quality": 63.7000000000055,
+                "serie": "13Zps1kL012qnXy",
+                "attachments": [
+                    {
+                        "label": "Flashlight",
+                        "component": "COMPONENT_AT_PI_FLSH"
+                    },
+                    {
+                        "component": 1709866683
+                    }
+                ]
+            },
+            "label": "Walther P99",
+            "slot": 1,
+            "useable": false,
+            "weight": 1000
+        },
+        null,
+        {
+            "amount": 1,
+            "image": "weapon_pumpshotgun.png",
+            "type": "weapon",
+            "name": "weapon_pumpshotgun",
+            "unique": true,
+            "description": "A pump-action smoothbore gun for firing small shot at short range",
+            "info": {
+                "ammo": 0,
+                "quality": 100,
+                "serie": "81KCr1Hx704gGzq",
+                "attachments": [
+                    {
+                        "label": "Flashlight",
+                        "component": "COMPONENT_AT_AR_FLSH"
+                    }
+                ]
+            },
+            "label": "Pump Shotgun",
+            "slot": 3,
+            "useable": false,
+            "weight": 1000
+        },
+        {
+            "amount": 1,
+            "image": "weapon_flashlight.png",
+            "type": "weapon",
+            "name": "weapon_flashlight",
+            "unique": true,
+            "description": "A battery-operated portable light",
+            "info": {
+                "ammo": 0,
+                "quality": 100,
+                "serie": "46jrC3GJ080wrJb"
+            },
+            "label": "Flashlight",
+            "slot": 4,
+            "useable": false,
+            "weight": 1000
+        }
+    ],
+    "action": "toggleHotbar"
+}

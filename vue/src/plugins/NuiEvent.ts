@@ -5,6 +5,7 @@ import { ParseCraftingInventory, ParseInventory } from "@/Parser/ItemParser";
 import { Plugin } from "vue";
 import { CraftingContainer } from "@/Models/Container/CraftingContainer";
 import { CreateContainerItem } from "@/Parser/ItemParser";
+import { ParseHotbarItems } from "@/Parser/HotbarParser";
 
 const nuiEventPlugin: Plugin = {
   install(
@@ -95,7 +96,7 @@ const nuiEventPlugin: Plugin = {
         // Something to do with a required item
       } else if (action === "toggleHotbar") {
         console.log("toggleHotbar", data);
-        hotbar.Toggle(data.items, data.open);
+        hotbar.Toggle(ParseHotbarItems(data.items), data.open);
         // Toggle the hotbar visibility
       } else if (action === "RobMoney") {
         console.log("RobMoney", data);
