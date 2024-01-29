@@ -5,6 +5,7 @@ import { Plugin, ref } from "vue";
 import { CraftingContainer } from "@/Models/Container/CraftingContainer";
 import { Item } from "@/Models/Item/Item";
 import { ModalPanelPlugin } from "./ModalPanelPlugin";
+import { RequiredItemsPlugin } from "./RequiredItemsPlugin";
 
 const ProviderPlugin: Plugin = {
   install(
@@ -15,6 +16,7 @@ const ProviderPlugin: Plugin = {
       craftingContainer: CraftingContainer;
       hotbar: Hotbar;
       modalPanel: ModalPanelPlugin;
+      requiredItems: RequiredItemsPlugin;
     },
   ) {
     app.provide("inventory", options.inventory);
@@ -22,6 +24,7 @@ const ProviderPlugin: Plugin = {
     app.provide("craftingContainer", options.craftingContainer);
     app.provide("hotbar", options.hotbar);
     app.provide(ModalPanelPlugin.SERVICE_NAME, options.modalPanel);
+    app.provide(RequiredItemsPlugin.SERVICE_NAME, options.requiredItems);
     app.provide(Item.SELECTED_ITEM, ref(null));
     app.provide(Item.HOVERED_ITEM, ref(null));
   },

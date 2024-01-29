@@ -13,6 +13,7 @@
     <HotbarContainer />
     <ItemDropdown />
     <ItemBox />
+    <RequiredItemsBox />
   </div>
   <ModalPanel />
 </template>
@@ -23,6 +24,7 @@ import HotbarContainer from "@/components/HotbarContainer.vue";
 import ItemDropdown from "@/components/ItemDropdown.vue";
 import ItemBox from "@/components/ItemBox.vue";
 import ModalPanel from "./components/ModalPanel.vue";
+import RequiredItemsBox from "./components/RequiredItemsBox.vue";
 
 function isDevBrowser() {
   return (

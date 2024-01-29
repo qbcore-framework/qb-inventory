@@ -6,6 +6,7 @@ import { Plugin } from "vue";
 import { CraftingContainer } from "@/Models/Container/CraftingContainer";
 import { CreateContainerItem } from "@/Parser/ItemParser";
 import { ParseHotbarItems } from "@/Parser/HotbarParser";
+import { RequiredItemDto } from "@/Models/Dto/RequiredItem";
 
 const nuiEventPlugin: Plugin = {
   install(
@@ -89,11 +90,17 @@ const nuiEventPlugin: Plugin = {
             },
           }),
         );
-        // Something to do with the item box
       } else if (action === "requiredItem") {
         console.log("requiredItem", data);
 
-        // Something to do with a required item
+        window.dispatchEvent(
+          new CustomEvent("inventory:required-item", {
+            detail: {
+              items: data.items as RequiredItemDto[],
+              isVisible: data.toggle as boolean,
+            },
+          }),
+        );
       } else if (action === "toggleHotbar") {
         console.log("toggleHotbar", data);
         hotbar.Toggle(ParseHotbarItems(data.items), data.open);
