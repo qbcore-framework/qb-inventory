@@ -2,19 +2,24 @@
   <Transition name="fade">
     <div
       v-if="isVisible"
-      class="fixed bottom-0 left-0 right-0 flex justify-center items-center space-x-4"
+      class="fixed bottom-0 left-0 right-0 flex justify-center items-center flex-col"
     >
-      <div
-        v-for="item in items"
-        :key="item.item"
-        class="text-white mb-32 flex flex-col bg-gray-200/20 w-fit p-3"
-      >
-        <img
-          class="w-28 h-28 object-contain p-3"
-          draggable="false"
-          :src="require(`@/assets/images/${item.image}`)"
-        />
-        <span class="text-center">{{ item.label }}</span>
+      <h3 class="text-white text-xl p-1 px-2 mb-2 bg-gray-200/20 w-fit">
+        Items required:
+      </h3>
+      <div class="flex justify-center items-center space-x-4">
+        <div
+          v-for="item in items"
+          :key="item.item"
+          class="text-white mb-32 flex flex-col bg-gray-200/20 w-fit p-3"
+        >
+          <img
+            class="w-28 h-28 object-contain p-3"
+            draggable="false"
+            :src="require(`@/assets/images/${item.image}`)"
+          />
+          <span class="text-center">{{ item.label }}</span>
+        </div>
       </div>
     </div>
   </Transition>
