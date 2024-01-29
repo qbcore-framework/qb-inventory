@@ -654,6 +654,7 @@ local function AddToStash(stashId, slot, otherslot, itemName, amount, info)
 			}
 		end
 	end
+	SaveStashItems(stashId, Stashes[stashId].items)
 end
 
 ---Remove the item from the stash
@@ -1098,7 +1099,7 @@ local function OpenInventory(name, id, other, origin)
 			secondInv.maxweight = maxweight
 			secondInv.inventory = {}
 			secondInv.slots = slots
-			if Stashes[id] and Stashes[id].isOpen then
+			if Stashes[id] and Stashes[id].isOpen and Stashes[id].isOpen ~= src then
 				secondInv.name = 'none-inv'
 				secondInv.label = 'Stash-None'
 				secondInv.maxweight = 1000000
