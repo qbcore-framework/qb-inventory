@@ -6,8 +6,8 @@
     }"
     class="w-screen h-screen bg-no-repeat bg-center bg-cover fixed -z-10 blur transform scale-105"
   />
-  <div class="h-screen w-screen">
-    <main class="w-screen h-screen text-white">
+  <div>
+    <main class="text-white">
       <InventoryContainer />
     </main>
     <HotbarContainer />
