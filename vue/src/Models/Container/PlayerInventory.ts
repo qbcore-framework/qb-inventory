@@ -28,15 +28,26 @@ class PlayerInventory extends ContainerBase<Item> {
     if (fromItem === undefined || toItem === undefined) return;
 
     const combineAbleData = toItem.combinable;
-    if (combineAbleData === undefined) Error("Item is not combinable");
+    if (combineAbleData === undefined)
+      throw new Error("Item is not combinable");
 
-    const body = {
-      combineData: combineAbleData,
-      usedItem: toItem.name,
-      requiredItem: fromItem.name,
-    };
+    if (combineAbleData.anim) {
+      const body = {
+        combineData: combineAbleData,
+        usedItem: toItem.name,
+        requiredItem: fromItem.name,
+      };
 
-    this._httpClient.Post("combineWithAnim", body);
+      this._httpClient.Post("combineWithAnim", body);
+    } else {
+      const body = {
+        reward: combineAbleData.reward,
+        toItem: toItem.name,
+        fromItem: fromItem.name,
+      };
+
+      this._httpClient.Post("combineItem", body);
+    }
     this.Close();
   }
 }
