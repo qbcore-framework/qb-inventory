@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS `gloveboxitems` (
   `plate` varchar(255) DEFAULT NULL,
   `items` json DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `plate` (`plate`)
+  UNIQUE KEY `unique_plate` (`plate`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `stashitems` (
@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS `stashitems` (
   `stash` varchar(255) DEFAULT NULL,
   `items` json DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `stash` (`stash`)
+  UNIQUE KEY `unique_stash` (`stash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `trunkitems` (
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS `trunkitems` (
   `plate` varchar(255) DEFAULT NULL,
   `items` json DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `plate` (`plate`)
+  UNIQUE KEY `unique_plate` (`plate`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `player_vehicles` (
