@@ -42,11 +42,6 @@ function stringifyInfo(info: object): string[] {
   );
 }
 
-function stringifyCombinableInfo(combinableInfo: string[]): string {
-  // Convert array to comma separated string
-  return combinableInfo.join(", ");
-}
-
 function parseInfoValues(key: string, value: string): string {
   // ID Card genders
   if (key === "gender") {

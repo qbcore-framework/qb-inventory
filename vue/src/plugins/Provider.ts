@@ -4,7 +4,7 @@ import { PlayerInventory } from "@/Models/Container/PlayerInventory";
 import { Plugin, ref } from "vue";
 import { CraftingContainer } from "@/Models/Container/CraftingContainer";
 import { Item } from "@/Models/Item/Item";
-import { ModalPanel } from "./ModalPanel";
+import { ModalPanelPlugin } from "./ModalPanelPlugin";
 
 const ProviderPlugin: Plugin = {
   install(
@@ -14,14 +14,14 @@ const ProviderPlugin: Plugin = {
       container: Container;
       craftingContainer: CraftingContainer;
       hotbar: Hotbar;
-      modalPanel: ModalPanel;
+      modalPanel: ModalPanelPlugin;
     },
   ) {
     app.provide("inventory", options.inventory);
     app.provide("container", options.container);
     app.provide("craftingContainer", options.craftingContainer);
     app.provide("hotbar", options.hotbar);
-    app.provide("modalPanel", options.modalPanel);
+    app.provide(ModalPanelPlugin.SERVICE_NAME, options.modalPanel);
     app.provide(Item.SELECTED_ITEM, ref(null));
     app.provide(Item.HOVERED_ITEM, ref(null));
   },

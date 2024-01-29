@@ -9,7 +9,7 @@ import { nuiEventPlugin } from "./plugins/NuiEvent";
 import { Container } from "./Models/Container/Container";
 import { Hotbar } from "./Models/Hotbar";
 import { CraftingContainer } from "./Models/Container/CraftingContainer";
-import { ModalPanel } from "./plugins/ModalPanel";
+import { ModalPanelPlugin } from "./plugins/ModalPanelPlugin";
 const { NuiMocker } = await import("./mock/NuiMocker");
 
 if (
@@ -26,7 +26,7 @@ const inventory = new PlayerInventory();
 const container = new Container();
 const craftingContainer = new CraftingContainer();
 const hotbar = new Hotbar();
-const modalPanel = new ModalPanel();
+const modalPanel = new ModalPanelPlugin();
 
 createApp(App)
   .use(httpClientPlugin)

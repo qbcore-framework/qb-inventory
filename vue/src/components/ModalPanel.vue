@@ -60,21 +60,6 @@
                 >
                   {{ modalButton.text }}
                 </button>
-                <button
-                  type="button"
-                  class="inline-flex w-full justify-center bg-gray-700 border px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-10 sm:ml-3 sm:w-auto"
-                  @click="open = false"
-                >
-                  🔨 Combine
-                </button>
-                <button
-                  type="button"
-                  class="mt-3 inline-flex w-full justify-center bg-gray-700 border px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset hover:bg-gray-10 sm:mt-0 sm:w-auto"
-                  @click="open = false"
-                  ref="cancelButtonRef"
-                >
-                  🔁 Swap
-                </button>
               </div>
             </DialogPanel>
           </TransitionChild>
@@ -93,10 +78,10 @@ import {
   TransitionChild,
   TransitionRoot,
 } from "@headlessui/vue";
-import { ModalPanel } from "@/plugins/ModalPanel";
+import { ModalPanelPlugin } from "@/plugins/ModalPanelPlugin";
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const modalPanel = inject<ModalPanel>("modalPanel")!;
+const modalPanel = inject<ModalPanelPlugin>(ModalPanelPlugin.SERVICE_NAME)!;
 
 const title = ref(modalPanel.title);
 const description = ref(modalPanel.description);

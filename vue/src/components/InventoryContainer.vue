@@ -1,15 +1,17 @@
 <template>
   <div class="flex justify-center">
-    <GroundDropBox @item-dropped="onQuickMove($event.detail, inventory)" />
+    <GroundDropBox
+      @item-dropped="onQuickMove($event.detail, playerInventory)"
+    />
     <TransitionGroup name="fade">
-      <template v-if="inventory.isVisible.value && !showWeaponPanel">
+      <template v-if="playerInventory.isVisible.value && !showWeaponPanel">
         <ItemGroup
-          :inventory="inventory"
+          :inventory="playerInventory"
           :canSelectItems="true"
-          @start-drag="onDragStart($event, inventory)"
+          @start-drag="onDragStart($event, playerInventory)"
           @end-drag="onDragEnd"
-          @item-dropped="onItemDropped($event, inventory)"
-          @quick-move="onQuickMove($event, inventory)"
+          @item-dropped="onItemDropped($event, playerInventory)"
+          @quick-move="onQuickMove($event, playerInventory)"
         />
         <div class="flex flex-col px-4">
           <span class="h-9" />
@@ -51,7 +53,9 @@
         />
       </template>
     </TransitionGroup>
-    <GroundDropBox @item-dropped="onQuickMove($event.detail, inventory)" />
+    <GroundDropBox
+      @item-dropped="onQuickMove($event.detail, playerInventory)"
+    />
     <!-- Ignore "(selectedItem as Weapon)" part as this seems to break the Vue syntax highlighting in VSCode -->
     <!-- prettier-ignore -->
     <WeaponPanel
@@ -73,6 +77,8 @@ import ItemGroup from "./ItemGroup.vue";
 import WeaponPanel from "./WeaponPanel.vue";
 import { ContainerBase } from "@/Models/Container/ContainerBase";
 import GroundDropBox from "./GroundDropBox.vue";
+import { ModalPanelPlugin } from "@/plugins/ModalPanelPlugin";
+import { ModalButton } from "@/Models/Interfaces/ModalButton";
 
 let fromInventory: ContainerBase<Item> | null = null;
 const fromIndex: Ref<number | null> = ref(null);
@@ -80,11 +86,14 @@ const moveAmount = ref(0);
 const isDragging = ref(false);
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const inventory = inject<PlayerInventory>("inventory")!;
+const playerInventory = inject<PlayerInventory>("inventory")!;
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const container = inject<Container>("container")!;
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const craftingContainer = inject<Container>("craftingContainer")!;
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const modalService = inject<ModalPanelPlugin>(ModalPanelPlugin.SERVICE_NAME)!;
+
 provide(
   "showGroundDropBox",
   computed(
@@ -101,7 +110,7 @@ const selectedItem: Ref<Item | null> = inject(Item.SELECTED_ITEM, ref(null));
 const canModifyWeapon = computed(
   () =>
     selectedItem.value instanceof Weapon &&
-    inventory.Items.value.includes(selectedItem.value),
+    playerInventory.Items.value.includes(selectedItem.value),
 );
 
 const showWeaponPanel = ref(false);
@@ -126,8 +135,42 @@ function onDragEnd() {
   isDragging.value = false;
 }
 
-function onItemDropped(index: number, dropInventory: ContainerBase<Item>) {
+async function onItemDropped(
+  index: number,
+  dropInventory: ContainerBase<Item>,
+) {
   if (fromInventory === null || fromIndex.value === null) return;
+
+  const toItem = dropInventory.Items.value[index];
+  if (
+    toItem?.combinable &&
+    // Items can only combined if they are in the player's inventory
+    fromInventory === playerInventory &&
+    dropInventory === playerInventory
+  ) {
+    // We need to store the current values as they are reset by the time the modal is closed
+    const fromIndexValue = fromIndex.value;
+
+    const shouldCombine = await modalService.open(
+      "Combine",
+      "Are you sure you want to combine these items?",
+      [new ModalButton("🔨 Combine", true), new ModalButton("🔁 Swap", false)],
+    );
+
+    // Here we use `inventory` instead of `fromInventory` as we asserted that they are the same
+    // and the fromInventory is reset by the time the modal is closed
+    if (shouldCombine) {
+      playerInventory.CombineItems(fromIndexValue, index);
+    } else {
+      playerInventory.MoveItem(
+        fromIndexValue,
+        index,
+        playerInventory,
+        getMoveAmount(),
+      );
+    }
+    return;
+  }
 
   fromInventory.MoveItem(
     fromIndex.value,
@@ -140,7 +183,7 @@ function onItemDropped(index: number, dropInventory: ContainerBase<Item>) {
 function onQuickMove(index: number, fromInventory: ContainerBase<Item>) {
   fromInventory.QuickMoveItem(
     index,
-    fromInventory === inventory ? container : inventory,
+    fromInventory === playerInventory ? container : playerInventory,
     getMoveAmount(),
   );
 }
