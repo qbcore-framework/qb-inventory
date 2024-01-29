@@ -3,6 +3,11 @@ import inventoryOpenContainerEvent from "@/../cypress/fixtures/inventory-open-co
 import fetchGetWeaponDataResponse from "@/../cypress/fixtures/fetch-get-weapon-data-response.json";
 import inventoryToggleHotbarEvent from "@/../cypress/fixtures/inventory-toggle-hotbar-event.json";
 
+///
+/// This file is not included in production builds. It is used to allow for UI development outside of the game.
+/// Imports of this file are configured in: vue.config.js
+///
+
 function NuiMocker() {
   // Listen to tab
   window.addEventListener("keydown", (e) => {
@@ -51,4 +56,12 @@ function toggleToolBar() {
   window.postMessage(inventoryToggleHotbarEvent);
 }
 
-export { NuiMocker };
+if (
+  process.env.NODE_ENV === "development" &&
+  typeof GetParentResourceName === "undefined"
+) {
+  console.log("Running in browser");
+  NuiMocker();
+} else {
+  console.log("Running in game");
+}

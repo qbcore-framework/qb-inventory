@@ -6,4 +6,10 @@ module.exports = defineConfig({
       topLevelAwait: true,
     },
   },
+  chainWebpack: (config) => {
+    // Setup NuiMocker in development mode
+    if (process.env.NODE_ENV === "development") {
+      config.entry("app").add("./src/mock/NuiMocker.ts");
+    }
+  },
 });

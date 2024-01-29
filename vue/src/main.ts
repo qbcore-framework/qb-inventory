@@ -10,17 +10,6 @@ import { Container } from "./Models/Container/Container";
 import { Hotbar } from "./Models/Hotbar";
 import { CraftingContainer } from "./Models/Container/CraftingContainer";
 import { ModalPanelPlugin } from "./plugins/ModalPanelPlugin";
-const { NuiMocker } = await import("./mock/NuiMocker");
-
-if (
-  process.env.NODE_ENV === "development" &&
-  typeof GetParentResourceName === "undefined"
-) {
-  console.log("Running in browser");
-  NuiMocker();
-} else {
-  console.log("Running in game");
-}
 
 const inventory = new PlayerInventory();
 const container = new Container();
