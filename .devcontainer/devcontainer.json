@@ -39,7 +39,7 @@
 			],
 			"settings": {
 				"jest.jestCommandLine": "yarn test:unit",
-				"jest.rootPath": "./vue"
+				"jest.rootPath": "./ui"
 			},
 		},
 	},

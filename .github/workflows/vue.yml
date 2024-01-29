@@ -9,7 +9,7 @@ jobs:
   lint-vue:
     defaults:
       run:
-          working-directory: ./vue
+          working-directory: ./ui
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: 18
           cache: 'yarn'
-          cache-dependency-path: ./vue/package.json
+          cache-dependency-path: ./ui/package.json
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
