@@ -3,7 +3,7 @@
     <Transition name="fade">
       <div
         v-if="item"
-        class="text-white mb-32 flex flex-col bg-gray-200/20 w-fit p-3"
+        class="text-white mb-32 flex flex-col bg-gray-800/60 w-fit p-3"
       >
         <img
           class="w-28 h-28 object-contain p-3"

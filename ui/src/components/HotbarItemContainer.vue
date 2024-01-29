@@ -10,7 +10,7 @@ defineProps<IProps>();
 
 <template>
   <div
-    class="w-28 h-28 p-2 flex flex-col z-0 relative cursor-pointer ease-in-out transition-transform duration-75 transform text-white bg-gray-200/20"
+    class="w-28 h-28 p-2 flex flex-col z-0 relative cursor-pointer ease-in-out transition-transform duration-75 transform text-white bg-gray-800/60"
   >
     <div
       v-if="item instanceof Weapon"

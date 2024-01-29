@@ -1,6 +1,6 @@
 <template>
   <div class="fixed top-0 left-0 z-50" ref="dropdown" v-show="show">
-    <ItemInfo class="p-1 border rounded bg-gray-800/80" />
+    <ItemInfo class="p-1 border rounded bg-gray-800/60" />
   </div>
 </template>
 

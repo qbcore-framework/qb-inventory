@@ -16,7 +16,7 @@
         <div class="flex flex-col px-4">
           <span class="h-9" />
           <input
-            class="h-12 w-20 bg-gray-200/20 text-center no-spinner border outline-none"
+            class="h-12 w-20 bg-gray-800/60 text-center no-spinner border outline-none"
             type="number"
             v-model="moveAmount"
             min="0"
@@ -24,7 +24,7 @@
             @keyup="enforceMinMax"
           />
           <button
-            class="w-20 h-16 mt-4 border bg-gray-200/20 disabled:bg-black/20 disabled:cursor-default"
+            class="w-20 h-16 mt-4 border bg-gray-800/60 disabled:bg-black/20 disabled:cursor-default"
             @click="modifyWeapon"
             :disabled="!canModifyWeapon"
             v-text="canModifyWeapon ? 'Modify' : 'Can\'t modify'"

@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col items-center relative">
     <button
-      class="absolute top-0 right-0 w-8 h-8 bg-gray-200/20 hover:bg-gray-200/40 border"
+      class="absolute top-0 right-0 w-8 h-8 bg-gray-800/60 hover:bg-gray-200/40 border"
       @click="$emit('close-panel')"
     >
       X
@@ -19,7 +19,7 @@
         :alt="weapon.label"
         class="w-max"
       />
-      <div class="relative bg-gray-200/20 w-full h-4">
+      <div class="relative bg-gray-800/60 w-full h-4">
         <div
           :style="{
             width: weapon.info.quality + '%',

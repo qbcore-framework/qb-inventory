@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-6 mb-4 bg-gray-200/20 relative">
+  <div class="w-full h-6 mb-4 bg-gray-800/60 relative">
     <div class="h-full bg-gray-200/40" ref="bar" />
 
     <span

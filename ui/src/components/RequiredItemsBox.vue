@@ -4,14 +4,14 @@
       v-if="isVisible"
       class="fixed bottom-0 left-0 right-0 flex justify-center items-center flex-col"
     >
-      <h3 class="text-white text-xl p-1 px-2 mb-2 bg-gray-200/20 w-fit">
+      <h3 class="text-white text-xl p-1 px-2 mb-2 bg-gray-800/60 w-fit">
         Items required:
       </h3>
       <div class="flex justify-center items-center space-x-4">
         <div
           v-for="item in items"
           :key="item.item"
-          class="text-white mb-32 flex flex-col bg-gray-200/20 w-fit p-3"
+          class="text-white mb-32 flex flex-col bg-gray-800/60 w-fit p-3"
         >
           <img
             class="w-28 h-28 object-contain p-3"

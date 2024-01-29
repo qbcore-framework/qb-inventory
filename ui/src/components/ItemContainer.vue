@@ -23,7 +23,7 @@ function onMouseLeave() {
   <div
     :class="[
       'w-28 h-28 p-2 flex flex-col z-0 relative cursor-pointer ease-in-out transition-transform duration-75 transform text-white',
-      selectedItem === item ? 'bg-gray-400/20 scale-105' : 'bg-gray-200/20',
+      selectedItem === item ? 'bg-gray-400/20 scale-105' : 'bg-gray-800/60',
       hoveredItem === item ? 'z-10' : '',
     ]"
     @mouseenter="onMouseEnter"
