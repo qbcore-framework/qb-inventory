@@ -48,6 +48,7 @@
     "prettier": "^3.2.4",
     "sass": "^1.70.0",
     "sass-loader": "^14.0.0",
+    "serve": "^14.2.1",
     "start-server-and-test": "^2.0.3",
     "ts-jest": "^27.0.4",
     "ts-node": "^10.9.2",
