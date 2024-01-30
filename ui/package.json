@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --port 3000",
+    "serve:production": "vue-cli-service serve --port 3000 --mode production",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
-    "test:e2e": "start-server-and-test serve http://localhost:3000 cypress:run",
-    "test:e2e:open": "start-server-and-test serve http://localhost:3000 cypress:open",
+    "test:e2e": "start-server-and-test serve:production http://localhost:3000 cypress:run",
+    "test:e2e:open": "start-server-and-test serve:production http://localhost:3000 cypress:open",
     "lint": "vue-cli-service lint",
     "postinstall": "cypress install",
     "cypress:open": "cypress open",
