@@ -4,9 +4,6 @@ on: push
 
 jobs:
   cypress-run:
-    defaults:
-      run:
-        working-directory: ./ui
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -16,6 +13,7 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
+          working-directory: ./ui
           build: yarn build
           start: yarn serve -s dist
 
@@ -23,11 +21,11 @@ jobs:
         if: failure()
         with:
           name: cypress-screenshots
-          path: cypress/screenshots
+          path: ui/cypress/screenshots
           if-no-files-found: error
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: cypress-videos
-          path: cypress/videos
+          path: ui/cypress/videos
           if-no-files-found: error
