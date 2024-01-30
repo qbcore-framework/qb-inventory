@@ -56,12 +56,15 @@ function toggleToolBar() {
   window.postMessage(inventoryToggleHotbarEvent);
 }
 
-if (
-  process.env.NODE_ENV === "development" &&
-  typeof GetParentResourceName === "undefined"
-) {
-  console.log("Running in browser");
-  NuiMocker();
+// This is a hacky way to check if we're in a dev environment
+if (process.env.NODE_ENV === "development") {
+  try {
+    await fetch("https://qb-inventory/");
+    console.log("Running in game");
+  } catch (e) {
+    console.log("Running in browser");
+    NuiMocker();
+  }
 } else {
-  console.log("Running in game");
+  throw new Error("This file should only be included in development builds");
 }
