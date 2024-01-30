@@ -28,6 +28,8 @@ const nuiEventPlugin: Plugin = {
 
       if (action === "open") {
         console.log("open", data);
+        window.dispatchEvent(new CustomEvent("inventory:open"));
+
         if (data.other) {
           if (data.other.name === "crafting") {
             craftingContainer.UpdateContents(
@@ -103,8 +105,8 @@ const nuiEventPlugin: Plugin = {
         );
       } else if (action === "toggleHotbar") {
         console.log("toggleHotbar", data);
-        hotbar.Toggle(ParseHotbarItems(data.items), data.open);
         // Toggle the hotbar visibility
+        hotbar.Toggle(ParseHotbarItems(data.items), data.open);
       } else if (action === "RobMoney") {
         console.log("RobMoney", data);
 
