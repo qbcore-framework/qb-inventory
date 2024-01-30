@@ -24,19 +24,23 @@ describe("Open inventory", () => {
   });
 
   it.only("should swap items", () => {
-    const phone = cy.get(".item-container").contains("Phone").parent();
-    const idCard = cy.get(".item-container").contains("ID Card").parent();
+    // Find img with "phone" in src and get parent
+    const phone = cy.get(".item-container").find("img[src*='phone']").parent();
+    const idCard = cy
+      .get(".item-container")
+      .find("img[src*='id_card']")
+      .parent();
 
     phone.should("be.visible");
     idCard.should("be.visible");
 
     cy.intercept("/SetInventoryData", { statusCode: 200, body: {} }).as(
-      "setInventoryData"
+      "setInventoryData",
     );
 
     phone
       .realMouseDown()
-      .realMouseMove(-150, 200, { position: "center" })
+      .realMouseMove(-200, 0, { position: "center" })
       .wait(300)
       .realMouseUp();
 

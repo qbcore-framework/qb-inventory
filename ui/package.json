@@ -6,8 +6,12 @@
     "serve": "vue-cli-service serve --port 3000",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
+    "test:e2e": "start-server-and-test serve http://localhost:3000 cypress:run",
+    "test:e2e:open": "start-server-and-test serve http://localhost:3000 cypress:open",
     "lint": "vue-cli-service lint",
-    "postinstall": "cypress install"
+    "postinstall": "cypress install",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.17",
@@ -43,6 +47,7 @@
     "prettier": "^3.2.4",
     "sass": "^1.70.0",
     "sass-loader": "^14.0.0",
+    "start-server-and-test": "^2.0.3",
     "ts-jest": "^27.0.4",
     "ts-node": "^10.9.2",
     "typescript": "~4.9.5",
