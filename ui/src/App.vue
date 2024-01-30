@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="isDevBrowser()"
+    v-if="isDevBrowser"
     :style="{
       background: 'url(' + require('@/mock/background.jpg') + ')',
     }"
@@ -25,11 +25,23 @@ import ItemDropdown from "@/components/ItemDropdown.vue";
 import ItemBox from "@/components/ItemBox.vue";
 import ModalPanel from "./components/ModalPanel.vue";
 import RequiredItemsBox from "./components/RequiredItemsBox.vue";
+import { ref } from "vue";
 
-function isDevBrowser() {
-  return (
-    process.env.NODE_ENV === "development" &&
-    typeof GetParentResourceName === "undefined"
-  );
+// This is a hacky way to check if we're in a dev environment
+const isDevBrowser = ref(false);
+async function checkIfDevBrowser(): Promise<boolean> {
+  if (process.env.NODE_ENV === "development") {
+    try {
+      await fetch("https://qb-inventory/");
+      return false;
+    } catch (e) {
+      return true;
+    }
+  } else {
+    return false;
+  }
 }
+checkIfDevBrowser().then((result) => {
+  isDevBrowser.value = result;
+});
 </script>
