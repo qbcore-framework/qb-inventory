@@ -1,6 +1,6 @@
 import { Plugin } from "vue";
 
-const keyPressPlugin: Plugin = {
+const keyPressEventHandler: Plugin = {
   install() {
     // Track key presses for tab, esc
     window.addEventListener("keydown", (e) => {
@@ -23,4 +23,4 @@ function closeInventory() {
   });
 }
 
-export { keyPressPlugin };
+export { keyPressEventHandler };

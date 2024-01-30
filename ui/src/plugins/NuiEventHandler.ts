@@ -8,7 +8,7 @@ import { CreateContainerItem } from "@/Parser/ItemParser";
 import { ParseHotbarItems } from "@/Parser/HotbarParser";
 import { RequiredItemDto } from "@/Models/Dto/RequiredItem";
 
-const nuiEventPlugin: Plugin = {
+const nuiEventHandler: Plugin = {
   install(
     app,
     options: {
@@ -122,4 +122,4 @@ const nuiEventPlugin: Plugin = {
   },
 };
 
-export { nuiEventPlugin };
+export { nuiEventHandler };

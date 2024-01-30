@@ -2,10 +2,10 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import "./assets/tailwind.css";
 import { httpClientPlugin } from "./plugins/HttpClient";
-import { ProviderPlugin } from "./plugins/Provider";
-import { keyPressPlugin } from "./plugins/KeyPress";
+import { ProviderPlugin } from "./plugins/ProviderPlugin";
+import { keyPressEventHandler } from "./plugins/KeyPressEventHandler";
 import { PlayerInventory } from "./Models/Container/PlayerInventory";
-import { nuiEventPlugin } from "./plugins/NuiEvent";
+import { nuiEventHandler } from "./plugins/NuiEventHandler";
 import { Container } from "./Models/Container/Container";
 import { Hotbar } from "./Models/Hotbar";
 import { CraftingContainer } from "./Models/Container/CraftingContainer";
@@ -17,12 +17,12 @@ const hotbar = new Hotbar();
 
 createApp(App)
   .use(httpClientPlugin)
-  .use(keyPressPlugin)
+  .use(keyPressEventHandler)
   .use(ProviderPlugin, {
     inventory,
     container,
     craftingContainer,
     hotbar,
   })
-  .use(nuiEventPlugin, { inventory, container, craftingContainer, hotbar })
+  .use(nuiEventHandler, { inventory, container, craftingContainer, hotbar })
   .mount("#app");
