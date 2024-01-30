@@ -24,7 +24,7 @@ describe("Open inventory", () => {
   });
 
   // Scrolling is disabled as this test sometimes seems to scroll the page when it shouldn't
-  it("should swap items", { scrollBehavior: false }, () => {
+  it("should swap items", () => {
     // Find img with "phone" in src and get parent
     const phone = cy.get(".item-container").find("img[src*='phone']").parent();
     const idCard = cy
@@ -39,18 +39,23 @@ describe("Open inventory", () => {
       "setInventoryData",
     );
 
-    phone
-      .realMouseDown()
-      .realMouseMove(-300, 0, { position: "center" })
-      .wait(300)
-      .realMouseUp();
+    idCard
+      .trigger("mousedown", { button: 0 })
+      .wait(200)
+      .trigger("mousemove", {
+        movementX: -150,
+        movementY: 0,
+        force: true,
+      })
+      .wait(200)
+      .trigger("mouseup");
 
     cy.wait("@setInventoryData");
   });
 
   // Scrolling is disabled as this test sometimes seems to scroll the page when it shouldn't
-  it("Should quick move items", { scrollBehavior: false }, () => {
-    const phone = cy.get(".item-container").find("img[src*='phone']");
+  it("Should quick move items", () => {
+    const phone = cy.get(".item-container").find("img[src*='phone']").parent();
 
     phone.should("be.visible");
 
@@ -58,7 +63,7 @@ describe("Open inventory", () => {
       "setInventoryData",
     );
 
-    phone.realClick({ button: "right" });
+    phone.rightclick();
 
     cy.wait("@setInventoryData");
 
