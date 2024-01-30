@@ -6,7 +6,7 @@ on:
     branches: [main, develop]
 
 jobs:
-  lint-vue:
+  vue:
     defaults:
       run:
           working-directory: ./ui
@@ -28,6 +28,9 @@ jobs:
 
       - name: Run unit tests
         run: yarn test:unit
+
+      - name: Run e2e tests
+        run: yarn test:e2e
       
       - name: Build
         run: yarn build
