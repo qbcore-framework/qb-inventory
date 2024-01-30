@@ -15,7 +15,7 @@ jobs:
         with:
           working-directory: ./ui
           build: yarn build
-          start: yarn serve -s dist
+          start: yarn exec serve -s dist
 
       - name: Upload Cypress screenshots
         uses: actions/upload-artifact@v4
