@@ -23,7 +23,7 @@ describe("Open inventory", () => {
     cy.wait("@closeInventory");
   });
 
-  it.only("should swap items", () => {
+  it("should swap items", () => {
     // Find img with "phone" in src and get parent
     const phone = cy.get(".item-container").find("img[src*='phone']").parent();
     const idCard = cy
@@ -45,5 +45,21 @@ describe("Open inventory", () => {
       .realMouseUp();
 
     cy.wait("@setInventoryData");
+  });
+
+  it("Should quick move items", () => {
+    const phone = cy.get(".item-container").find("img[src*='phone']");
+
+    phone.should("be.visible");
+
+    cy.intercept("/SetInventoryData", { statusCode: 200, body: {} }).as(
+      "setInventoryData",
+    );
+
+    phone.realClick({ button: "right" });
+
+    cy.wait("@setInventoryData");
+
+    cy.get(".item-container").find("img[src*='phone']").should("not.exist");
   });
 });
