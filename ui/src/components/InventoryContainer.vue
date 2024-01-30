@@ -24,11 +24,18 @@
             @keyup="enforceMinMax"
           />
           <button
-            class="w-20 h-16 mt-4 border bg-gray-800/60 disabled:bg-black/20 disabled:cursor-default"
+            class="w-20 h-16 py-2 mt-4 disabled:border-gray-400 border bg-gray-800/60 disabled:bg-black/20 disabled:cursor-default"
             @click="modifyWeapon"
             :disabled="!canModifyWeapon"
             v-text="canModifyWeapon ? 'Modify' : 'Can\'t modify'"
           />
+          <button
+            class="w-20 py-2 mt-4 border bg-gray-800/60"
+            v-if="canRobPlayer"
+            @click="robPlayer"
+          >
+            Rob money
+          </button>
         </div>
         <!-- Container -->
         <ItemGroup
@@ -79,6 +86,7 @@ import { ContainerBase } from "@/Models/Container/ContainerBase";
 import GroundDropBox from "./GroundDropBox.vue";
 import { ModalPanelPlugin } from "@/plugins/ModalPanelPlugin";
 import { ModalButton } from "@/Models/Interfaces/ModalButton";
+import { RobMoneyPlugin } from "@/plugins/RobMoneyPlugin";
 
 let fromInventory: ContainerBase<Item> | null = null;
 const fromIndex: Ref<number | null> = ref(null);
@@ -93,6 +101,9 @@ const container = inject<Container>("container")!;
 const craftingContainer = inject<Container>("craftingContainer")!;
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const modalService = inject<ModalPanelPlugin>(ModalPanelPlugin.SERVICE_NAME)!;
+
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const robMoneyPlugin = inject<RobMoneyPlugin>(RobMoneyPlugin.SERVICE_NAME)!;
 
 provide(
   "showGroundDropBox",
@@ -112,6 +123,11 @@ const canModifyWeapon = computed(
     selectedItem.value instanceof Weapon &&
     playerInventory.Items.value.includes(selectedItem.value),
 );
+
+const canRobPlayer = robMoneyPlugin.canRobMoney;
+function robPlayer() {
+  robMoneyPlugin.rob();
+}
 
 const showWeaponPanel = ref(false);
 

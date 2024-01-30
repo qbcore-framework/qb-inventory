@@ -110,7 +110,13 @@ const nuiEventPlugin: Plugin = {
       } else if (action === "RobMoney") {
         console.log("RobMoney", data);
 
-        // Add option to take money from player
+        window.dispatchEvent(
+          new CustomEvent("inventory:rob-money", {
+            detail: {
+              playerId: data.TargetId,
+            },
+          }),
+        );
       }
     });
   },

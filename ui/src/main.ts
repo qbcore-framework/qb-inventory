@@ -9,15 +9,11 @@ import { nuiEventPlugin } from "./plugins/NuiEvent";
 import { Container } from "./Models/Container/Container";
 import { Hotbar } from "./Models/Hotbar";
 import { CraftingContainer } from "./Models/Container/CraftingContainer";
-import { ModalPanelPlugin } from "./plugins/ModalPanelPlugin";
-import { RequiredItemsPlugin } from "./plugins/RequiredItemsPlugin";
 
 const inventory = new PlayerInventory();
 const container = new Container();
 const craftingContainer = new CraftingContainer();
 const hotbar = new Hotbar();
-const modalPanel = new ModalPanelPlugin();
-const requiredItems = new RequiredItemsPlugin();
 
 createApp(App)
   .use(httpClientPlugin)
@@ -27,8 +23,6 @@ createApp(App)
     container,
     craftingContainer,
     hotbar,
-    modalPanel,
-    requiredItems,
   })
   .use(nuiEventPlugin, { inventory, container, craftingContainer, hotbar })
   .mount("#app");
