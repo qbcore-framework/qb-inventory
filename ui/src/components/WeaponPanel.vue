@@ -1,7 +1,7 @@
 <template>
-  <div class="flex flex-col items-center relative">
+  <div class="flex flex-col items-center relative mt-32 bg-gray-800/60 p-4">
     <button
-      class="absolute top-0 right-0 w-8 h-8 bg-gray-800/60 hover:bg-gray-200/40 border"
+      class="absolute top-4 right-4 w-8 h-8 bg-gray-800/60 hover:bg-gray-200/40 border"
       @click="$emit('close-panel')"
     >
       X
@@ -50,6 +50,7 @@
       <div
         v-for="attachment in weaponInfo.AttachmentData"
         :key="attachment.attachment"
+        class="bg-gray-500/60 flex flex-col items-center justify-center py-4 px-2 space-y-2"
       >
         <span v-text="attachment.label" />
         <img
@@ -57,7 +58,7 @@
           :alt="attachment.label"
         />
         <button
-          class="h-12 w-20"
+          class="h-12 w-20 disabled:border-gray-400 border bg-gray-800/60 disabled:bg-black/20 disabled:cursor-default"
           @click="RemoveAttachment(attachment.attachment)"
         >
           Remove

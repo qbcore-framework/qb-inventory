@@ -2,9 +2,9 @@
   <Transition>
     <div
       v-if="showGroundDropBox"
-      class="grow bg-gray-200/10 m-4 item-container text-center flex justify-center items-center"
+      class="grow bg-gray-800/30 m-4 item-container text-center flex justify-center items-center"
     >
-      <span class="text-gray-200">
+      <span class="text-gray-50">
         Drag you items here to drop them on the ground
       </span>
     </div>

@@ -4,7 +4,10 @@
       @item-dropped="onQuickMove($event.detail, playerInventory)"
     />
     <TransitionGroup name="fade">
-      <template v-if="playerInventory.isVisible.value && !showWeaponPanel">
+      <div
+        v-if="playerInventory.isVisible.value && !showWeaponPanel"
+        class="flex mt-24"
+      >
         <ItemGroup
           :inventory="playerInventory"
           :canSelectItems="true"
@@ -58,7 +61,7 @@
           @item-dropped="onItemDropped($event, craftingContainer)"
           @quick-move="onQuickMove($event, craftingContainer)"
         />
-      </template>
+      </div>
     </TransitionGroup>
     <GroundDropBox
       @item-dropped="onQuickMove($event.detail, playerInventory)"

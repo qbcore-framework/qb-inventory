@@ -45,3 +45,10 @@ checkIfDevBrowser().then((result) => {
   isDevBrowser.value = result;
 });
 </script>
+
+<style>
+body,
+html {
+  user-select: none;
+}
+</style>
