@@ -161,11 +161,13 @@ async function onItemDropped(
   if (fromInventory === null || fromIndex.value === null) return;
 
   const toItem = dropInventory.Items.value[index];
+  const fromItem = fromInventory.Items.value[fromIndex.value];
   if (
-    toItem?.combinable &&
     // Items can only combined if they are in the player's inventory
     fromInventory === playerInventory &&
-    dropInventory === playerInventory
+    dropInventory === playerInventory &&
+    toItem?.combinable &&
+    toItem.isCombinableWith(fromItem)
   ) {
     // We need to store the current values as they are reset by the time the modal is closed
     const fromIndexValue = fromIndex.value;
