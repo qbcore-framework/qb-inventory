@@ -51,7 +51,7 @@ const nuiEventHandler: Plugin = {
           container.UpdateContents(
             "0",
             new Array(10),
-            1000,
+            100_000,
             {
               pistol: 0,
               shotgun: 0,
