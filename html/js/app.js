@@ -395,7 +395,7 @@ function generateDescription(itemData) {
         case "labkey":
             return `<p>Lab: ${itemData.info.lab}</p>`;
         default:
-            let itemDescr = itemData.description;
+            let itemDescr = itemData.info.description || itemData.description;
 	    if (itemData.info.costs != undefined && itemData.info.costs != null) itemDescr += `<p><strong>ITEMS NEEDED:</strong> <span>${itemData.info.costs}</span></p>`;
             return itemDescr;
     }
