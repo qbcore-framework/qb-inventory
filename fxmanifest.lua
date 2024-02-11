@@ -1,7 +1,8 @@
 fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
-description 'QB-Inventory'
+author 'Kakarot'
+description 'Player inventory system providing a variety of features for storing and managing items'
 version '1.2.4'
 
 shared_scripts {
