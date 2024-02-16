@@ -177,7 +177,7 @@ end
 ---Checks weight and size of the vehicle trunk
 local function GetTrunkSize(vehicleClass)
     local trunkSize = Config.TrunkSpace[vehicleClass] or Config.TrunkSpace['default']
-    return trunkSize[vehicleClass].maxweight, trunkSize[vehicleClass].slots
+    return trunkSize.maxWeight, trunkSize.slots
 end
 exports('GetTrunkSize', GetTrunkSize)
 
