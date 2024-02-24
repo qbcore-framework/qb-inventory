@@ -1089,12 +1089,14 @@ local function OpenInventory(name, id, other, origin)
 			end
 			local maxweight = 1000000
 			local slots = 50
+			local label = 'Stash-' .. id
 			if other then
 				maxweight = other.maxweight or 1000000
 				slots = other.slots or 50
+				label = other.label or label
 			end
 			secondInv.name = 'stash-' .. id
-			secondInv.label = 'Stash-' .. id
+			secondInv.label = label
 			secondInv.maxweight = maxweight
 			secondInv.inventory = {}
 			secondInv.slots = slots
