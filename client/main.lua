@@ -55,6 +55,31 @@ end
 
 exports('HasItem', HasItem)
 
+function GetItemCount(items)
+    assert((type(items) == 'table' or type(items) == 'string') and table.type(table) == 'hash', "Table in ^3GetItemCount^7 cannot be dictionary!")
+
+    local check = type(items) == 'table' and 1 or 2
+    local count = 0
+
+    for _,item in pairs(PlayerData.items) do
+        if check == 1 then
+            for k,v in pairs(items) do
+                if v == item.name then
+                    count+=item.amount
+                end
+            end
+        elseif check == 2 then
+            if items == item.name then
+				count+=item.amount
+			end
+        end
+    end
+
+    return count
+end
+
+exports('GetItemCount', GetItemCount)
+
 ---Gets the closest vending machine object to the client
 ---@return integer closestVendingMachine
 local function GetClosestVending()

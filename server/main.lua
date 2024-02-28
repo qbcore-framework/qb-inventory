@@ -446,6 +446,33 @@ end
 
 exports('HasItem', HasItem)
 
+function GetItemCount(source, items)
+    assert((type(items) == 'table' or type(items) == 'string') and table.type(table) == 'hash', "Table in ^3GetItemCount^7 cannot be dictionary!")
+
+	local Player = QBCore.Functions.GetPlayer(source)
+	if not Player then return 0 end
+    local check = type(items) == 'table' and 1 or 2
+    local count = 0
+
+    for _,item in pairs(Player.PlayerData.items) do
+        if check == 1 then
+            for k,v in pairs(items) do
+                if v == item.name then
+                    count+=item.amount
+                end
+            end
+		else
+			if items == item.name then
+				count+=item.amount
+			end
+        end
+    end
+
+    return count
+end
+
+exports('GetItemCount', GetItemCount)
+
 ---Create a usable item with a callback on use
 ---@param itemName string The name of the item to make usable
 ---@param data any
