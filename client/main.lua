@@ -88,7 +88,11 @@ end
 ---@param text string The text to display
 local function DrawText3Ds(x, y, z, text)
     SetTextScale(0.35, 0.35)
-    SetTextFont(4)
+    if GetConvar('qb_locale', 'en') == 'en' then
+        SetTextFont(4)
+    else
+        SetTextFont(1)
+    end
     SetTextProportional(1)
     SetTextColour(255, 255, 255, 215)
     SetTextEntry('STRING')
@@ -116,20 +120,23 @@ end
 ---@param itemdata table Data of an item
 ---@return table attachments
 local function FormatWeaponAttachments(itemdata)
+    if not itemdata.info or not itemdata.info.attachments or #itemdata.info.attachments == 0 then
+        return {}
+    end
     local attachments = {}
-    itemdata.name = itemdata.name:upper()
-    if itemdata.info.attachments ~= nil and next(itemdata.info.attachments) ~= nil then
-        for _, v in pairs(itemdata.info.attachments) do
-            if exports['qb-weapons']:getConfigWeaponAttachments(itemdata.name) then
-                for key, value in pairs(exports['qb-weapons']:getConfigWeaponAttachments(itemdata.name)) do
-                    if value.component == v.component then
-                        local item = value.item
-                        attachments[#attachments + 1] = {
-                            attachment = key,
-                            label = QBCore.Shared.Items[item].label
-                            --label = value.label
-                        }
-                    end
+    local weaponName = itemdata.name
+    local WeaponAttachments = exports['qb-weapons']:getConfigWeaponAttachments()
+    if not WeaponAttachments then return {} end
+    for attachmentType, weapons in pairs(WeaponAttachments) do
+        local componentHash = weapons[weaponName]
+        if componentHash then
+            for _, attachmentData in pairs(itemdata.info.attachments) do
+                if attachmentData.component == componentHash then
+                    local label = QBCore.Shared.Items[attachmentType] and QBCore.Shared.Items[attachmentType].label or 'Unknown'
+                    attachments[#attachments + 1] = {
+                        attachment = attachmentType,
+                        label = label
+                    }
                 end
             end
         end
@@ -589,6 +596,10 @@ RegisterNetEvent('inventory:client:UseWeapon', function(weaponData, shootbool)
             end
         end
 
+        if weaponData.info.tint then
+            SetPedWeaponTintIndex(ped, weaponHash, weaponData.info.tint)
+        end
+
         currentWeapon = weaponName
     end
 end)
@@ -785,19 +796,23 @@ end)
 
 RegisterNUICallback('RemoveAttachment', function(data, cb)
     local ped = PlayerPedId()
-    local WeaponData = QBCore.Shared.Items[data.WeaponData.name]
-    local Attachment = exports['qb-weapons']:getConfigWeaponAttachments(WeaponData.name:upper())[data.AttachmentData.attachment]
+    local WeaponData = data.WeaponData
+    local allAttachments = exports['qb-weapons']:getConfigWeaponAttachments()
+    local Attachment = allAttachments[data.AttachmentData.attachment][WeaponData.name]
+
     QBCore.Functions.TriggerCallback('weapons:server:RemoveAttachment', function(NewAttachments)
         if NewAttachments ~= false then
             local Attachies = {}
-            RemoveWeaponComponentFromPed(ped, joaat(data.WeaponData.name), joaat(Attachment.component))
+            RemoveWeaponComponentFromPed(ped, joaat(WeaponData.name), joaat(Attachment))
+
             for _, v in pairs(NewAttachments) do
-                for _, pew in pairs(exports['qb-weapons']:getConfigWeaponAttachments(WeaponData.name:upper())) do
-                    if v.component == pew.component then
-                        local item = pew.item
+                for attachmentType, weapons in pairs(allAttachments) do
+                    local componentHash = weapons[WeaponData.name]
+                    if componentHash and v.component == componentHash then
+                        local label = QBCore.Shared.Items[attachmentType] and QBCore.Shared.Items[attachmentType].label or 'Unknown'
                         Attachies[#Attachies + 1] = {
-                            attachment = pew.item,
-                            label = QBCore.Shared.Items[item].label,
+                            attachment = attachmentType,
+                            label = label,
                         }
                     end
                 end
@@ -808,10 +823,10 @@ RegisterNUICallback('RemoveAttachment', function(data, cb)
             }
             cb(DJATA)
         else
-            RemoveWeaponComponentFromPed(ped, joaat(data.WeaponData.name), joaat(Attachment.component))
+            RemoveWeaponComponentFromPed(ped, joaat(WeaponData.name), joaat(Attachment))
             cb({})
         end
-    end, data.AttachmentData, data.WeaponData)
+    end, data.AttachmentData, WeaponData)
 end)
 
 RegisterNUICallback('getCombineItem', function(data, cb)
