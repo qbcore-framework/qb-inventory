@@ -226,6 +226,10 @@ local function RemoveItem(source, item, amount, slot)
 	slot = tonumber(slot)
 
 	if slot then
+		if not Player.PlayerData.items[slot] then
+			DropPlayer(source, 'Failed to remove item, most likely cheating')
+			return false
+		end
 		if Player.PlayerData.items[slot].amount > amount then
 			Player.PlayerData.items[slot].amount = Player.PlayerData.items[slot].amount - amount
 			Player.Functions.SetPlayerData('items', Player.PlayerData.items)
@@ -252,6 +256,10 @@ local function RemoveItem(source, item, amount, slot)
 		if not slots then return false end
 
 		for _, _slot in pairs(slots) do
+			if not Player.PlayerData.items[_slot] then
+				DropPlayer(source, 'Failed to remove item, most likely cheating')
+				return false
+			end
 			if Player.PlayerData.items[_slot].amount > amountToRemove then
 				Player.PlayerData.items[_slot].amount = Player.PlayerData.items[_slot].amount - amountToRemove
 				Player.Functions.SetPlayerData('items', Player.PlayerData.items)
@@ -2156,7 +2164,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
 			QBCore.Functions.Notify(src, Lang:t('notify.noitem'), 'error')
 		end
 	elseif fromInventory == 'attachment_crafting' then
-		local itemData = Config.AttachmentCrafting['items'][fromSlot]
+		local itemData = Config.AttachmentCrafting[fromSlot]
 		if hasCraftItems(src, itemData.costs, fromAmount) then
 			TriggerClientEvent('inventory:client:CraftAttachment', src, itemData.name, itemData.costs, fromAmount, toSlot, itemData.points)
 		else

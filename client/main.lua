@@ -88,7 +88,11 @@ end
 ---@param text string The text to display
 local function DrawText3Ds(x, y, z, text)
     SetTextScale(0.35, 0.35)
-    SetTextFont(4)
+    if GetConvar('qb_locale', 'en') == 'en' then
+        SetTextFont(4)
+    else
+        SetTextFont(1)
+    end
     SetTextProportional(1)
     SetTextColour(255, 255, 255, 215)
     SetTextEntry('STRING')
