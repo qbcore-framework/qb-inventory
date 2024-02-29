@@ -32,7 +32,7 @@ local function LoadInventory(source, citizenid)
 				loadedInventory[item.slot] = {
 					name = itemInfo['name'],
 					amount = item.amount,
-					info = item.info or '',
+					info = item.info or itemInfo['info'],
 					label = itemInfo['label'],
 					description = itemInfo['description'] or '',
 					weight = itemInfo['weight'],
@@ -164,7 +164,7 @@ local function AddItem(source, item, amount, slot, info)
 
 	amount = tonumber(amount) or 1
 	slot = tonumber(slot) or GetFirstSlotByItem(Player.PlayerData.items, item)
-	info = info or {}
+	info = info or itemInfo["info"]
 
 	if itemInfo['type'] == 'weapon' then
 		info.serie = info.serie or tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
@@ -181,8 +181,8 @@ local function AddItem(source, item, amount, slot, info)
 
 			return true
 		elseif not itemInfo['unique'] and slot or slot and Player.PlayerData.items[slot] == nil then
-			Player.PlayerData.items[slot] = { name = itemInfo['name'], amount = amount, info = info or '', label = itemInfo['label'], description = itemInfo['description'] or '', weight = itemInfo['weight'], type = itemInfo['type'], unique = itemInfo['unique'], useable = itemInfo['useable'], image = itemInfo['image'], shouldClose = itemInfo['shouldClose'], slot = slot, combinable = itemInfo['combinable'] }
-			Player.Functions.SetPlayerData('items', Player.PlayerData.items)
+			Player.PlayerData.items[slot] = { name = itemInfo['name'], amount = amount, info = info or itemInfo["info"], label = itemInfo['label'], description = itemInfo['description'] or '', weight = itemInfo['weight'], type = itemInfo['type'], unique = itemInfo['unique'], useable = itemInfo['useable'], image = itemInfo['image'], shouldClose = itemInfo['shouldClose'], slot = slot, combinable = itemInfo['combinable'] }
+			Player.Functions.SetPlayerData("items", Player.PlayerData.items)
 
 			if Player.Offline then return true end
 
@@ -192,8 +192,8 @@ local function AddItem(source, item, amount, slot, info)
 		elseif itemInfo['unique'] or (not slot or slot == nil) or itemInfo['type'] == 'weapon' then
 			for i = 1, Config.MaxInventorySlots, 1 do
 				if Player.PlayerData.items[i] == nil then
-					Player.PlayerData.items[i] = { name = itemInfo['name'], amount = amount, info = info or '', label = itemInfo['label'], description = itemInfo['description'] or '', weight = itemInfo['weight'], type = itemInfo['type'], unique = itemInfo['unique'], useable = itemInfo['useable'], image = itemInfo['image'], shouldClose = itemInfo['shouldClose'], slot = i, combinable = itemInfo['combinable'] }
-					Player.Functions.SetPlayerData('items', Player.PlayerData.items)
+					Player.PlayerData.items[i] = { name = itemInfo['name'], amount = amount, info = info or itemInfo["info"], label = itemInfo['label'], description = itemInfo['description'] or '', weight = itemInfo['weight'], type = itemInfo['type'], unique = itemInfo['unique'], useable = itemInfo['useable'], image = itemInfo['image'], shouldClose = itemInfo['shouldClose'], slot = i, combinable = itemInfo['combinable'] }
+					Player.Functions.SetPlayerData("items", Player.PlayerData.items)
 
 					if Player.Offline then return true end
 
@@ -610,14 +610,14 @@ local function AddToStash(stashId, slot, otherslot, itemName, amount, info)
 			Stashes[stashId].items[slot] = {
 				name = itemInfo['name'],
 				amount = amount,
-				info = info or '',
-				label = itemInfo['label'],
-				description = itemInfo['description'] or '',
-				weight = itemInfo['weight'],
-				type = itemInfo['type'],
-				unique = itemInfo['unique'],
-				useable = itemInfo['useable'],
-				image = itemInfo['image'],
+				info = info or itemInfo["info"],
+				label = itemInfo["label"],
+				description = itemInfo["description"] or "",
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
+				image = itemInfo["image"],
 				slot = slot,
 			}
 		end
@@ -627,14 +627,14 @@ local function AddToStash(stashId, slot, otherslot, itemName, amount, info)
 			Stashes[stashId].items[otherslot] = {
 				name = itemInfo['name'],
 				amount = amount,
-				info = info or '',
-				label = itemInfo['label'],
-				description = itemInfo['description'] or '',
-				weight = itemInfo['weight'],
-				type = itemInfo['type'],
-				unique = itemInfo['unique'],
-				useable = itemInfo['useable'],
-				image = itemInfo['image'],
+				info = info or itemInfo["info"],
+				label = itemInfo["label"],
+				description = itemInfo["description"] or "",
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
+				image = itemInfo["image"],
 				slot = otherslot,
 			}
 		else
@@ -642,14 +642,14 @@ local function AddToStash(stashId, slot, otherslot, itemName, amount, info)
 			Stashes[stashId].items[slot] = {
 				name = itemInfo['name'],
 				amount = amount,
-				info = info or '',
-				label = itemInfo['label'],
-				description = itemInfo['description'] or '',
-				weight = itemInfo['weight'],
-				type = itemInfo['type'],
-				unique = itemInfo['unique'],
-				useable = itemInfo['useable'],
-				image = itemInfo['image'],
+				info = info or itemInfo["info"],
+				label = itemInfo["label"],
+				description = itemInfo["description"] or "",
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
+				image = itemInfo["image"],
 				slot = slot,
 			}
 		end
@@ -694,20 +694,26 @@ local function GetOwnedVehicleItems(plate)
 			items[item.slot] = {
 				name = itemInfo['name'],
 				amount = tonumber(item.amount),
-				info = item.info or '',
-				label = itemInfo['label'],
-				description = itemInfo['description'] or '',
-				weight = itemInfo['weight'],
-				type = itemInfo['type'],
-				unique = itemInfo['unique'],
-				useable = itemInfo['useable'],
-				image = itemInfo['image'],
+				info = item.info or itemInfo["info"],
+				label = itemInfo["label"],
+				description = itemInfo["description"] or "",
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
+				image = itemInfo["image"],
 				slot = item.slot,
 			}
 		end
 	end
 	return items
 end
+exports('GetOwnedVehicleItems', GetOwnedVehicleItems)
+exports('GetUnownedVehicleItems', function(plate)
+    if not plate then return {} end
+    if Trunks[plate] then return Trunks[plate].items end 
+    return {}
+end)
 
 ---Save the items in a trunk
 ---@param plate string The plate to save the items from
@@ -739,28 +745,50 @@ local function AddToTrunk(plate, slot, otherslot, itemName, amount, info)
 	local ItemData = QBCore.Shared.Items[itemName]
 
 	if not ItemData.unique then
-		if Trunks[plate].items[slot] and Trunks[plate].items[slot].name == itemName then
-			Trunks[plate].items[slot].amount = Trunks[plate].items[slot].amount + amount
+		if Trunks[plate].items[slot] then
+            if Trunks[plate].items[slot].name == itemName then
+                Trunks[plate].items[slot].amount = Trunks[plate].items[slot].amount + amount
+            else
+                return false, "Slot Occupied"
+            end
 		else
 			local itemInfo = QBCore.Shared.Items[itemName:lower()]
 			Trunks[plate].items[slot] = {
 				name = itemInfo['name'],
 				amount = amount,
-				info = info or '',
-				label = itemInfo['label'],
-				description = itemInfo['description'] or '',
-				weight = itemInfo['weight'],
-				type = itemInfo['type'],
-				unique = itemInfo['unique'],
-				useable = itemInfo['useable'],
-				image = itemInfo['image'],
+				info = info or itemInfo["info"],
+				label = itemInfo["label"],
+				description = itemInfo["description"] or "",
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
+				image = itemInfo["image"],
 				slot = slot,
 			}
 		end
 	else
-		if Trunks[plate].items[slot] and Trunks[plate].items[slot].name == itemName then
-			local itemInfo = QBCore.Shared.Items[itemName:lower()]
-			Trunks[plate].items[otherslot] = {
+	  if Trunks[plate].items[slot] and Trunks[plate].items[slot].name == itemName then
+            if otherslot > 0 then
+                local itemInfo = QBCore.Shared.Items[itemName:lower()]
+                Trunks[plate].items[otherslot] = {
+                    name = itemInfo["name"],
+                    amount = amount,
+                    info = info or itemInfo["info"],
+                    label = itemInfo["label"],
+                    description = itemInfo["description"] or "",
+                    weight = itemInfo["weight"],
+                    type = itemInfo["type"],
+                    unique = itemInfo["unique"],
+                    useable = itemInfo["useable"],
+                    image = itemInfo["image"],
+                    slot = otherslot,
+                }
+            else
+                return false, "OtherSlot not specified"
+            end
+	    local itemInfo = QBCore.Shared.Items[itemName:lower()]
+	    Trunks[plate].items[otherslot] = {
 				name = itemInfo['name'],
 				amount = amount,
 				info = info or '',
@@ -773,37 +801,50 @@ local function AddToTrunk(plate, slot, otherslot, itemName, amount, info)
 				image = itemInfo['image'],
 				slot = otherslot,
 			}
-		else
-			local itemInfo = QBCore.Shared.Items[itemName:lower()]
-			Trunks[plate].items[slot] = {
+	  else
+	     local itemInfo = QBCore.Shared.Items[itemName:lower()]
+	     Trunks[plate].items[slot] = {
 				name = itemInfo['name'],
 				amount = amount,
-				info = info or '',
-				label = itemInfo['label'],
-				description = itemInfo['description'] or '',
-				weight = itemInfo['weight'],
-				type = itemInfo['type'],
-				unique = itemInfo['unique'],
-				useable = itemInfo['useable'],
-				image = itemInfo['image'],
+				info = info or itemInfo["info"],
+				label = itemInfo["label"],
+				description = itemInfo["description"] or "",
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
+				image = itemInfo["image"],
 				slot = slot,
-			}
-		end
+	    }
+	  end
 	end
+    return true, "OK"
 end
+exports('AddItemToTrunk', AddToTrunk)
 
 ---Remove the item from the trunk
 ---@param plate string plate of the car to remove the item from
 ---@param slot number Slot to remove the item from
 ---@param itemName string Name of the item to remove
 ---@param amount? number The amount to remove
+---@return number The number of items remaining. Negative indicates error.
 local function RemoveFromTrunk(plate, slot, itemName, amount)
 	amount = tonumber(amount) or 1
-	if Trunks[plate].items[slot] and Trunks[plate].items[slot].name == itemName then
-		if Trunks[plate].items[slot].amount > amount then
-			Trunks[plate].items[slot].amount = Trunks[plate].items[slot].amount - amount
+	if Trunks[plate].items[slot] then
+        if Trunks[plate].items[slot].name == itemName then
+            if Trunks[plate].items[slot].amount >= amount then
+                Trunks[plate].items[slot].amount = Trunks[plate].items[slot].amount - amount
+                if (Trunks[plate].items[slot].amount < 1) then 
+                    Trunks[plate].items[slot] = nil
+                    return 0, "OK"
+                end
+                return Trunks[plate].items[slot].amount
+            else
+                Trunks[plate].items[slot] = nil
+                return 0, "OK"
+            end
 		else
-			Trunks[plate].items[slot] = nil
+            return -1, "Mismatched Item"
 		end
 	else
 		Trunks[plate].items[slot] = nil
@@ -811,7 +852,9 @@ local function RemoveFromTrunk(plate, slot, itemName, amount)
 			Trunks[plate].items[slot] = nil
 		end
 	end
+    return -1, "Item NonExist"
 end
+exports('RemoveItemFromTrunk', RemoveFromTrunk)
 
 ---Get the items in the glovebox of a vehicle
 ---@param plate string The plate of the vehicle to check
@@ -830,20 +873,26 @@ local function GetOwnedVehicleGloveboxItems(plate)
 			items[item.slot] = {
 				name = itemInfo['name'],
 				amount = tonumber(item.amount),
-				info = item.info or '',
-				label = itemInfo['label'],
-				description = itemInfo['description'] or '',
-				weight = itemInfo['weight'],
-				type = itemInfo['type'],
-				unique = itemInfo['unique'],
-				useable = itemInfo['useable'],
-				image = itemInfo['image'],
+				info = item.info or itemInfo["info"],
+				label = itemInfo["label"],
+				description = itemInfo["description"] or "",
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
+				image = itemInfo["image"],
 				slot = item.slot,
 			}
 		end
 	end
 	return items
 end
+exports('GetOwnedVehicleGloveboxItems', GetOwnedVehicleGloveboxItems)
+exports('GetUnownedVehicleGloveboxItems', function(plate)
+    if not plate then return {} end
+    if Gloveboxes[plate] then return Gloveboxes[plate].items end
+    return {}
+end)
 
 ---Save the items in a glovebox
 ---@param plate string The plate to save the items from
@@ -882,14 +931,14 @@ local function AddToGlovebox(plate, slot, otherslot, itemName, amount, info)
 			Gloveboxes[plate].items[slot] = {
 				name = itemInfo['name'],
 				amount = amount,
-				info = info or '',
-				label = itemInfo['label'],
-				description = itemInfo['description'] or '',
-				weight = itemInfo['weight'],
-				type = itemInfo['type'],
-				unique = itemInfo['unique'],
-				useable = itemInfo['useable'],
-				image = itemInfo['image'],
+				info = info or itemInfo["info"],
+				label = itemInfo["label"],
+				description = itemInfo["description"] or "",
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
+				image = itemInfo["image"],
 				slot = slot,
 			}
 		end
@@ -899,14 +948,14 @@ local function AddToGlovebox(plate, slot, otherslot, itemName, amount, info)
 			Gloveboxes[plate].items[otherslot] = {
 				name = itemInfo['name'],
 				amount = amount,
-				info = info or '',
-				label = itemInfo['label'],
-				description = itemInfo['description'] or '',
-				weight = itemInfo['weight'],
-				type = itemInfo['type'],
-				unique = itemInfo['unique'],
-				useable = itemInfo['useable'],
-				image = itemInfo['image'],
+				info = info or itemInfo["info"],
+				label = itemInfo["label"],
+				description = itemInfo["description"] or "",
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
+				image = itemInfo["image"],
 				slot = otherslot,
 			}
 		else
@@ -914,14 +963,14 @@ local function AddToGlovebox(plate, slot, otherslot, itemName, amount, info)
 			Gloveboxes[plate].items[slot] = {
 				name = itemInfo['name'],
 				amount = amount,
-				info = info or '',
-				label = itemInfo['label'],
-				description = itemInfo['description'] or '',
-				weight = itemInfo['weight'],
-				type = itemInfo['type'],
-				unique = itemInfo['unique'],
-				useable = itemInfo['useable'],
-				image = itemInfo['image'],
+				info = info or itemInfo["info"],
+				label = itemInfo["label"],
+				description = itemInfo["description"] or "",
+				weight = itemInfo["weight"],
+				type = itemInfo["type"],
+				unique = itemInfo["unique"],
+				useable = itemInfo["useable"],
+				image = itemInfo["image"],
 				slot = slot,
 			}
 		end
@@ -965,14 +1014,14 @@ local function AddToDrop(dropId, slot, itemName, amount, info)
 		Drops[dropId].items[slot] = {
 			name = itemInfo['name'],
 			amount = amount,
-			info = info or '',
-			label = itemInfo['label'],
-			description = itemInfo['description'] or '',
-			weight = itemInfo['weight'],
-			type = itemInfo['type'],
-			unique = itemInfo['unique'],
-			useable = itemInfo['useable'],
-			image = itemInfo['image'],
+			info = info or itemInfo["info"],
+			label = itemInfo["label"],
+			description = itemInfo["description"] or "",
+			weight = itemInfo["weight"],
+			type = itemInfo["type"],
+			unique = itemInfo["unique"],
+			useable = itemInfo["useable"],
+			image = itemInfo["image"],
 			slot = slot,
 			id = dropId,
 		}
@@ -1353,11 +1402,53 @@ RegisterNetEvent('QBCore:Server:UpdateObject', function()
 	QBCore = exports['qb-core']:GetCoreObject()
 end)
 
+-- Returns the first empty slot in the vehicle trunk
+local function GetFirstEmptyTrunkSlot(vehicleClass, plate)
+    if not vehicleClass then vehicleClass = 'default' end
+    if not plate then return -2 end -- Indicates error with the plate number
+    if not Trunks[plate] then Trunks[plate] = {label = "Trunk-"..plate, items = {}} end
+    local trunkSize = Config.TrunkSpace[vehicleClass] or Config.TrunkSpace['default']
+    local maxSlots = trunkSize.slots or 0
+    local slotUsed = {}
+    -- Sets all used slots to TRUE
+    for k,v in pairs (Trunks[plate].items) do
+        if v.slot then 
+            slotUsed[tostring(v.slot)] = true
+        end
+    end
+    -- Returns on the first FALSE slot
+    for i = 1, maxSlots do
+        if not slotUsed[tostring(i)] and i <= maxSlots then
+            return i
+        end
+    end
+    return 0 -- Indicates that the Inventory is Full
+end
+exports('GetFirstEmptyTrunkSlot', GetFirstEmptyTrunkSlot)
+
+-- Returns the first slot containing the same item
+local function GetFirstMatchingTrunkSlot(vehicleClass, plate, item)
+    if not plate then return -3 end -- Indicates there is a problem with the plate
+    if not item then return -2 end -- Indicates error with the item name
+    if QBCore.Shared.Items[item] then
+        if not Trunks[plate] then Trunks[plate] = {label = "Trunk-"..plate, items = {}} end
+        for itemName,itemData in pairs (Trunks[plate].items) do
+            if itemData.unique then break end
+            if itemData.name == item then
+                return itemData.slot
+            end
+        end
+        -- Item not found, return first empty slot
+        return GetFirstEmptyTrunkSlot(vehicleClass, plate)
+    end
+    return -1 -- Indicates the requested item or inventory does not exist
+end
+exports('GetFirstMatchingTrunkSlot', GetFirstMatchingTrunkSlot)
+
 function addTrunkItems(plate, items)
 	Trunks[plate] = {}
 	Trunks[plate].items = items
 end
-
 exports('addTrunkItems', addTrunkItems)
 
 function addGloveboxItems(plate, items)
