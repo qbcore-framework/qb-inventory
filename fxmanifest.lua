@@ -28,6 +28,7 @@ files {
     'html/css/main.css',
     'html/js/app.js',
     'html/images/*.png',
+    'html/images/*.webp',
     'html/images/*.jpg',
     'html/ammo_images/*.png',
     'html/attachment_images/*.png',
