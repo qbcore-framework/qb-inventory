@@ -311,6 +311,21 @@ end
 
 exports('GetItemByName', GetItemByName)
 
+local function GetTotalItemCount(source, item)
+    local totalCount = 0
+    local Player = QBCore.Functions.GetPlayer(source)
+    if not Player then return end
+    item = tostring(item):lower()
+    for _,invItem in pairs(Player.PlayerData.items) do
+        if invItem.name:lower() == item then
+            totalCount += invItem.amount
+        end
+    end
+    return totalCount or 0
+end
+
+exports('GetTotalItemCount', GetTotalItemCount)
+
 ---Get the item from the inventory of the player with the provided source by the name of the item in an array for all slots that the item is in
 ---@param source number The source of the player
 ---@param item string The name of the item to get
@@ -1312,6 +1327,10 @@ AddEventHandler('QBCore:Server:PlayerLoaded', function(Player)
 	QBCore.Functions.AddPlayerMethod(Player.PlayerData.source, 'SetInventory', function(items)
 		SetInventory(Player.PlayerData.source, items)
 	end)
+
+    QBCore.Functions.AddPlayerMethod(Player.PlayerData.source, 'GetTotalItemCount', function(item)
+        return GetTotalItemCount(Player.PlayerData.source, item)
+    end)
 end)
 
 AddEventHandler('onResourceStart', function(resourceName)
@@ -1345,6 +1364,10 @@ AddEventHandler('onResourceStart', function(resourceName)
 		QBCore.Functions.AddPlayerMethod(k, 'SetInventory', function(items)
 			SetInventory(k, items)
 		end)
+
+        QBCore.Functions.AddPlayerMethod(k, 'GetTotalItemCount', function(item)
+            return GetTotalItemCount(k, item)
+        end)
 	end
 end)
 
