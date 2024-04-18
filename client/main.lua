@@ -60,6 +60,7 @@ exports('HasItem', HasItem)
 local function GetInventory()
     return PlayerData.items
 end
+
 exports('GetInventory', GetInventory)
 
 ---Gets the closest vending machine object to the client
