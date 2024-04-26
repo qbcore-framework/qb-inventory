@@ -55,6 +55,14 @@ end
 
 exports('HasItem', HasItem)
 
+---Return the items in player inventory
+---@return { [number]: { name: string, amount: number, info?: table, label: string, description: string, weight: number, type: string, unique: boolean, useable: boolean, image: string, shouldClose: boolean, slot: number, combinable: table } } loadedInventory Table of items with slot as index
+local function GetInventory()
+    return PlayerData.items
+end
+
+exports('GetInventory', GetInventory)
+
 ---Gets the closest vending machine object to the client
 ---@return integer closestVendingMachine
 local function GetClosestVending()
