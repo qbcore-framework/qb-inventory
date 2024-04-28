@@ -7,6 +7,18 @@ local Gloveboxes = {}
 local Stashes = {}
 local ShopItems = {}
 
+AddEventHandler('playerDropped', function()
+    local src = source
+    local inventories = { Stashes, Trunks, Gloveboxes, Drops }
+    for _, inventory in pairs(inventories) do
+        for _, inv in pairs(inventory) do
+            if inv.isOpen == src then
+                inv.isOpen = false
+            end
+        end
+    end
+end)
+
 --#endregion Variables
 
 --#region Functions
@@ -1144,14 +1156,14 @@ local function OpenInventory(name, id, other, origin)
 			else
 				if id then
 					local ownedItems = GetOwnedVehicleItems(id)
-					if IsVehicleOwned(id) and next(ownedItems) then
+					if Trunks[id] and not Trunks[id].isOpen then
+						secondInv.inventory = Trunks[id].items
+						Trunks[id].isOpen = src
+						Trunks[id].label = secondInv.label
+					elseif IsVehicleOwned(id) and next(ownedItems) then
 						secondInv.inventory = ownedItems
 						Trunks[id] = {}
 						Trunks[id].items = ownedItems
-						Trunks[id].isOpen = src
-						Trunks[id].label = secondInv.label
-					elseif Trunks[id] and not Trunks[id].isOpen then
-						secondInv.inventory = Trunks[id].items
 						Trunks[id].isOpen = src
 						Trunks[id].label = secondInv.label
 					else
@@ -1518,14 +1530,14 @@ RegisterNetEvent('inventory:server:OpenInventory', function(name, id, other)
 			else
 				if id then
 					local ownedItems = GetOwnedVehicleItems(id)
-					if IsVehicleOwned(id) and next(ownedItems) then
+					if Trunks[id] and not Trunks[id].isOpen then
+						secondInv.inventory = Trunks[id].items
+						Trunks[id].isOpen = src
+						Trunks[id].label = secondInv.label
+					elseif IsVehicleOwned(id) and next(ownedItems) then
 						secondInv.inventory = ownedItems
 						Trunks[id] = {}
 						Trunks[id].items = ownedItems
-						Trunks[id].isOpen = src
-						Trunks[id].label = secondInv.label
-					elseif Trunks[id] and not Trunks[id].isOpen then
-						secondInv.inventory = Trunks[id].items
 						Trunks[id].isOpen = src
 						Trunks[id].label = secondInv.label
 					else
