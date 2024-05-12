@@ -3,7 +3,7 @@ game 'gta5'
 lua54 'yes'
 author 'Kakarot'
 description 'Player inventory system providing a variety of features for storing and managing items'
-version '1.2.4'
+version '1.2.5'
 
 shared_scripts {
     '@qb-core/shared/locale.lua',
@@ -28,6 +28,7 @@ files {
     'html/css/main.css',
     'html/js/app.js',
     'html/images/*.png',
+    'html/images/*.webp',
     'html/images/*.jpg',
     'html/ammo_images/*.png',
     'html/attachment_images/*.png',
