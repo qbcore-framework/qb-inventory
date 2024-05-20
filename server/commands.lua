@@ -35,7 +35,7 @@ QBCore.Commands.Add('giveitem', 'Give An Item (Admin Only)', { { name = 'id', he
                 info.url = 'https://cdn.discordapp.com/attachments/870094209783308299/870104331142189126/Logo_-_Display_Picture_-_Stylized_-_Red.png'
             end
 
-            if AddItem(id, itemData['name'], amount, false, info) then
+            if AddItem(id, itemData['name'], amount, false, info, 'give item command') then
                 QBCore.Functions.Notify(source, Lang:t('notify.yhg') .. GetPlayerName(id) .. ' ' .. amount .. ' ' .. itemData['name'] .. '', 'success')
                 TriggerClientEvent('qb-inventory:client:ItemBox', id, itemData, 'add', amount)
                 if Player(id).state.inv_busy then TriggerClientEvent('qb-inventory:client:updateInventory', id) end
@@ -73,7 +73,7 @@ QBCore.Commands.Add('randomitems', 'Receive random items', {}, false, function(s
             end
         end
         if emptySlot then
-            if AddItem(source, randitem.name, amount, emptySlot) then
+            if AddItem(source, randitem.name, amount, emptySlot, false, 'random items command') then
                 TriggerClientEvent('qb-inventory:client:ItemBox', source, QBCore.Shared.Items[randitem.name], 'add')
                 player = QBCore.Functions.GetPlayer(source)
                 playerInventory = player.PlayerData.items
