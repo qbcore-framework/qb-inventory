@@ -449,9 +449,8 @@ exports('CreateShop', CreateShop)
 --- @param source number The player's server ID.
 --- @param name string The identifier of the inventory to open.
 function OpenShop(source, name)
-    local src = source
     if not name then return end
-    local Player = QBCore.Functions.GetPlayer(src)
+    local Player = QBCore.Functions.GetPlayer(source)
     if not Player then return end
     if not RegisteredShops[name] then return end
     local playerPed = GetPlayerPed(source)
@@ -497,7 +496,7 @@ function OpenInventory(source, identifier, data)
     local inventory = Inventories[identifier]
 
     if inventory and inventory.isOpen then
-        QBCore.Functions.Notify(source, 'This inventory is currently in use.', 'error')
+        TriggerClientEvent('QBCore:Notify', source, 'This inventory is currently in use', 'error')
         return
     end
 
@@ -505,7 +504,7 @@ function OpenInventory(source, identifier, data)
     inventory.maxweight = (inventory and inventory.maxweight) or (data and data.maxweight) or Config.StashSize.maxweight
     inventory.slots = (inventory and inventory.slots) or (data and data.slots) or Config.StashSize.slots
     inventory.label = (inventory and inventory.label) or (data and data.label) or identifier
-    inventory.isOpen = true
+    inventory.isOpen = source
 
     local formattedInventory = {
         name = identifier,

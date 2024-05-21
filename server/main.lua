@@ -34,6 +34,22 @@ end)
 
 -- Handlers
 
+AddEventHandler('playerDropped', function()
+    for _, inv in pairs(Inventories) do
+        if inv.isOpen == source then
+            inv.isOpen = false
+        end
+    end
+end)
+
+AddEventHandler('txAdmin:events:serverShuttingDown', function()
+    for inventory, data in pairs(Inventories) do
+        if data.isOpen then
+            MySQL.prepare('INSERT INTO inventories (identifier, items) VALUES (?, ?) ON DUPLICATE KEY UPDATE items = ?', { inventory, json.encode(data.items), json.encode(data.items) })
+        end
+    end
+end)
+
 RegisterNetEvent('QBCore:Server:UpdateObject', function()
     if source ~= '' then return end
     QBCore = exports['qb-core']:GetCoreObject()
@@ -178,7 +194,7 @@ RegisterNetEvent('qb-inventory:server:updateDrop', function(dropId, coords)
     Drops[dropId].coords = coords
 end)
 
-RegisterNetEvent('inventory:server:snowball', function(action)
+RegisterNetEvent('qb-inventory:server:snowball', function(action)
     if action == 'add' then
         AddItem(source, 'weapon_snowball')
     elseif action == 'remove' then
