@@ -302,7 +302,7 @@ function HasItem(source, items, amount)
         for _ in pairs(items) do totalItems = totalItems + 1 end
     end
 
-    for _, itemData in pairs(Player.items) do
+    for _, itemData in pairs(Player.PlayerData.items) do
         if isTable then
             for k, v in pairs(items) do
                 if itemData and itemData.name == (isArray and v or k) and ((amount and itemData.amount >= amount) or (not isArray and itemData.amount >= v) or (not amount and isArray)) then
