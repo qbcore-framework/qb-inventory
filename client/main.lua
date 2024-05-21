@@ -285,6 +285,7 @@ end)
 -- Commands
 
 RegisterCommand('openInv', function()
+    if IsNuiFocused() then return end
     ExecuteCommand('inventory')
 end, false)
 
