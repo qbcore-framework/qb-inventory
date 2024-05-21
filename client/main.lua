@@ -192,6 +192,9 @@ end)
 RegisterNUICallback('CloseInventory', function(data, cb)
     SetNuiFocus(false, false)
     if data.name then
+        if data.name:find('trunk-') then
+            CloseTrunk()
+        end
         TriggerServerEvent('qb-inventory:server:closeInventory', data.name)
     elseif CurrentDrop then
         TriggerServerEvent('qb-inventory:server:closeInventory', CurrentDrop)
