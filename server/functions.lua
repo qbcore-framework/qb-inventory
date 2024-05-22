@@ -395,7 +395,7 @@ exports('CloseInventory', CloseInventory)
 --- @param targetId number - The ID of the player whose inventory will be opened.
 function OpenInventoryById(source, targetId)
     local QBPlayer = QBCore.Functions.GetPlayer(source)
-    local TargetPlayer = QBCore.Functions.GetPlayer(targetId)
+    local TargetPlayer = QBCore.Functions.GetPlayer(tonumber(targetId))
     if not QBPlayer or not TargetPlayer then return end
     if Player(targetId).state.inv_busy then CloseInventory(targetId) end
     local playerItems = QBPlayer.PlayerData.items
