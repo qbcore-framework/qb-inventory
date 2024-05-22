@@ -258,6 +258,35 @@ end
 
 exports('GetItemsByName', GetItemsByName)
 
+--- Retrieves the total count of used and free slots for a player or an inventory.
+--- @param identifier number|string The player's identifier or the identifier of an inventory or drop.
+--- @return number, number - The total count of used slots and the total count of free slots. If no inventory is found, returns 0 and the maximum slots.
+function GetSlots(identifier)
+    local inventory, maxSlots
+    local player = QBCore.Functions.GetPlayer(identifier)
+    if player then
+        inventory = player.PlayerData.items
+        maxSlots = Config.MaxSlots
+    elseif Inventories[identifier] then
+        inventory = Inventories[identifier].items
+        maxSlots = Inventories[identifier].slots
+    elseif Drops[identifier] then
+        inventory = Drops[identifier].items
+        maxSlots = Drops[identifier].slots
+    end
+    if not inventory then return 0, maxSlots end
+    local slotsUsed = 0
+    for _, v in pairs(inventory) do
+        if v then
+            slotsUsed = slotsUsed + 1
+        end
+    end
+    local slotsFree = maxSlots - slotsUsed
+    return slotsUsed, slotsFree
+end
+
+exports('GetSlots', GetSlots)
+
 --- Retrieves the total count of specified items for a player.
 --- @param source number The player's source ID.
 --- @param items table|string The items to count. Can be either a table of item names or a single item name.
