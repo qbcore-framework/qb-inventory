@@ -1,14 +1,5 @@
 -- Local Functions
 
-local function GetTotalWeight(items)
-    if not items then return 0 end
-    local weight = 0
-    for _, item in pairs(items) do
-        weight = weight + (item.weight * item.amount)
-    end
-    return tonumber(weight)
-end
-
 local function InitializeInventory(inventoryId, data)
     Inventories[inventoryId] = {
         items = {},
@@ -223,6 +214,16 @@ function GetItemBySlot(source, slot)
 end
 
 exports('GetItemBySlot', GetItemBySlot)
+
+local function GetTotalWeight(items)
+    if not items then return 0 end
+    local weight = 0
+    for _, item in pairs(items) do
+        weight = weight + (item.weight * item.amount)
+    end
+    return tonumber(weight)
+end
+exports('GetTotalWeight', GetTotalWeight)
 
 -- Retrieves an item from a player's inventory by its name.
 --- @param source number - The player's server ID.
