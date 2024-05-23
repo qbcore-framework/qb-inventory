@@ -288,7 +288,7 @@ end)
 -- Commands
 
 RegisterCommand('openInv', function()
-    if IsNuiFocused() then return end
+    if IsNuiFocused() or IsPauseMenuActive() then return end
     ExecuteCommand('inventory')
 end, false)
 
