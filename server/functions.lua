@@ -1,3 +1,55 @@
+-- Local Functions
+
+local function InitializeInventory(inventoryId, data)
+    Inventories[inventoryId] = {
+        items = {},
+        isOpen = false,
+        label = data and data.label or inventoryId,
+        maxweight = data and data.maxweight or Config.StashSize.maxweight,
+        slots = data and data.slots or Config.StashSize.slots
+    }
+    return Inventories[inventoryId]
+end
+
+local function GetFirstFreeSlot(items, maxSlots)
+    for i = 1, maxSlots do
+        if items[i] == nil then
+            return i
+        end
+    end
+    return nil
+end
+
+local function SetupShopItems(shopItems)
+    local items = {}
+    local slot = 1
+    if shopItems and next(shopItems) then
+        for _, item in pairs(shopItems) do
+            local itemInfo = QBCore.Shared.Items[item.name:lower()]
+            if itemInfo then
+                items[slot] = {
+                    name = itemInfo['name'],
+                    amount = tonumber(item.amount),
+                    info = item.info or {},
+                    label = itemInfo['label'],
+                    description = itemInfo['description'] or '',
+                    weight = itemInfo['weight'],
+                    type = itemInfo['type'],
+                    unique = itemInfo['unique'],
+                    useable = itemInfo['useable'],
+                    price = item.price,
+                    image = itemInfo['image'],
+                    slot = slot,
+                }
+                slot = slot + 1
+            end
+        end
+    end
+    return items
+end
+
+-- Exported Functions
+
 function LoadInventory(source, citizenid)
     local inventory = MySQL.prepare.await('SELECT inventory FROM players WHERE citizenid = ?', { citizenid })
     local loadedInventory = {}
@@ -163,6 +215,17 @@ end
 
 exports('GetItemBySlot', GetItemBySlot)
 
+function GetTotalWeight(items)
+    if not items then return 0 end
+    local weight = 0
+    for _, item in pairs(items) do
+        weight = weight + (item.weight * item.amount)
+    end
+    return tonumber(weight)
+end
+
+exports('GetTotalWeight', GetTotalWeight)
+
 -- Retrieves an item from a player's inventory by its name.
 --- @param source number - The player's server ID.
 --- @param item string - The name of the item to retrieve.
@@ -197,6 +260,35 @@ end
 
 exports('GetItemsByName', GetItemsByName)
 
+--- Retrieves the total count of used and free slots for a player or an inventory.
+--- @param identifier number|string The player's identifier or the identifier of an inventory or drop.
+--- @return number, number - The total count of used slots and the total count of free slots. If no inventory is found, returns 0 and the maximum slots.
+function GetSlots(identifier)
+    local inventory, maxSlots
+    local player = QBCore.Functions.GetPlayer(identifier)
+    if player then
+        inventory = player.PlayerData.items
+        maxSlots = Config.MaxSlots
+    elseif Inventories[identifier] then
+        inventory = Inventories[identifier].items
+        maxSlots = Inventories[identifier].slots
+    elseif Drops[identifier] then
+        inventory = Drops[identifier].items
+        maxSlots = Drops[identifier].slots
+    end
+    if not inventory then return 0, maxSlots end
+    local slotsUsed = 0
+    for _, v in pairs(inventory) do
+        if v then
+            slotsUsed = slotsUsed + 1
+        end
+    end
+    local slotsFree = maxSlots - slotsUsed
+    return slotsUsed, slotsFree
+end
+
+exports('GetSlots', GetSlots)
+
 --- Retrieves the total count of specified items for a player.
 --- @param source number The player's source ID.
 --- @param items table|string The items to count. Can be either a table of item names or a single item name.
@@ -221,15 +313,6 @@ function GetItemCount(source, items)
 end
 
 exports('GetItemCount', GetItemCount)
-
-local function GetTotalWeight(items)
-    if not items then return 0 end
-    local weight = 0
-    for _, item in pairs(items) do
-        weight = weight + (item.weight * item.amount)
-    end
-    return tonumber(weight)
-end
 
 --- Checks if an item can be added to a player's inventory.
 --- @param source number The player's server ID.
@@ -302,7 +385,7 @@ function HasItem(source, items, amount)
         for _ in pairs(items) do totalItems = totalItems + 1 end
     end
 
-    for _, itemData in pairs(Player.items) do
+    for _, itemData in pairs(Player.PlayerData.items) do
         if isTable then
             for k, v in pairs(items) do
                 if itemData and itemData.name == (isArray and v or k) and ((amount and itemData.amount >= amount) or (not isArray and itemData.amount >= v) or (not amount and isArray)) then
@@ -343,7 +426,7 @@ exports('CloseInventory', CloseInventory)
 --- @param targetId number - The ID of the player whose inventory will be opened.
 function OpenInventoryById(source, targetId)
     local QBPlayer = QBCore.Functions.GetPlayer(source)
-    local TargetPlayer = QBCore.Functions.GetPlayer(targetId)
+    local TargetPlayer = QBCore.Functions.GetPlayer(tonumber(targetId))
     if not QBPlayer or not TargetPlayer then return end
     if Player(targetId).state.inv_busy then CloseInventory(targetId) end
     local playerItems = QBPlayer.PlayerData.items
@@ -361,34 +444,6 @@ function OpenInventoryById(source, targetId)
 end
 
 exports('OpenInventoryById', OpenInventoryById)
-
-local function SetupShopItems(shopItems)
-    local items = {}
-    local slot = 1
-    if shopItems and next(shopItems) then
-        for _, item in pairs(shopItems) do
-            local itemInfo = QBCore.Shared.Items[item.name:lower()]
-            if itemInfo then
-                items[slot] = {
-                    name = itemInfo['name'],
-                    amount = tonumber(item.amount),
-                    info = item.info or {},
-                    label = itemInfo['label'],
-                    description = itemInfo['description'] or '',
-                    weight = itemInfo['weight'],
-                    type = itemInfo['type'],
-                    unique = itemInfo['unique'],
-                    useable = itemInfo['useable'],
-                    price = item.price,
-                    image = itemInfo['image'],
-                    slot = slot,
-                }
-                slot = slot + 1
-            end
-        end
-    end
-    return items
-end
 
 --- @param shopData table The data of the shop to create.
 function CreateShop(shopData)
@@ -425,9 +480,8 @@ exports('CreateShop', CreateShop)
 --- @param source number The player's server ID.
 --- @param name string The identifier of the inventory to open.
 function OpenShop(source, name)
-    local src = source
     if not name then return end
-    local Player = QBCore.Functions.GetPlayer(src)
+    local Player = QBCore.Functions.GetPlayer(source)
     if not Player then return end
     if not RegisteredShops[name] then return end
     local playerPed = GetPlayerPed(source)
@@ -451,17 +505,6 @@ end
 
 exports('OpenShop', OpenShop)
 
-local function InitializeInventory(inventoryId, data)
-    Inventories[inventoryId] = {
-        items = {},
-        isOpen = false,
-        label = data and data.label or inventoryId,
-        maxweight = data and data.maxweight or Config.StashSize.maxweight,
-        slots = data and data.slots or Config.StashSize.slots
-    }
-    return Inventories[inventoryId]
-end
-
 --- @param source number The player's server ID.
 --- @param identifier string|nil The identifier of the inventory to open.
 --- @param data table|nil Additional data for initializing the inventory.
@@ -484,7 +527,7 @@ function OpenInventory(source, identifier, data)
     local inventory = Inventories[identifier]
 
     if inventory and inventory.isOpen then
-        QBCore.Functions.Notify(source, 'This inventory is currently in use.', 'error')
+        TriggerClientEvent('QBCore:Notify', source, 'This inventory is currently in use', 'error')
         return
     end
 
@@ -492,7 +535,7 @@ function OpenInventory(source, identifier, data)
     inventory.maxweight = (inventory and inventory.maxweight) or (data and data.maxweight) or Config.StashSize.maxweight
     inventory.slots = (inventory and inventory.slots) or (data and data.slots) or Config.StashSize.slots
     inventory.label = (inventory and inventory.label) or (data and data.label) or identifier
-    inventory.isOpen = true
+    inventory.isOpen = source
 
     local formattedInventory = {
         name = identifier,
@@ -505,15 +548,6 @@ function OpenInventory(source, identifier, data)
 end
 
 exports('OpenInventory', OpenInventory)
-
-local function GetFirstFreeSlot(items, maxSlots)
-    for i = 1, maxSlots do
-        if items[i] == nil then
-            return i
-        end
-    end
-    return nil
-end
 
 --- Adds an item to the player's inventory or a specific inventory.
 --- @param identifier string The identifier of the player or inventory.
