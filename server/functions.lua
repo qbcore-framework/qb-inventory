@@ -215,7 +215,7 @@ end
 
 exports('GetItemBySlot', GetItemBySlot)
 
-local function GetTotalWeight(items)
+function GetTotalWeight(items)
     if not items then return 0 end
     local weight = 0
     for _, item in pairs(items) do
@@ -223,6 +223,7 @@ local function GetTotalWeight(items)
     end
     return tonumber(weight)
 end
+
 exports('GetTotalWeight', GetTotalWeight)
 
 -- Retrieves an item from a player's inventory by its name.
