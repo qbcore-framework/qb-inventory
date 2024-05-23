@@ -119,6 +119,17 @@ AddEventHandler('onResourceStart', function(resourceName)
     end
 end)
 
+-- Functions
+
+local function checkWeapon(source, item)
+    local ped = GetPlayerPed(source)
+    local weapon = GetSelectedPedWeapon(ped)
+    local weaponInfo = QBCore.Shared.Weapons[weapon]
+    if weaponInfo and weaponInfo.name == item.name then
+        RemoveWeaponFromPed(ped, weapon)
+    end
+end
+
 -- Events
 
 RegisterNetEvent('qb-inventory:server:openVending', function()
@@ -196,9 +207,9 @@ end)
 
 RegisterNetEvent('qb-inventory:server:snowball', function(action)
     if action == 'add' then
-        AddItem(source, 'weapon_snowball')
+        AddItem(source, 'weapon_snowball', 1, false, false, 'qb-inventory:server:snowball')
     elseif action == 'remove' then
-        RemoveItem(source, 'weapon_snowball')
+        RemoveItem(source, 'weapon_snowball', 1, false, 'qb-inventory:server:snowball')
     end
 end)
 
@@ -217,8 +228,8 @@ QBCore.Functions.CreateCallback('qb-inventory:server:createDrop', function(sourc
     end
     local playerPed = GetPlayerPed(src)
     local playerCoords = GetEntityCoords(playerPed)
-    if RemoveItem(src, item.name, item.amount, item.fromSlot) then
-        if item.type == 'weapon' then SetCurrentPedWeapon(playerPed, `WEAPON_UNARMED`, true) end
+    if RemoveItem(src, item.name, item.amount, item.fromSlot, 'dropped item') then
+        if item.type == 'weapon' then checkWeapon(src, item) end
         TaskPlayAnim(playerPed, 'pickup_object', 'pickup_low', 8.0, -8.0, 2000, 0, 0, false, false, false)
         local bag = CreateObjectNoOffset(Config.ItemDropObject, playerCoords.x + 0.5, playerCoords.y + 0.5, playerCoords.z, true, true, false)
         local dropId = NetworkGetNetworkIdFromEntity(bag)
@@ -330,7 +341,7 @@ QBCore.Functions.CreateCallback('qb-inventory:server:giveItem', function(source,
         return
     end
 
-    if itemInfo.type == 'weapon' then SetCurrentPedWeapon(playerPed, `WEAPON_UNARMED`, true) end
+    if itemInfo.type == 'weapon' then checkWeapon(source, item) end
     TriggerClientEvent('qb-inventory:client:giveAnim', source)
     TriggerClientEvent('qb-inventory:client:ItemBox', source, itemInfo, 'remove', giveAmount)
     TriggerClientEvent('qb-inventory:client:giveAnim', target)
@@ -383,6 +394,7 @@ RegisterNetEvent('qb-inventory:server:SetInventoryData', function(fromInventory,
 
     if fromItem then
         if not toItem and toAmount > fromItem.amount then return end
+        if fromInventory == 'player' and toInventory ~= 'player' then checkWeapon(src, fromItem) end
 
         local fromId = getIdentifier(fromInventory, src)
         local toId = getIdentifier(toInventory, src)
