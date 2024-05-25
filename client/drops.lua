@@ -18,7 +18,7 @@ function GetDrops()
                                 label = Lang:t('menu.o_bag'),
                                 action = function()
                                     TriggerServerEvent('qb-inventory:server:openDrop', k)
-                                    CurrentDrop = dropId
+                                    CurrentDrop = k
                                 end,
                             },
                         },
