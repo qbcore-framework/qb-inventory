@@ -1,5 +1,6 @@
 QBCore = exports['qb-core']:GetCoreObject()
 local hotbarShown = false
+local PlayerData = nil
 
 -- Handlers
 
@@ -11,7 +12,7 @@ end)
 
 RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
     LocalPlayer.state:set('inv_busy', true, true)
-    PlayerData = {}
+    PlayerData = nil
 end)
 
 RegisterNetEvent('QBCore:Client:UpdateObject', function()
@@ -78,19 +79,21 @@ function HasItem(items, amount)
         for _ in pairs(items) do totalItems = totalItems + 1 end
     end
 
-    for _, itemData in pairs(PlayerData.items) do
-        if isTable then
-            for k, v in pairs(items) do
-                if itemData and itemData.name == (isArray and v or k) and ((amount and itemData.amount >= amount) or (not isArray and itemData.amount >= v) or (not amount and isArray)) then
-                    count = count + 1
-                    if count == totalItems then
-                        return true
+    if PlayerData and type(PlayerData.items) == "table" then
+        for _, itemData in pairs(PlayerData.items) do
+            if isTable then
+                for k, v in pairs(items) do
+                    if itemData and itemData.name == (isArray and v or k) and ((amount and itemData.amount >= amount) or (not isArray and itemData.amount >= v) or (not amount and isArray)) then
+                        count = count + 1
+                        if count == totalItems then
+                            return true
+                        end
                     end
                 end
-            end
-        else -- Single item as string
-            if itemData and itemData.name == items and (not amount or (itemData and amount and itemData.amount >= amount)) then
-                return true
+            else -- Single item as string
+                if itemData and itemData.name == items and (not amount or (itemData and amount and itemData.amount >= amount)) then
+                    return true
+                end
             end
         end
     end
@@ -137,9 +140,14 @@ RegisterNetEvent('qb-inventory:client:closeInv', function()
 end)
 
 RegisterNetEvent('qb-inventory:client:updateInventory', function()
+    local items = {}
+    if PlayerData and type(PlayerData.items) == "table" then
+        items = PlayerData.items
+    end
+
     SendNUIMessage({
         action = 'update',
-        inventory = PlayerData.items
+        inventory = items
     })
 end)
 
@@ -298,9 +306,11 @@ end, false)
 
 for i = 1, 5 do
     RegisterCommand('slot_' .. i, function()
-        local itemData = PlayerData.items[i]
-        if not itemData then return end
-        TriggerServerEvent('qb-inventory:server:useItem', itemData)
+        if PlayerData and type(PlayerData.items) == "table" then
+            local itemData = PlayerData.items[i]
+            if not itemData then return end
+            TriggerServerEvent('qb-inventory:server:useItem', itemData)
+        end
     end, false)
     RegisterKeyMapping('slot_' .. i, Lang:t('inf_mapping.use_item') .. i, 'keyboard', i)
 end
