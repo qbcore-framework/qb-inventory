@@ -9,12 +9,25 @@ CreateThread(function()
             for i = 1, #result do
                 local inventory = result[i]
                 local cacheKey = inventory.identifier
-                Inventories[cacheKey] = {
-                    items = json.decode(inventory.items) or {},
-                    isOpen = false
-                }
+                local items = json.decode(inventory.items) or {}
+                if #items == 0 then
+                    MySQL.Async.execute('DELETE FROM inventories WHERE id = @id', {
+                        ['@id'] = inventory.id
+                    }, function(rowsChanged)
+                        if rowsChanged > 0 then
+                            print('Empty inventory with id ( ' .. inventory.id .. ' ) and name ( ' ..cacheKey.. ' ) removed')
+                        else
+                            print('Failed to remove empty inventory with id ( ' .. inventory.id .. ' ) and name ( ' ..cacheKey.. ' )')
+                        end
+                    end)
+                else
+                    Inventories[cacheKey] = {
+                        items = items,
+                        isOpen = false
+                    }
+                end
             end
-            print(#result .. ' inventories successfully loaded')
+            print(#result .. ' inventories successfully checked and loaded')
         end
     end)
 end)
