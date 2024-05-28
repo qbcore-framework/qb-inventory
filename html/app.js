@@ -210,6 +210,11 @@ const InventoryContainer = Vue.createApp({
         getHotbarItemInSlot(slot) {
             return this.hotbarItems[slot - 1] || null;
         },
+        containerMouseDownAction(event){
+            if (event.button === 0 && this.showContextMenu) {
+                this.showContextMenu = false
+            }
+        },
         handleMouseDown(event, slot, inventory) {
             event.preventDefault();
             const itemInSlot = this.getItemInSlot(slot, inventory);
