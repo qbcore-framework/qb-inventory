@@ -51,22 +51,26 @@ RegisterNetEvent('qb-inventory:client:setupDropTarget', function(dropId)
                 icon = 'fas fa-hand-pointer',
                 label = 'Pick up bag',
                 action = function()
-                    AttachEntityToEntity(
-                        bag,
-                        PlayerPedId(),
-                        GetPedBoneIndex(PlayerPedId(), Config.ItemDropObjectBone),
-                        Config.ItemDropObjectOffset[1].x,
-                        Config.ItemDropObjectOffset[1].y,
-                        Config.ItemDropObjectOffset[1].z,
-                        Config.ItemDropObjectOffset[2].x,
-                        Config.ItemDropObjectOffset[2].y,
-                        Config.ItemDropObjectOffset[2].z,
-                        true, true, false, true, 1, true
-                    )
-                    bagObject = bag
-                    holdingDrop = true
-                    heldDrop = newDropId
-                    exports['qb-core']:DrawText('Press [G] to drop the bag')
+                    if not holdingDrop then
+                        AttachEntityToEntity(
+                            bag,
+                            PlayerPedId(),
+                            GetPedBoneIndex(PlayerPedId(), Config.ItemDropObjectBone),
+                            Config.ItemDropObjectOffset[1].x,
+                            Config.ItemDropObjectOffset[1].y,
+                            Config.ItemDropObjectOffset[1].z,
+                            Config.ItemDropObjectOffset[2].x,
+                            Config.ItemDropObjectOffset[2].y,
+                            Config.ItemDropObjectOffset[2].z,
+                            true, true, false, true, 1, true
+                        )
+                        bagObject = bag
+                        holdingDrop = true
+                        heldDrop = newDropId
+                        exports['qb-core']:DrawText('Press [G] to drop the bag')
+                    else
+                        QBCore.Functions.Notify(Lang:t('notify.c_pu_bag'), 'error')
+                    end
                 end,
             }
         },
