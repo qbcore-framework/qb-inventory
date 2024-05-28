@@ -298,6 +298,7 @@ const InventoryContainer = Vue.createApp({
             this.dragStartX = event.clientX;
             this.dragStartY = event.clientY;
             this.dragStartInventoryType = inventoryType;
+            this.showContextMenu = false
         },
         createGhostElement(slotElement) {
             const ghostElement = slotElement.cloneNode(true);
