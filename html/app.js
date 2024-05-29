@@ -216,7 +216,7 @@ const InventoryContainer = Vue.createApp({
             }
         },
         handleMouseDown(event, slot, inventory) {
-            if (event.button === 1) return; // skip middle mouse
+            if (event.button === 1) return; // skip middle mouse button
             event.preventDefault();
             const itemInSlot = this.getItemInSlot(slot, inventory);
             if (event.button === 0) {
@@ -227,7 +227,7 @@ const InventoryContainer = Vue.createApp({
                 }
             } else if (event.button === 2 && itemInSlot) {
                 if (this.otherInventoryName.startsWith("shop-")) {
-                    this.handlePurchase(slot, itemInSlot.slot, itemInSlot, 1);
+                    if (inventory === "other") this.handlePurchase(slot, itemInSlot.slot, itemInSlot, 1);
                     return;
                 }
                 if (!this.isOtherInventoryEmpty) {
@@ -411,7 +411,9 @@ const InventoryContainer = Vue.createApp({
         handleItemDrop(targetInventoryType, targetSlot) {
             try {
                 const isShop = this.otherInventoryName.indexOf("shop-")
-                if (this.dragStartInventoryType  === "other" && targetInventoryType === "other" && isShop !== -1) {
+                const isMovingWithinShop = this.dragStartInventoryType === "other" && targetInventoryType === "other";
+                const isMovingToShop = this.dragStartInventoryType === "player" && targetInventoryType === "other";
+                if (isShop !== -1 && (isMovingWithinShop || isMovingToShop)) {
                     return;
                     // throw new Error("Cannot move items within the same shop inventory");
                 }
