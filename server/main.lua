@@ -159,6 +159,13 @@ RegisterNetEvent('qb-inventory:server:closeInventory', function(inventory)
     end
     if Drops[inventory] then
         Drops[inventory].isOpen = false
+        if #Drops[inventory].items == 0 and not Drops[inventory].isOpen then -- if no listeed items in the drop on close
+            TriggerClientEvent('qb-inventory:client:removeDropTarget', Drops[inventory].entityId)
+            Wait(500)
+            local entity = NetworkGetEntityFromNetworkId(Drops[inventory].entityId)
+            if DoesEntityExist(entity) then DeleteEntity(entity) end
+            Drops[inventory] = nil
+        end
         return
     end
     if not Inventories[inventory] then return end
