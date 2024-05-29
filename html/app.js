@@ -410,6 +410,12 @@ const InventoryContainer = Vue.createApp({
         },
         handleItemDrop(targetInventoryType, targetSlot) {
             try {
+                const isShop = this.otherInventoryName.indexOf("shop-")
+                if (this.dragStartInventoryType  === "other" && targetInventoryType === "other" && isShop !== -1) {
+                    return;
+                    // throw new Error("Cannot move items within the same shop inventory");
+                }
+
                 const targetSlotNumber = parseInt(targetSlot, 10);
                 if (isNaN(targetSlotNumber)) {
                     throw new Error("Invalid target slot number");

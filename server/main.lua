@@ -394,6 +394,9 @@ RegisterNetEvent('qb-inventory:server:SetInventoryData', function(fromInventory,
     local Player = QBCore.Functions.GetPlayer(src)
     if not Player then return end
 
+    local isShop = toInventory:find('shop-') ~= nil
+    if isShop then return end
+
     fromSlot, toSlot, fromAmount, toAmount = tonumber(fromSlot), tonumber(toSlot), tonumber(fromAmount), tonumber(toAmount)
 
     local fromItem = getItem(fromInventory, src, fromSlot)
