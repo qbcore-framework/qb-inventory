@@ -32,6 +32,14 @@ end
 
 -- Events
 
+RegisterNetEvent('qb-inventory:client:removeDropTarget', function(dropId)
+    while not NetworkDoesNetworkIdExist(dropId) do Wait(10) end
+    local bag = NetworkGetEntityFromNetworkId(dropId)
+    while not DoesEntityExist(bag) do Wait(10) end
+    --Run exsport to remove entity target bag
+    exports['qb-target']:RemoveTargetEntity(bag)
+end)
+
 RegisterNetEvent('qb-inventory:client:setupDropTarget', function(dropId)
     while not NetworkDoesNetworkIdExist(dropId) do Wait(10) end
     local bag = NetworkGetEntityFromNetworkId(dropId)
@@ -51,29 +59,32 @@ RegisterNetEvent('qb-inventory:client:setupDropTarget', function(dropId)
                 icon = 'fas fa-hand-pointer',
                 label = 'Pick up bag',
                 action = function()
-                    AttachEntityToEntity(
-                        bag,
-                        PlayerPedId(),
-                        GetPedBoneIndex(PlayerPedId(), Config.ItemDropObjectBone),
-                        Config.ItemDropObjectOffset[1].x,
-                        Config.ItemDropObjectOffset[1].y,
-                        Config.ItemDropObjectOffset[1].z,
-                        Config.ItemDropObjectOffset[2].x,
-                        Config.ItemDropObjectOffset[2].y,
-                        Config.ItemDropObjectOffset[2].z,
-                        true, true, false, true, 1, true
-                    )
-                    bagObject = bag
-                    holdingDrop = true
-                    heldDrop = newDropId
-                    exports['qb-core']:DrawText('Press [G] to drop the bag')
+                    if not holdingDrop then 
+                        AttachEntityToEntity(
+                            bag,
+                            PlayerPedId(),
+                            GetPedBoneIndex(PlayerPedId(), Config.ItemDropObjectBone),
+                            Config.ItemDropObjectOffset[1].x,
+                            Config.ItemDropObjectOffset[1].y,
+                            Config.ItemDropObjectOffset[1].z,
+                            Config.ItemDropObjectOffset[2].x,
+                            Config.ItemDropObjectOffset[2].y,
+                            Config.ItemDropObjectOffset[2].z,
+                            true, true, false, true, 1, true
+                        )
+                        bagObject = bag
+                        holdingDrop = true
+                        heldDrop = newDropId
+                        exports['qb-core']:DrawText('Press [G] to drop the bag')
+                    else
+                        QBCore.Functions.Notify("Your already holding a bag, Go Drop it!", "error", 5500)
+                    end
                 end,
             }
         },
         distance = 2.5,
     })
 end)
-
 -- NUI Callbacks
 
 RegisterNUICallback('DropItem', function(item, cb)
