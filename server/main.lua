@@ -272,6 +272,17 @@ local function getShopStock(shop, itemName)
     return 0 
 end
 
+local function isNearInventory(playerCoords, inventory)
+    if inventory.coords then
+        local inventoryDistance = vector3(inventory.coords.x, inventory.coords.y, inventory.coords.z)
+        if inventoryDistance then
+            local distance = #(playerCoords - inventoryDistance)
+            if distance > 5.0 then return false end
+        end
+    end
+    return true
+end
+
 QBCore.Functions.CreateCallback('qb-inventory:server:attemptPurchase', function(source, cb, data)
     local itemInfo = data.item
     local amount = data.amount
@@ -289,6 +300,13 @@ QBCore.Functions.CreateCallback('qb-inventory:server:attemptPurchase', function(
     local shopStock = getShopStock(shop, itemInfo.name)
     if shopStock < 1 then
         TriggerClientEvent('QBCore:Notify', source, 'Item is out of stock', 'error')
+        cb(false)
+        return
+    end
+
+    local playerPed = GetPlayerPed(source)
+    local playerCoords = GetEntityCoords(playerPed)
+    if not isNearInventory(playerCoords, shop) then
         cb(false)
         return
     end
