@@ -16,7 +16,7 @@
     </head>
     <body>
         <div id="app">
-            <div class="inventory-container" v-if="isInventoryOpen" @mousemove="drag" @mouseup="endDrag">
+            <div class="inventory-container" v-if="isInventoryOpen" @mousemove="drag" @mouseup="endDrag" @mousedown="containerMouseDownAction">
                 <div class="player-inventory-header" :class="{ 'centered-inventory-header': shouldCenterInventory }">
                     <div class="labels-container">
                         <div class="inventory-label">

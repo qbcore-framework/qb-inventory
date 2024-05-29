@@ -210,7 +210,13 @@ const InventoryContainer = Vue.createApp({
         getHotbarItemInSlot(slot) {
             return this.hotbarItems[slot - 1] || null;
         },
+        containerMouseDownAction(event){
+            if (event.button === 0 && this.showContextMenu) {
+                this.showContextMenu = false
+            }
+        },
         handleMouseDown(event, slot, inventory) {
+            if (event.button === 1) return; // skip middle mouse
             event.preventDefault();
             const itemInSlot = this.getItemInSlot(slot, inventory);
             if (event.button === 0) {
@@ -298,6 +304,7 @@ const InventoryContainer = Vue.createApp({
             this.dragStartX = event.clientX;
             this.dragStartY = event.clientY;
             this.dragStartInventoryType = inventoryType;
+            this.showContextMenu = false
         },
         createGhostElement(slotElement) {
             const ghostElement = slotElement.cloneNode(true);
