@@ -263,16 +263,36 @@ QBCore.Functions.CreateCallback('qb-inventory:server:createDrop', function(sourc
     end
 end)
 
+local function getShopStock(shop, itemName)
+    for _, item in ipairs(shop.items) do
+        if item.name == itemName then
+            return item.amount
+        end
+    end
+    return 0 
+end
+
 QBCore.Functions.CreateCallback('qb-inventory:server:attemptPurchase', function(source, cb, data)
     local itemInfo = data.item
     local amount = data.amount
-    local shop = string.gsub(data.shop, 'shop%-', '')
+    local shopName = string.gsub(data.shop, 'shop%-', '')
     local price = itemInfo.price * amount
     local Player = QBCore.Functions.GetPlayer(source)
     if not Player then
         cb(false)
         return
     end
+
+    local shop = RegisteredShops[shopName]
+    if not shop then return end
+
+    local shopStock = getShopStock(shop, itemInfo.name)
+    if shopStock < 1 then
+        TriggerClientEvent('QBCore:Notify', source, 'Item is out of stock', 'error')
+        cb(false)
+        return
+    end
+    
     if not CanAddItem(source, itemInfo.name, amount) then
         TriggerClientEvent('QBCore:Notify', source, 'Cannot hold item', 'error')
         cb(false)
@@ -282,7 +302,7 @@ QBCore.Functions.CreateCallback('qb-inventory:server:attemptPurchase', function(
     if Player.PlayerData.money.cash >= price then
         Player.Functions.RemoveMoney('cash', price, 'shop-purchase')
         AddItem(source, itemInfo.name, amount, nil, itemInfo.info, 'shop-purchase')
-        TriggerEvent('qb-shops:server:UpdateShopItems', shop, itemInfo, amount)
+        TriggerEvent('qb-shops:server:UpdateShopItems', shopName, itemInfo, amount)
         cb(true)
     else
         TriggerClientEvent('QBCore:Notify', source, 'You do not have enough money', 'error')
