@@ -300,6 +300,11 @@ for i = 1, 5 do
     RegisterCommand('slot_' .. i, function()
         local itemData = PlayerData.items[i]
         if not itemData then return end
+        if itemData.type == "weapon" then
+            if holdingDrop then
+                return QBCore.Functions.Notify("Your already holding a bag, Go Drop it!", "error", 5500)
+            end
+        end
         TriggerServerEvent('qb-inventory:server:useItem', itemData)
     end, false)
     RegisterKeyMapping('slot_' .. i, Lang:t('inf_mapping.use_item') .. i, 'keyboard', i)
