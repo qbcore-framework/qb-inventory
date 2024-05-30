@@ -70,7 +70,6 @@ const InventoryContainer = Vue.createApp({
                 otherInventory: {},
                 otherInventoryName: "",
                 otherInventoryLabel: "Drop",
-                otherInventoryTotalWeight: 0,
                 otherInventoryMaxWeight: 1000000,
                 otherInventorySlots: 100,
                 isShopInventory: false,
@@ -210,9 +209,9 @@ const InventoryContainer = Vue.createApp({
         getHotbarItemInSlot(slot) {
             return this.hotbarItems[slot - 1] || null;
         },
-        containerMouseDownAction(event){
+        containerMouseDownAction(event) {
             if (event.button === 0 && this.showContextMenu) {
-                this.showContextMenu = false
+                this.showContextMenu = false;
             }
         },
         handleMouseDown(event, slot, inventory) {
@@ -240,42 +239,58 @@ const InventoryContainer = Vue.createApp({
         moveItemBetweenInventories(item, sourceInventoryType) {
             const sourceInventory = sourceInventoryType === "player" ? this.playerInventory : this.otherInventory;
             const targetInventory = sourceInventoryType === "player" ? this.otherInventory : this.playerInventory;
-            const targetItemKey = Object.keys(targetInventory).find((key) => targetInventory[key] && targetInventory[key].name === item.name);
-            const targetItem = targetInventory[targetItemKey];
             const amountToTransfer = this.transferAmount !== null ? this.transferAmount : 1;
             let targetSlot = null;
 
             const sourceItem = sourceInventory[item.slot];
             if (!sourceItem || sourceItem.amount < amountToTransfer) {
-                console.error("Error: Insufficient amount of item in source inventory");
+                this.inventoryError(item.slot);
                 return;
             }
 
-            if (!targetItem) {
+            const totalWeightAfterTransfer = this.otherInventoryWeight + sourceItem.weight * amountToTransfer;
+            if (totalWeightAfterTransfer > this.otherInventoryMaxWeight) {
+                this.inventoryError(item.slot);
+                return;
+            }
+
+            if (item.unique) {
+                targetSlot = this.findNextAvailableSlot(targetInventory);
+                if (targetSlot === null) {
+                    this.inventoryError(item.slot);
+                    return;
+                }
+
                 const newItem = {
                     ...item,
                     inventory: sourceInventoryType === "player" ? "other" : "player",
                     amount: amountToTransfer,
                 };
-
-                let added = false;
-                for (let slot = 1; slot <= this.totalSlots; slot++) {
-                    if (!targetInventory[slot]) {
-                        targetInventory[slot] = newItem;
-                        newItem.slot = slot;
-                        targetSlot = slot;
-                        added = true;
-                        break;
-                    }
-                }
-
-                if (!added) {
-                    console.error("Error: No free slots available in target inventory");
-                    return;
-                }
+                targetInventory[targetSlot] = newItem;
+                newItem.slot = targetSlot;
             } else {
-                targetItem.amount += amountToTransfer;
-                targetSlot = targetItem.slot;
+                const targetItemKey = Object.keys(targetInventory).find((key) => targetInventory[key] && targetInventory[key].name === item.name);
+                const targetItem = targetInventory[targetItemKey];
+
+                if (!targetItem) {
+                    const newItem = {
+                        ...item,
+                        inventory: sourceInventoryType === "player" ? "other" : "player",
+                        amount: amountToTransfer,
+                    };
+
+                    targetSlot = this.findNextAvailableSlot(targetInventory);
+                    if (targetSlot === null) {
+                        this.inventoryError(item.slot);
+                        return;
+                    }
+
+                    targetInventory[targetSlot] = newItem;
+                    newItem.slot = targetSlot;
+                } else {
+                    targetItem.amount += amountToTransfer;
+                    targetSlot = targetItem.slot;
+                }
             }
 
             sourceItem.amount -= amountToTransfer;
@@ -304,7 +319,7 @@ const InventoryContainer = Vue.createApp({
             this.dragStartX = event.clientX;
             this.dragStartY = event.clientY;
             this.dragStartInventoryType = inventoryType;
-            this.showContextMenu = false
+            this.showContextMenu = false;
         },
         createGhostElement(slotElement) {
             const ghostElement = slotElement.cloneNode(true);
@@ -410,6 +425,11 @@ const InventoryContainer = Vue.createApp({
         },
         handleItemDrop(targetInventoryType, targetSlot) {
             try {
+                const isShop = this.otherInventoryName.indexOf("shop-");
+                if (this.dragStartInventoryType === "other" && targetInventoryType === "other" && isShop !== -1) {
+                    return;
+                }
+
                 const targetSlotNumber = parseInt(targetSlot, 10);
                 if (isNaN(targetSlotNumber)) {
                     throw new Error("Invalid target slot number");
@@ -426,6 +446,11 @@ const InventoryContainer = Vue.createApp({
                 const amountToTransfer = this.transferAmount !== null ? this.transferAmount : sourceItem.amount;
                 if (sourceItem.amount < amountToTransfer) {
                     throw new Error("Insufficient amount of item in source inventory");
+                }
+
+                const totalWeightAfterTransfer = this.otherInventoryWeight + sourceItem.weight * amountToTransfer;
+                if (totalWeightAfterTransfer > this.otherInventoryMaxWeight) {
+                    throw new Error("Insufficient weight capacity in target inventory");
                 }
 
                 const targetItem = targetInventory[targetSlotNumber];

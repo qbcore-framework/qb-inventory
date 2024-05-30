@@ -269,10 +269,28 @@ QBCore.Functions.CreateCallback('qb-inventory:server:attemptPurchase', function(
     local shop = string.gsub(data.shop, 'shop%-', '')
     local price = itemInfo.price * amount
     local Player = QBCore.Functions.GetPlayer(source)
+
     if not Player then
         cb(false)
         return
     end
+
+    local shopInfo = RegisteredShops[shop]
+    if not shopInfo then
+        cb(false)
+        return
+    end
+
+    local playerPed = GetPlayerPed(source)
+    local playerCoords = GetEntityCoords(playerPed)
+    if shopInfo.coords then
+        local shopCoords = vector3(shopInfo.coords.x, shopInfo.coords.y, shopInfo.coords.z)
+        if #(playerCoords - shopCoords) > 10 then
+            cb(false)
+            return
+        end
+    end
+
     if not CanAddItem(source, itemInfo.name, amount) then
         TriggerClientEvent('QBCore:Notify', source, 'Cannot hold item', 'error')
         cb(false)
@@ -389,6 +407,7 @@ local function getIdentifier(inventoryId, src)
 end
 
 RegisterNetEvent('qb-inventory:server:SetInventoryData', function(fromInventory, toInventory, fromSlot, toSlot, fromAmount, toAmount)
+    if toInventory:find('shop-') then return end
     if not fromInventory or not toInventory or not fromSlot or not toSlot or not fromAmount or not toAmount then return end
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)

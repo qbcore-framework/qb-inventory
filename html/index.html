@@ -27,7 +27,7 @@
                         </div>
                     </div>
                     <div class="weight-bar">
-                        <div class="weight-bar-fill" :style="{ width: (playerWeight / maxWeight) * 100 + '%' }" :class="weightBarClass"></div>
+                        <div class="weight-bar-fill" :style="{ width: Math.min((playerWeight / maxWeight) * 100, 100) + '%' }" :class="weightBarClass"></div>
                     </div>
                 </div>
                 <div class="player-inventory" :class="{ 'centered-player-inventory': shouldCenterInventory }">
@@ -79,7 +79,7 @@
                         </div>
                     </div>
                     <div class="weight-bar">
-                        <div class="weight-bar-fill" :style="{ width: (otherInventoryWeight / otherInventoryMaxWeight) * 100 + '%' }" :class="otherWeightBarClass"></div>
+                        <div class="weight-bar-fill" :style="{ width: Math.min((otherInventoryWeight / otherInventoryMaxWeight) * 100, 100) + '%' }" :class="otherWeightBarClass"></div>
                     </div>
                 </div>
                 <div class="other-inventory" v-if="!isOtherInventoryEmpty">
