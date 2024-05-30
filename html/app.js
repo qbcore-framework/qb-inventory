@@ -70,7 +70,6 @@ const InventoryContainer = Vue.createApp({
                 otherInventory: {},
                 otherInventoryName: "",
                 otherInventoryLabel: "Drop",
-                otherInventoryTotalWeight: 0,
                 otherInventoryMaxWeight: 1000000,
                 otherInventorySlots: 100,
                 isShopInventory: false,
@@ -245,6 +244,12 @@ const InventoryContainer = Vue.createApp({
 
             const sourceItem = sourceInventory[item.slot];
             if (!sourceItem || sourceItem.amount < amountToTransfer) {
+                this.inventoryError(item.slot);
+                return;
+            }
+
+            const totalWeightAfterTransfer = this.otherInventoryWeight + sourceItem.weight * amountToTransfer;
+            if (totalWeightAfterTransfer > this.otherInventoryMaxWeight) {
                 this.inventoryError(item.slot);
                 return;
             }
@@ -441,6 +446,11 @@ const InventoryContainer = Vue.createApp({
                 const amountToTransfer = this.transferAmount !== null ? this.transferAmount : sourceItem.amount;
                 if (sourceItem.amount < amountToTransfer) {
                     throw new Error("Insufficient amount of item in source inventory");
+                }
+
+                const totalWeightAfterTransfer = this.otherInventoryWeight + sourceItem.weight * amountToTransfer;
+                if (totalWeightAfterTransfer > this.otherInventoryMaxWeight) {
+                    throw new Error("Insufficient weight capacity in target inventory");
                 }
 
                 const targetItem = targetInventory[targetSlotNumber];
