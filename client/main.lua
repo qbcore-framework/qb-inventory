@@ -309,7 +309,7 @@ for i = 1, 5 do
         local itemData = PlayerData.items[i]
         if not itemData then return end
         if itemData.type == "weapon" then
-            if holdingDrop then
+            if HoldingDrop then
                 return QBCore.Functions.Notify("Your already holding a bag, Go Drop it!", "error", 5500)
             end
         end

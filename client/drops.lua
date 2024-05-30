@@ -1,4 +1,4 @@
-local holdingDrop = false
+HoldingDrop = false
 local bagObject = nil
 local heldDrop = nil
 CurrentDrop = nil
@@ -59,9 +59,9 @@ RegisterNetEvent('qb-inventory:client:setupDropTarget', function(dropId)
                 label = 'Pick up bag',
                 action = function()
                     if IsPedArmed(PlayerPedId(), 4) then
-                        return QBCore.Functions.Notify("You can not be holding a Gun and a Bag!", "error", 5500) 
+                        return QBCore.Functions.Notify("You can not be holding a Gun and a Bag!", "error", 5500)
                     end
-                    if holdingDrop then
+                    if HoldingDrop then
                         return QBCore.Functions.Notify("Your already holding a bag, Go Drop it!", "error", 5500)
                     end
                     AttachEntityToEntity(
@@ -77,7 +77,7 @@ RegisterNetEvent('qb-inventory:client:setupDropTarget', function(dropId)
                         true, true, false, true, 1, true
                     )
                     bagObject = bag
-                    holdingDrop = true
+                    HoldingDrop = true
                     heldDrop = newDropId
                     exports['qb-core']:DrawText('Press [G] to drop the bag')
                 end,
@@ -109,7 +109,7 @@ end)
 
 CreateThread(function()
     while true do
-        if holdingDrop then
+        if HoldingDrop then
             if IsControlJustPressed(0, 47) then
                 DetachEntity(bagObject, true, true)
                 local coords = GetEntityCoords(PlayerPedId())
@@ -119,7 +119,7 @@ CreateThread(function()
                 FreezeEntityPosition(bagObject, true)
                 exports['qb-core']:HideText()
                 TriggerServerEvent('qb-inventory:server:updateDrop', heldDrop, coords)
-                holdingDrop = false
+                HoldingDrop = false
                 bagObject = nil
                 heldDrop = nil
             end
