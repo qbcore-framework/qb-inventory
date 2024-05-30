@@ -1,5 +1,9 @@
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans&display=swap");
 
+body {
+    margin: 0;
+}
+
 div {
     font-family: "Open Sans", sans-serif;
 }
@@ -9,8 +13,8 @@ div {
 }
 
 #app {
-    height: 99vh;
-    width: 99vw;
+    height: 100vh;
+    width: 100vw;
     background: transparent;
 }
 
@@ -195,7 +199,7 @@ div {
     white-space: nowrap;
     bottom: 0;
     height: 1vh;
-    width: 99%;
+    width: 100%;
     background-color: #cccccc;
     display: flex;
     justify-content: center;
