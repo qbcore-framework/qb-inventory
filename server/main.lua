@@ -132,14 +132,14 @@ end
 
 -- Events
 
-RegisterNetEvent('qb-inventory:server:openVending', function()
+RegisterNetEvent('qb-inventory:server:openVending', function(data)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     if not Player then return end
     CreateShop({
         name = 'vending',
         label = 'Vending Machine',
-        coords = vendingMachineCoords,
+        coords = data.coords,
         slots = #Config.VendingItems,
         items = Config.VendingItems
     })
