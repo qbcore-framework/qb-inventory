@@ -376,6 +376,41 @@ QBCore.Functions.CreateCallback('qb-inventory:server:giveItem', function(source,
     cb(true)
 end)
 
+-- Function to convert the JSON object to a JSON array
+local function convert_to_json_array(input)
+    -- Find the maximum slot number
+    local max_slot = 0
+    for _, item in pairs(input) do
+        if item.slot and item.slot > max_slot then
+            max_slot = item.slot
+        end
+    end
+    -- Create the output array with null values for missing slots
+    local output = {}
+    for i = 1, max_slot do
+        output[i] = input[i] or nil
+    end
+    -- Insert the items into their respective slots
+    for _, item in pairs(input) do
+        if item.slot then
+            output[item.slot] = item
+        end
+    end
+    return output
+end
+
+-- Function to transform the input structure to use slot numbers as primary keys
+local function transform_input(input)
+   local transformed = {}
+   for _, item in pairs(input) do
+       local slot = item.slot
+       if slot then
+           transformed[slot] = item
+       end
+   end
+   return transformed
+end
+
 -- Item move logic
 
 local function getItem(inventoryId, src, slot)
@@ -392,7 +427,9 @@ local function getItem(inventoryId, src, slot)
     elseif inventoryId:find('drop-') then
         item = Drops[inventoryId]['items'][slot]
     else
-        item = Inventories[inventoryId]['items'][slot]
+        Inventories[inventoryId]['items']  = transform_input(Inventories[inventoryId]['items'])
+        Inventories[inventoryId]['items'] = convert_to_json_array(Inventories[inventoryId]['items'])
+        item = invdata[slot]
     end
     return item
 end
