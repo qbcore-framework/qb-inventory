@@ -429,7 +429,7 @@ local function getItem(inventoryId, src, slot)
     else
         Inventories[inventoryId]['items']  = transform_input(Inventories[inventoryId]['items'])
         Inventories[inventoryId]['items'] = convert_to_json_array(Inventories[inventoryId]['items'])
-        item = invdata[slot]
+        item = Inventories[inventoryId]['items'][slot]
     end
     return item
 end
