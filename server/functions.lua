@@ -365,11 +365,6 @@ function CanAddItem(identifier, item, amount)
         items = Inventories[identifier].items
     end
 
-    if not inventory or not items then
-        print("CanAddItem: Inventory not found")
-        return false
-    end
-
     local weight = itemData.weight * amount
     local totalWeight = GetTotalWeight(items) + weight
     if totalWeight > inventory.maxweight then
