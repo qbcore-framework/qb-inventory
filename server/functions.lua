@@ -125,17 +125,40 @@ end
 
 exports('SaveInventory', SaveInventory)
 
---- Sets the inventory of a player.
---- @param source number The player's server ID.
---- @param items table The items to set in the player's inventory.
-function SetInventory(source, items)
-    local Player = QBCore.Functions.GetPlayer(source)
-    if not Player then return end
-    Player.Functions.SetPlayerData('items', items)
-    if not Player.Offline then
-        local logMessage = string.format('**%s (citizenid: %s | id: %s)** items set: %s', GetPlayerName(source), Player.PlayerData.citizenid, source, json.encode(items))
-        TriggerEvent('qb-log:server:CreateLog', 'playerinventory', 'SetInventory', 'blue', logMessage)
+-- Sets the items in a inventory.
+--- @param identifier string The identifier of the player or inventory.
+--- @param items table The items to set in the inventory.
+--- @param reason string The reason for setting the items.
+function SetInventory(identifier, items, reason)
+    if not Inventories[identifier] then return end
+    local player = QBCore.Functions.GetPlayer(identifier)
+
+    if player then
+        player.Functions.SetPlayerData('items', items)
+        if not player.Offline then
+            local logMessage = string.format('**%s (citizenid: %s | id: %s)** items set: %s', GetPlayerName(source), player.PlayerData.citizenid, source, json.encode(items))
+            TriggerEvent('qb-log:server:CreateLog', 'playerinventory', 'SetInventory', 'blue', logMessage)
+        end
+    elseif Drops[identifier] then
+        Drops[identifier].items = items
+    elseif Inventories[identifier] then
+        Inventories[identifier].items = items
     end
+
+    local invName = player and GetPlayerName(identifier) .. ' (' .. identifier .. ')' or identifier
+    local setReason = reason or 'No reason specified'
+    local resourceName = GetInvokingResource() or 'qb-inventory'
+    TriggerEvent(
+        'qb-log:server:CreateLog',
+        'playerinventory',
+        'Inventory Set',
+        'blue',
+        '**Inventory:** ' .. invName .. '\n' ..
+        '**Items:** ' .. json.encode(items) .. '\n' ..
+        '**Reason:** ' .. setReason .. '\n' ..
+        '**Resource:** ' .. resourceName
+    )
+
 end
 
 exports('SetInventory', SetInventory)
@@ -552,15 +575,32 @@ exports('OpenInventory', OpenInventory)
 --- Creates a new inventory and returns the inventory object.
 --- @param identifier string The identifier of the inventory to create.
 --- @param data table Additional data for initializing the inventory.
---- @return table|nil - The inventory object if created successfully, nil otherwise.
 function CreateInventory(identifier, data)
     if Inventories[identifier] then return end
     if not identifier then return end
     Inventories[identifier] = InitializeInventory(identifier, data)
-    return Inventories[identifier]
 end
 
 exports('CreateInventory', CreateInventory)
+
+--- Retrieves an inventory by its identifier.
+--- @param identifier string The identifier of the inventory to retrieve.
+--- @return table|nil - The inventory object if found, nil otherwise.
+function GetInventory(identifier)
+    return Inventories[identifier]
+end
+
+exports('GetInventory', GetInventory)
+
+--- Removes an inventory by its identifier.
+--- @param identifier string The identifier of the inventory to remove.
+function RemoveInventory(identifier)
+    if Inventories[identifier] then
+        Inventories[identifier] = nil
+    end
+end
+
+exports('RemoveInventory', RemoveInventory)
 
 --- Adds an item to the player's inventory or a specific inventory.
 --- @param identifier string The identifier of the player or inventory.
