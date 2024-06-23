@@ -130,13 +130,19 @@ exports('SaveInventory', SaveInventory)
 --- @param items table The items to set in the inventory.
 --- @param reason string The reason for setting the items.
 function SetInventory(identifier, items, reason)
-    if not Inventories[identifier] then return end
     local player = QBCore.Functions.GetPlayer(identifier)
+
+    print('Setting inventory for ' .. identifier)
+
+    if not player and not Inventories[identifier] and not Drops[identifier] then
+        print('SetInventory: Inventory not found')
+        return
+    end
 
     if player then
         player.Functions.SetPlayerData('items', items)
         if not player.Offline then
-            local logMessage = string.format('**%s (citizenid: %s | id: %s)** items set: %s', GetPlayerName(source), player.PlayerData.citizenid, source, json.encode(items))
+            local logMessage = string.format('**%s (citizenid: %s | id: %s)** items set: %s', GetPlayerName(identifier), player.PlayerData.citizenid, identifier, json.encode(items))
             TriggerEvent('qb-log:server:CreateLog', 'playerinventory', 'SetInventory', 'blue', logMessage)
         end
     elseif Drops[identifier] then
@@ -345,10 +351,7 @@ exports('GetItemCount', GetItemCount)
 --- @return string|nil - Returns a string indicating the reason why the item cannot be added (e.g., 'weight' or 'slots'), or nil if it can be added.
 function CanAddItem(identifier, item, amount)
 
-    if not Inventories[identifier] then return false end
-
     local Player = QBCore.Functions.GetPlayer(identifier)
-    if not Player then return false end
 
     local itemData = QBCore.Shared.Items[item:lower()]
     if not itemData then return false end
@@ -363,6 +366,11 @@ function CanAddItem(identifier, item, amount)
     elseif Inventories[identifier] then
         inventory = Inventories[identifier]
         items = Inventories[identifier].items
+    end
+
+    if not inventory then
+        print('CanAddItem: Inventory not found')
+        return false
     end
 
     local weight = itemData.weight * amount
