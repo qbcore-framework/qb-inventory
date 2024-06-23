@@ -337,29 +337,48 @@ end
 
 exports('GetItemCount', GetItemCount)
 
---- Checks if an item can be added to a player's inventory.
---- @param source number The player's server ID.
+--- Checks if an item can be added to a inventory based on the weight and slots available.
+--- @param identifier string The identifier of the player or inventory.
 --- @param item string The item name.
 --- @param amount number The amount of the item.
 --- @return boolean - Returns true if the item can be added, false otherwise.
 --- @return string|nil - Returns a string indicating the reason why the item cannot be added (e.g., 'weight' or 'slots'), or nil if it can be added.
-function CanAddItem(source, item, amount)
-    local Player = QBCore.Functions.GetPlayer(source)
+function CanAddItem(identifier, item, amount)
+
+    if not Inventories[identifier] then return false end
+
+    local Player = QBCore.Functions.GetPlayer(identifier)
     if not Player then return false end
+
     local itemData = QBCore.Shared.Items[item:lower()]
     if not itemData then return false end
+
+    local inventory, items
+    if Player then
+        inventory = {
+            maxweight = Config.MaxWeight,
+            slots = Config.MaxSlots
+        }
+        items = Player.PlayerData.items
+    elseif Inventories[identifier] then
+        inventory = Inventories[identifier]
+        items = Inventories[identifier].items
+    end
+
+    if not inventory or not items then
+        print("CanAddItem: Inventory not found")
+        return false
+    end
+
     local weight = itemData.weight * amount
-    local totalWeight = GetTotalWeight(Player.PlayerData.items) + weight
-    if totalWeight > Config.MaxWeight then
+    local totalWeight = GetTotalWeight(items) + weight
+    if totalWeight > inventory.maxweight then
         return false, 'weight'
     end
-    local slotsUsed = 0
-    for _, v in pairs(Player.PlayerData.items) do
-        if v then
-            slotsUsed = slotsUsed + 1
-        end
-    end
-    if slotsUsed >= Config.MaxSlots then
+
+    local slotsUsed, slotsFree = GetSlots(identifier)
+
+    if slotsUsed >= inventory.slots then
         return false, 'slots'
     end
     return true
