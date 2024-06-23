@@ -549,6 +549,19 @@ end
 
 exports('OpenInventory', OpenInventory)
 
+--- Creates a new inventory and returns the inventory object.
+--- @param identifier string The identifier of the inventory to create.
+--- @param data table Additional data for initializing the inventory.
+--- @return table|nil - The inventory object if created successfully, nil otherwise.
+function CreateInventory(identifier, data)
+    if Inventories[identifier] then return end
+    if not identifier then return end
+    Inventories[identifier] = InitializeInventory(identifier, data)
+    return Inventories[identifier]
+end
+
+exports('CreateInventory', CreateInventory)
+
 --- Adds an item to the player's inventory or a specific inventory.
 --- @param identifier string The identifier of the player or inventory.
 --- @param item string The name of the item to add.
