@@ -116,6 +116,8 @@ AddEventHandler('onResourceStart', function(resourceName)
         QBCore.Functions.AddPlayerMethod(k, 'SetInventory', function(items)
             SetInventory(k, items)
         end)
+
+        Player(k).state.inv_busy = false
     end
 end)
 
