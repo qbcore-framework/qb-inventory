@@ -1,6 +1,6 @@
 -- Local Functions
 
-local function InitializeInventory(inventoryId, data)
+function InitializeInventory(inventoryId, data)
     Inventories[inventoryId] = {
         items = {},
         isOpen = false,
@@ -415,7 +415,7 @@ function CloseInventory(source, identifier)
     if identifier and Inventories[identifier] then
         Inventories[identifier].isOpen = false
     end
-    Player(source).state.inv_busy = false
+    Player(source).state.inv_busy:set("inv_busy", false, true)
     TriggerClientEvent('qb-inventory:client:closeInv', source)
 end
 
@@ -428,19 +428,8 @@ function OpenInventoryById(source, targetId)
     local QBPlayer = QBCore.Functions.GetPlayer(source)
     local TargetPlayer = QBCore.Functions.GetPlayer(tonumber(targetId))
     if not QBPlayer or not TargetPlayer then return end
-    if Player(targetId).state.inv_busy then CloseInventory(targetId) end
-    local playerItems = QBPlayer.PlayerData.items
-    local targetItems = TargetPlayer.PlayerData.items
-    local formattedInventory = {
-        name = 'otherplayer-' .. targetId,
-        label = GetPlayerName(targetId),
-        maxweight = Config.MaxWeight,
-        slots = Config.MaxSlots,
-        inventory = targetItems
-    }
-    Wait(1500)
-    Player(targetId).state.inv_busy = true
-    TriggerClientEvent('qb-inventory:client:openInventory', source, playerItems, formattedInventory)
+    if Player(targetId).state.inv_busy then return end
+    TriggerClientEvent('qb-inventory:client:openInventory', source, "otherplayer", targetId)
 end
 
 exports('OpenInventoryById', OpenInventoryById)
@@ -493,14 +482,7 @@ function OpenShop(source, name)
             if distance > 5.0 then return end
         end
     end
-    local formattedInventory = {
-        name = 'shop-' .. RegisteredShops[name].name,
-        label = RegisteredShops[name].label,
-        maxweight = 5000000,
-        slots = #RegisteredShops[name].items,
-        inventory = RegisteredShops[name].items
-    }
-    TriggerClientEvent('qb-inventory:client:openInventory', source, Player.PlayerData.items, formattedInventory)
+    TriggerClientEvent('qb-inventory:client:openInventory', source, "shop", name)
 end
 
 exports('OpenShop', OpenShop)
@@ -514,8 +496,8 @@ function OpenInventory(source, identifier, data)
     if not QBPlayer then return end
 
     if not identifier then
-        Player(source).state.inv_busy = true
-        TriggerClientEvent('qb-inventory:client:openInventory', source, QBPlayer.PlayerData.items)
+        Player(source).state.inv_busy:set("inv_busy", true, true)
+        TriggerClientEvent('qb-inventory:client:openInventory', source, "self")
         return
     end
 
@@ -524,27 +506,7 @@ function OpenInventory(source, identifier, data)
         return
     end
 
-    local inventory = Inventories[identifier]
-
-    if inventory and inventory.isOpen then
-        TriggerClientEvent('QBCore:Notify', source, 'This inventory is currently in use', 'error')
-        return
-    end
-
-    if not inventory then inventory = InitializeInventory(identifier, data) end
-    inventory.maxweight = (inventory and inventory.maxweight) or (data and data.maxweight) or Config.StashSize.maxweight
-    inventory.slots = (inventory and inventory.slots) or (data and data.slots) or Config.StashSize.slots
-    inventory.label = (inventory and inventory.label) or (data and data.label) or identifier
-    inventory.isOpen = source
-
-    local formattedInventory = {
-        name = identifier,
-        label = inventory.label,
-        maxweight = inventory.maxweight,
-        slots = inventory.slots,
-        inventory = inventory.items
-    }
-    TriggerClientEvent('qb-inventory:client:openInventory', source, QBPlayer.PlayerData.items, formattedInventory)
+    TriggerClientEvent('qb-inventory:client:openInventory', source, "identifier", identifier, data)
 end
 
 exports('OpenInventory', OpenInventory)
