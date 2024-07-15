@@ -191,7 +191,7 @@
                 </div>
             </div>
             <ul v-if="showContextMenu" class="context-menu" :style="{ top: contextMenuPosition.top, left: contextMenuPosition.left }">
-                <li @click="useItem(contextMenuItem)">Use</li>
+                <li v-if="contextMenuItem.useable" @click="useItem(contextMenuItem)">Use</li>
                 <li @mouseover="showSubmenu = true" @mouseleave="showSubmenu = false">
                     Give
                     <ul v-if="showSubmenu" class="submenu">

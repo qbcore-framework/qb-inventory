@@ -174,15 +174,16 @@ RegisterNetEvent('qb-inventory:server:closeInventory', function(inventory)
 end)
 
 RegisterNetEvent('qb-inventory:server:useItem', function(item)
-    local itemData = GetItemBySlot(source, item.slot)
+    local src = source
+    local itemData = GetItemBySlot(src, item.slot)
     if not itemData then return end
     local itemInfo = QBCore.Shared.Items[itemData.name]
     if itemData.type == 'weapon' then
-        TriggerClientEvent('qb-weapons:client:UseWeapon', source, itemData, itemData.info.quality and itemData.info.quality > 0)
-        TriggerClientEvent('qb-inventory:client:ItemBox', source, itemInfo, 'use')
+        TriggerClientEvent('qb-weapons:client:UseWeapon', src, itemData, itemData.info.quality and itemData.info.quality > 0)
+        TriggerClientEvent('qb-inventory:client:ItemBox', src, itemInfo, 'use')
     else
-        UseItem(itemData.name, source, itemData)
-        TriggerClientEvent('qb-inventory:client:ItemBox', source, itemInfo, 'use')
+        UseItem(itemData.name, src, itemData)
+        TriggerClientEvent('qb-inventory:client:ItemBox', src, itemInfo, 'use')
     end
 end)
 
