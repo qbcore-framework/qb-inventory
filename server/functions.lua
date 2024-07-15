@@ -415,7 +415,7 @@ function CloseInventory(source, identifier)
     if identifier and Inventories[identifier] then
         Inventories[identifier].isOpen = false
     end
-    Player(source).state.inv_busy:set("inv_busy", false, true)
+    Player(source).state:set("inv_busy", false, true)
     TriggerClientEvent('qb-inventory:client:closeInv', source)
 end
 
@@ -496,7 +496,7 @@ function OpenInventory(source, identifier, data)
     if not QBPlayer then return end
 
     if not identifier then
-        Player(source).state.inv_busy:set("inv_busy", true, true)
+        Player(source).state:set("inv_busy", true, true)
         TriggerClientEvent('qb-inventory:client:openInventory', source, "self")
         return
     end

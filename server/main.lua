@@ -112,6 +112,13 @@ QBCore.Functions.CreateCallback('qb-inventory:OpenInventory', function(source, c
         end
         local targetPlayer = QBCore.Functions.GetPlayer(targetId)
         if not targetPlayer then return cb(false) end
+        local targetPlayerCoords = GetEntityCoords(GetPlayerPed(targetId))
+        local distance = #(playerCoords - targetPlayerCoords)
+        if (distance > 5.0) and not (QBCore.Functions.HasPermission(src, 'admin') or IsPlayerAceAllowed(src, 'command'))  then
+            print(("Warning: Player [%s] Attempted to exploit Player [%s]'s inventory inventory!"):format(src, targetId))
+            cb(false)
+            return
+        end
         local targetItems = targetPlayer.PlayerData.items
         local formattedInventory = {
                 name = 'otherplayer-' .. targetId,
@@ -140,34 +147,36 @@ QBCore.Functions.CreateCallback('qb-inventory:OpenInventory', function(source, c
     end
 end)
 
-AddEventHandler('QBCore:Server:PlayerLoaded', function(Player)
-    QBCore.Functions.AddPlayerMethod(Player.PlayerData.source, 'AddItem', function(item, amount, slot, info, reason)
-        return AddItem(Player.PlayerData.source, item, amount, slot, info, reason)
+AddEventHandler('QBCore:Server:PlayerLoaded', function(player)
+    QBCore.Functions.AddPlayerMethod(player.PlayerData.source, 'AddItem', function(item, amount, slot, info, reason)
+        return AddItem(player.PlayerData.source, item, amount, slot, info, reason)
     end)
 
-    QBCore.Functions.AddPlayerMethod(Player.PlayerData.source, 'RemoveItem', function(item, amount, slot, reason)
-        return RemoveItem(Player.PlayerData.source, item, amount, slot, reason)
+    QBCore.Functions.AddPlayerMethod(player.PlayerData.source, 'RemoveItem', function(item, amount, slot, reason)
+        return RemoveItem(player.PlayerData.source, item, amount, slot, reason)
     end)
 
-    QBCore.Functions.AddPlayerMethod(Player.PlayerData.source, 'GetItemBySlot', function(slot)
-        return GetItemBySlot(Player.PlayerData.source, slot)
+    QBCore.Functions.AddPlayerMethod(player.PlayerData.source, 'GetItemBySlot', function(slot)
+        return GetItemBySlot(player.PlayerData.source, slot)
     end)
 
-    QBCore.Functions.AddPlayerMethod(Player.PlayerData.source, 'GetItemByName', function(item)
-        return GetItemByName(Player.PlayerData.source, item)
+    QBCore.Functions.AddPlayerMethod(player.PlayerData.source, 'GetItemByName', function(item)
+        return GetItemByName(player.PlayerData.source, item)
     end)
 
-    QBCore.Functions.AddPlayerMethod(Player.PlayerData.source, 'GetItemsByName', function(item)
-        return GetItemsByName(Player.PlayerData.source, item)
+    QBCore.Functions.AddPlayerMethod(player.PlayerData.source, 'GetItemsByName', function(item)
+        return GetItemsByName(player.PlayerData.source, item)
     end)
 
-    QBCore.Functions.AddPlayerMethod(Player.PlayerData.source, 'ClearInventory', function(filterItems)
-        ClearInventory(Player.PlayerData.source, filterItems)
+    QBCore.Functions.AddPlayerMethod(player.PlayerData.source, 'ClearInventory', function(filterItems)
+        ClearInventory(player.PlayerData.source, filterItems)
     end)
 
-    QBCore.Functions.AddPlayerMethod(Player.PlayerData.source, 'SetInventory', function(items)
-        SetInventory(Player.PlayerData.source, items)
+    QBCore.Functions.AddPlayerMethod(player.PlayerData.source, 'SetInventory', function(items)
+        SetInventory(player.PlayerData.source, items)
     end)
+
+    Player(player.PlayerData.source).state:set("inv_busy", false, true)
 end)
 
 AddEventHandler('onResourceStart', function(resourceName)
@@ -235,11 +244,11 @@ RegisterNetEvent('qb-inventory:server:closeInventory', function(inventory)
     local src = source
     local QBPlayer = QBCore.Functions.GetPlayer(src)
     if not QBPlayer then return end
-    Player(source).state.inv_busy = false
+    Player(src).state:set("inv_busy", false, true)
     if inventory:find('shop-') then return end
     if inventory:find('otherplayer-') then
         local targetId = tonumber(inventory:match('otherplayer%-(.+)'))
-        Player(targetId).state.inv_busy = false
+        Player(targetId).state:set("inv_busy", false, true)
         return
     end
     if Drops[inventory] then
