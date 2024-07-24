@@ -95,6 +95,42 @@ VehicleStorage = {
         trunkSlots = 50,
         trunkWeight = 120000
     },
+    [17] = { -- service
+        gloveboxSlots = 0,
+        gloveboxWeight = 0,
+        trunkSlots = 0,
+        trunkWeight = 0
+    },
+    [18] = { -- Emergency
+        gloveboxSlots = 4,
+        gloveboxWeight = 10000,
+        trunkSlots = 12,
+        trunkWeight = 150000
+    },
+    [19] = { -- Military
+        gloveboxSlots = 0,
+        gloveboxWeight = 0,
+        trunkSlots = 0,
+        trunkWeight = 0
+    },
+    [20] = { -- Commercial
+        gloveboxSlots = 0,
+        gloveboxWeight = 0,
+        trunkSlots = 0,
+        trunkWeight = 0
+    },
+    [21] = { -- trains
+        gloveboxSlots = 0,
+        gloveboxWeight = 0,
+        trunkSlots = 0,
+        trunkWeight = 0
+    },
+    [22] = { -- Commercial
+        gloveboxSlots = 0,
+        gloveboxWeight = 0,
+        trunkSlots = 0,
+        trunkWeight = 0
+    },
 }
 
 BackEngineVehicles = {
