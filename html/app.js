@@ -701,6 +701,8 @@ const InventoryContainer = Vue.createApp({
                         await axios.post("https://qb-inventory/GiveItem", {
                             item: selectedItem,
                             amount: amountToGive,
+                            slot: selectedItem.slot,
+                            info: selectedItem.info,
                         });
                         this.playerInventory[selectedItem.slot].amount -= amountToGive;
                         if (this.playerInventory[selectedItem.slot].amount === 0) {
