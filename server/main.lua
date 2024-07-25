@@ -116,19 +116,21 @@ AddEventHandler('onResourceStart', function(resourceName)
         QBCore.Functions.AddPlayerMethod(k, 'SetInventory', function(items)
             SetInventory(k, items)
         end)
+
+        Player(k).state.inv_busy = false
     end
 end)
 
 -- Events
 
-RegisterNetEvent('qb-inventory:server:openVending', function()
+RegisterNetEvent('qb-inventory:server:openVending', function(data)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     if not Player then return end
     CreateShop({
         name = 'vending',
         label = 'Vending Machine',
-        coords = vendingMachineCoords,
+        coords = data.coords,
         slots = #Config.VendingItems,
         items = Config.VendingItems
     })
@@ -426,7 +428,7 @@ local function getItem(inventoryId, src, slot)
         if targetPlayer then
             item = targetPlayer.PlayerData.items[slot]
         end
-    elseif inventoryId:find('drop-') then
+    elseif inventoryId:find('drop-') == 1 then
         item = Drops[inventoryId]['items'][slot]
     else
         item = Inventories[inventoryId]['items'][slot]
