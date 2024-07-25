@@ -227,7 +227,7 @@ RegisterNUICallback('GiveItem', function(data, cb)
         local playerId = GetPlayerServerId(player)
         QBCore.Functions.TriggerCallback('qb-inventory:server:giveItem', function(success)
             cb(success)
-        end, playerId, data.item.name, data.amount)
+        end, playerId, data.item.name, data.amount, data.slot, data.info)
     else
         QBCore.Functions.Notify(Lang:t('notify.nonb'), 'error')
         cb(false)
