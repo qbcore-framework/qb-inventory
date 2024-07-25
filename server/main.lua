@@ -183,6 +183,54 @@ RegisterNetEvent('qb-inventory:server:useItem', function(item)
     if itemData.type == 'weapon' then
         TriggerClientEvent('qb-weapons:client:UseWeapon', src, itemData, itemData.info.quality and itemData.info.quality > 0)
         TriggerClientEvent('qb-inventory:client:ItemBox', src, itemInfo, 'use')
+    elseif itemData.name == 'id_card' then
+        UseItem(itemData.name, src, itemData)
+        TriggerClientEvent('qb-inventory:client:ItemBox', source, itemInfo, 'use')
+        local playerPed = GetPlayerPed(src)
+        local playerCoords = GetEntityCoords(playerPed)
+        local players = QBCore.Functions.GetPlayers()
+        local gender = item.info.gender == 0 and 'Male' or 'Female'
+        for _, v in pairs(players) do
+            local targetPed = GetPlayerPed(v)
+            local dist = #(playerCoords - GetEntityCoords(targetPed))
+            if dist < 3.0 then
+                TriggerClientEvent('chat:addMessage', v, {
+                    template = '<div class="chat-message advert" style="background: linear-gradient(to right, rgba(5, 5, 5, 0.6), #74807c); display: flex;"><div style="margin-right: 10px;"><i class="far fa-id-card" style="height: 100%;"></i><strong> {0}</strong><br> <strong>Civ ID:</strong> {1} <br><strong>First Name:</strong> {2} <br><strong>Last Name:</strong> {3} <br><strong>Birthdate:</strong> {4} <br><strong>Gender:</strong> {5} <br><strong>Nationality:</strong> {6}</div></div>',
+                    args = {
+                        'ID Card',
+                        item.info.citizenid,
+                        item.info.firstname,
+                        item.info.lastname,
+                        item.info.birthdate,
+                        gender,
+                        item.info.nationality
+                    }
+                })
+            end
+        end
+    elseif itemData.name == 'driver_license' then
+        UseItem(itemData.name, src, itemData)
+        TriggerClientEvent('qb-inventory:client:ItemBox', src, itemInfo, 'use')
+        local playerPed = GetPlayerPed(src)
+        local playerCoords = GetEntityCoords(playerPed)
+        local players = QBCore.Functions.GetPlayers()
+        for _, v in pairs(players) do
+            local targetPed = GetPlayerPed(v)
+            local dist = #(playerCoords - GetEntityCoords(targetPed))
+            if dist < 3.0 then
+                TriggerClientEvent('chat:addMessage', v, {
+                    template = '<div class="chat-message advert" style="background: linear-gradient(to right, rgba(5, 5, 5, 0.6), #657175); display: flex;"><div style="margin-right: 10px;"><i class="far fa-id-card" style="height: 100%;"></i><strong> {0}</strong><br> <strong>First Name:</strong> {1} <br><strong>Last Name:</strong> {2} <br><strong>Birth Date:</strong> {3} <br><strong>Licenses:</strong> {4}</div></div>',
+                    args = {
+                        'Drivers License',
+                        item.info.firstname,
+                        item.info.lastname,
+                        item.info.birthdate,
+                        item.info.type
+                    }
+                }
+                )
+            end
+        end
     else
         UseItem(itemData.name, src, itemData)
         TriggerClientEvent('qb-inventory:client:ItemBox', src, itemInfo, 'use')
@@ -357,13 +405,13 @@ QBCore.Functions.CreateCallback('qb-inventory:server:giveItem', function(source,
         return
     end
 
-    local removeItem = RemoveItem(source, item, giveAmount, slot, 'Item given to ID #'..target)
+    local removeItem = RemoveItem(source, item, giveAmount, slot, 'Item given to ID #' .. target)
     if not removeItem then
         cb(false)
         return
     end
 
-    local giveItem = AddItem(target, item, giveAmount, false, info, 'Item given from ID #'..source)
+    local giveItem = AddItem(target, item, giveAmount, false, info, 'Item given from ID #' .. source)
     if not giveItem then
         cb(false)
         return
