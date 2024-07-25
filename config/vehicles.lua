@@ -21,13 +21,13 @@ VehicleStorage = {
         gloveboxSlots = 5,
         gloveboxWeight = 10000,
         trunkSlots = 50,
-        maxWeight = 75000
+        trunkWeight = 75000
     },
     [3] = { -- Coupes
         gloveboxSlots = 5,
         gloveboxWeight = 10000,
         trunkSlots = 35,
-        maxWeight = 42000
+        trunkWeight = 42000
     },
     [4] = { -- Muscle
         gloveboxSlots = 5,
