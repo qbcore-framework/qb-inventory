@@ -116,6 +116,8 @@ AddEventHandler('onResourceStart', function(resourceName)
         QBCore.Functions.AddPlayerMethod(k, 'SetInventory', function(items)
             SetInventory(k, items)
         end)
+
+        Player(k).state.inv_busy = false
     end
 end)
 
@@ -389,7 +391,7 @@ local function getItem(inventoryId, src, slot)
         if targetPlayer then
             item = targetPlayer.PlayerData.items[slot]
         end
-    elseif inventoryId:find('drop-') then
+    elseif inventoryId:find('drop-') == 1 then
         item = Drops[inventoryId]['items'][slot]
     else
         item = Inventories[inventoryId]['items'][slot]
