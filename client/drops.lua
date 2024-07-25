@@ -32,6 +32,13 @@ end
 
 -- Events
 
+RegisterNetEvent('qb-inventory:client:removeDropTarget', function(dropId)
+    while not NetworkDoesNetworkIdExist(dropId) do Wait(10) end
+    local bag = NetworkGetEntityFromNetworkId(dropId)
+    while not DoesEntityExist(bag) do Wait(10) end
+    exports['qb-target']:RemoveTargetEntity(bag)
+end)
+
 RegisterNetEvent('qb-inventory:client:setupDropTarget', function(dropId)
     while not NetworkDoesNetworkIdExist(dropId) do Wait(10) end
     local bag = NetworkGetEntityFromNetworkId(dropId)
@@ -51,6 +58,12 @@ RegisterNetEvent('qb-inventory:client:setupDropTarget', function(dropId)
                 icon = 'fas fa-hand-pointer',
                 label = 'Pick up bag',
                 action = function()
+                    if IsPedArmed(PlayerPedId(), 4) then
+                        return QBCore.Functions.Notify("You can not be holding a Gun and a Bag!", "error", 5500) 
+                    end
+                    if holdingDrop then
+                        return QBCore.Functions.Notify("Your already holding a bag, Go Drop it!", "error", 5500)
+                    end
                     AttachEntityToEntity(
                         bag,
                         PlayerPedId(),

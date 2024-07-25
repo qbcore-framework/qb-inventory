@@ -148,6 +148,13 @@ RegisterNetEvent('qb-inventory:server:closeInventory', function(inventory)
     end
     if Drops[inventory] then
         Drops[inventory].isOpen = false
+        if #Drops[inventory].items == 0 and not Drops[inventory].isOpen then -- if no listeed items in the drop on close
+            TriggerClientEvent('qb-inventory:client:removeDropTarget', -1, Drops[inventory].entityId)
+            Wait(500)
+            local entity = NetworkGetEntityFromNetworkId(Drops[inventory].entityId)
+            if DoesEntityExist(entity) then DeleteEntity(entity) end
+            Drops[inventory] = nil
+        end
         return
     end
     if not Inventories[inventory] then return end
@@ -156,7 +163,8 @@ RegisterNetEvent('qb-inventory:server:closeInventory', function(inventory)
 end)
 
 RegisterNetEvent('qb-inventory:server:useItem', function(item)
-    local itemData = GetItemBySlot(source, item.slot)
+    local src = source
+    local itemData = GetItemBySlot(src, item.slot)
     if not itemData then return end
     local itemInfo = QBCore.Shared.Items[itemData.name]
     if itemData.type == 'weapon' then
@@ -211,8 +219,8 @@ RegisterNetEvent('qb-inventory:server:useItem', function(item)
             end
         end
     else
-        UseItem(itemData.name, source, itemData)
-        TriggerClientEvent('qb-inventory:client:ItemBox', source, itemInfo, 'use')
+        UseItem(itemData.name, src, itemData)
+        TriggerClientEvent('qb-inventory:client:ItemBox', src, itemInfo, 'use')
     end
 end)
 
@@ -299,10 +307,28 @@ QBCore.Functions.CreateCallback('qb-inventory:server:attemptPurchase', function(
     local shop = string.gsub(data.shop, 'shop%-', '')
     local price = itemInfo.price * amount
     local Player = QBCore.Functions.GetPlayer(source)
+
     if not Player then
         cb(false)
         return
     end
+
+    local shopInfo = RegisteredShops[shop]
+    if not shopInfo then
+        cb(false)
+        return
+    end
+
+    local playerPed = GetPlayerPed(source)
+    local playerCoords = GetEntityCoords(playerPed)
+    if shopInfo.coords then
+        local shopCoords = vector3(shopInfo.coords.x, shopInfo.coords.y, shopInfo.coords.z)
+        if #(playerCoords - shopCoords) > 10 then
+            cb(false)
+            return
+        end
+    end
+
     if not CanAddItem(source, itemInfo.name, amount) then
         TriggerClientEvent('QBCore:Notify', source, 'Cannot hold item', 'error')
         cb(false)
@@ -311,7 +337,7 @@ QBCore.Functions.CreateCallback('qb-inventory:server:attemptPurchase', function(
 
     if Player.PlayerData.money.cash >= price then
         Player.Functions.RemoveMoney('cash', price, 'shop-purchase')
-        AddItem(source, itemInfo.name, amount, nil, itemInfo.info)
+        AddItem(source, itemInfo.name, amount, nil, itemInfo.info, 'shop-purchase')
         TriggerEvent('qb-shops:server:UpdateShopItems', shop, itemInfo, amount)
         cb(true)
     else
@@ -320,7 +346,7 @@ QBCore.Functions.CreateCallback('qb-inventory:server:attemptPurchase', function(
     end
 end)
 
-QBCore.Functions.CreateCallback('qb-inventory:server:giveItem', function(source, cb, target, item, amount)
+QBCore.Functions.CreateCallback('qb-inventory:server:giveItem', function(source, cb, target, item, amount, slot, info)
     local player = QBCore.Functions.GetPlayer(source)
     if not player or player.PlayerData.metadata['isdead'] or player.PlayerData.metadata['inlaststand'] or player.PlayerData.metadata['ishandcuffed'] then
         cb(false)
@@ -366,14 +392,14 @@ QBCore.Functions.CreateCallback('qb-inventory:server:giveItem', function(source,
         return
     end
 
-    local giveItem = AddItem(target, item, giveAmount)
-    if not giveItem then
+    local removeItem = RemoveItem(source, item, giveAmount, slot, 'Item given to ID #' .. target)
+    if not removeItem then
         cb(false)
         return
     end
 
-    local removeItem = RemoveItem(source, item, giveAmount)
-    if not removeItem then
+    local giveItem = AddItem(target, item, giveAmount, false, info, 'Item given from ID #' .. source)
+    if not giveItem then
         cb(false)
         return
     end
@@ -419,6 +445,7 @@ local function getIdentifier(inventoryId, src)
 end
 
 RegisterNetEvent('qb-inventory:server:SetInventoryData', function(fromInventory, toInventory, fromSlot, toSlot, fromAmount, toAmount)
+    if toInventory:find('shop-') then return end
     if not fromInventory or not toInventory or not fromSlot or not toSlot or not fromAmount or not toAmount then return end
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
