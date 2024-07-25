@@ -116,6 +116,8 @@ AddEventHandler('onResourceStart', function(resourceName)
         QBCore.Functions.AddPlayerMethod(k, 'SetInventory', function(items)
             SetInventory(k, items)
         end)
+
+        Player(k).state.inv_busy = false
     end
 end)
 
@@ -309,7 +311,7 @@ QBCore.Functions.CreateCallback('qb-inventory:server:attemptPurchase', function(
     end
 end)
 
-QBCore.Functions.CreateCallback('qb-inventory:server:giveItem', function(source, cb, target, item, amount)
+QBCore.Functions.CreateCallback('qb-inventory:server:giveItem', function(source, cb, target, item, amount, slot, info)
     local player = QBCore.Functions.GetPlayer(source)
     if not player or player.PlayerData.metadata['isdead'] or player.PlayerData.metadata['inlaststand'] or player.PlayerData.metadata['ishandcuffed'] then
         cb(false)
@@ -355,14 +357,14 @@ QBCore.Functions.CreateCallback('qb-inventory:server:giveItem', function(source,
         return
     end
 
-    local giveItem = AddItem(target, item, giveAmount)
-    if not giveItem then
+    local removeItem = RemoveItem(source, item, giveAmount, slot, 'Item given to ID #'..target)
+    if not removeItem then
         cb(false)
         return
     end
 
-    local removeItem = RemoveItem(source, item, giveAmount)
-    if not removeItem then
+    local giveItem = AddItem(target, item, giveAmount, false, info, 'Item given from ID #'..source)
+    if not giveItem then
         cb(false)
         return
     end
@@ -389,7 +391,7 @@ local function getItem(inventoryId, src, slot)
         if targetPlayer then
             item = targetPlayer.PlayerData.items[slot]
         end
-    elseif inventoryId:find('drop-') then
+    elseif inventoryId:find('drop-') == 1 then
         item = Drops[inventoryId]['items'][slot]
     else
         item = Inventories[inventoryId]['items'][slot]
