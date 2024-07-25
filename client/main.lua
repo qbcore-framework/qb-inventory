@@ -219,7 +219,7 @@ RegisterNUICallback('GiveItem', function(data, cb)
         local playerId = GetPlayerServerId(player)
         QBCore.Functions.TriggerCallback('qb-inventory:server:giveItem', function(success)
             cb(success)
-        end, playerId, data.item.name, data.amount)
+        end, playerId, data.item.name, data.amount, data.slot, data.info)
     else
         QBCore.Functions.Notify(Lang:t('notify.nonb'), 'error')
         cb(false)
@@ -300,6 +300,11 @@ for i = 1, 5 do
     RegisterCommand('slot_' .. i, function()
         local itemData = PlayerData.items[i]
         if not itemData then return end
+        if itemData.type == "weapon" then
+            if holdingDrop then
+                return QBCore.Functions.Notify("Your already holding a bag, Go Drop it!", "error", 5500)
+            end
+        end
         TriggerServerEvent('qb-inventory:server:useItem', itemData)
     end, false)
     RegisterKeyMapping('slot_' .. i, Lang:t('inf_mapping.use_item') .. i, 'keyboard', i)
