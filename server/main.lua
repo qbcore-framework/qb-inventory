@@ -55,34 +55,128 @@ RegisterNetEvent('QBCore:Server:UpdateObject', function()
     QBCore = exports['qb-core']:GetCoreObject()
 end)
 
-AddEventHandler('QBCore:Server:PlayerLoaded', function(Player)
-    QBCore.Functions.AddPlayerMethod(Player.PlayerData.source, 'AddItem', function(item, amount, slot, info, reason)
-        return AddItem(Player.PlayerData.source, item, amount, slot, info, reason)
+QBCore.Functions.CreateCallback('qb-inventory:OpenInventory', function(source, cb, type, name, data)
+    local src = source
+    local ply = QBCore.Functions.GetPlayer(src)
+    if not ply then
+        cb(false)
+        return
+    end
+    local playerPed = GetPlayerPed(src)
+    local playerCoords = GetEntityCoords(playerPed)
+    if type == 'shop' then
+        local shop = RegisteredShops[name]
+        if not shop then
+            print("Warning: Player Attempted to exploit shops!")
+            cb(false)
+            return
+        end
+        local shopCoords = shop.coords and vector3(shop.coords.x, shop.coords.y, shop.coords.z) or nil
+        if shopCoords and #(playerCoords - shopCoords) > 5.0 then
+            print("Warning: Player Attempted to exploit shops!")
+            cb(false)
+            return
+        end
+        shop.inventory = shop.items
+        cb(true, ply.PlayerData.items, shop)
+    elseif type == "self" then
+        cb(true, ply.PlayerData.items, nil)
+    elseif type == "identifier" then
+        local inventory = Inventories[name]
+
+        if inventory and inventory.isOpen then
+            TriggerClientEvent('QBCore:Notify', source, 'This inventory is currently in use', 'error')
+            return
+        end
+    
+        if not inventory then inventory = InitializeInventory(name, data) end
+        inventory.maxweight = (inventory and inventory.maxweight) or (data and data.maxweight) or Config.StashSize.maxweight
+        inventory.slots = (inventory and inventory.slots) or (data and data.slots) or Config.StashSize.slots
+        inventory.label = (inventory and inventory.label) or (data and data.label) or name
+        inventory.isOpen = source
+    
+        local formattedInventory = {
+            name = name,
+            label = inventory.label,
+            maxweight = inventory.maxweight,
+            slots = inventory.slots,
+            inventory = inventory.items
+        }
+        cb(true, ply.PlayerData.items, formattedInventory)
+    elseif type == "otherplayer" then
+        local targetId = tonumber(name)
+        if not targetId then
+            print("Warning: Player Attempted to exploit otherplayer inventory!")
+            cb(false)
+            return
+        end
+        local targetPlayer = QBCore.Functions.GetPlayer(targetId)
+        if not targetPlayer then return cb(false) end
+        local targetPlayerCoords = GetEntityCoords(GetPlayerPed(targetId))
+        local distance = #(playerCoords - targetPlayerCoords)
+        if (distance > 5.0) and not (QBCore.Functions.HasPermission(src, 'admin') or IsPlayerAceAllowed(src, 'command'))  then
+            print(("Warning: Player [%s] Attempted to exploit Player [%s]'s inventory inventory!"):format(src, targetId))
+            cb(false)
+            return
+        end
+        local targetItems = targetPlayer.PlayerData.items
+        local formattedInventory = {
+                name = 'otherplayer-' .. targetId,
+                label = GetPlayerName(targetId),
+                maxweight = Config.MaxWeight,
+                slots = Config.MaxSlots,
+                inventory = targetItems
+        }
+        Player(targetId).state:set("inv_busy", true, true)
+        cb(true, ply.PlayerData.items, formattedInventory)
+    elseif type == "Drop" then
+        local drop = Drops[name]
+        if not drop then return end
+        if drop.isOpen then return end
+        local distance = #(playerCoords - drop.coords)
+        if distance > 2.5 then return end
+        local formattedInventory = {
+            name = name,
+            label = name,
+            maxweight = drop.maxweight,
+            slots = drop.slots,
+            inventory = drop.items
+        }
+        Drops[name].isOpen = true
+        cb(true, ply.PlayerData.items, formattedInventory)
+    end
+end)
+
+AddEventHandler('QBCore:Server:PlayerLoaded', function(player)
+    QBCore.Functions.AddPlayerMethod(player.PlayerData.source, 'AddItem', function(item, amount, slot, info, reason)
+        return AddItem(player.PlayerData.source, item, amount, slot, info, reason)
     end)
 
-    QBCore.Functions.AddPlayerMethod(Player.PlayerData.source, 'RemoveItem', function(item, amount, slot, reason)
-        return RemoveItem(Player.PlayerData.source, item, amount, slot, reason)
+    QBCore.Functions.AddPlayerMethod(player.PlayerData.source, 'RemoveItem', function(item, amount, slot, reason)
+        return RemoveItem(player.PlayerData.source, item, amount, slot, reason)
     end)
 
-    QBCore.Functions.AddPlayerMethod(Player.PlayerData.source, 'GetItemBySlot', function(slot)
-        return GetItemBySlot(Player.PlayerData.source, slot)
+    QBCore.Functions.AddPlayerMethod(player.PlayerData.source, 'GetItemBySlot', function(slot)
+        return GetItemBySlot(player.PlayerData.source, slot)
     end)
 
-    QBCore.Functions.AddPlayerMethod(Player.PlayerData.source, 'GetItemByName', function(item)
-        return GetItemByName(Player.PlayerData.source, item)
+    QBCore.Functions.AddPlayerMethod(player.PlayerData.source, 'GetItemByName', function(item)
+        return GetItemByName(player.PlayerData.source, item)
     end)
 
-    QBCore.Functions.AddPlayerMethod(Player.PlayerData.source, 'GetItemsByName', function(item)
-        return GetItemsByName(Player.PlayerData.source, item)
+    QBCore.Functions.AddPlayerMethod(player.PlayerData.source, 'GetItemsByName', function(item)
+        return GetItemsByName(player.PlayerData.source, item)
     end)
 
-    QBCore.Functions.AddPlayerMethod(Player.PlayerData.source, 'ClearInventory', function(filterItems)
-        ClearInventory(Player.PlayerData.source, filterItems)
+    QBCore.Functions.AddPlayerMethod(player.PlayerData.source, 'ClearInventory', function(filterItems)
+        ClearInventory(player.PlayerData.source, filterItems)
     end)
 
-    QBCore.Functions.AddPlayerMethod(Player.PlayerData.source, 'SetInventory', function(items)
-        SetInventory(Player.PlayerData.source, items)
+    QBCore.Functions.AddPlayerMethod(player.PlayerData.source, 'SetInventory', function(items)
+        SetInventory(player.PlayerData.source, items)
     end)
+
+    Player(player.PlayerData.source).state:set("inv_busy", false, true)
 end)
 
 AddEventHandler('onResourceStart', function(resourceName)
@@ -154,11 +248,11 @@ RegisterNetEvent('qb-inventory:server:closeInventory', function(inventory)
     local src = source
     local QBPlayer = QBCore.Functions.GetPlayer(src)
     if not QBPlayer then return end
-    Player(source).state.inv_busy = false
+    Player(src).state:set("inv_busy", false, true)
     if inventory:find('shop-') then return end
     if inventory:find('otherplayer-') then
         local targetId = tonumber(inventory:match('otherplayer%-(.+)'))
-        Player(targetId).state.inv_busy = false
+        Player(targetId).state:set("inv_busy", false, true)
         return
     end
     if Drops[inventory] then
@@ -250,15 +344,7 @@ RegisterNetEvent('qb-inventory:server:openDrop', function(dropId)
     if drop.isOpen then return end
     local distance = #(playerCoords - drop.coords)
     if distance > 2.5 then return end
-    local formattedInventory = {
-        name = dropId,
-        label = dropId,
-        maxweight = drop.maxweight,
-        slots = drop.slots,
-        inventory = drop.items
-    }
-    drop.isOpen = true
-    TriggerClientEvent('qb-inventory:client:openInventory', source, Player.PlayerData.items, formattedInventory)
+    TriggerClientEvent('qb-inventory:client:openInventory', source, "Drop", dropId)
 end)
 
 RegisterNetEvent('qb-inventory:server:updateDrop', function(dropId, coords)

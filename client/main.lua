@@ -159,15 +159,18 @@ RegisterNetEvent('qb-inventory:server:RobPlayer', function(TargetId)
     })
 end)
 
-RegisterNetEvent('qb-inventory:client:openInventory', function(items, other)
-    SetNuiFocus(true, true)
-    SendNUIMessage({
-        action = 'open',
-        inventory = items,
-        slots = Config.MaxSlots,
-        maxweight = Config.MaxWeight,
-        other = other
-    })
+RegisterNetEvent('qb-inventory:client:openInventory', function(type, name, data)
+    QBCore.Functions.TriggerCallback('qb-inventory:OpenInventory', function(canAccess, items, other)
+        if not canAccess then return end
+        SetNuiFocus(true, true)
+        SendNUIMessage({
+            action = 'open',
+            inventory = items,
+            slots = Config.MaxSlots,
+            maxweight = Config.MaxWeight,
+            other = other
+        })
+    end, type, name, data)
 end)
 
 RegisterNetEvent('qb-inventory:client:giveAnim', function()
