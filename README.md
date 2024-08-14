@@ -2,7 +2,7 @@
 
 ## Dependencies
 - [qb-core](https://github.com/qbcore-framework/qb-core)
-- [qb-logs](https://github.com/qbcore-framework/qb-logs) - For logging transfer and other history
+- [qb-smallresources](https://github.com/qbcore-framework/qb-smallresources) - For logging transfer and other history
 
 ## Features
 - Stashes (Personal and/or Shared)
