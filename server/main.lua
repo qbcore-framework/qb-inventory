@@ -344,6 +344,16 @@ QBCore.Functions.CreateCallback('qb-inventory:server:attemptPurchase', function(
         end
     end
 
+    if data.item.amount < 1 then
+        TriggerClientEvent('QBCore:Notify', source, 'Out of stock, sorry.', 'error')
+        cb(false)
+        return
+    elseif data.item.amount < amount then
+        TriggerClientEvent('QBCore:Notify', source, 'You cant buy so many units.', 'error')
+        cb(false)
+        return
+    end
+        
     if not CanAddItem(source, itemInfo.name, amount) then
         TriggerClientEvent('QBCore:Notify', source, 'Cannot hold item', 'error')
         cb(false)
