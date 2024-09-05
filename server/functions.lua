@@ -505,6 +505,18 @@ end
 
 exports('OpenInventoryById', OpenInventoryById)
 
+-- Clears a given stash of all items inside
+--- @param identifier string
+function ClearStash(identifier)
+    if not identifier then return end
+    local inventory = Inventories[identifier]
+    if not inventory then return end
+    inventory.items = {}
+    MySQL.prepare('UPDATE inventories SET items = ? WHERE identifier = ?', { json.encode(inventory.items), identifier })
+end
+
+exports('ClearStash', ClearStash)
+
 --- @param shopData table The data of the shop to create.
 function CreateShop(shopData)
     if shopData.name then
