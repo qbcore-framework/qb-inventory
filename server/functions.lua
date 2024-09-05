@@ -344,6 +344,21 @@ end
 
 exports('CanAddItem', CanAddItem)
 
+--- Gets the total free weight of the player's inventory.
+--- @param source number The player's server ID.
+--- @return number - Returns the free weight of the players inventory. Error will return 0
+function GetFreeWeight(source)
+    if not source then warn("Source was not passed into GetFreeWeight") return 0 end
+    local Player = QBCore.Functions.GetPlayer(source)
+    if not Player then return 0 end
+
+    local totalWeight = GetTotalWeight(Player.PlayerData.items)
+    local freeWeight = Config.MaxWeight - totalWeight
+    return freeWeight
+end
+
+exports('GetFreeWeight', GetFreeWeight)
+
 function ClearInventory(source, filterItems)
     local player = QBCore.Functions.GetPlayer(source)
     local savedItemData = {}
@@ -433,6 +448,18 @@ function OpenInventoryById(source, targetId)
 end
 
 exports('OpenInventoryById', OpenInventoryById)
+
+-- Clears a given stash of all items inside
+--- @param identifier string
+function ClearStash(identifier)
+    if not identifier then return end
+    local inventory = Inventories[identifier]
+    if not inventory then return end
+    inventory.items = {}
+    MySQL.prepare('UPDATE inventories SET items = ? WHERE identifier = ?', { json.encode(inventory.items), identifier })
+end
+
+exports('ClearStash', ClearStash)
 
 --- @param shopData table The data of the shop to create.
 function CreateShop(shopData)
