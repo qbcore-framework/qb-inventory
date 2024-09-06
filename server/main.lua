@@ -495,9 +495,12 @@ RegisterNetEvent('qb-inventory:server:SetInventoryData', function(fromInventory,
             end
         else
             if toItem then
-                if RemoveItem(fromId, fromItem.name, fromAmount, fromSlot, 'swapped item') and RemoveItem(toId, toItem.name, toAmount, toSlot, 'swapped item') then
-                    AddItem(toId, fromItem.name, fromAmount, toSlot, fromItem.info, 'swapped item')
-                    AddItem(fromId, toItem.name, toAmount, fromSlot, toItem.info, 'swapped item')
+                local fromItemAmount = fromItem.amount
+                local toItemAmount = toItem.amount
+
+                if RemoveItem(fromId, fromItem.name, fromItemAmount, fromSlot, 'swapped item') and RemoveItem(toId, toItem.name, toItemAmount, toSlot, 'swapped item') then
+                    AddItem(toId, fromItem.name, fromItemAmount, toSlot, fromItem.info, 'swapped item')
+                    AddItem(fromId, toItem.name, toItemAmount, fromSlot, toItem.info, 'swapped item')
                 end
             else
                 if RemoveItem(fromId, fromItem.name, toAmount, fromSlot, 'moved item') then
