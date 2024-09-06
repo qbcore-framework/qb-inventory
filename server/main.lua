@@ -294,11 +294,18 @@ QBCore.Functions.CreateCallback('qb-inventory:server:createDrop', function(sourc
         local bag = CreateObjectNoOffset(Config.ItemDropObject, playerCoords.x + 0.5, playerCoords.y + 0.5, playerCoords.z, true, true, false)
         local dropId = NetworkGetNetworkIdFromEntity(bag)
         local newDropId = 'drop-' .. dropId
+        local itemsTable = setmetatable({ item }, {
+            __len = function(t)
+                local length = 0
+                for _ in pairs(t) do length += 1 end
+                return length
+            end
+        })
         if not Drops[newDropId] then
             Drops[newDropId] = {
                 name = newDropId,
                 label = 'Drop',
-                items = { item },
+                items = itemsTable,
                 entityId = dropId,
                 createdTime = os.time(),
                 coords = playerCoords,
