@@ -482,7 +482,7 @@ const InventoryContainer = Vue.createApp({
                         targetInventory[targetSlotNumber] = sourceItem;
                         sourceInventory[this.currentlyDraggingSlot].slot = this.currentlyDraggingSlot;
                         targetInventory[targetSlotNumber].slot = targetSlotNumber;
-                        this.postInventoryData(this.dragStartInventoryType, targetInventoryType, this.currentlyDraggingSlot, targetSlotNumber, amountToTransfer, targetItem.amount);
+                        this.postInventoryData(this.dragStartInventoryType, targetInventoryType, this.currentlyDraggingSlot, targetSlotNumber, sourceItem.amount, targetItem.amount);
                     }
                 } else {
                     sourceItem.amount -= amountToTransfer;
