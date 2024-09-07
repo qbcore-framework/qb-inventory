@@ -589,6 +589,7 @@ const InventoryContainer = Vue.createApp({
                         });
 
                         if (response.data) {
+                            delete this.playerInventory[playerItemKey];
                             this.otherInventory[1] = newItem;
                             this.otherInventoryName = response.data;
                             this.otherInventoryLabel = response.data;
