@@ -1,4 +1,4 @@
-local holdingDrop = false
+holdingDrop = false
 local bagObject = nil
 local heldDrop = nil
 CurrentDrop = nil
@@ -7,24 +7,23 @@ CurrentDrop = nil
 
 function GetDrops()
     QBCore.Functions.TriggerCallback('qb-inventory:server:GetCurrentDrops', function(drops)
-        if drops then
-            for k, v in pairs(drops) do
-                local bag = NetworkGetEntityFromNetworkId(v.entityId)
-                if DoesEntityExist(bag) then
-                    exports['qb-target']:AddTargetEntity(bag, {
-                        options = {
-                            {
-                                icon = 'fas fa-backpack',
-                                label = Lang:t('menu.o_bag'),
-                                action = function()
-                                    TriggerServerEvent('qb-inventory:server:openDrop', k)
-                                    CurrentDrop = dropId
-                                end,
-                            },
+        if not drops then return end
+        for k, v in pairs(drops) do
+            local bag = NetworkGetEntityFromNetworkId(v.entityId)
+            if DoesEntityExist(bag) then
+                exports['qb-target']:AddTargetEntity(bag, {
+                    options = {
+                        {
+                            icon = 'fas fa-backpack',
+                            label = Lang:t('menu.o_bag'),
+                            action = function()
+                                TriggerServerEvent('qb-inventory:server:openDrop', k)
+                                CurrentDrop = k
+                            end,
                         },
-                        distance = 2.5,
-                    })
-                end
+                    },
+                    distance = 2.5,
+                })
             end
         end
     end)
@@ -59,7 +58,7 @@ RegisterNetEvent('qb-inventory:client:setupDropTarget', function(dropId)
                 label = 'Pick up bag',
                 action = function()
                     if IsPedArmed(PlayerPedId(), 4) then
-                        return QBCore.Functions.Notify("You can not be holding a Gun and a Bag!", "error", 5500) 
+                        return QBCore.Functions.Notify("You can not be holding a Gun and a Bag!", "error", 5500)
                     end
                     if holdingDrop then
                         return QBCore.Functions.Notify("Your already holding a bag, Go Drop it!", "error", 5500)

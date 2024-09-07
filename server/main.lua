@@ -294,11 +294,18 @@ QBCore.Functions.CreateCallback('qb-inventory:server:createDrop', function(sourc
         local bag = CreateObjectNoOffset(Config.ItemDropObject, playerCoords.x + 0.5, playerCoords.y + 0.5, playerCoords.z, true, true, false)
         local dropId = NetworkGetNetworkIdFromEntity(bag)
         local newDropId = 'drop-' .. dropId
+        local itemsTable = setmetatable({ item }, {
+            __len = function(t)
+                local length = 0
+                for _ in pairs(t) do length += 1 end
+                return length
+            end
+        })
         if not Drops[newDropId] then
             Drops[newDropId] = {
                 name = newDropId,
                 label = 'Drop',
-                items = { item },
+                items = itemsTable,
                 entityId = dropId,
                 createdTime = os.time(),
                 coords = playerCoords,
@@ -488,9 +495,12 @@ RegisterNetEvent('qb-inventory:server:SetInventoryData', function(fromInventory,
             end
         else
             if toItem then
-                if RemoveItem(fromId, fromItem.name, fromAmount, fromSlot, 'swapped item') and RemoveItem(toId, toItem.name, toAmount, toSlot, 'swapped item') then
-                    AddItem(toId, fromItem.name, fromAmount, toSlot, fromItem.info, 'swapped item')
-                    AddItem(fromId, toItem.name, toAmount, fromSlot, toItem.info, 'swapped item')
+                local fromItemAmount = fromItem.amount
+                local toItemAmount = toItem.amount
+
+                if RemoveItem(fromId, fromItem.name, fromItemAmount, fromSlot, 'swapped item') and RemoveItem(toId, toItem.name, toItemAmount, toSlot, 'swapped item') then
+                    AddItem(toId, fromItem.name, fromItemAmount, toSlot, fromItem.info, 'swapped item')
+                    AddItem(fromId, toItem.name, toItemAmount, fromSlot, toItem.info, 'swapped item')
                 end
             else
                 if RemoveItem(fromId, fromItem.name, toAmount, fromSlot, 'moved item') then
