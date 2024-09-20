@@ -155,8 +155,8 @@ RegisterNetEvent('qb-inventory:server:closeInventory', function(inventory)
     local QBPlayer = QBCore.Functions.GetPlayer(src)
     if not QBPlayer then return end
     Player(source).state.inv_busy = false
-    if inventory:match('shop%-') then return end
-    if inventory:match('otherplayer%-') then
+    if inventory:find('shop%-') then return end
+    if inventory:find('otherplayer%-') then
         local targetId = tonumber(inventory:match('otherplayer%-(.+)'))
         Player(targetId).state.inv_busy = false
         return
