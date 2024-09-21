@@ -379,7 +379,7 @@ function CanAddItem(identifier, item, amount)
         return false, 'weight'
     end
 
-    local slotsUsed, slotsFree = GetSlots(identifier)
+    local slotsUsed, _ = GetSlots(identifier)
 
     if slotsUsed >= inventory.slots then
         return false, 'slots'
