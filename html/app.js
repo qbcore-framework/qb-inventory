@@ -482,7 +482,7 @@ const InventoryContainer = Vue.createApp({
                         targetInventory[targetSlotNumber] = sourceItem;
                         sourceInventory[this.currentlyDraggingSlot].slot = this.currentlyDraggingSlot;
                         targetInventory[targetSlotNumber].slot = targetSlotNumber;
-                        this.postInventoryData(this.dragStartInventoryType, targetInventoryType, this.currentlyDraggingSlot, targetSlotNumber, amountToTransfer, targetItem.amount);
+                        this.postInventoryData(this.dragStartInventoryType, targetInventoryType, this.currentlyDraggingSlot, targetSlotNumber, sourceItem.amount, targetItem.amount);
                     }
                 } else {
                     sourceItem.amount -= amountToTransfer;
@@ -589,6 +589,7 @@ const InventoryContainer = Vue.createApp({
                         });
 
                         if (response.data) {
+                            delete this.playerInventory[playerItemKey];
                             this.otherInventory[1] = newItem;
                             this.otherInventoryName = response.data;
                             this.otherInventoryLabel = response.data;
@@ -698,12 +699,14 @@ const InventoryContainer = Vue.createApp({
                     }
 
                     try {
-                        await axios.post("https://qb-inventory/GiveItem", {
+                        const response = await axios.post("https://qb-inventory/GiveItem", {
                             item: selectedItem,
                             amount: amountToGive,
                             slot: selectedItem.slot,
                             info: selectedItem.info,
                         });
+                        if (!response.data) return;
+                        
                         this.playerInventory[selectedItem.slot].amount -= amountToGive;
                         if (this.playerInventory[selectedItem.slot].amount === 0) {
                             delete this.playerInventory[selectedItem.slot];

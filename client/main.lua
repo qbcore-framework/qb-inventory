@@ -1,4 +1,5 @@
 QBCore = exports['qb-core']:GetCoreObject()
+PlayerData = nil
 local hotbarShown = false
 
 -- Handlers
