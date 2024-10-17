@@ -438,22 +438,34 @@ end)
 -- Item move logic
 
 local function getItem(inventoryId, src, slot)
-    local item
+    local items = {}
     if inventoryId == 'player' then
         local Player = QBCore.Functions.GetPlayer(src)
-        item = Player.PlayerData.items[slot]
+        if Player and Player.PlayerData.items then
+            items = Player.PlayerData.items
+        end
     elseif inventoryId:find('otherplayer-') then
         local targetId = tonumber(inventoryId:match('otherplayer%-(.+)'))
         local targetPlayer = QBCore.Functions.GetPlayer(targetId)
-        if targetPlayer then
-            item = targetPlayer.PlayerData.items[slot]
+        if targetPlayer and targetPlayer.PlayerData.items then
+            items = targetPlayer.PlayerData.items
         end
     elseif inventoryId:find('drop-') == 1 then
-        item = Drops[inventoryId]['items'][slot]
+        if Drops[inventoryId] and Drops[inventoryId]['items'] then
+            items = Drops[inventoryId]['items']
+        end
     else
-        item = Inventories[inventoryId]['items'][slot]
+        if Inventories[inventoryId] and Inventories[inventoryId]['items'] then
+            items = Inventories[inventoryId]['items']
+        end
     end
-    return item
+
+    for _, item in pairs(items) do
+        if item.slot == slot then
+            return item
+        end
+    end
+    return nil
 end
 
 local function getIdentifier(inventoryId, src)
