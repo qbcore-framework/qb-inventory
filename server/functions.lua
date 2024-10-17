@@ -348,7 +348,10 @@ exports('CanAddItem', CanAddItem)
 --- @param source number The player's server ID.
 --- @return number - Returns the free weight of the players inventory. Error will return 0
 function GetFreeWeight(source)
-    if not source then warn("Source was not passed into GetFreeWeight") return 0 end
+    if not source then
+        warn('Source was not passed into GetFreeWeight')
+        return 0
+    end
     local Player = QBCore.Functions.GetPlayer(source)
     if not Player then return 0 end
 
@@ -559,9 +562,9 @@ function OpenInventory(source, identifier, data)
     end
 
     if not inventory then inventory = InitializeInventory(identifier, data) end
-    inventory.maxweight =   (data and data.maxweight) or (inventory and inventory.maxweight) or Config.StashSize.maxweight
-    inventory.slots =       (data and data.slots) or (inventory and inventory.slots) or Config.StashSize.slots
-    inventory.label =       (data and data.label) or (inventory and inventory.label)  or identifier
+    inventory.maxweight = (data and data.maxweight) or (inventory and inventory.maxweight) or Config.StashSize.maxweight
+    inventory.slots = (data and data.slots) or (inventory and inventory.slots) or Config.StashSize.slots
+    inventory.label = (data and data.label) or (inventory and inventory.label) or identifier
     inventory.isOpen = source
 
     local formattedInventory = {
@@ -699,6 +702,7 @@ function RemoveItem(identifier, item, amount, slot, reason)
         print('RemoveItem: Invalid item')
         return false
     end
+
     local inventory
     local player = QBCore.Functions.GetPlayer(identifier)
 
@@ -722,7 +726,17 @@ function RemoveItem(identifier, item, amount, slot, reason)
         return false
     end
 
-    local inventoryItem = inventory[slot]
+    local inventoryItem = nil
+    local itemKey = nil
+
+    for key, invItem in pairs(inventory) do
+        if invItem.slot == slot then
+            inventoryItem = invItem
+            itemKey = key
+            break
+        end
+    end
+
     if not inventoryItem or inventoryItem.name:lower() ~= item:lower() then
         print('RemoveItem: Item not found in slot')
         return false
@@ -736,13 +750,17 @@ function RemoveItem(identifier, item, amount, slot, reason)
 
     inventoryItem.amount = inventoryItem.amount - amount
     if inventoryItem.amount <= 0 then
-        inventory[slot] = nil
+        inventory[itemKey] = nil
+    else
+        inventory[itemKey] = inventoryItem
     end
 
     if player then player.Functions.SetPlayerData('items', inventory) end
+
     local invName = player and GetPlayerName(identifier) .. ' (' .. identifier .. ')' or identifier
     local removeReason = reason or 'No reason specified'
     local resourceName = GetInvokingResource() or 'qb-inventory'
+
     TriggerEvent(
         'qb-log:server:CreateLog',
         'playerinventory',
