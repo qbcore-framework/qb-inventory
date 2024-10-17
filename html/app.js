@@ -447,21 +447,21 @@ const InventoryContainer = Vue.createApp({
                 if (sourceItem.amount < amountToTransfer) {
                     throw new Error("Insufficient amount of item in source inventory");
                 }
-                
-                if (targetInventoryType == "other")
-                    {
+
+                if (targetInventoryType !== this.dragStartInventoryType) {
+                    if (targetInventoryType == "other") {
                         const totalWeightAfterTransfer = this.otherInventoryWeight + sourceItem.weight * amountToTransfer;
                         if (totalWeightAfterTransfer > this.otherInventoryMaxWeight) {
                             throw new Error("Insufficient weight capacity in target inventory");
                         }
                     }
-                else if (targetInventoryType == "player")
-                    {
+                    else if (targetInventoryType == "player") {
                         const totalWeightAfterTransfer = this.playerWeight + sourceItem.weight * amountToTransfer;
                         if (totalWeightAfterTransfer > this.maxWeight) {
                             throw new Error("Insufficient weight capacity in player inventory");
                         }
                     }
+                }
 
                 const targetItem = targetInventory[targetSlotNumber];
 
