@@ -559,9 +559,9 @@ function OpenInventory(source, identifier, data)
     end
 
     if not inventory then inventory = InitializeInventory(identifier, data) end
-    inventory.maxweight = (inventory and inventory.maxweight) or (data and data.maxweight) or Config.StashSize.maxweight
-    inventory.slots = (inventory and inventory.slots) or (data and data.slots) or Config.StashSize.slots
-    inventory.label = (inventory and inventory.label) or (data and data.label) or identifier
+    inventory.maxweight =   (data and data.maxweight) or (inventory and inventory.maxweight) or Config.StashSize.maxweight
+    inventory.slots =       (data and data.slots) or (inventory and inventory.slots) or Config.StashSize.slots
+    inventory.label =       (data and data.label) or (inventory and inventory.label)  or identifier
     inventory.isOpen = source
 
     local formattedInventory = {
@@ -758,3 +758,9 @@ function RemoveItem(identifier, item, amount, slot, reason)
 end
 
 exports('RemoveItem', RemoveItem)
+
+function GetInventory(identifier)
+    return Inventories[identifier]
+end
+
+exports('GetInventory', GetInventory)
