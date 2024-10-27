@@ -598,11 +598,9 @@ function AddItem(identifier, item, amount, slot, info, reason, vehicleClass)
     local player = QBCore.Functions.GetPlayer(identifier)
 
     local vehicle = nil
-    for word in string.gmatch(identifier, "([^%-]+)") do
-        if word == "trunk" or word == "glovebox" then
-            vehicle = word
-            break
-        end
+    local word = QBCore.Shared.SplitStr(item, '-')[1]
+    if word == "trunk" or word == "glovebox" then
+        vehicle = word
     end
     if player then
         inventory = player.PlayerData.items
