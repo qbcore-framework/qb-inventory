@@ -598,7 +598,7 @@ function AddItem(identifier, item, amount, slot, info, reason, vehicleClass)
     local player = QBCore.Functions.GetPlayer(identifier)
 
     local vehicle = nil
-    local word = QBCore.Shared.SplitStr(item, '-')[1]
+    local word = QBCore.Shared.SplitStr(item, '-')[2]
     if word == "trunk" or word == "glovebox" then
         vehicle = word
     end
