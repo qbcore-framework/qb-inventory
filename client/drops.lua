@@ -7,24 +7,23 @@ CurrentDrop = nil
 
 function GetDrops()
     QBCore.Functions.TriggerCallback('qb-inventory:server:GetCurrentDrops', function(drops)
-        if drops then
-            for k, v in pairs(drops) do
-                local bag = NetworkGetEntityFromNetworkId(v.entityId)
-                if DoesEntityExist(bag) then
-                    exports['qb-target']:AddTargetEntity(bag, {
-                        options = {
-                            {
-                                icon = 'fas fa-backpack',
-                                label = Lang:t('menu.o_bag'),
-                                action = function()
-                                    TriggerServerEvent('qb-inventory:server:openDrop', k)
-                                    CurrentDrop = k
-                                end,
-                            },
+        if not drops then return end
+        for k, v in pairs(drops) do
+            local bag = NetworkGetEntityFromNetworkId(v.entityId)
+            if DoesEntityExist(bag) then
+                exports['qb-target']:AddTargetEntity(bag, {
+                    options = {
+                        {
+                            icon = 'fas fa-backpack',
+                            label = Lang:t('menu.o_bag'),
+                            action = function()
+                                TriggerServerEvent('qb-inventory:server:openDrop', k)
+                                CurrentDrop = k
+                            end,
                         },
-                        distance = 2.5,
-                    })
-                end
+                    },
+                    distance = 2.5,
+                })
             end
         end
     end)
