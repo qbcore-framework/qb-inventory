@@ -348,7 +348,10 @@ exports('CanAddItem', CanAddItem)
 --- @param source number The player's server ID.
 --- @return number - Returns the free weight of the players inventory. Error will return 0
 function GetFreeWeight(source)
-    if not source then warn("Source was not passed into GetFreeWeight") return 0 end
+    if not source then
+        warn('Source was not passed into GetFreeWeight')
+        return 0
+    end
     local Player = QBCore.Functions.GetPlayer(source)
     if not Player then return 0 end
 
@@ -460,6 +463,18 @@ end
 
 exports('OpenInventoryById', OpenInventoryById)
 
+-- Clears a given stash of all items inside
+--- @param identifier string
+function ClearStash(identifier)
+    if not identifier then return end
+    local inventory = Inventories[identifier]
+    if not inventory then return end
+    inventory.items = {}
+    MySQL.prepare('UPDATE inventories SET items = ? WHERE identifier = ?', { json.encode(inventory.items), identifier })
+end
+
+exports('ClearStash', ClearStash)
+
 --- @param shopData table The data of the shop to create.
 function CreateShop(shopData)
     if shopData.name then
@@ -547,9 +562,9 @@ function OpenInventory(source, identifier, data)
     end
 
     if not inventory then inventory = InitializeInventory(identifier, data) end
-    inventory.maxweight = (inventory and inventory.maxweight) or (data and data.maxweight) or Config.StashSize.maxweight
-    inventory.slots = (inventory and inventory.slots) or (data and data.slots) or Config.StashSize.slots
-    inventory.label = (inventory and inventory.label) or (data and data.label) or identifier
+    inventory.maxweight = (data and data.maxweight) or (inventory and inventory.maxweight) or Config.StashSize.maxweight
+    inventory.slots = (data and data.slots) or (inventory and inventory.slots) or Config.StashSize.slots
+    inventory.label = (data and data.label) or (inventory and inventory.label) or identifier
     inventory.isOpen = source
 
     local formattedInventory = {
@@ -687,6 +702,7 @@ function RemoveItem(identifier, item, amount, slot, reason)
         print('RemoveItem: Invalid item')
         return false
     end
+
     local inventory
     local player = QBCore.Functions.GetPlayer(identifier)
 
@@ -710,7 +726,17 @@ function RemoveItem(identifier, item, amount, slot, reason)
         return false
     end
 
-    local inventoryItem = inventory[slot]
+    local inventoryItem = nil
+    local itemKey = nil
+
+    for key, invItem in pairs(inventory) do
+        if invItem.slot == slot then
+            inventoryItem = invItem
+            itemKey = key
+            break
+        end
+    end
+
     if not inventoryItem or inventoryItem.name:lower() ~= item:lower() then
         print('RemoveItem: Item not found in slot')
         return false
@@ -724,13 +750,17 @@ function RemoveItem(identifier, item, amount, slot, reason)
 
     inventoryItem.amount = inventoryItem.amount - amount
     if inventoryItem.amount <= 0 then
-        inventory[slot] = nil
+        inventory[itemKey] = nil
+    else
+        inventory[itemKey] = inventoryItem
     end
 
     if player then player.Functions.SetPlayerData('items', inventory) end
+
     local invName = player and GetPlayerName(identifier) .. ' (' .. identifier .. ')' or identifier
     local removeReason = reason or 'No reason specified'
     local resourceName = GetInvokingResource() or 'qb-inventory'
+
     TriggerEvent(
         'qb-log:server:CreateLog',
         'playerinventory',
@@ -746,3 +776,9 @@ function RemoveItem(identifier, item, amount, slot, reason)
 end
 
 exports('RemoveItem', RemoveItem)
+
+function GetInventory(identifier)
+    return Inventories[identifier]
+end
+
+exports('GetInventory', GetInventory)
