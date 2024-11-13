@@ -191,9 +191,9 @@ exports('SetItemData', SetItemData)
 
 function UseItem(itemName, ...)
     local itemData = QBCore.Functions.CanUseItem(itemName)
-    local callback = type(itemData) == 'table' and (rawget(itemData, '__cfx_functionReference') and itemData or itemData.cb or itemData.callback) or type(itemData) == 'function' and itemData
-    if not callback then return end
-    callback(...)
+    if type(itemData) == "table" and itemData.func then
+        itemData.func(...)
+    end
 end
 
 exports('UseItem', UseItem)
