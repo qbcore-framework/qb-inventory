@@ -125,17 +125,46 @@ end
 
 exports('SaveInventory', SaveInventory)
 
---- Sets the inventory of a player.
---- @param source number The player's server ID.
---- @param items table The items to set in the player's inventory.
-function SetInventory(source, items)
-    local Player = QBCore.Functions.GetPlayer(source)
-    if not Player then return end
-    Player.Functions.SetPlayerData('items', items)
-    if not Player.Offline then
-        local logMessage = string.format('**%s (citizenid: %s | id: %s)** items set: %s', GetPlayerName(source), Player.PlayerData.citizenid, source, json.encode(items))
-        TriggerEvent('qb-log:server:CreateLog', 'playerinventory', 'SetInventory', 'blue', logMessage)
+-- Sets the items in a inventory.
+--- @param identifier string The identifier of the player or inventory.
+--- @param items table The items to set in the inventory.
+--- @param reason string The reason for setting the items.
+function SetInventory(identifier, items, reason)
+    local player = QBCore.Functions.GetPlayer(identifier)
+
+    print('Setting inventory for ' .. identifier)
+
+    if not player and not Inventories[identifier] and not Drops[identifier] then
+        print('SetInventory: Inventory not found')
+        return
     end
+
+    if player then
+        player.Functions.SetPlayerData('items', items)
+        if not player.Offline then
+            local logMessage = string.format('**%s (citizenid: %s | id: %s)** items set: %s', GetPlayerName(identifier), player.PlayerData.citizenid, identifier, json.encode(items))
+            TriggerEvent('qb-log:server:CreateLog', 'playerinventory', 'SetInventory', 'blue', logMessage)
+        end
+    elseif Drops[identifier] then
+        Drops[identifier].items = items
+    elseif Inventories[identifier] then
+        Inventories[identifier].items = items
+    end
+
+    local invName = player and GetPlayerName(identifier) .. ' (' .. identifier .. ')' or identifier
+    local setReason = reason or 'No reason specified'
+    local resourceName = GetInvokingResource() or 'qb-inventory'
+    TriggerEvent(
+        'qb-log:server:CreateLog',
+        'playerinventory',
+        'Inventory Set',
+        'blue',
+        '**Inventory:** ' .. invName .. '\n' ..
+        '**Items:** ' .. json.encode(items) .. '\n' ..
+        '**Reason:** ' .. setReason .. '\n' ..
+        '**Resource:** ' .. resourceName
+    )
+
 end
 
 exports('SetInventory', SetInventory)
@@ -319,29 +348,45 @@ end
 
 exports('GetItemCount', GetItemCount)
 
---- Checks if an item can be added to a player's inventory.
---- @param source number The player's server ID.
+--- Checks if an item can be added to a inventory based on the weight and slots available.
+--- @param identifier string The identifier of the player or inventory.
 --- @param item string The item name.
 --- @param amount number The amount of the item.
 --- @return boolean - Returns true if the item can be added, false otherwise.
 --- @return string|nil - Returns a string indicating the reason why the item cannot be added (e.g., 'weight' or 'slots'), or nil if it can be added.
-function CanAddItem(source, item, amount)
-    local Player = QBCore.Functions.GetPlayer(source)
-    if not Player then return false end
+function CanAddItem(identifier, item, amount)
+
+    local Player = QBCore.Functions.GetPlayer(identifier)
+
     local itemData = QBCore.Shared.Items[item:lower()]
     if not itemData then return false end
+
+    local inventory, items
+    if Player then
+        inventory = {
+            maxweight = Config.MaxWeight,
+            slots = Config.MaxSlots
+        }
+        items = Player.PlayerData.items
+    elseif Inventories[identifier] then
+        inventory = Inventories[identifier]
+        items = Inventories[identifier].items
+    end
+
+    if not inventory then
+        print('CanAddItem: Inventory not found')
+        return false
+    end
+
     local weight = itemData.weight * amount
-    local totalWeight = GetTotalWeight(Player.PlayerData.items) + weight
-    if totalWeight > Config.MaxWeight then
+    local totalWeight = GetTotalWeight(items) + weight
+    if totalWeight > inventory.maxweight then
         return false, 'weight'
     end
-    local slotsUsed = 0
-    for _, v in pairs(Player.PlayerData.items) do
-        if v then
-            slotsUsed = slotsUsed + 1
-        end
-    end
-    if slotsUsed >= Config.MaxSlots then
+
+    local slotsUsed, _ = GetSlots(identifier)
+
+    if slotsUsed >= inventory.slots then
         return false, 'slots'
     end
     return true
@@ -583,6 +628,36 @@ function OpenInventory(source, identifier, data)
 end
 
 exports('OpenInventory', OpenInventory)
+
+--- Creates a new inventory and returns the inventory object.
+--- @param identifier string The identifier of the inventory to create.
+--- @param data table Additional data for initializing the inventory.
+function CreateInventory(identifier, data)
+    if Inventories[identifier] then return end
+    if not identifier then return end
+    Inventories[identifier] = InitializeInventory(identifier, data)
+end
+
+exports('CreateInventory', CreateInventory)
+
+--- Retrieves an inventory by its identifier.
+--- @param identifier string The identifier of the inventory to retrieve.
+--- @return table|nil - The inventory object if found, nil otherwise.
+function GetInventory(identifier)
+    return Inventories[identifier]
+end
+
+exports('GetInventory', GetInventory)
+
+--- Removes an inventory by its identifier.
+--- @param identifier string The identifier of the inventory to remove.
+function RemoveInventory(identifier)
+    if Inventories[identifier] then
+        Inventories[identifier] = nil
+    end
+end
+
+exports('RemoveInventory', RemoveInventory)
 
 --- Adds an item to the player's inventory or a specific inventory.
 --- @param identifier string The identifier of the player or inventory.
