@@ -248,7 +248,12 @@ function GetTotalWeight(items)
     if not items then return 0 end
     local weight = 0
     for _, item in pairs(items) do
-        weight = weight + (item.weight * item.amount)
+        local amount = item.amount
+        if type(amount) ~= "number" then
+            amount = 1
+        end
+
+        weight = weight + (item.weight * amount)
     end
     return tonumber(weight)
 end
