@@ -666,8 +666,9 @@ exports('RemoveInventory', RemoveInventory)
 --- @param slot number (optional) The slot to add the item to. If not provided, it will find the first available slot.
 --- @param info table (optional) Additional information about the item.
 --- @param reason string (optional) The reason for adding the item.
+--- @param vehicleClass number (optional) The class of the vehicle if its being added to a newly created vehicle. Used in detecting the number of slots.
 --- @return boolean Returns true if the item was successfully added, false otherwise.
-function AddItem(identifier, item, amount, slot, info, reason)
+function AddItem(identifier, item, amount, slot, info, reason, vehicleClass)
     local itemInfo = QBCore.Shared.Items[item:lower()]
     if not itemInfo then
         print('AddItem: Invalid item')
@@ -676,6 +677,11 @@ function AddItem(identifier, item, amount, slot, info, reason)
     local inventory, inventoryWeight, inventorySlots
     local player = QBCore.Functions.GetPlayer(identifier)
 
+    local vehicle = nil
+    local word = QBCore.Shared.SplitStr(item, '-')[2]
+    if word == "trunk" or word == "glovebox" then
+        vehicle = word
+    end
     if player then
         inventory = player.PlayerData.items
         inventoryWeight = Config.MaxWeight
@@ -688,6 +694,19 @@ function AddItem(identifier, item, amount, slot, info, reason)
         inventory = Drops[identifier].items
         inventoryWeight = Drops[identifier].maxweight
         inventorySlots = Drops[identifier].slots
+    elseif vehicle then  
+        Inventories[identifier] = {}
+        Inventories[identifier].items = {}
+        local storageConfig = VehicleStorage[vehicleClass] or VehicleStorage.default
+        if vehicle == "trunk" then 
+            Inventories[identifier].maxweight = storageConfig.trunkWeight
+            Inventories[identifier].slots = storageConfig.trunkSlots
+        else 
+            Inventories[identifier].maxweight = storageConfig.gloveboxWeight
+            Inventories[identifier].slots = storageConfig.gloveboxSlots
+        end
+        inventoryWeight = Inventories[identifier].maxweight
+        inventorySlots = Inventories[identifier].slots
     end
 
     if not inventory then
