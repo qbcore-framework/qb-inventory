@@ -522,3 +522,11 @@ RegisterNetEvent('qb-inventory:server:SetInventoryData', function(fromInventory,
         end
     end
 end)
+
+-- Event to add the custom inventory created to Inventory cache.
+RegisterNetEvent('qb-inventory:server:addInventoryToCache', function(invId, inventoryData)
+    Inventories[invId] = {
+        isOpen = false,
+        items = inventoryData
+    }
+end)
