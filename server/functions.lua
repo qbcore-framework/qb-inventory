@@ -673,13 +673,15 @@ function AddItem(identifier, item, amount, slot, info, reason, vehicleClass)
     local player = QBCore.Functions.GetPlayer(identifier)
 
     local vehicle = nil
-    local word = QBCore.Shared.SplitStr(item, '-')[2]
+    local word = QBCore.Shared.SplitStr(identifier, '-')[1]
     if word == "trunk" or word == "glovebox" then
         vehicle = word
     end
     if player then
+        local src = player.PlayerData.source
         inventory = player.PlayerData.items
-        inventoryWeight = Config.MaxWeight
+        local value = exports["dw_skillsystem"]:GetSkillValue(src, "maxWeight")
+        inventoryWeight = Config.MaxWeight * value
         inventorySlots = Config.MaxSlots
     elseif Inventories[identifier] then
         inventory = Inventories[identifier].items
@@ -692,6 +694,7 @@ function AddItem(identifier, item, amount, slot, info, reason, vehicleClass)
     elseif vehicle then  
         Inventories[identifier] = {}
         Inventories[identifier].items = {}
+        inventory = Inventories[identifier].items
         local storageConfig = VehicleStorage[vehicleClass] or VehicleStorage.default
         if vehicle == "trunk" then 
             Inventories[identifier].maxweight = storageConfig.trunkWeight
