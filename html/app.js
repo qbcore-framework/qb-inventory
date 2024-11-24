@@ -187,6 +187,7 @@ const InventoryContainer = Vue.createApp({
             }
         },
         async closeInventory() {
+            this.clearDragData();
             let inventoryName = this.otherInventoryName;
             Object.assign(this, this.getInitialState());
             try {
