@@ -430,6 +430,11 @@ function ClearInventory(source, filterItems)
     if not player.Offline then
         local logMessage = string.format('**%s (citizenid: %s | id: %s)** inventory cleared', GetPlayerName(source), player.PlayerData.citizenid, source)
         TriggerEvent('qb-log:server:CreateLog', 'playerinventory', 'ClearInventory', 'red', logMessage)
+        local ped = GetPlayerPed(source)
+        local weapon = GetSelectedPedWeapon(ped)
+        if weapon ~= GetHashKey('WEAPON_UNARMED') then
+            RemoveWeaponFromPed(ped, weapon)
+        end
         if Player(source).state.inv_busy then TriggerClientEvent('qb-inventory:client:updateInventory', source) end
     end
 end
