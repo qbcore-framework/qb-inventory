@@ -36,7 +36,7 @@ QBCore.Functions.CreateClientCallback('qb-inventory:client:vehicleCheck', functi
     if inVehicle ~= 0 then
         local plate = GetVehicleNumberPlateText(inVehicle)
         local class = GetVehicleClass(inVehicle)
-        local inventory = 'glovebox-' .. plate
+        local inventory = 'glovebox-' .. plate:gsub("%s+", "")
         cb(inventory, class)
         return
     end
@@ -53,7 +53,7 @@ QBCore.Functions.CreateClientCallback('qb-inventory:client:vehicleCheck', functi
                 OpenTrunk(vehicle)
                 local class = GetVehicleClass(vehicle)
                 local plate = GetVehicleNumberPlateText(vehicle)
-                local inventory = 'trunk-' .. plate
+                local inventory = 'trunk-' .. plate:gsub("%s+", "")
                 cb(inventory, class)
             else
                 QBCore.Functions.Notify(Lang:t('notify.vlocked'), 'error')
