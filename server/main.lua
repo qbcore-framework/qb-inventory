@@ -327,7 +327,6 @@ QBCore.Functions.CreateCallback('qb-inventory:server:attemptPurchase', function(
     local itemInfo = data.item
     local amount = data.amount
     local shop = string.gsub(data.shop, 'shop%-', '')
-    local price = itemInfo.price * amount
     local Player = QBCore.Functions.GetPlayer(source)
 
     if not Player then
@@ -351,12 +350,24 @@ QBCore.Functions.CreateCallback('qb-inventory:server:attemptPurchase', function(
         end
     end
 
+    if shopInfo.items[itemInfo.slot].name ~= itemInfo.name then -- Check if item name passed is the same as the item in that slot
+        cb(false)
+        return
+    end
+
+    if amount > shopInfo.items[itemInfo.slot].amount then
+        TriggerClientEvent('QBCore:Notify', source, 'Cannot purchase larger quantity than currently in stock', 'error')
+        cb(false)
+        return
+    end
+
     if not CanAddItem(source, itemInfo.name, amount) then
         TriggerClientEvent('QBCore:Notify', source, 'Cannot hold item', 'error')
         cb(false)
         return
     end
 
+    local price = shopInfo.items[itemInfo.slot].price * amount
     if Player.PlayerData.money.cash >= price then
         Player.Functions.RemoveMoney('cash', price, 'shop-purchase')
         AddItem(source, itemInfo.name, amount, nil, itemInfo.info, 'shop-purchase')
