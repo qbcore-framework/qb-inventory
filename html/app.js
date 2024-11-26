@@ -104,6 +104,7 @@ const InventoryContainer = Vue.createApp({
                 ghostElement: null,
                 dragStartInventoryType: "player",
                 transferAmount: null,
+                firstBulkPurchase: true,
             };
         },
         openInventory(data) {
@@ -431,6 +432,10 @@ const InventoryContainer = Vue.createApp({
                     return;
                 }
 
+                if (this.dragStartInventoryType === "player" && targetInventoryType === "other" && isShop !== -1) {
+                    throw new Error("You cannot sell items to this shop.");
+                }
+
                 const targetSlotNumber = parseInt(targetSlot, 10);
                 if (isNaN(targetSlotNumber)) {
                     throw new Error("Invalid target slot number");
@@ -502,23 +507,34 @@ const InventoryContainer = Vue.createApp({
         },
         async handlePurchase(targetSlot, sourceSlot, sourceItem, transferAmount) {
             try {
+
+                if (this.transferAmount === null) {
+                    if (this.firstBulkPurchase === true) {
+                        this.firstBulkPurchase = false;
+                        this.inventoryError(sourceSlot, "other", true);
+                        console.error("Purchasing items in bulk. Next time there will be no warning...");
+                        return;
+                    }
+                }
+
+                const sourceInventory = this.getInventoryByType("other");
+                const targetInventory = this.getInventoryByType("player");
+                const amountToTransfer = transferAmount !== null ? transferAmount : sourceItem.amount;
+                if (sourceItem.amount < amountToTransfer) {
+                    this.inventoryError(sourceSlot, "other");
+                    return;
+                }
+
                 const response = await axios.post("https://qb-inventory/AttemptPurchase", {
                     item: sourceItem,
                     amount: transferAmount || sourceItem.amount,
                     shop: this.otherInventoryName,
                 });
                 if (response.data) {
-                    const sourceInventory = this.getInventoryByType("other");
-                    const targetInventory = this.getInventoryByType("player");
-                    const amountToTransfer = transferAmount !== null ? transferAmount : sourceItem.amount;
-                    if (sourceItem.amount < amountToTransfer) {
-                        this.inventoryError(sourceSlot);
-                        return;
-                    }
                     let targetItem = targetInventory[targetSlot];
                     if (!targetItem || targetItem.name !== sourceItem.name) {
                         let foundSlot = Object.keys(targetInventory).find((slot) => targetInventory[slot] && targetInventory[slot].name === sourceItem.name);
-                        if (foundSlot) {
+                        if (foundSlot && sourceItem.unique == false) {
                             targetInventory[foundSlot].amount += amountToTransfer;
                         } else {
                             const targetInventoryKeys = Object.keys(targetInventory);
@@ -529,7 +545,7 @@ const InventoryContainer = Vue.createApp({
                                     amount: amountToTransfer,
                                 };
                             } else {
-                                this.inventoryError(sourceSlot);
+                                this.inventoryError(sourceSlot, "other");
                                 return;
                             }
                         }
@@ -541,10 +557,10 @@ const InventoryContainer = Vue.createApp({
                         delete sourceInventory[sourceSlot];
                     }
                 } else {
-                    this.inventoryError(sourceSlot);
+                    this.inventoryError(sourceSlot, "other");
                 }
             } catch (error) {
-                this.inventoryError(sourceSlot);
+                this.inventoryError(sourceSlot, "other");
             }
         },
         async dropItem(item, quantity) {
@@ -707,7 +723,7 @@ const InventoryContainer = Vue.createApp({
                             info: selectedItem.info,
                         });
                         if (!response.data) return;
-                        
+
                         this.playerInventory[selectedItem.slot].amount -= amountToGive;
                         if (this.playerInventory[selectedItem.slot].amount === 0) {
                             delete this.playerInventory[selectedItem.slot];
@@ -775,10 +791,10 @@ const InventoryContainer = Vue.createApp({
                 }, 100);
             }
         },
-        inventoryError(slot) {
-            const slotElement = document.getElementById(`slot-${slot}`);
+        inventoryError(slot, parent = "", warning = false) {
+            const slotElement = document.querySelector(`.${parent}-inventory [data-slot="${slot}"]`);
             if (slotElement) {
-                slotElement.style.backgroundColor = "red";
+                slotElement.style.backgroundColor = warning ? "yellow" : "red";
             }
             axios.post("https://qb-inventory/PlayDropFail", {}).catch((error) => {
                 console.error("Error playing drop fail:", error);
