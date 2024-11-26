@@ -433,6 +433,7 @@ const InventoryContainer = Vue.createApp({
                 }
 
                 if (this.dragStartInventoryType === "player" && targetInventoryType === "other" && isShop !== -1) {
+                    this.inventoryError(this.currentlyDraggingSlot, "player");
                     throw new Error("You cannot sell items to this shop.");
                 }
 
