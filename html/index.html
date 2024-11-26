@@ -6,6 +6,7 @@
         <title>QB Inventory</title>
         <link rel="stylesheet" href="main.css" />
         <link rel="stylesheet" href="https://unpkg.com/floating-vue@5.2.2/dist/style.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" />
         <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@floating-ui/core@1.6.0"></script>
         <script src="https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.6.1"></script>
@@ -19,9 +20,11 @@
                 <div class="player-inventory-header" :class="{ 'centered-inventory-header': shouldCenterInventory }">
                     <div class="labels-container">
                         <div class="inventory-label">
+                            <i class="fa-solid fa-box-open"></i>
                             <p>{{ inventoryLabel }}</p>
                         </div>
                         <div class="current-weight">
+                            <i class="fa-solid fa-weight-scale"></i>
                             <p>{{ (playerWeight / 1000).toFixed(1) }} / {{ (maxWeight / 1000).toFixed(1) }}</p>
                         </div>
                     </div>
@@ -71,9 +74,11 @@
                 <div class="other-inventory-header" v-if="!isOtherInventoryEmpty">
                     <div class="labels-container">
                         <div class="inventory-label">
+                            <i class="fa-solid fa-box-open"></i>
                             <p>{{ otherInventoryLabel }}</p>
                         </div>
                         <div class="current-weight">
+                            <i class="fa-solid fa-weight-scale"></i>
                             <p>{{ (otherInventoryWeight / 1000).toFixed(1) }} / {{(otherInventoryMaxWeight / 1000).toFixed(1) }}</p>
                         </div>
                     </div>

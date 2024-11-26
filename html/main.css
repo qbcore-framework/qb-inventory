@@ -115,7 +115,17 @@ div {
 }
 
 .inventory-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     flex-grow: 1;
+}
+
+.current-weight {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
 .item-grid {
@@ -174,7 +184,6 @@ div {
     position: absolute;
     top: 5px;
     right: 5px;
-    width: 20px;
     height: 20px;
     display: flex;
     align-items: center;
@@ -402,7 +411,7 @@ div {
 
 .input-container {
     position: absolute;
-    width: 4%;
+    width: 6%;
     top: calc(26% + ((47.16% - 3vh) / 2));
     left: 50%;
     transform: translate(-50%, -50%);
@@ -414,6 +423,12 @@ div {
     align-items: center;
     justify-content: center;
     box-shadow: 0 0 0 1px rgb(255 255 255 / 8%), 0 2px 2px rgb(0 0 0 / 3%), 0 4px 4px rgb(0 0 0 / 4%), 0 10px 8px rgb(0 0 0 / 5%), 0 15px 15px rgb(0 0 0 / 6%), 0 30px 30px rgb(0 0 0 / 7%), 0 70px 65px rgb(0 0 0 / 9%);
+}
+
+.input-container input::-webkit-outer-spin-button,
+.input-container input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .input-wrapper {
