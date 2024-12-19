@@ -20,6 +20,7 @@ local function GetFirstFreeSlot(items, maxSlots)
     return nil
 end
 
+
 local function SetupShopItems(shopItems)
     local items = {}
     local slot = 1
@@ -46,6 +47,12 @@ local function SetupShopItems(shopItems)
         end
     end
     return items
+end
+
+function IsVehicleOwned(plate)
+    local result = MySQL.scalar.await('SELECT 1 from player_vehicles WHERE plate = ?', { plate })
+    if result then return true end
+    return false
 end
 
 -- Exported Functions
