@@ -45,7 +45,11 @@ end)
 AddEventHandler('txAdmin:events:serverShuttingDown', function()
     for inventory, data in pairs(Inventories) do
         if data.isOpen then
-            MySQL.prepare('INSERT INTO inventories (identifier, items) VALUES (?, ?) ON DUPLICATE KEY UPDATE items = ?', { inventory, json.encode(data.items), json.encode(data.items) })
+            if (inventory:find('glovebox%-') and IsVehicleOwned(inventory:match('glovebox%-(.+)'))) or (inventory:find('trunk%-') and IsVehicleOwned(inventory:match('trunk%-(.+)'))) then 
+                MySQL.prepare('INSERT INTO inventories (identifier, items) VALUES (?, ?) ON DUPLICATE KEY UPDATE items = ?', { inventory, json.encode(data.items), json.encode(data.items) })
+            else
+                MySQL.prepare('INSERT INTO inventories (identifier, items) VALUES (?, ?) ON DUPLICATE KEY UPDATE items = ?', { inventory, json.encode(data.items), json.encode(data.items) })
+            end
         end
     end
 end)
@@ -174,6 +178,15 @@ RegisterNetEvent('qb-inventory:server:closeInventory', function(inventory)
     end
     if not Inventories[inventory] then return end
     Inventories[inventory].isOpen = false
+
+    if inventory:find('glovebox%-') then 
+        if not IsVehicleOwned(inventory:match('glovebox%-(.+)')) then return end
+    end
+    
+    if inventory:find('trunk%-') then 
+        if not IsVehicleOwned(inventory:match('trunk%-(.+)')) then return end
+    end
+
     MySQL.prepare('INSERT INTO inventories (identifier, items) VALUES (?, ?) ON DUPLICATE KEY UPDATE items = ?', { inventory, json.encode(Inventories[inventory].items), json.encode(Inventories[inventory].items) })
 end)
 
