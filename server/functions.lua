@@ -745,7 +745,7 @@ function AddItem(identifier, item, amount, slot, info, reason)
             combinable = itemInfo.combinable
         }
 
-        if QBCore.Shared.SplitStr(item, '_')[1] == 'weapon' then
+        if itemInfo.type == 'weapon' then
             if not inventory[slot].info.serie then
                 inventory[slot].info.serie = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
             end
