@@ -47,7 +47,7 @@ AddEventHandler('txAdmin:events:serverShuttingDown', function()
         if data.isOpen then
             if (inventory:find('glovebox%-') and IsVehicleOwned(inventory:match('glovebox%-(.+)'))) or (inventory:find('trunk%-') and IsVehicleOwned(inventory:match('trunk%-(.+)'))) then
                 MySQL.prepare('INSERT INTO inventories (identifier, items) VALUES (?, ?) ON DUPLICATE KEY UPDATE items = ?', { inventory, json.encode(data.items), json.encode(data.items) })
-            else
+            elseif (not inventory:find('glovebox%-') and not inventory:find('trunk%-')) then
                 MySQL.prepare('INSERT INTO inventories (identifier, items) VALUES (?, ?) ON DUPLICATE KEY UPDATE items = ?', { inventory, json.encode(data.items), json.encode(data.items) })
             end
         end
