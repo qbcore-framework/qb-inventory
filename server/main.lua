@@ -509,7 +509,7 @@ RegisterNetEvent('qb-inventory:server:SetInventoryData', function(fromInventory,
         local toId = getIdentifier(toInventory, src)
 
         if toItem and fromItem.name == toItem.name then
-            if RemoveItem(fromId, fromItem.name, toAmount, fromSlot, 'stacked item') then
+            if CanAddItem(toId, toItem.name, toAmount) and RemoveItem(fromId, fromItem.name, toAmount, fromSlot, 'stacked item') then
                 AddItem(toId, toItem.name, toAmount, toSlot, toItem.info, 'stacked item')
             end
         elseif not toItem and toAmount < fromAmount then
@@ -521,9 +521,27 @@ RegisterNetEvent('qb-inventory:server:SetInventoryData', function(fromInventory,
                 local fromItemAmount = fromItem.amount
                 local toItemAmount = toItem.amount
 
-                if RemoveItem(fromId, fromItem.name, fromItemAmount, fromSlot, 'swapped item') and RemoveItem(toId, toItem.name, toItemAmount, toSlot, 'swapped item') then
-                    AddItem(toId, fromItem.name, fromItemAmount, toSlot, fromItem.info, 'swapped item')
-                    AddItem(fromId, toItem.name, toItemAmount, fromSlot, toItem.info, 'swapped item')
+                local didRemoveFromOurInventory = RemoveItem(fromId, fromItem.name, fromItemAmount, fromSlot, 'swapped item')
+                local didRemoveFromTheirInventory = RemoveItem(toId, toItem.name, toItemAmount, toSlot, 'swapped item')
+
+                if didRemoveFromOurInventory and didRemoveFromTheirInventory then
+                    local didAddToTheirInventory = AddItem(toId, fromItem.name, fromItemAmount, toSlot, fromItem.info, 'swapped item')
+                    local didAddToOurInventory = AddItem(fromId, toItem.name, toItemAmount, fromSlot, toItem.info, 'swapped item')
+
+                    local function refundBoth()
+                        AddItem(fromId, fromItem.name, fromItemAmount, fromSlot, fromItem.info, 'refund swapped item due to error')
+                        AddItem(toId, toItem.name, toItemAmount, toSlot, toItem.info, 'refund swapped item due to error')
+                    end
+
+                    if (not didAddToTheirInventory) and (not didAddToOurInventory) then
+                        refundBoth()
+                    elseif (not didAddToTheirInventory) and (didAddToOurInventory) then 
+                        RemoveItem(fromId, toItem.name, toItemAmount, fromSlot, 'remove item due to being refunded')
+                        refundBoth()
+                    elseif (not didAddToOurInventory) and (didAddToTheirInventory) then 
+                        RemoveItem(toId, fromItem.name, fromItemAmount, toSlot, 'remove item due to being refunded')
+                        refundBoth()
+                    end
                 end
             else
                 if RemoveItem(fromId, fromItem.name, toAmount, fromSlot, 'moved item') then
