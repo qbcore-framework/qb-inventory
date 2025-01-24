@@ -535,10 +535,10 @@ RegisterNetEvent('qb-inventory:server:SetInventoryData', function(fromInventory,
 
                     if (not didAddToTheirInventory) and (not didAddToOurInventory) then
                         refundBoth()
-                    elseif (not didAddToTheirInventory) and (didAddToOurInventory) then 
+                    elseif (not didAddToTheirInventory) and (didAddToOurInventory) then
                         RemoveItem(fromId, toItem.name, toItemAmount, fromSlot, 'remove item due to being refunded')
                         refundBoth()
-                    elseif (not didAddToOurInventory) and (didAddToTheirInventory) then 
+                    elseif (not didAddToOurInventory) and (didAddToTheirInventory) then
                         RemoveItem(toId, fromItem.name, fromItemAmount, toSlot, 'remove item due to being refunded')
                         refundBoth()
                     end
