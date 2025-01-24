@@ -371,6 +371,9 @@ function CanAddItem(identifier, item, amount)
     elseif Inventories[identifier] then
         inventory = Inventories[identifier]
         items = Inventories[identifier].items
+    elseif Drops[identifier] then
+        inventory = Drops[identifier]
+        items = Drops[identifier].items
     end
 
     if not inventory then
