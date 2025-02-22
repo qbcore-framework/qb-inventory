@@ -187,6 +187,7 @@ const InventoryContainer = Vue.createApp({
             }
         },
         async closeInventory() {
+            this.clearDragData();
             let inventoryName = this.otherInventoryName;
             Object.assign(this, this.getInitialState());
             try {
@@ -239,6 +240,8 @@ const InventoryContainer = Vue.createApp({
         moveItemBetweenInventories(item, sourceInventoryType) {
             const sourceInventory = sourceInventoryType === "player" ? this.playerInventory : this.otherInventory;
             const targetInventory = sourceInventoryType === "player" ? this.otherInventory : this.playerInventory;
+            const targetWeight  = sourceInventoryType === "player" ? this.otherInventoryWeight : this.playerWeight ; 
+            const maxTargetWeight  = sourceInventoryType === "player" ? this.otherInventoryMaxWeight : this.maxWeight ;     
             const amountToTransfer = this.transferAmount !== null ? this.transferAmount : 1;
             let targetSlot = null;
 
@@ -247,9 +250,10 @@ const InventoryContainer = Vue.createApp({
                 this.inventoryError(item.slot);
                 return;
             }
+            
+            const totalWeightAfterTransfer = targetWeight + sourceItem.weight * amountToTransfer;
 
-            const totalWeightAfterTransfer = this.otherInventoryWeight + sourceItem.weight * amountToTransfer;
-            if (totalWeightAfterTransfer > this.otherInventoryMaxWeight) {
+            if (totalWeightAfterTransfer > maxTargetWeight) {
                 this.inventoryError(item.slot);
                 return;
             }
@@ -906,12 +910,10 @@ const InventoryContainer = Vue.createApp({
     mounted() {
         window.addEventListener("keydown", (event) => {
             const key = event.key;
-            if (key === "Escape") {
+            if (key === "Escape" || key === "Tab") {
                 if (this.isInventoryOpen) {
                     this.closeInventory();
                 }
-            } else if (key === "Tab") {
-                event.preventDefault();
             }
         });
 

@@ -443,7 +443,7 @@ div {
 }
 
 .custom-tooltip {
-    max-width: 6vw;
+    max-width: 20vw;
 }
 
 .custom-tooltip .tooltip-header {
