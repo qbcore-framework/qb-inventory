@@ -240,8 +240,8 @@ const InventoryContainer = Vue.createApp({
         moveItemBetweenInventories(item, sourceInventoryType) {
             const sourceInventory = sourceInventoryType === "player" ? this.playerInventory : this.otherInventory;
             const targetInventory = sourceInventoryType === "player" ? this.otherInventory : this.playerInventory;
-            const targetWeight  = sourceInventoryType === "player" ? this.otherInventoryWeight : this.playerWeight ; 
-            const maxTargetWeight  = sourceInventoryType === "player" ? this.otherInventoryMaxWeight : this.maxWeight ;     
+            const targetWeight = sourceInventoryType === "player" ? this.otherInventoryWeight : this.playerWeight;
+            const maxTargetWeight = sourceInventoryType === "player" ? this.otherInventoryMaxWeight : this.maxWeight;
             const amountToTransfer = this.transferAmount !== null ? this.transferAmount : 1;
             let targetSlot = null;
 
@@ -250,7 +250,7 @@ const InventoryContainer = Vue.createApp({
                 this.inventoryError(item.slot);
                 return;
             }
-            
+
             const totalWeightAfterTransfer = targetWeight + sourceItem.weight * amountToTransfer;
 
             if (totalWeightAfterTransfer > maxTargetWeight) {
@@ -347,24 +347,31 @@ const InventoryContainer = Vue.createApp({
             if (!this.currentlyDraggingItem) {
                 return;
             }
-            const targetPlayerItemSlotElement = event.target.closest(".player-inventory .item-slot");
-            if (targetPlayerItemSlotElement) {
-                const targetSlot = Number(targetPlayerItemSlotElement.dataset.slot);
+
+            const elementsUnderCursor = document.elementsFromPoint(event.clientX, event.clientY);
+
+            const playerSlotElement = elementsUnderCursor.find((el) => el.classList.contains("item-slot") && el.closest(".player-inventory-section"));
+
+            const otherSlotElement = elementsUnderCursor.find((el) => el.classList.contains("item-slot") && el.closest(".other-inventory-section"));
+
+            if (playerSlotElement) {
+                const targetSlot = Number(playerSlotElement.dataset.slot);
                 if (targetSlot && !(targetSlot === this.currentlyDraggingSlot && this.dragStartInventoryType === "player")) {
                     this.handleDropOnPlayerSlot(targetSlot);
                 }
-            }
-            const targetOtherItemSlotElement = event.target.closest(".other-inventory .item-slot");
-            if (targetOtherItemSlotElement) {
-                const targetSlot = Number(targetOtherItemSlotElement.dataset.slot);
+            } else if (otherSlotElement) {
+                const targetSlot = Number(otherSlotElement.dataset.slot);
                 if (targetSlot && !(targetSlot === this.currentlyDraggingSlot && this.dragStartInventoryType === "other")) {
                     this.handleDropOnOtherSlot(targetSlot);
                 }
+            } else if (this.isOtherInventoryEmpty && this.dragStartInventoryType === "player") {
+                const isOverInventoryGrid = elementsUnderCursor.some((el) => el.classList.contains("inventory-grid") || el.classList.contains("item-grid"));
+
+                if (!isOverInventoryGrid) {
+                    this.handleDropOnInventoryContainer();
+                }
             }
-            const targetInventoryContainer = event.target.closest(".inventory-container");
-            if (targetInventoryContainer && !targetPlayerItemSlotElement && !targetOtherItemSlotElement) {
-                this.handleDropOnInventoryContainer();
-            }
+
             this.clearDragData();
         },
         handleDropOnPlayerSlot(targetSlot) {
@@ -458,8 +465,7 @@ const InventoryContainer = Vue.createApp({
                         if (totalWeightAfterTransfer > this.otherInventoryMaxWeight) {
                             throw new Error("Insufficient weight capacity in target inventory");
                         }
-                    }
-                    else if (targetInventoryType == "player") {
+                    } else if (targetInventoryType == "player") {
                         const totalWeightAfterTransfer = this.playerWeight + sourceItem.weight * amountToTransfer;
                         if (totalWeightAfterTransfer > this.maxWeight) {
                             throw new Error("Insufficient weight capacity in player inventory");
@@ -710,7 +716,7 @@ const InventoryContainer = Vue.createApp({
                             info: selectedItem.info,
                         });
                         if (!response.data) return;
-                        
+
                         this.playerInventory[selectedItem.slot].amount -= amountToGive;
                         if (this.playerInventory[selectedItem.slot].amount === 0) {
                             delete this.playerInventory[selectedItem.slot];
