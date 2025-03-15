@@ -2,7 +2,7 @@
 
 QBCore.Commands.Add('giveitem', 'Give An Item (Admin Only)', { { name = 'id', help = 'Player ID' }, { name = 'item', help = 'Name of the item (not a label)' }, { name = 'amount', help = 'Amount of items' } }, false, function(source, args)
     local id = tonumber(args[1])
-    local player = QBCore.Functions.GetPlayer(id)
+    local player = QBCore.Functions.GetPlayerByPlayerId(id)
     local amount = tonumber(args[3]) or 1
     local itemData = QBCore.Shared.Items[tostring(args[2]):lower()]
     if player then
@@ -84,11 +84,10 @@ end, 'god')
 
 QBCore.Commands.Add('clearinv', 'Clear Inventory (Admin Only)', { { name = 'id', help = 'Player ID' } }, false, function(source, args)
     local id = tonumber(args[1])
-    if not id then
-        ClearInventory(source)
-        return
-    end
-    ClearInventory(id)
+    if not id then return ClearInventory(source) end
+    local Player = QBCore.Functions.GetPlayerByPlayerId(id)
+    if not Player then return end
+    ClearInventory(Player.PlayerData.source)
 end, 'admin')
 
 -- Keybindings
