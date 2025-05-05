@@ -490,7 +490,7 @@ local function getIdentifier(inventoryId, src)
 end
 
 RegisterNetEvent('qb-inventory:server:SetInventoryData', function(fromInventory, toInventory, fromSlot, toSlot, fromAmount, toAmount)
-    if toInventory:find('shop-') then return end
+    if toInventory:find('shop%-') then return end
     if not fromInventory or not toInventory or not fromSlot or not toSlot or not fromAmount or not toAmount then return end
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
