@@ -392,8 +392,17 @@ function CanAddItem(identifier, item, amount)
     local slotsUsed, _ = GetSlots(identifier)
 
     if slotsUsed >= inventory.slots then
+        for _,v in pairs(items) do
+            if v.name == itemData.name then
+                print(('CanAddItem: Player %s has no free slots for item %s, but has %d of it already'):format(identifier, itemData.name, v.amount))
+                goto continue
+            end
+        end
         return false, 'slots'
     end
+
+    ::continue::
+    
     return true
 end
 
