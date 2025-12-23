@@ -130,25 +130,50 @@ exports('SaveInventory', SaveInventory)
 --- @param items table The items to set in the inventory.
 --- @param reason string The reason for setting the items.
 function SetInventory(identifier, items, reason)
+    if not identifier then return end
+    if not items or type(items) ~= 'table' then return end
+    
+    -- Validate items structure
+    local validatedItems = {}
+    for slot, item in pairs(items) do
+        if item and item.name then
+            local itemInfo = QBCore.Shared.Items[item.name:lower()]
+            if itemInfo then
+                -- Validate item data
+                local validatedItem = {
+                    name = itemInfo.name,
+                    amount = math.max(1, math.min(tonumber(item.amount) or 1, 10000)),
+                    info = item.info or {},
+                    type = itemInfo.type,
+                    label = itemInfo.label,
+                    description = itemInfo.description or '',
+                    weight = itemInfo.weight,
+                    unique = itemInfo.unique,
+                    useable = itemInfo.useable,
+                    image = itemInfo.image,
+                    slot = tonumber(slot) or 1
+                }
+                validatedItems[validatedItem.slot] = validatedItem
+            end
+        end
+    end
+    
     local player = QBCore.Functions.GetPlayer(identifier)
 
-    print('Setting inventory for ' .. identifier)
-
     if not player and not Inventories[identifier] and not Drops[identifier] then
-        print('SetInventory: Inventory not found')
         return
     end
 
     if player then
-        player.Functions.SetPlayerData('items', items)
+        player.Functions.SetPlayerData('items', validatedItems)
         if not player.Offline then
-            local logMessage = string.format('**%s (citizenid: %s | id: %s)** items set: %s', GetPlayerName(identifier), player.PlayerData.citizenid, identifier, json.encode(items))
+            local logMessage = string.format('**%s (citizenid: %s | id: %s)** items set: %s', GetPlayerName(identifier), player.PlayerData.citizenid, identifier, json.encode(validatedItems))
             TriggerEvent('qb-log:server:CreateLog', 'playerinventory', 'SetInventory', 'blue', logMessage)
         end
     elseif Drops[identifier] then
-        Drops[identifier].items = items
+        Drops[identifier].items = validatedItems
     elseif Inventories[identifier] then
-        Inventories[identifier].items = items
+        Inventories[identifier].items = validatedItems
     end
 
     local invName = player and GetPlayerName(identifier) .. ' (' .. identifier .. ')' or identifier
@@ -160,7 +185,7 @@ function SetInventory(identifier, items, reason)
         'Inventory Set',
         'blue',
         '**Inventory:** ' .. invName .. '\n' ..
-        '**Items:** ' .. json.encode(items) .. '\n' ..
+        '**Items:** ' .. json.encode(validatedItems) .. '\n' ..
         '**Reason:** ' .. setReason .. '\n' ..
         '**Resource:** ' .. resourceName
     )
@@ -176,18 +201,49 @@ exports('SetInventory', SetInventory)
 --- @param slot number (optional) The slot number of the item. If not provided, it will search by name.
 --- @return boolean|nil - Returns true if the value was set successfully, false otherwise.
 function SetItemData(source, itemName, key, val, slot)
-    if not itemName or not key then return false end
+    if not source or not itemName or not key then return false end
+    
+    -- Validate key is allowed (prevent setting critical properties)
+    local restrictedKeys = {'name', 'slot', 'label', 'weight', 'type', 'unique', 'useable', 'image', 'description'}
+    for _, restricted in ipairs(restrictedKeys) do
+        if key:lower() == restricted then
+            return false
+        end
+    end
+    
     local Player = QBCore.Functions.GetPlayer(source)
-    if not Player then return end
+    if not Player then return false end
+    
     local item
     if slot then
-        item = Player.PlayerData.items[tonumber(slot)]
+        slot = tonumber(slot)
+        if not slot or slot < 1 or slot > Config.MaxSlots then return false end
+        item = Player.PlayerData.items[slot]
         if not item or item.name:lower() ~= itemName:lower() then return false end
     else
         item = GetItemByName(source, itemName)
         if not item then return false end
     end
-    item[key] = val
+    
+    -- Only allow setting info sub-properties, not top-level item properties
+    if key == 'info' then
+        if type(val) ~= 'table' then return false end
+        item.info = val
+    elseif key:find('info%.') == 1 then
+        -- Setting nested info property
+        if not item.info then item.info = {} end
+        local infoKey = key:match('info%.(.+)')
+        item.info[infoKey] = val
+    elseif key == 'amount' then
+        -- Validate amount is reasonable
+        local amount = tonumber(val)
+        if not amount or amount < 0 or amount > 10000 then return false end
+        item.amount = amount
+    else
+        -- Disallow setting other properties
+        return false
+    end
+    
     Player.PlayerData.items[item.slot] = item
     Player.Functions.SetPlayerData('items', Player.PlayerData.items)
     return true
