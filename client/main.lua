@@ -35,9 +35,12 @@ function LoadAnimDict(dict)
     if HasAnimDictLoaded(dict) then return end
 
     RequestAnimDict(dict)
-    while not HasAnimDictLoaded(dict) do
+    local timeout = 0
+    while not HasAnimDictLoaded(dict) and timeout < 5000 do
         Wait(10)
+        timeout = timeout + 10
     end
+    return HasAnimDictLoaded(dict)
 end
 
 local function FormatWeaponAttachments(itemdata)
