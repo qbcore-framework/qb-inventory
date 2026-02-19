@@ -32,16 +32,39 @@ end
 -- Events
 
 RegisterNetEvent('qb-inventory:client:removeDropTarget', function(dropId)
-    while not NetworkDoesNetworkIdExist(dropId) do Wait(10) end
+    local timeout = 0
+    while not NetworkDoesNetworkIdExist(dropId) and timeout < 5000 do
+        Wait(10)
+        timeout = timeout + 10
+    end
+    if not NetworkDoesNetworkIdExist(dropId) then return end
+    
     local bag = NetworkGetEntityFromNetworkId(dropId)
-    while not DoesEntityExist(bag) do Wait(10) end
+    timeout = 0
+    while not DoesEntityExist(bag) and timeout < 5000 do
+        Wait(10)
+        timeout = timeout + 10
+    end
+    if not DoesEntityExist(bag) then return end
+    
     exports['qb-target']:RemoveTargetEntity(bag)
 end)
 
 RegisterNetEvent('qb-inventory:client:setupDropTarget', function(dropId)
-    while not NetworkDoesNetworkIdExist(dropId) do Wait(10) end
+    local timeout = 0
+    while not NetworkDoesNetworkIdExist(dropId) and timeout < 5000 do
+        Wait(10)
+        timeout = timeout + 10
+    end
+    if not NetworkDoesNetworkIdExist(dropId) then return end
+    
     local bag = NetworkGetEntityFromNetworkId(dropId)
-    while not DoesEntityExist(bag) do Wait(10) end
+    timeout = 0
+    while not DoesEntityExist(bag) and timeout < 5000 do
+        Wait(10)
+        timeout = timeout + 10
+    end
+    if not DoesEntityExist(bag) then return end
     local newDropId = 'drop-' .. dropId
     exports['qb-target']:AddTargetEntity(bag, {
         options = {
@@ -91,7 +114,16 @@ end)
 RegisterNUICallback('DropItem', function(item, cb)
     QBCore.Functions.TriggerCallback('qb-inventory:server:createDrop', function(dropId)
         if dropId then
-            while not NetworkDoesNetworkIdExist(dropId) do Wait(10) end
+            local timeout = 0
+            while not NetworkDoesNetworkIdExist(dropId) and timeout < 5000 do
+                Wait(10)
+                timeout = timeout + 10
+            end
+            if not NetworkDoesNetworkIdExist(dropId) then
+                cb(false)
+                return
+            end
+            
             local bag = NetworkGetEntityFromNetworkId(dropId)
             SetModelAsNoLongerNeeded(bag)
             PlaceObjectOnGroundProperly(bag)
@@ -108,7 +140,10 @@ end)
 
 CreateThread(function()
     while true do
+        local sleep = 1000 -- Default: check once per second when not holding
+        
         if HoldingDrop then
+            sleep = 50 -- Check 20x/sec when holding (still instant response)
             if IsControlJustPressed(0, 47) then
                 DetachEntity(bagObject, true, true)
                 local coords = GetEntityCoords(PlayerPedId())
@@ -123,6 +158,7 @@ CreateThread(function()
                 heldDrop = nil
             end
         end
-        Wait(0)
+        
+        Wait(sleep)
     end
 end)
