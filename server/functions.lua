@@ -855,7 +855,14 @@ function RemoveItem(identifier, item, amount, slot, reason)
         inventory[itemKey] = inventoryItem
     end
 
-    if player then player.Functions.SetPlayerData('items', inventory) end
+    if player then
+        player.Functions.SetPlayerData('items', inventory)
+        
+        local itemInfo = QBCore.Shared.Items[item:lower()]
+        if itemInfo and itemInfo.type == 'weapon' and inventoryItem.amount <= 0 then
+            checkWeapon(identifier, item)
+        end
+    end
 
     local invName = player and GetPlayerName(identifier) .. ' (' .. identifier .. ')' or identifier
     local removeReason = reason or 'No reason specified'
