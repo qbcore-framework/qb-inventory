@@ -544,7 +544,7 @@ RegisterNetEvent('qb-inventory:server:SetInventoryData', function(fromInventory,
         end
 
         if toItem and fromItem.name == toItem.name then
-            if TriggerHook('ItemMoved', 'Stacked', {
+            if TriggerHook('ItemMoved', 'stacked', {
                 fromInventory = fromInventoryData,
                 toInventory = toInventoryData,
                 fromId = fromId,
@@ -558,7 +558,7 @@ RegisterNetEvent('qb-inventory:server:SetInventoryData', function(fromInventory,
                 AddItem(toId, toItem.name, toAmount, toSlot, toItem.info, 'stacked item')
             end
         elseif not toItem and toAmount < fromAmount then
-            if TriggerHook('ItemMoved', 'Split', {
+            if TriggerHook('ItemMoved', 'split', {
                 fromInventory = fromInventoryData,
                 toInventory = toInventoryData,
                 fromId = fromId,
@@ -576,7 +576,7 @@ RegisterNetEvent('qb-inventory:server:SetInventoryData', function(fromInventory,
                 local fromItemAmount = fromItem.amount
                 local toItemAmount = toItem.amount
 
-                if TriggerHook('ItemMoved', 'Swapped', {
+                if TriggerHook('ItemMoved', 'swapped', {
                     fromInventory = fromInventoryData,
                     toInventory = toInventoryData,
                     fromId = fromId,
@@ -590,7 +590,7 @@ RegisterNetEvent('qb-inventory:server:SetInventoryData', function(fromInventory,
                     AddItem(fromId, toItem.name, toItemAmount, fromSlot, toItem.info, 'swapped item')
                 end
             else
-                if TriggerHook('ItemMoved', 'Moved', {
+                if TriggerHook('ItemMoved', 'moved', {
                     fromInventory = fromInventoryData,
                     toInventory = toInventoryData,
                     fromId = fromId,
