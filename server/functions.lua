@@ -890,42 +890,45 @@ end
 
 exports('GetInventory', GetInventory)
 
-function AddHook(Type, Callback)
-    if not Type or not Callback then return end
-    if type(Callback) == 'table' and not rawget(Callback, '__cfx_functionReference') then return end
+function AddHook(hookType, callback)
+    if not hookType or not callback then return end
+    if type(callback) == 'table' and not rawget(callback, '__cfx_functionReference') then return end
 
-    local HookType = Hooks[Type]
-    if not HookType then
-        print('AddHook: Invalid hook type', Type)
+    local hooks = Hooks[hookType]
+    if not hooks then
+        print('AddHook: Invalid hook type', hookType)
         return
     end
 
-    HookType[#HookType + 1] = Callback
+    local hookIdx = #hooks + 1
+    hooks[hookIdx] = callback
+
+    return hookIdx
 end
 
 exports('AddHook', AddHook)
 
-function RemoveHook(Type, HookID)
-    if not Type then return end
+function RemoveHook(hookType, hookIdx)
+    if not hookType then return end
     
-    local HookType = Hooks[Type]
-    if not HookType then return end
+    local hooks = Hooks[hookType]
+    if not hooks then return end
 
-    HookType[HookID] = nil
+    hooks[hookIdx] = nil
 end
 
 exports('RemoveHook', RemoveHook)
 
-function TriggerHook(Type, ...)
-    if not Type then return end
+function TriggerHook(hookType, ...)
+    if not hookType then return end
 
-    local HookType = Hooks[Type]
-    if not HookType then return end
+    local hooks = Hooks[hookType]
+    if not hooks then return end
 
-    for i = 1, #HookType do
+    for i = 1, #hooks do
         -- TODO: Add further logic here, like filtering.
-        local _, Response = pcall(HookType[i], ...)
-        if Response == false then
+        local _, response = pcall(hooks[i], ...)
+        if response == false then
             return false
         end
     end
