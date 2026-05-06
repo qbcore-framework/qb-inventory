@@ -277,6 +277,20 @@ div {
     text-align: center;
 }
 
+@keyframes item-error-shake {
+    0%   { transform: translateX(0); }
+    5%   { transform: translateX(-3px); }
+    15%  { transform: translateX(2px);  }
+    25%  { transform: translateX(-2px); }
+    35%  { transform: translateX(2px);  }
+    45%  { transform: translateX(-1px); }
+    50%  { transform: translateX(0); background-color: var(--error-container); }
+}
+
+.item-slot.error {
+    animation: item-error-shake 1s ease-out forwards;
+}
+
 /* Weight Bar Styles */
 
 .current-weight > p {
