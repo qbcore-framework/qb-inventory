@@ -185,6 +185,25 @@ const InventoryContainer = Vue.createApp({
                     }
                 }
             }
+
+            if (data.otherItems) {
+                this.otherInventory = {};
+                if (Array.isArray(data.otherItems)) {
+                    data.otherItems.forEach((item) => {
+                        if (item && item.slot) {
+                            this.otherInventory[item.slot] = item;
+                        }
+                    });
+                } else if (typeof data.otherItems === "object") {
+                    for (const key in data.otherItems) {
+                        const item = data.otherItems[key];
+                        if (item && item.slot) {
+                            this.otherInventory[item.slot] = item;
+                        }
+                    }
+                }
+            }
+
         },
         async closeInventory() {
             this.clearDragData();
