@@ -149,7 +149,7 @@ div {
     align-content: flex-start;
     width: 100%;
     box-sizing: border-box;
-    justify-content: space-between;
+    justify-content: flex-start;
 }
 
 .item-slot {
@@ -157,7 +157,7 @@ div {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: calc(20% - 2px);
+    width: calc(20% - 1.6px);
     height: 10vh;
     background-color: rgba(30, 30, 30, 0.6);
     border: 1px solid rgba(80, 80, 80, 0.5);
