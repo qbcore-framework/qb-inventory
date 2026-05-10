@@ -542,7 +542,7 @@ const InventoryContainer = Vue.createApp({
                     const targetInventory = this.getInventoryByType("player");
                     const amountToTransfer = transferAmount !== null ? transferAmount : sourceItem.amount;
                     if (sourceItem.amount < amountToTransfer) {
-                        this.inventoryError(sourceSlot);
+                        this.inventoryError(sourceSlot, "other");
                         return;
                     }
                     let targetItem = targetInventory[targetSlot];
