@@ -46,7 +46,7 @@ RegisterNetEvent('qb-inventory:client:setupDropTarget', function(dropId)
     exports['qb-target']:AddTargetEntity(bag, {
         options = {
             {
-                icon = 'fas fa-backpack',
+                icon = 'fa-solid fa-suitcase',
                 label = Lang:t('menu.o_bag'),
                 action = function()
                     TriggerServerEvent('qb-inventory:server:openDrop', newDropId)
@@ -55,13 +55,13 @@ RegisterNetEvent('qb-inventory:client:setupDropTarget', function(dropId)
             },
             {
                 icon = 'fas fa-hand-pointer',
-                label = 'Pick up bag',
+                label = Lang:t('menu.p_bag'),
                 action = function()
                     if IsPedArmed(PlayerPedId(), 4) then
-                        return QBCore.Functions.Notify("You can not be holding a Gun and a Bag!", "error", 5500)
+                        return QBCore.Functions.Notify(Lang:t('notify.nogunbag'), "error", 5500)
                     end
                     if HoldingDrop then
-                        return QBCore.Functions.Notify("Your already holding a bag, Go Drop it!", "error", 5500)
+                        return QBCore.Functions.Notify(Lang:t('notify.hasbag'), "error", 5500)
                     end
                     AttachEntityToEntity(
                         bag,
@@ -78,7 +78,7 @@ RegisterNetEvent('qb-inventory:client:setupDropTarget', function(dropId)
                     bagObject = bag
                     HoldingDrop = true
                     heldDrop = newDropId
-                    exports['qb-core']:DrawText('Press [G] to drop the bag')
+                    exports['qb-core']:DrawText(Lang:t('interaction.drop_bag'))
                 end,
             }
         },

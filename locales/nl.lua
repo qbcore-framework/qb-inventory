@@ -31,6 +31,11 @@ local Translations = {
         ['cgitem'] = 'Kan item niet geven!',
         ['idne'] = 'Item bestaat niet',
         ['pdne'] = 'Speler is niet online',
+        ['nogunbag'] = 'Je kunt niet tegelijk een wapen en een tas vasthouden!',
+        ['hasbag'] = 'Je hebt al een tas vast, ga hem eerst neerleggen!',
+        ['invinuse'] = 'Deze inventaris is momenteel in gebruik',
+        ['notenoughstock'] = 'Je kunt niet meer kopen dan er momenteel op voorraad is',
+        ['canthold'] = 'Je kunt dit item niet dragen',
     },
     inf_mapping = {
         ['opn_inv'] = 'Open Inventaris',
@@ -41,10 +46,12 @@ local Translations = {
         ['vending'] = 'Verkoopautomaat',
         ['bin'] = 'Open Prullenbak',
         ['craft'] = 'Maak',
-        ['o_bag'] = 'Open Tas',
+        ['o_bag'] = 'Zak openen',
+        ['p_bag'] = 'Tas ophalen',
     },
     interaction = {
         ['craft'] = '~g~E~w~ - Maken',
+        ['drop_bag'] = 'Druk op [G] om de zak te laten vallen',
     },
 }
 

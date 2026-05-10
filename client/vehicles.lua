@@ -5,8 +5,9 @@ local function IsBackEngine(vehModel)
 end
 
 local function OpenTrunk(vehicle)
-    LoadAnimDict('amb@prop_human_bum_bin@idle_b')
-    TaskPlayAnim(PlayerPedId(), 'amb@prop_human_bum_bin@idle_b', 'idle_d', 4.0, 4.0, -1, 50, 0, false, false, false)
+    local animDict = 'amb@prop_human_bum_bin@idle_b'
+    QBCore.Functions.RequestAnimDict(animDict)
+    TaskPlayAnim(PlayerPedId(), animDict, 'idle_d', 4.0, 4.0, -1, 50, 0, false, false, false)
     if IsBackEngine(GetEntityModel(vehicle)) then
         SetVehicleDoorOpen(vehicle, 4, false, false)
     else
@@ -17,8 +18,9 @@ end
 function CloseTrunk()
     local vehicle, distance = QBCore.Functions.GetClosestVehicle()
     if vehicle == 0 or distance > 5 then return end
-    LoadAnimDict('amb@prop_human_bum_bin@idle_b')
-    TaskPlayAnim(PlayerPedId(), 'amb@prop_human_bum_bin@idle_b', 'exit', 4.0, 4.0, -1, 50, 0, false, false, false)
+    local animDict = 'amb@prop_human_bum_bin@idle_b'
+    QBCore.Functions.RequestAnimDict(animDict)
+    TaskPlayAnim(PlayerPedId(), animDict, 'exit', 4.0, 4.0, -1, 50, 0, false, false, false)
     if IsBackEngine(GetEntityModel(vehicle)) then
         SetVehicleDoorShut(vehicle, 4, false)
     else
