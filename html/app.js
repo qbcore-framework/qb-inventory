@@ -204,6 +204,8 @@ const InventoryContainer = Vue.createApp({
                 }
             }
 
+            if (data.errorSlot)
+                this.inventoryError(data.errorSlot, data.errorInventory); // pass from inventory for from errors
         },
         async closeInventory() {
             this.clearDragData();
