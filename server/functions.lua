@@ -933,3 +933,40 @@ function TriggerHook(hookType, ...)
         end
     end
 end
+
+local function resolveInventoryContext(inventory, id, player)
+    local inventoryType = (inventory == 'player' and 'player') or (Drops[id] and 'drop') or inventory:match('(trunk)%-') or inventory:match('(glovebox)%-')
+    if inventoryType == 'player' then
+        player = player or exports['qb-core']:GetPlayer(id)
+        return inventoryType, {
+            slots = Config.MaxSlots,
+            maxweight = Config.MaxWeight,
+            items = player?.PlayerData?.items or {},
+        }
+    end
+    if inventoryType == 'drop' then return inventoryType, Drops[id] end
+
+    return inventoryType, Inventories[id]
+end
+
+local function buildMovedData(fromInventory, toInventory, fromId, toId, fromSlot, toSlot, toAmount, fromPlayer, toPlayer)
+    local fromType, fromInventoryData = resolveInventoryContext(fromInventory, fromId, fromPlayer)
+    local toType, toInventoryData = resolveInventoryContext(toInventory, toId, toPlayer)
+    return {
+        fromType = fromType,
+        toType = toType,
+        fromInventory = fromInventoryData,
+        toInventory = toInventoryData,
+        fromId = fromId,
+        toId = toId,
+        fromSlot = fromSlot,
+        toSlot = toSlot,
+        amount = toAmount,
+    }
+end
+
+function buildHookData(hookType, ...)
+    if hookType == 'ItemMoved' then
+        return buildMovedData(...)
+    end
+end
