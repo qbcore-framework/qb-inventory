@@ -31,15 +31,6 @@ end)
 
 -- Functions
 
-function LoadAnimDict(dict)
-    if HasAnimDictLoaded(dict) then return end
-
-    RequestAnimDict(dict)
-    while not HasAnimDictLoaded(dict) do
-        Wait(10)
-    end
-end
-
 local function FormatWeaponAttachments(itemdata)
     if not itemdata.info or not itemdata.info.attachments or #itemdata.info.attachments == 0 then
         return {}
@@ -180,8 +171,9 @@ end)
 
 RegisterNetEvent('qb-inventory:client:giveAnim', function()
     if IsPedInAnyVehicle(PlayerPedId(), false) then return end
-    LoadAnimDict('mp_common')
-    TaskPlayAnim(PlayerPedId(), 'mp_common', 'givetake1_b', 8.0, 1.0, -1, 16, 0, false, false, false)
+    local animDict = 'mp_common'
+    QBCore.Functions.RequestAnimDict(animDict)
+    TaskPlayAnim(PlayerPedId(), animDict, 'givetake1_b', 8.0, 1.0, -1, 16, 0, false, false, false)
 end)
 
 -- NUI Callbacks

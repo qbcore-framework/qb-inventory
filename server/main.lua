@@ -358,13 +358,13 @@ QBCore.Functions.CreateCallback('qb-inventory:server:attemptPurchase', function(
     end
 
     if amount > shopInfo.items[itemInfo.slot].amount or shopInfo.items[itemInfo.slot].amount <= 0 then
-        TriggerClientEvent('QBCore:Notify', source, 'Cannot purchase larger quantity than currently in stock', 'error')
+        TriggerClientEvent('QBCore:Notify', source, Lang:t('notify.notenoughstock'), 'error')
         cb(false)
         return
     end
 
     if not CanAddItem(source, itemInfo.name, amount) then
-        TriggerClientEvent('QBCore:Notify', source, 'Cannot hold item', 'error')
+        TriggerClientEvent('QBCore:Notify', source, Lang:t('notify.canthold'), 'error')
         cb(false)
         return
     end
@@ -377,7 +377,7 @@ QBCore.Functions.CreateCallback('qb-inventory:server:attemptPurchase', function(
         TriggerEvent('qb-shops:server:UpdateShopItems', shop, itemInfo, amount)
         cb(true)
     else
-        TriggerClientEvent('QBCore:Notify', source, 'You do not have enough money', 'error')
+        TriggerClientEvent('QBCore:Notify', source, Lang:t('notify.notencash'), 'error')
         cb(false)
     end
 end)

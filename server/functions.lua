@@ -627,7 +627,7 @@ function OpenInventory(source, identifier, data)
     local inventory = Inventories[identifier]
 
     if inventory and inventory.isOpen then
-        TriggerClientEvent('QBCore:Notify', source, 'This inventory is currently in use', 'error')
+        TriggerClientEvent('QBCore:Notify', source, Lang:t('notify.invinuse'), 'error')
         return
     end
 
@@ -857,7 +857,7 @@ function RemoveItem(identifier, item, amount, slot, reason)
 
     if player then
         player.Functions.SetPlayerData('items', inventory)
-        
+
         local itemInfo = QBCore.Shared.Items[item:lower()]
         if itemInfo and itemInfo.type == 'weapon' and inventoryItem.amount <= 0 then
             checkWeapon(identifier, item)
