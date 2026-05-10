@@ -965,8 +965,23 @@ local function buildMovedData(fromInventory, toInventory, fromId, toId, fromSlot
     }
 end
 
+local function buildShopData(shopType, shopId, itemSlot, amount, toId)
+    local shopData = RegisteredShops[shopId]
+    local itemData = shopData.items[itemSlot]
+    return {
+        shopType = shopType,
+        shop = shopData,
+        toId = toId,
+        item = itemData,
+        amount = amount,
+        total = itemData.price * amount,
+    }
+end
+
 function buildHookData(hookType, ...)
     if hookType == 'ItemMoved' then
         return buildMovedData(...)
+    elseif hookType == 'ItemBought' then
+        return buildShopData(...)
     end
 end
