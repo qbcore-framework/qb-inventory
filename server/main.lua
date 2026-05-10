@@ -434,6 +434,9 @@ QBCore.Functions.CreateCallback('qb-inventory:server:giveItem', function(source,
         return
     end
 
+    local hookData = buildHookData('ItemMoved', 'player', 'player', source, target, slot, nil, amount, player, Target)
+    if TriggerHook('ItemMoved', 'given', hookData) == false then cb(false) return end
+
     local removeItem = RemoveItem(source, item, giveAmount, slot, 'Item given to ID #' .. target)
     if not removeItem then
         cb(false)
