@@ -1,14 +1,21 @@
 -- Local Functions
 
-local function InitializeInventory(inventoryId, data)
-    Inventories[inventoryId] = {
-        items = {},
-        isOpen = false,
-        label = data and data.label or inventoryId,
-        maxweight = data and data.maxweight or Config.StashSize.maxweight,
-        slots = data and data.slots or Config.StashSize.slots
-    }
-    return Inventories[inventoryId]
+--- Creates an inventory if missing, then fills in any metadata the caller did not supply.
+--- @param identifier string
+--- @param data table|nil Optional metadata: label, maxweight, slots.
+--- @return table - The inventory.
+local function ResolveInventory(identifier, data)
+    local inventory = Inventories[identifier]
+    if not inventory then
+        inventory = { items = {}, isOpen = false }
+        Inventories[identifier] = inventory
+    end
+
+    inventory.label = (data and data.label) or inventory.label or identifier
+    inventory.maxweight = (data and data.maxweight) or inventory.maxweight or Config.StashSize.maxweight
+    inventory.slots = (data and data.slots) or inventory.slots or Config.StashSize.slots
+
+    return inventory
 end
 
 local function GetFirstFreeSlot(items, maxSlots)
@@ -46,6 +53,27 @@ local function SetupShopItems(shopItems)
         end
     end
     return items
+end
+
+--- Resolves an identifier to its items and capacity.
+--- @param identifier string|number The identifier of a player, inventory or drop.
+--- @param requireCapacity boolean|nil Refuse inventories whose capacity is not set yet.
+--- @return table|nil items, number|nil maxweight, number|nil slots, table|nil player
+local function ResolveTarget(identifier, requireCapacity)
+    local player = exports['qb-core']:GetPlayer(identifier)
+    if player then
+        return player.PlayerData.items, Config.MaxWeight, Config.MaxSlots, player
+    end
+
+    local inventory = Inventories[identifier] or Drops[identifier]
+    if not inventory then return nil end
+
+    if requireCapacity and (not inventory.maxweight or not inventory.slots) then
+        print(('Inventory %s has no capacity set, create or open it first'):format(identifier))
+        return nil
+    end
+
+    return inventory.items, inventory.maxweight, inventory.slots
 end
 
 -- Exported Functions
@@ -306,20 +334,9 @@ exports('GetItemsByName', GetItemsByName)
 
 --- Retrieves the total count of used and free slots for a player or an inventory.
 --- @param identifier number|string The player's identifier or the identifier of an inventory or drop.
---- @return number, number - The total count of used slots and the total count of free slots. If no inventory is found, returns 0 and the maximum slots.
+--- @return number, number|nil - The total count of used slots and the total count of free slots. If no usable inventory is found, returns 0 and nil.
 function GetSlots(identifier)
-    local inventory, maxSlots
-    local player = exports['qb-core']:GetPlayer(identifier)
-    if player then
-        inventory = player.PlayerData.items
-        maxSlots = Config.MaxSlots
-    elseif Inventories[identifier] then
-        inventory = Inventories[identifier].items
-        maxSlots = Inventories[identifier].slots
-    elseif Drops[identifier] then
-        inventory = Drops[identifier].items
-        maxSlots = Drops[identifier].slots
-    end
+    local inventory, _, maxSlots = ResolveTarget(identifier, true)
     if not inventory then return 0, maxSlots end
     local slotsUsed = 0
     for _, v in pairs(inventory) do
@@ -365,41 +382,29 @@ exports('GetItemCount', GetItemCount)
 --- @return boolean - Returns true if the item can be added, false otherwise.
 --- @return string|nil - Returns a string indicating the reason why the item cannot be added (e.g., 'weight' or 'slots'), or nil if it can be added.
 function CanAddItem(identifier, item, amount)
-    local Player = exports['qb-core']:GetPlayer(identifier)
-
     local itemData = QBCore.Shared.Items[item:lower()]
     if not itemData then return false end
 
-    local inventory, items
-    if Player then
-        inventory = {
-            maxweight = Config.MaxWeight,
-            slots = Config.MaxSlots
-        }
-        items = Player.PlayerData.items
-    elseif Inventories[identifier] then
-        inventory = Inventories[identifier]
-        items = Inventories[identifier].items
-    end
+    local items, maxweight, slots = ResolveTarget(identifier, true)
 
-    if not inventory then
-        print('CanAddItem: Inventory not found')
+    if not items then
+        print(('CanAddItem: Inventory not found: %s'):format(identifier))
         return false
     end
 
     local weight = itemData.weight * amount
     local totalWeight = GetTotalWeight(items) + weight
-    if totalWeight > inventory.maxweight then
+    if totalWeight > maxweight then
         return false, 'weight'
     end
 
     local slotsUsed, _ = GetSlots(identifier)
 
-    if slotsUsed >= inventory.slots then
+    if slotsUsed >= slots then
         for _, v in pairs(items) do
             if v.name == itemData.name then
                 if itemData.unique then break end
-                print(('CanAddItem: Player %s has no free slots for item %s, but has %d of it already'):format(identifier, itemData.name, v.amount))
+                print(('CanAddItem: Inventory %s has no free slots for item %s, but has %d of it already'):format(identifier, itemData.name, v.amount))
                 goto continue
             end
         end
@@ -646,10 +651,7 @@ function OpenInventory(source, identifier, data)
         return
     end
 
-    if not inventory then inventory = InitializeInventory(identifier, data) end
-    inventory.maxweight = (data and data.maxweight) or (inventory and inventory.maxweight) or Config.StashSize.maxweight
-    inventory.slots = (data and data.slots) or (inventory and inventory.slots) or Config.StashSize.slots
-    inventory.label = (data and data.label) or (inventory and inventory.label) or identifier
+    inventory = ResolveInventory(identifier, data)
     local hookData = buildHookData('InventoryOpened', source, QBPlayer, identifier, identifier, inventory)
     if TriggerHook('InventoryOpened', GetInventoryType(identifier), hookData) == false then return end
     inventory.isOpen = source
@@ -667,13 +669,12 @@ end
 
 exports('OpenInventory', OpenInventory)
 
---- Creates a new inventory and returns the inventory object.
+--- Creates an inventory, or fills in the metadata of one that already exists.
 --- @param identifier string The identifier of the inventory to create.
---- @param data table Additional data for initializing the inventory.
+--- @param data table|nil Optional metadata: label, maxweight, slots.
 function CreateInventory(identifier, data)
-    if Inventories[identifier] then return end
-    if not identifier then return end
-    Inventories[identifier] = InitializeInventory(identifier, data)
+    if type(identifier) ~= 'string' then return end
+    ResolveInventory(identifier, data)
 end
 
 exports('CreateInventory', CreateInventory)
@@ -712,25 +713,10 @@ function AddItem(identifier, item, amount, slot, info, reason, isInternalMove)
         print('AddItem: Invalid item')
         return false
     end
-    local inventory, inventoryWeight, inventorySlots
-    local player = exports['qb-core']:GetPlayer(identifier)
-
-    if player then
-        inventory = player.PlayerData.items
-        inventoryWeight = Config.MaxWeight
-        inventorySlots = Config.MaxSlots
-    elseif Inventories[identifier] then
-        inventory = Inventories[identifier].items
-        inventoryWeight = Inventories[identifier].maxweight
-        inventorySlots = Inventories[identifier].slots
-    elseif Drops[identifier] then
-        inventory = Drops[identifier].items
-        inventoryWeight = Drops[identifier].maxweight
-        inventorySlots = Drops[identifier].slots
-    end
+    local inventory, inventoryWeight, inventorySlots, player = ResolveTarget(identifier, true)
 
     if not inventory then
-        print('AddItem: Inventory not found')
+        print(('AddItem: Inventory not found: %s'):format(identifier))
         return false
     end
 
@@ -826,19 +812,10 @@ function RemoveItem(identifier, item, amount, slot, reason, isInternalMove)
         return false
     end
 
-    local inventory
-    local player = exports['qb-core']:GetPlayer(identifier)
-
-    if player then
-        inventory = player.PlayerData.items
-    elseif Inventories[identifier] then
-        inventory = Inventories[identifier].items
-    elseif Drops[identifier] then
-        inventory = Drops[identifier].items
-    end
+    local inventory, _, _, player = ResolveTarget(identifier)
 
     if not inventory then
-        print('RemoveItem: Inventory not found')
+        print(('RemoveItem: Inventory not found: %s'):format(identifier))
         return false
     end
 
