@@ -157,7 +157,7 @@ end)
 
 -- Functions
 
---- Writes an inventory's items to the database. Metadata is not persisted.
+--- Writes an inventory's items to the database.
 --- @param identifier string The identifier of the inventory.
 function SaveInventoryItems(identifier)
     local inventory = Inventories[identifier]
