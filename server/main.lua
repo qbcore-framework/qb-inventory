@@ -55,7 +55,7 @@ end)
 AddEventHandler('txAdmin:events:serverShuttingDown', function()
     for inventory, data in pairs(Inventories) do
         if data.isOpen then
-            MySQL.prepare('INSERT INTO inventories (identifier, items) VALUES (?, ?) ON DUPLICATE KEY UPDATE items = ?', { inventory, json.encode(data.items), json.encode(data.items) })
+            SaveInventoryItems(inventory)
         end
     end
 end)
@@ -149,6 +149,15 @@ end)
 
 -- Functions
 
+--- Writes an inventory's items to the database. Metadata is not persisted.
+--- @param identifier string The identifier of the inventory.
+function SaveInventoryItems(identifier)
+    local inventory = Inventories[identifier]
+    if not inventory then return end
+    local items = json.encode(inventory.items)
+    MySQL.prepare('INSERT INTO inventories (identifier, items) VALUES (?, ?) ON DUPLICATE KEY UPDATE items = ?', { identifier, items, items })
+end
+
 function checkWeapon(source, item)
     local currentWeapon = item
     local ped = GetPlayerPed(source)
@@ -207,7 +216,7 @@ RegisterNetEvent('qb-inventory:server:closeInventory', function(inventory)
     end
     if not Inventories[inventory] then return end
     Inventories[inventory].isOpen = false
-    MySQL.prepare('INSERT INTO inventories (identifier, items) VALUES (?, ?) ON DUPLICATE KEY UPDATE items = ?', { inventory, json.encode(Inventories[inventory].items), json.encode(Inventories[inventory].items) })
+    SaveInventoryItems(inventory)
 end)
 
 RegisterNetEvent('qb-inventory:server:useItem', function(item)
