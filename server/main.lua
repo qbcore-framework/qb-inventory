@@ -132,6 +132,14 @@ AddEventHandler('onResourceStart', function(resourceName)
 end)
 
 AddEventHandler('onResourceStop', function(resourceName)
+    if resourceName == GetCurrentResourceName() then
+        for inventory, data in pairs(Inventories) do
+            if data.isOpen then
+                SaveInventoryItems(inventory)
+            end
+        end
+    end
+
     for _, eventData in pairs(Events) do
         for i = 1, #eventData.hooks do
             if eventData.hooks[i] and eventData.hooks[i].resource == resourceName then

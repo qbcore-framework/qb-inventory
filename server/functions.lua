@@ -779,6 +779,8 @@ function AddItem(identifier, item, amount, slot, info, reason, isInternalMove)
     end
 
     if player then player.SetPlayerData('items', inventory) end
+    local stash = Inventories[identifier]
+    if stash and not stash.isOpen then SaveInventoryItems(identifier) end
     if hookData then TriggerListener('ItemAdded', pendingItem.type, hookData) end
     local invName = player and GetPlayerName(identifier) .. ' (' .. identifier .. ')' or identifier
     local addReason = reason or 'No reason specified'
@@ -870,6 +872,9 @@ function RemoveItem(identifier, item, amount, slot, reason, isInternalMove)
             checkWeapon(identifier, item)
         end
     end
+
+    local stash = Inventories[identifier]
+    if stash and not stash.isOpen then SaveInventoryItems(identifier) end
 
     if hookData then TriggerListener('ItemRemoved', inventoryItem.type, hookData) end
 
