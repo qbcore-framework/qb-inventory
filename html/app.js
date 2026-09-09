@@ -559,7 +559,7 @@ const InventoryContainer = Vue.createApp({
                                     amount: amountToTransfer,
                                 };
                             } else {
-                                this.inventoryError(sourceSlot);
+                                this.inventoryError(sourceSlot, "other");
                                 return;
                             }
                         }
@@ -571,10 +571,10 @@ const InventoryContainer = Vue.createApp({
                         delete sourceInventory[sourceSlot];
                     }
                 } else {
-                    this.inventoryError(sourceSlot);
+                    this.inventoryError(sourceSlot, "other");
                 }
             } catch (error) {
-                this.inventoryError(sourceSlot);
+                this.inventoryError(sourceSlot, "other");
             }
         },
         async dropItem(item, quantity) {
