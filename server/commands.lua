@@ -121,14 +121,14 @@ RegisterCommand('inventory', function(source)
         if not inventory then return OpenInventory(source) end
         if inventory:find('trunk%-') then
             OpenInventory(source, inventory, {
-                slots = VehicleStorage[class] and VehicleStorage[class].trunkSlots or VehicleStorage.default.slots,
-                maxweight = VehicleStorage[class] and VehicleStorage[class].trunkWeight or VehicleStorage.default.maxWeight
+                slots = VehicleStorage[class] and VehicleStorage[class].trunkSlots or VehicleStorage.default.trunkSlots,
+                maxweight = VehicleStorage[class] and VehicleStorage[class].trunkWeight or VehicleStorage.default.trunkWeight
             })
             return
         elseif inventory:find('glovebox%-') then
             OpenInventory(source, inventory, {
-                slots = VehicleStorage[class] and VehicleStorage[class].gloveboxSlots or VehicleStorage.default.slots,
-                maxweight = VehicleStorage[class] and VehicleStorage[class].gloveboxWeight or VehicleStorage.default.maxWeight
+                slots = VehicleStorage[class] and VehicleStorage[class].gloveboxSlots or VehicleStorage.default.gloveboxSlots,
+                maxweight = VehicleStorage[class] and VehicleStorage[class].gloveboxWeight or VehicleStorage.default.gloveboxWeight
             })
             return
         end
