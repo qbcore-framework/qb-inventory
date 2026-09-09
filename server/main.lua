@@ -55,7 +55,7 @@ end)
 AddEventHandler('txAdmin:events:serverShuttingDown', function()
     for inventory, data in pairs(Inventories) do
         if data.isOpen then
-            MySQL.prepare('INSERT INTO inventories (identifier, items) VALUES (?, ?) ON DUPLICATE KEY UPDATE items = ?', { inventory, json.encode(data.items), json.encode(data.items) })
+            SaveInventoryItems(inventory)
         end
     end
 end)
@@ -132,6 +132,14 @@ AddEventHandler('onResourceStart', function(resourceName)
 end)
 
 AddEventHandler('onResourceStop', function(resourceName)
+    if resourceName == GetCurrentResourceName() then
+        for inventory, data in pairs(Inventories) do
+            if data.isOpen then
+                SaveInventoryItems(inventory)
+            end
+        end
+    end
+
     for _, eventData in pairs(Events) do
         for i = 1, #eventData.hooks do
             if eventData.hooks[i] and eventData.hooks[i].resource == resourceName then
@@ -148,6 +156,15 @@ AddEventHandler('onResourceStop', function(resourceName)
 end)
 
 -- Functions
+
+--- Writes an inventory's items to the database.
+--- @param identifier string The identifier of the inventory.
+function SaveInventoryItems(identifier)
+    local inventory = Inventories[identifier]
+    if not inventory then return end
+    local items = json.encode(inventory.items)
+    MySQL.prepare('INSERT INTO inventories (identifier, items) VALUES (?, ?) ON DUPLICATE KEY UPDATE items = ?', { identifier, items, items })
+end
 
 function checkWeapon(source, item)
     local currentWeapon = item
@@ -207,7 +224,7 @@ RegisterNetEvent('qb-inventory:server:closeInventory', function(inventory)
     end
     if not Inventories[inventory] then return end
     Inventories[inventory].isOpen = false
-    MySQL.prepare('INSERT INTO inventories (identifier, items) VALUES (?, ?) ON DUPLICATE KEY UPDATE items = ?', { inventory, json.encode(Inventories[inventory].items), json.encode(Inventories[inventory].items) })
+    SaveInventoryItems(inventory)
 end)
 
 RegisterNetEvent('qb-inventory:server:useItem', function(item)
