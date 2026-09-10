@@ -332,6 +332,10 @@ end)
 
 RegisterNetEvent('qb-inventory:server:updateDrop', function(dropId, coords)
     Drops[dropId].coords = coords
+    local entity = NetworkGetEntityFromNetworkId(Drops[dropId].entityId)
+    if DoesEntityExist(entity) then
+        SetEntityRoutingBucket(entity, GetPlayerRoutingBucket(source))
+    end
 end)
 
 RegisterNetEvent('qb-inventory:server:snowball', function(action)
@@ -364,6 +368,7 @@ QBCore.Functions.CreateCallback('qb-inventory:server:createDrop', function(sourc
         if item.type == 'weapon' then checkWeapon(src, item) end
         TaskPlayAnim(playerPed, 'pickup_object', 'pickup_low', 8.0, -8.0, 2000, 0, 0, false, false, false)
         local bag = CreateObjectNoOffset(Config.ItemDropObject, playerCoords.x + 0.5, playerCoords.y + 0.5, playerCoords.z, true, true, false)
+        SetEntityRoutingBucket(bag, GetPlayerRoutingBucket(src))
         local dropId = NetworkGetNetworkIdFromEntity(bag)
         local newDropId = 'drop-' .. dropId
         local itemsTable = setmetatable({ item }, {
