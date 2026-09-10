@@ -46,9 +46,21 @@ end)
 -- Handlers
 
 AddEventHandler('playerDropped', function()
+    local src = source
     for _, inv in pairs(Inventories) do
-        if inv.isOpen == source then
+        if inv.isOpen == src then
             inv.isOpen = false
+        end
+    end
+    for _, drop in pairs(Drops) do
+        if drop.isOpen == src then
+            drop.isOpen = false
+        end
+    end
+    InventoryViewers[src] = nil
+    for targetId, viewer in pairs(InventoryViewers) do
+        if viewer == src then
+            InventoryViewers[targetId] = nil
         end
     end
 end)
