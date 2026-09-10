@@ -538,6 +538,7 @@ function OpenInventoryById(source, targetId)
     local hookData = buildHookData('InventoryOpened', source, QBPlayer, targetId, TargetPlayer)
     if TriggerHook('InventoryOpened', 'player', hookData) == false then return end
     Wait(1500)
+    InventoryViewers[tonumber(targetId)] = source
     Player(targetId).state.inv_busy = true
     TriggerClientEvent('qb-inventory:client:openInventory', source, playerItems, formattedInventory)
     TriggerListener('InventoryOpened', 'player', hookData)

@@ -1,6 +1,7 @@
 QBCore = exports['qb-core']:GetCoreObject()
 Inventories = {}
 Drops = {}
+InventoryViewers = {}
 RegisteredShops = {}
 Events = {
     ItemMoved = { hooks = {}, listeners = {} },
@@ -45,9 +46,21 @@ end)
 -- Handlers
 
 AddEventHandler('playerDropped', function()
+    local src = source
     for _, inv in pairs(Inventories) do
-        if inv.isOpen == source then
+        if inv.isOpen == src then
             inv.isOpen = false
+        end
+    end
+    for _, drop in pairs(Drops) do
+        if drop.isOpen == src then
+            drop.isOpen = false
+        end
+    end
+    InventoryViewers[src] = nil
+    for targetId, viewer in pairs(InventoryViewers) do
+        if viewer == src then
+            InventoryViewers[targetId] = nil
         end
     end
 end)
@@ -206,8 +219,9 @@ RegisterNetEvent('qb-inventory:server:closeInventory', function(inventory)
     if not QBPlayer then return end
     Player(source).state.inv_busy = false
     if inventory:find('shop%-') then return end
-    if inventory:find('otherplayer%-') then
-        local targetId = tonumber(inventory:match('otherplayer%-(.+)'))
+    if inventory:find('^otherplayer%-') then
+        local targetId = tonumber(inventory:match('^otherplayer%-(.+)'))
+        InventoryViewers[targetId] = nil
         Player(targetId).state.inv_busy = false
         return
     end
@@ -312,7 +326,7 @@ RegisterNetEvent('qb-inventory:server:openDrop', function(dropId)
         slots = drop.slots,
         inventory = drop.items
     }
-    drop.isOpen = true
+    drop.isOpen = src
     TriggerClientEvent('qb-inventory:client:openInventory', source, Player.PlayerData.items, formattedInventory)
 end)
 
@@ -371,7 +385,7 @@ QBCore.Functions.CreateCallback('qb-inventory:server:createDrop', function(sourc
                 coords = playerCoords,
                 maxweight = Config.DropSize.maxweight,
                 slots = Config.DropSize.slots,
-                isOpen = true
+                isOpen = src
             }
             TriggerClientEvent('qb-inventory:client:setupDropTarget', -1, dropId)
         else
@@ -530,13 +544,13 @@ local function getItem(inventoryId, src, slot)
         if Player and Player.PlayerData.items then
             items = Player.PlayerData.items
         end
-    elseif inventoryId:find('otherplayer-') then
-        local targetId = tonumber(inventoryId:match('otherplayer%-(.+)'))
+    elseif inventoryId:find('^otherplayer%-') then
+        local targetId = tonumber(inventoryId:match('^otherplayer%-(.+)'))
         local targetPlayer = QBCore.Functions.GetPlayer(targetId)
         if targetPlayer and targetPlayer.PlayerData.items then
             items = targetPlayer.PlayerData.items
         end
-    elseif inventoryId:find('drop-') == 1 then
+    elseif inventoryId:find('^drop%-') then
         if Drops[inventoryId] and Drops[inventoryId]['items'] then
             items = Drops[inventoryId]['items']
         end
@@ -554,24 +568,42 @@ local function getItem(inventoryId, src, slot)
     return nil
 end
 
+--- @param inventoryId string The inventory the client named.
+--- @param src number The player's server ID.
+--- @return boolean
+local function isOpenFor(inventoryId, src)
+    if inventoryId == 'player' then
+        return true
+    elseif inventoryId:find('^otherplayer%-') then
+        local targetId = tonumber(inventoryId:match('^otherplayer%-(.+)'))
+        return targetId ~= nil and InventoryViewers[targetId] == src
+    elseif inventoryId:find('^drop%-') then
+        return Drops[inventoryId] ~= nil and Drops[inventoryId].isOpen == src
+    else
+        return Inventories[inventoryId] ~= nil and Inventories[inventoryId].isOpen == src
+    end
+end
+
 local function getIdentifier(inventoryId, src)
     if inventoryId == 'player' then
         return src
-    elseif inventoryId:find('otherplayer-') then
-        return tonumber(inventoryId:match('otherplayer%-(.+)'))
+    elseif inventoryId:find('^otherplayer%-') then
+        return tonumber(inventoryId:match('^otherplayer%-(.+)'))
     else
         return inventoryId
     end
 end
 
 RegisterNetEvent('qb-inventory:server:SetInventoryData', function(fromInventory, toInventory, fromSlot, toSlot, fromAmount, toAmount)
+    if type(fromInventory) ~= 'string' or type(toInventory) ~= 'string' then return end
     if toInventory:find('shop%-') then return end
-    if not fromInventory or not toInventory or not fromSlot or not toSlot or not fromAmount or not toAmount or fromAmount < 0 or toAmount < 0 then return end
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     if not Player then return end
 
     fromSlot, toSlot, fromAmount, toAmount = tonumber(fromSlot), tonumber(toSlot), tonumber(fromAmount), tonumber(toAmount)
+    if not fromSlot or not toSlot or not fromAmount or not toAmount or fromAmount < 0 or toAmount < 0 then return end
+    if not isOpenFor(fromInventory, src) or not isOpenFor(toInventory, src) then return end
 
     local fromItem = getItem(fromInventory, src, fromSlot)
     local toItem = getItem(toInventory, src, toSlot)
